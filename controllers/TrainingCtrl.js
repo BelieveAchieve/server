@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 
 module.exports = {
   getQuestions: function(options, callback){
+    var quizType = JSON.stringify(options.quizType);
 
     async.waterfall([
 
@@ -33,7 +34,8 @@ module.exports = {
         var db = mongoose.createConnection('mongodb://localhost/test');
         db.on('error', console.error.bind(console, 'connection error:'));
         db.once('open', function() {
-          var collection = db.collection('questions');
+          var collection = db.collection(quizType);
+          console.log(collection);
           var questions = [];
           randomIds.forEach(function(item, index) {
             collection.findOne({'id':item.toString()}, function (err, question) {
