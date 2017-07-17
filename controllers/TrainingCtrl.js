@@ -25,6 +25,7 @@ module.exports = {
             }
           }
         }
+        console.log(randomIds);
         done(null, randomIds);
       },
 
