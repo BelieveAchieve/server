@@ -1,6 +1,7 @@
 var async = require('async');
 var crypto = require('crypto');
 var mongoose = require('mongoose');
+var config = require('./../config');
 
 module.exports = {
   getQuestions: function(options, callback){
@@ -31,9 +32,9 @@ module.exports = {
       },
 
       function(randomIds, done){
-        var db = mongoose.createConnection('mongodb://localhost/test');
+        var db = mongoose.createConnection(config.database);
         db.on('error', console.error.bind(console, 'connection error:'));
-        db.once('open', function() {
+        db.once('open', function(){
           var collection = db.collection(quizType);
           var questions = [];
           randomIds.forEach(function(item, index) {
