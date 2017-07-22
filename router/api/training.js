@@ -19,7 +19,7 @@ module.exports = function(router){
 				res.json({err: err});
 			} else {
 				res.json({
-          msg: 'Questions retrieved from database',
+          msg: 'Score calculated',
           score: score
         });
 			}
