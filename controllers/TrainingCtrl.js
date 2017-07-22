@@ -1,4 +1,5 @@
 var Question = require('../models/Question');
+var User = require('../models/User');
 var ObjectId = require('mongodb').ObjectID;
 
 module.exports = {
@@ -14,6 +15,7 @@ module.exports = {
     });
   },
   getQuizScore: function(options, callback){
+    var userid = options.userid;
     var idAnswerMap = options.idAnswerMap;
     var score = 0;
     var answer;
@@ -30,7 +32,20 @@ module.exports = {
             score = score + 1;
           }
         });
-        return callback(null, score);
+        User.findOne({'_id': userid}, function(err, user){
+          if (err){
+            return done(err);
+          }
+          if (!user) {
+            return done(new Error('No account with that id found.'));
+          }
+          user.save(function(err) {
+            score: score
+          });
+          console.log(user);
+          console.log(user.score);
+          return callback(null, score);
+        });
       }
     });
   }

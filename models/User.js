@@ -53,6 +53,8 @@ var userSchema = new mongoose.Schema({
   advancedCoursesText: String,
   extracurricularActivitesText: String,
 
+  score: Number,
+
 
 
   // User status
