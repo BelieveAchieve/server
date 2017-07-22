@@ -9,7 +9,7 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function(){
 	console.log('Connected to database');
-  var collection = db.collection('math');
+  var collection = db.collection('question');
   var json = require('./primer-dataset.json');
   collection.insertMany(json, function(err,result) {
     console.log(json);
@@ -17,7 +17,7 @@ db.once('open', function(){
       throw new Error(err);
     }
     else {
-      console.log('Successfully imported math data');
+      console.log('Successfully imported data');
       process.exit();
     }
   });
