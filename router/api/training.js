@@ -2,7 +2,7 @@ var TrainingCtrl = require('../../controllers/TrainingCtrl');
 
 module.exports = function(router){
 	router.post('/training/questions', function(req, res){
-		TrainingCtrl.getQuestions({quizType: req.body.quizType}, function(err, questions){
+		TrainingCtrl.getQuestions({category: req.body.category}, function(err, questions){
 			if (err){
 				res.json({err: err});
 			} else {

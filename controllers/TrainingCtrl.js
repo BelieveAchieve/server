@@ -4,9 +4,9 @@ var ObjectId = require('mongodb').ObjectID;
 
 module.exports = {
   getQuestions: function(options, callback){
-    var quizType = JSON.parse(JSON.stringify(options.quizType));
+    var category = JSON.parse(JSON.stringify(options.category));
 
-    Question.aggregate({ $match: { 'type' : quizType } }).sample(4).exec(function(err, questions) {
+    Question.aggregate({ $match: { 'category' : category } }).sample(4).exec(function(err, questions) {
       questions.map(function(currentValue) {
         var parsedQuestion = (new Question(currentValue)).parseQuestion();
         return parsedQuestion;

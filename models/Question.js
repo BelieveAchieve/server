@@ -4,7 +4,8 @@ var questionSchema = new mongoose.Schema({
   questionText: String,
   possibleAnswers: [String],
   correctAnswer: String,
-  type: String
+  category: String,
+  subcategory: String
 });
 
 // Given a question record, strip out sensitive data for public consumption
