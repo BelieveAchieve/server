@@ -5,7 +5,7 @@ var questionSchema = new mongoose.Schema({
   possibleAnswers: [String],
   correctAnswer: String,
   category: String,
-  subcategory: String
+  subcategory: String,
 });
 
 // Given a question record, strip out sensitive data for public consumption
@@ -16,5 +16,13 @@ questionSchema.methods.parseQuestion = function(){
     possibleAnswers: this.possibleAnswers
   };
 };
+
+questionSchema.statics.getSubcategories = function(category){
+  var categoryToSubcategoryMap = {
+    math: ['addition', 'subtraction', 'multiplication', 'division']
+  };
+  var subcategories = categoryToSubcategoryMap[category];
+  return subcategories;
+}
 
 module.exports = mongoose.model('Question', questionSchema, 'question');

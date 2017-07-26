@@ -5,6 +5,11 @@ var ObjectId = require('mongodb').ObjectID;
 module.exports = {
   getQuestions: function(options, callback){
     var category = JSON.parse(JSON.stringify(options.category));
+    var subcategories = Question.getSubcategories(category);
+
+    Question.aggregate({ $match: { 'subcategory': {$in: subcategories}}}).sample(4).exec(function(err, questions) {
+      console.log(questions);
+    });
 
     Question.aggregate({ $match: { 'category' : category } }).sample(4).exec(function(err, questions) {
       questions.map(function(currentValue) {
@@ -14,6 +19,7 @@ module.exports = {
       return callback(null, questions);
     });
   },
+
   getQuizScore: function(options, callback){
     var userid = options.userid;
     var idAnswerMap = options.idAnswerMap;

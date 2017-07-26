@@ -39,4 +39,11 @@
   "correctAnswer": "c",
   "category": "math",
   "subcategory": "multiplication"
+},
+{
+  "questionText": "What is 10 minus 4?",
+  "possibleAnswers": ["8", "2", "6.5", "6"],
+  "correctAnswer": "d",
+  "category": "math",
+  "subcategory": "subtraction"
 }]
