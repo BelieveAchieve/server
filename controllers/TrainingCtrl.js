@@ -45,12 +45,14 @@ module.exports = {
           if (!user) {
             return done(new Error('No account with that id found.'));
           }
-          user.save(function(err) {
-            score: score
+          user.score = score;
+          user.save(function(err, user){
+            if (err){
+              callback(err, null)
+            } else {
+              callback(null, score)
+            }
           });
-          console.log(user);
-          console.log(user.score);
-          return callback(null, score);
         });
       }
     });
