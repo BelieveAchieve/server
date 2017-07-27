@@ -2,68 +2,89 @@ var config = require('../config');
 var helper = require('sendgrid').mail
 var sendgrid = require('sendgrid')(config.sendgrid.apiKey);
 
-// var transporter = require('nodemailer').createTransport(config.mail.smtpConfig);
+
+// Utility functions for sendgrid
+
+var getMailHelper = function(options){
+  options = options || {};
+
+  var fromEmail = new helper.Email(options.from || config.mail.senders.noreply),
+      toEmail = new helper.Email(options.to),
+      subject = options.subject || '[UPchieve] New message',
+      content = new helper.Content('text/plain', options.content || '<p></p>');
+
+  return new helper.Mail(fromEmail, subject, toEmail, content);
+};
+
+var getTemplateMailHelper = function(mail, id, substitutions) {
+  var templatedMail = mail;
+
+  templatedMail.setTemplateId(id);
+  Object.keys(substitutions).forEach(function(subKey){
+    var subHelper = new helper.Substitution(subKey, substitutions[subKey]);
+    templatedMail.personalizations[0].addSubstitution(subHelper);
+  });
+
+  return templatedMail;
+};
+
+var sendEmail = function(mail, callback) {
+  console.log(mail.toJSON());
+  var request = sendgrid.emptyRequest({
+    method: 'POST',
+    path: '/v3/mail/send',
+    body: mail.toJSON()
+  });
+
+  sendgrid.API(request, function(err, res){
+    if (err){
+      console.log('Sendgrid error');
+      if (err.response){
+        console.log(err.response.body);
+      } else {
+        console.log(err);
+      }
+    }
+    callback(err, res);
+  });
+};
 
 module.exports = {
-
-  // HTML version
-
-  sendTemplatedEmail: function(mail, callback) {
-  	var request = sendgrid.emptyRequest({
-  	  method: 'POST',
-  	  path: '/v3/mail/send',
-  	  body: mail.toJSON()
-  	});
-
-    sendgrid.API(request, callback);
-  },
-
   sendVerification: function(options, callback){
-
     var email = options.email,
         token = options.token;
 
     var url = 'http://' + config.client.host + '/#/action/verify/' + token;
 
-    var fromEmail = new helper.Email(config.mail.senders.noreply),
-        toEmail = new helper.Email(email),
-        subject = '[UPchieve] Verify your email address';
-        content = new helper.Content('text/plain', options.content);
+  	var mail = getMailHelper({
+      to: email,
+      subject: '[UPchieve] Verify your email address'
+    });
 
-	var mail = new helper.Mail(fromEmail, subject, toEmail, content);
-	mail.personalizations[0].addSubstitution(new helper.Substitution('-userEmail-', email));
-	mail.personalizations[0].addSubstitution(new helper.Substitution('-verifyLink-', url));
-	mail.setTemplateId(config.sendgrid.templateId);
-
-	this.sendTemplatedEmail(mail, callback);
-
+    var templatedMail = getTemplateMailHelper(mail, config.sendgrid.verifyTemplateId, {
+      '-userEmail-': email,
+      '-verifyLink-': url
+    });
+    sendEmail(templatedMail, callback);
   },
 
-  // plain text version
+  sendReset: function(options, callback){
+    var email = options.email,
+        token = options.token;
 
-  sendPlainTextEmail: function(options, callback){
-    options = options || {};
+    var url = 'http://' + config.client.host + '/#/setpassword/' + token;
 
-    var fromEmail = new helper.Email(options.from),
-        toEmail = new helper.Email(options.to),
-        subject = options.subject || 'New message from UPchieve',
-        content = new helper.Content('text/plain', options.content);
+    var emailContent = [
+      'Click on this link to choose a new password!', url,
+      'If you received this email by accident, you can just ignore it and your password will not change.',
+    ].join('\n\n');
 
-    var mail = new helper.Mail(fromEmail, subject, toEmail, content);
-
-    var request = sg.emptyRequest({
-      method: 'POST',
-      path: '/v3/mail/send',
-      body: mail.toJSON()
+    var mail = getMailHelper({
+      to: email,
+      subject: '[UPchieve] Did you want to reset your password?',
+      content: emailContent
     });
-
-    sg.API(request, function(err, res) {
-      if (err) {
-        console.log('SendGrid error');
-        console.log(err);
-      }
-      callback(err, res);
-    });
+    sendEmail(mail, callback);
   }
 
 };
