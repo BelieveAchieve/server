@@ -13,6 +13,13 @@
   "subcategory": "addition"
 },
 {
+  "questionText": "What is 12+2?",
+  "possibleAnswers": ["3", "12", "14", "5"],
+  "correctAnswer": "c",
+  "category": "math",
+  "subcategory": "addition"
+},
+{
   "questionText": "What is 1*2?",
   "possibleAnswers": ["3", "2", "1", "5"],
   "correctAnswer": "b",
@@ -34,6 +41,13 @@
   "subcategory": "division"
 },
 {
+  "questionText": "What is 16 divided by 4?",
+  "possibleAnswers": ["33", "2", "4", "555"],
+  "correctAnswer": "c",
+  "category": "math",
+  "subcategory": "division"
+},
+{
   "questionText": "What is 10 times 4?",
   "possibleAnswers": ["35", "2", "40", "51"],
   "correctAnswer": "c",
@@ -41,9 +55,30 @@
   "subcategory": "multiplication"
 },
 {
+  "questionText": "What is 30 times 4?",
+  "possibleAnswers": ["8", "120", "16", "26"],
+  "correctAnswer": "b",
+  "category": "math",
+  "subcategory": "multiplication"
+},
+{
   "questionText": "What is 10 minus 4?",
   "possibleAnswers": ["8", "2", "6.5", "6"],
   "correctAnswer": "d",
+  "category": "math",
+  "subcategory": "subtraction"
+},
+{
+  "questionText": "What is 30 minus 4?",
+  "possibleAnswers": ["8", "2", "6.5", "26"],
+  "correctAnswer": "d",
+  "category": "math",
+  "subcategory": "subtraction"
+},
+{
+  "questionText": "What is 30 minus 14?",
+  "possibleAnswers": ["8", "2", "16", "26"],
+  "correctAnswer": "c",
   "category": "math",
   "subcategory": "subtraction"
 }]

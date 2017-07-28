@@ -2,21 +2,72 @@ var Question = require('../models/Question');
 var User = require('../models/User');
 var ObjectId = require('mongodb').ObjectID;
 
+// Fisher-Yates shuffle
+function shuffle(array) {
+  var currIndex = array.length,
+      tempValue,
+      randomIndex;
+
+  // while there are still elements to shuffle
+  while (0 != currIndex) {
+    // pick a remaining element
+    randomIndex = Math.floor(Math.random() * currIndex);
+    currIndex -= 1;
+
+    // swap it with the current element
+    tempValue = array[currIndex];
+    array[currIndex] = array[randomIndex];
+    array[randomIndex] = tempValue;
+  }
+
+  return array;
+}
+
 module.exports = {
   getQuestions: function(options, callback){
     var category = JSON.parse(JSON.stringify(options.category));
     var subcategories = Question.getSubcategories(category);
 
-    Question.aggregate({ $match: { 'subcategory': {$in: subcategories}}}).sample(4).exec(function(err, questions) {
-      console.log(questions);
+    // create an array of arrays of questions (divided by subcategory)
+    var questionsBySubcategory = [];
+    subcategories.map(function(subcategory) {
+      questionsBySubcategory[subcategory] = [];
     });
 
-    Question.aggregate({ $match: { 'category' : category } }).sample(4).exec(function(err, questions) {
-      questions.map(function(currentValue) {
-        var parsedQuestion = (new Question(currentValue)).parseQuestion();
-        return parsedQuestion;
-      });
-      return callback(null, questions);
+    Question.find({ 'category': category }, function(err, questions) {
+      if (err){
+        return callback(err);
+      }
+      else {
+        var randomQuestions = [];
+
+        // sort questions by subcategory into arrays
+        questions.map(function(question) {
+          var subcategory = question.subcategory;
+          questionsBySubcategory[subcategory].push(question);
+        });
+
+        // get x unique, random objects from n objects in arrays
+        subcategories.map(function(subcategory) {
+          var questions = questionsBySubcategory[subcategory];
+          // initialize array of values from 0 to questions.length - 1
+          var array = [];
+          for (var i = 0; i < questions.length; i++) {
+            array[i] = i;
+          }
+          array = shuffle(array);
+
+          // change depending on how many of each subcategory are wanted
+          for (var i = 0; i < 2; i++) {
+            var index = array[i];
+            var question = questions[index];
+            randomQuestions.push(question);
+          }
+        });
+
+        randomQuestions = shuffle(randomQuestions);
+        return callback(null, randomQuestions);
+      }
     });
   },
 
