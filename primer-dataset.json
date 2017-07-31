@@ -3,21 +3,24 @@
   "possibleAnswers": ["3", "2", "6", "5"],
   "correctAnswer": "c",
   "category": "math",
-  "subcategory": "addition"
+  "subcategory": "addition",
+  "image": "Black_cat.png"
 },
 {
   "questionText": "What is 1+2?",
   "possibleAnswers": ["3", "2", "1", "5"],
   "correctAnswer": "a",
   "category": "math",
-  "subcategory": "addition"
+  "subcategory": "addition",
+  "image": "Black_cat.png"
 },
 {
   "questionText": "What is 12+2?",
   "possibleAnswers": ["3", "12", "14", "5"],
   "correctAnswer": "c",
   "category": "math",
-  "subcategory": "addition"
+  "subcategory": "addition",
+  "image": "Black_cat.png"
 },
 {
   "questionText": "What is 1*2?",
