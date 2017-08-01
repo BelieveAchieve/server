@@ -1,87 +1,233 @@
 [{
-  "questionText": "What is 1+5?",
-  "possibleAnswers": ["3", "2", "6", "5"],
-  "correctAnswer": "c",
-  "category": "math",
-  "subcategory": "addition",
-  "image": "Black_cat.png"
+  "questionText": "Evaluate -2x + 6 = 4x – 2",
+  "possibleAnswers": [{"txt": "no solutions", "val": "a"}, {"txt": "0", "val": "b"}, {"txt": "3", "val": "c"}, {"txt": "1/2", "val": "d"}, {"txt": "4/3", "val": "e"}],
+  "correctAnswer": "e",
+  "category": "algebra",
+  "subcategory": "linear equations"
 },
 {
-  "questionText": "What is 1+2?",
-  "possibleAnswers": ["3", "2", "1", "5"],
+  "questionText": "Evaluate –(-x-5) = x-2",
+  "possibleAnswers": [{"txt": "no solutions", "val": "a"}, {"txt": "-5", "val": "b"}, {"txt": "3", "val": "c"}, {"txt": "1/2", "val": "d"}, {"txt": "4/3", "val": "e"}],
   "correctAnswer": "a",
-  "category": "math",
-  "subcategory": "addition",
-  "image": "Black_cat.png"
+  "category": "algebra",
+  "subcategory": "linear equations"
 },
 {
-  "questionText": "What is 12+2?",
-  "possibleAnswers": ["3", "12", "14", "5"],
+  "questionText": "Evaluate -(-x - 5) + 5(x - 9) = 2(x + 8) -(2x + 5)",
+  "possibleAnswers": [{"txt": "5", "val": "a"}, {"txt": "no solutions", "val": "b"}, {"txt": "17/2", "val": "c"}, {"txt": "15/2", "val": "d"}, {"txt": "-8", "val": "e"}],
   "correctAnswer": "c",
-  "category": "math",
-  "subcategory": "addition",
-  "image": "Black_cat.png"
+  "category": "algebra",
+  "subcategory": "linear equations"
 },
 {
-  "questionText": "What is 1*2?",
-  "possibleAnswers": ["3", "2", "1", "5"],
-  "correctAnswer": "b",
-  "category": "math",
-  "subcategory": "multiplication"
-},
-{
-  "questionText": "What is 8 divided by 2?",
-  "possibleAnswers": ["3", "2", "4", "5"],
-  "correctAnswer": "c",
-  "category": "math",
-  "subcategory": "division"
-},
-{
-  "questionText": "What is 8 divided by 4?",
-  "possibleAnswers": ["3", "2", "4", "5"],
-  "correctAnswer": "b",
-  "category": "math",
-  "subcategory": "division"
-},
-{
-  "questionText": "What is 16 divided by 4?",
-  "possibleAnswers": ["33", "2", "4", "555"],
-  "correctAnswer": "c",
-  "category": "math",
-  "subcategory": "division"
-},
-{
-  "questionText": "What is 10 times 4?",
-  "possibleAnswers": ["35", "2", "40", "51"],
-  "correctAnswer": "c",
-  "category": "math",
-  "subcategory": "multiplication"
-},
-{
-  "questionText": "What is 30 times 4?",
-  "possibleAnswers": ["8", "120", "16", "26"],
-  "correctAnswer": "b",
-  "category": "math",
-  "subcategory": "multiplication"
-},
-{
-  "questionText": "What is 10 minus 4?",
-  "possibleAnswers": ["8", "2", "6.5", "6"],
+  "questionText": "Evaluate -(3x - 1) / 3 - 2(x - 8) / 5 = (x + 8) / 5 - 3",
+  "possibleAnswers": [{"txt": "-10", "val": "a"}, {"txt": "15", "val": "b"}, {"txt": "17/2", "val": "c"}, {"txt": "37/2", "val": "d"}, {"txt": "no solutions", "val": "e"}],
   "correctAnswer": "d",
-  "category": "math",
-  "subcategory": "subtraction"
+  "category": "algebra",
+  "subcategory": "linear equations"
 },
 {
-  "questionText": "What is 30 minus 4?",
-  "possibleAnswers": ["8", "2", "6.5", "26"],
+  "questionText": "Evaluate 2/7 - (x + 8)/4 = 3(x - 3)/ 5 - 3/ 2",
+  "possibleAnswers": [{"txt": "no solutions", "val": "a"}, {"txt": "0", "val": "b"}, {"txt": "17/111", "val": "c"}, {"txt": "37/119", "val": "d"}, {"txt": "222/119", "val": "e"}],
+  "correctAnswer": "e",
+  "category": "algebra",
+  "subcategory": "linear equations"
+},
+{
+  "questionText": "Solve y=(3+x)/(12-9x) for x",
+  "possibleAnswers": [{"txt": "x=(12y-3)/(1+9y)", "val": "a"}, {"txt": "x=(4y-8)/(12=7y)", "val": "b"}, {"txt": "x=4y+2", "val": "c"}, {"txt": "x=y+9", "val": "d"}],
+  "correctAnswer": "a",
+  "category": "algebra",
+  "subcategory": "linear equations"
+},
+{
+  "questionText": "Solve d/3=3 for d",
+  "possibleAnswers": [{"txt": "no solutions", "val": "a"}, {"txt": "1", "val": "b"}, {"txt": "3", "val": "c"}, {"txt": "9", "val": "d"}],
   "correctAnswer": "d",
-  "category": "math",
-  "subcategory": "subtraction"
+  "category": "algebra",
+  "subcategory": "linear equations"
 },
 {
-  "questionText": "What is 30 minus 14?",
-  "possibleAnswers": ["8", "2", "16", "26"],
+  "questionText": "Solve v/3=7 for v",
+  "possibleAnswers": [{"txt": "no solutions", "val": "a"}, {"txt": "21", "val": "b"}, {"txt": "21", "val": "c"}, {"txt": "-10", "val": "d"}],
   "correctAnswer": "c",
-  "category": "math",
-  "subcategory": "subtraction"
+  "category": "algebra",
+  "subcategory": "linear equations"
+},
+{
+  "questionText": "Solve x-3=-5",
+  "possibleAnswers": [{"txt": "no solutions", "val": "a"}, {"txt": "-2", "val": "b"}, {"txt": "21", "val": "c"}, {"txt": "-4", "val": "d"}, {"txt": "-10", "val": "e"}],
+  "correctAnswer": "b",
+  "category": "algebra",
+  "subcategory": "linear equations"
+},
+{
+  "questionText": "Solve x-3=5+x",
+  "possibleAnswers": [{"txt": "no solutions", "val": "a"}, {"txt": "-15", "val": "b"}, {"txt": "-2", "val": "c"}, {"txt": "15", "val": "d"}, {"txt": "7", "val": "e"}],
+  "correctAnswer": "a",
+  "category": "algebra",
+  "subcategory": "linear equations"
+},
+{
+  "questionText": "Solve the inequality x + 3 > 2",
+  "possibleAnswers": [{"txt": "x>1", "val": "a"}, {"txt": "x>5", "val": "b"}, {"txt": "x<1", "val": "c"}, {"txt": "x<6", "val": "d"}, {"txt": "x=0", "val": "e"}],
+  "correctAnswer": "a",
+  "category": "algebra",
+  "subcategory": "linear equations"
+},
+{
+  "questionText": "Reduce the following rational expression in the image below to lowest terms",
+  "possibleAnswers": [{"txt": "(x+1)/(x-3)", "val": "a"}, {"txt": "(x-3)/(x+1)", "val": "b"}, {"txt": "(x-1)/(x+3)", "val": "c"}, {"txt": "(x+3)/(x-1)", "val": "d"}],
+  "correctAnswer": "a",
+  "category": "algebra",
+  "subcategory": "rational expressions",
+  "image": "Image_1.png"
+},
+{
+  "questionText": "Reduce the following rational expression in the image below to lowest terms",
+  "possibleAnswers": [{"txt": "(x-3)/(x-3)", "val": "a"}, {"txt": "x+3", "val": "b"}, {"txt": "x-3", "val": "c"}, {"txt": "(x+3)/(x-3)", "val": "d"}],
+  "correctAnswer": "d",
+  "category": "algebra",
+  "subcategory": "rational expressions",
+  "image": "Image_2.png"
+},
+{
+  "questionText": "Find an equation of the line passing through the two points. Write the equation in standard form: (-5, 1) and (0, 8)",
+  "possibleAnswers": [{"txt": "-7x - 5y = -40", "val": "a"}, {"txt": "-6x - 8y = -64", "val": "b"}, {"txt": "7x - 5y = -40", "val": "c"}, {"txt": "6x + 8y = -64", "val": "d"}],
+  "correctAnswer": "c",
+  "category": "algebra",
+  "subcategory": "two variable equations"
+},
+{
+  "questionText": "Find an equation of the line that satisfies the conditions. Write the equation in standard form Through (0, 4); m = - 8/9 ",
+  "possibleAnswers": [{"txt": "8x - 9y = 36", "val": "a"}, {"txt": "8x + 9y = -36", "val": "b"}, {"txt": "8x + 9y = 36", "val": "c"}, {"txt": "9x + 8y = -36", "val": "d"}],
+  "correctAnswer": "c",
+  "category": "algebra",
+  "subcategory": "two variable equations"
+},
+{
+  "questionText": "Write the equation in slope-intercept form:  9x + 5y = 5",
+  "possibleAnswers": [{"txt": "y=9x-5", "val": "a"}, {"txt": "y=9/5x -1", "val": "b"}, {"txt": "y = -9/5x+1", "val": "c"}, {"txt": "y=9/5x+1", "val": "d"}],
+  "correctAnswer": "b",
+  "category": "algebra",
+  "subcategory": "two variable equations"
+},
+{
+  "questionText": "Which of the below is a solution to the following system? 3x-y=7 and 2x+3y=1",
+  "possibleAnswers": [{"txt": "no solutions", "val": "a"}, {"txt": "(0,0)", "val": "b"}, {"txt": "(2.,3)", "val": "c"}, {"txt": "(2,-1)", "val": "d"}],
+  "correctAnswer": "d",
+  "category": "algebra",
+  "subcategory": "two variable equations"
+},
+{
+  "questionText": "Evaluate (4-5i)(12+11i)",
+  "possibleAnswers": [{"txt": "16-6i", "val": "a"}, {"txt": "16+6i", "val": "b"}, {"txt": "103-16i", "val": "c"}, {"txt": "16i", "val": "d"}],
+  "correctAnswer": "c",
+  "category": "algebra",
+  "subcategory": "complex numbers"
+},
+{
+  "questionText": "Evaluate (-3-i) – (6-7i)",
+  "possibleAnswers": [{"txt": "-9", "val": "a"}, {"txt": "6i", "val": "b"}, {"txt": "-9-6i", "val": "c"}, {"txt": "-9+6i", "val": "d"}],
+  "correctAnswer": "d",
+  "category": "algebra",
+  "subcategory": "complex numbers"
+},
+{
+  "questionText": "Evaluate (1+4i) – (-16+9i)",
+  "possibleAnswers": [{"txt": "-5i-17", "val": "a"}, {"txt": "-17+5i", "val": "b"}, {"txt": "17-5i", "val": "c"}, {"txt": "7-5i", "val": "d"}],
+  "correctAnswer": "c",
+  "category": "algebra",
+  "subcategory": "complex numbers"
+},
+{
+  "questionText": "Evaluate the equation in the following image",
+  "possibleAnswers": [{"txt": "36", "val": "a"}, {"txt": "49", "val": "b"}, {"txt": "16", "val": "c"}, {"txt": "4", "val": "d"}],
+  "correctAnswer": "a",
+  "category": "algebra",
+  "subcategory": "rational exponents and radicals",
+  "image": "Image_3.png"
+},
+{
+  "questionText": "Evaluate the equation in the image below",
+  "possibleAnswers": [{"txt": "16/169", "val": "a"}, {"txt": "1/18", "val": "b"}, {"txt": "12/169", "val": "c"}, {"txt": "16/144", "val": "d"}],
+  "correctAnswer": "a",
+  "category": "algebra",
+  "subcategory": "rational exponents and radicals",
+  "image": "Image_4.png"
+},
+{
+  "questionText": "Evaluate the equation in  the image below",
+  "possibleAnswers": [{"txt": "9", "val": "a"}, {"txt": "6", "val": "b"}, {"txt": "16", "val": "c"}, {"txt": "72", "val": "d"}],
+  "correctAnswer": "b",
+  "category": "algebra",
+  "subcategory": "rational exponents and radicals",
+  "image": "Image_5.png"
+},
+{
+  "questionText": "Evaluate the equation in the image below",
+  "possibleAnswers": [{"txt": "-5", "val": "a"}, {"txt": "5", "val": "b"}, {"txt": "15", "val": "c"}, {"txt": "375", "val": "d"}],
+  "correctAnswer": "a",
+  "category": "algebra",
+  "subcategory": "rational exponents and radicals",
+  "image": "Image_6.png"
+},
+{
+  "questionText": "Evaluate the equation in the image below",
+  "possibleAnswers": [{"txt": "a^2", "val": "a"}, {"txt": "b^1/3", "val": "b"}, {"txt": "a/b^1/3", "val": "c"}, {"txt": "(a^2)/(b^1/6)", "val": "d"}],
+  "correctAnswer": "d",
+  "category": "algebra",
+  "subcategory": "rational exponents and radicals",
+  "image": "Image_7.png"
+},
+{
+  "questionText": "Evaluate the equation in the image below ",
+  "possibleAnswers": [{"txt": "x^1/20", "val": "a"}, {"txt": "x^1/9", "val": "b"}, {"txt": "x^9", "val": "c"}, {"txt": "x^20", "val": "d"}],
+  "correctAnswer": "a",
+  "category": "algebra",
+  "subcategory": "rational exponents and radicals",
+  "image": "Image_8.png"
+},
+{
+  "questionText": "Evaluate the equation in the image below ",
+  "possibleAnswers": [{"txt": "9", "val": "a"}, {"txt": "-36", "val": "b"}, {"txt": "36", "val": "c"}, {"txt": "-27", "val": "d"}],
+  "correctAnswer": "c",
+  "category": "algebra",
+  "subcategory": "rational exponents and radicals",
+  "image": "Image_9.png"
+},
+{
+  "questionText": "A fidget spinner is being sold in a store for $140.35 and has been marked up 7%.  How much did the store pay for the fidget spinner?",
+  "possibleAnswers": [{"txt": "$131.16", "val": "a"}, {"txt": "$130.00", "val": "b"}, {"txt": "$155.17", "val": "c"}, {"txt": "$133.35", "val": "d"}],
+  "correctAnswer": "a",
+  "category": "algebra",
+  "subcategory": "application of linear equations"
+},
+{
+  "questionText": "A store is having a 60% off sale and one item is now being sold for $79.00.  What was the original price of the item?",
+  "possibleAnswers": [{"txt": "$131.66", "val": "a"}, {"txt": "$39.00", "val": "b"}, {"txt": "$197.50", "val": "c"}, {"txt": "$125.00", "val": "d"}],
+  "correctAnswer": "c",
+  "category": "algebra",
+  "subcategory": "application of linear equations"
+},
+{
+  "questionText": "Two planes start out 2800 km apart and move towards each other meeting after 3.5 hours. One plane flies at 75 kmhour slower than the other plane.  What was the speed of each plane?",
+  "possibleAnswers": [{"txt": "Faster plane: 437.5 km/hour, slower plane: 362.5 km/hour", "val": "a"}, {"txt": "Faster plane: 445.5 km/hour, slower plane: 354.5 km/hour", "val": "b"}, {"txt": "Faster plane: 500 km/hour, slower plane: 425 km/hour", "val": "c"}, {"txt": "Faster plane: 362.5 km/hour, slower plane: 287.5 km/hour", "val": "d"}],
+  "correctAnswer": "a",
+  "category": "algebra",
+  "subcategory": "application of linear equations"
+},
+{
+  "questionText": "We want to fence in a field whose length is twice the width and we have 80 feet of fencing material.  If we use all the fencing material what would the dimensions of the field be?",
+  "possibleAnswers": [{"txt": "Length: 26.66 feet, width: 13.33 feet", "val": "a"}, {"txt": "Length: 26 feet, width: 13 feet", "val": "b"}, {"txt": "Length: 26.5 feet, width: 13.25 feet", "val": "c"}, {"txt": "Length: 30 feet, width: 15 feet", "val": "d"}],
+  "correctAnswer": "a",
+  "category": "algebra",
+  "subcategory": "application of linear equations"
+},
+{
+  "questionText": "How much of a 20% acid solution should we add to 20 gallons of a 42% acid solution to get a 35% acid solution?",
+  "possibleAnswers": [{"txt": "8.33 gallons", "val": "a"}, {"txt": "10.33 gallons", "val": "b"}, {"txt": "9.33 gallons", "val": "c"}, {"txt": "7 gallons", "val": "d"}],
+  "correctAnswer": "b",
+  "category": "algebra",
+  "subcategory": "application of linear equations"
 }]

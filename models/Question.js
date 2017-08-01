@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 var questionSchema = new mongoose.Schema({
   questionText: String,
-  possibleAnswers: [String],
+  possibleAnswers: [{txt: String, val: String}],
   correctAnswer: String,
   category: String,
   subcategory: String,
@@ -21,7 +21,7 @@ questionSchema.methods.parseQuestion = function(){
 
 questionSchema.statics.getSubcategories = function(category){
   var categoryToSubcategoryMap = {
-    math: ['addition', 'subtraction', 'multiplication', 'division']
+    algebra: ['linear equations', 'rational exponents and radicals', 'application of linear equations', 'two variable equations', 'rational expressions', 'complex numbers']
   };
   var subcategories = categoryToSubcategoryMap[category];
   return subcategories;

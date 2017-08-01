@@ -10,7 +10,11 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function(){
 	console.log('Connected to database');
   var collection = db.collection('question');
-  var json = require('./primer-dataset.json');
+	try {
+		var json = require('./primer-dataset.json');
+	} catch (e) {
+		console.log(e);
+	}
   collection.insertMany(json, function(err,result) {
     console.log(json);
     if (err) {

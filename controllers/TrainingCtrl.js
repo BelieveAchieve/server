@@ -58,7 +58,7 @@ module.exports = {
           array = shuffle(array);
 
           // change depending on how many of each subcategory are wanted
-          for (var i = 0; i < 2; i++) {
+          for (var i = 0; i < 1; i++) {
             var index = array[i];
             var question = questions[index];
             randomQuestions.push(question);
