@@ -9,6 +9,7 @@ module.exports = function(app){
 	require('./user')(router);
 	require('./verify')(router);
 	require('./session')(router);
+	require('./training')(router);
 	require('./sockets')(app);
 
 	app.use('/api', passport.isAuthenticated, router);
