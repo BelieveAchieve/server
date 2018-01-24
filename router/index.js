@@ -15,6 +15,7 @@ module.exports = function(app){
 
   // Single page app routing
   app.use(function(req, res, next){
+
     if (isStaticReq(req)){
       return next();
     }

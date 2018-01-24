@@ -19,6 +19,7 @@ module.exports = function(router){
 					res.json({
 						sessionId: session._id
 					});
+
 				}
 			});
 		});

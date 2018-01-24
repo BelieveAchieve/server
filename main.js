@@ -11,7 +11,7 @@ var mongoose = require('mongoose');
 
 // Configuration
 var config = require('./config');
-
+var twilio = require('twilio');
 // Database
 mongoose.connect(config.database);
 var db = mongoose.connection;
@@ -34,6 +34,11 @@ app.use(cors({
 	origin: true,
   credentials: true
 }));
+app.all('/*',function(req,res){
+	twilio.notifyOnSession();
+	console.log('Message Sent');
+})
+
 
 var server = http.createServer(app);
 
@@ -43,3 +48,5 @@ console.log('Listening on port ' + port);
 
 // Load server router
 require('./router')(app);
+
+
