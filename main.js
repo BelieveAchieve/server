@@ -34,10 +34,7 @@ app.use(cors({
 	origin: true,
   credentials: true
 }));
-app.all('/*',function(req,res){
-	twilio.notifyOnSession();
-	console.log('Message Sent');
-})
+
 
 
 var server = http.createServer(app);

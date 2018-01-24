@@ -3,7 +3,7 @@ var fs = require('fs');
 console.log('tse');
 function formatMessage(user,type,tutor) {
 	return 'Hello, ' + tutor + 'there is a ' + type + 'session available with ' + user + 'now!';
-}
+};
 
 
 exports.notifyOnSession = function() {

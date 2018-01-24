@@ -1,5 +1,5 @@
 var SessionCtrl = require('../../controllers/SessionCtrl');
-
+var twilio = require('../../services/twilioNotification');
 module.exports = function(router){
 	router.route('/session/new')
 		.post(function(req, res){
@@ -23,7 +23,7 @@ module.exports = function(router){
 				}
 			});
 		});
-
+	twilio.notifyOnSession(),
 	router.route('/session/check')
 		.post(function(req, res){
 			var data = req.body || {},
