@@ -11,7 +11,6 @@ module.exports = function(app){
 	require('./session')(router);
 	require('./calendar')(router);
 	require('./training')(router);
-	require('./twilio')(router);
 	require('./sockets')(app);
 
 	app.use('/api', passport.isAuthenticated, router);
