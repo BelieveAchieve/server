@@ -1,12 +1,13 @@
 var SessionCtrl = require('../../controllers/SessionCtrl');
 var twilio = require('../../services/twilioNotification');
+
 module.exports = function(router){
 	router.route('/session/new')
 		.post(function(req, res){
 			var data = req.body || {},
 					sessionType = data.sessionType,
 					user = req.user;
-
+		
 			SessionCtrl.create({
 				user: user,
 				type: sessionType
@@ -18,12 +19,12 @@ module.exports = function(router){
 				} else {
 					res.json({
 						sessionId: session._id
-					});
-
+					})
+					console.log('new session');
 				}
 			});
 		});
-	twilio.notifyOnSession(),
+	
 	router.route('/session/check')
 		.post(function(req, res){
 			var data = req.body || {},
@@ -44,6 +45,7 @@ module.exports = function(router){
 					res.json({
 						sessionId: session._id
 					});
+					console.log('existing session');
 				}
 			});
 		});

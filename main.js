@@ -11,7 +11,7 @@ var mongoose = require('mongoose');
 
 // Configuration
 var config = require('./config');
-var twilio = require('twilio');
+
 // Database
 mongoose.connect(config.database);
 var db = mongoose.connection;
