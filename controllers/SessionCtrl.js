@@ -1,7 +1,7 @@
 var Q = require('q');
 
 var Session = require('../models/Session');
-var twilio = require('../services/twilioNotification');
+var twilio = require('../services/twilioSend')
 
 // A socket session tracks a session with its users and sockets
 var SocketSession = function(options){
@@ -193,7 +193,7 @@ module.exports = {
       type: type
     });
     console.log('create');
-    twilio.notifyOnSession();
+    
     session.save(cb);
   },
 

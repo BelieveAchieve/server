@@ -1,5 +1,4 @@
 var SessionCtrl = require('../../controllers/SessionCtrl');
-var twilio = require('../../services/twilioNotification');
 
 module.exports = function(router){
 	router.route('/session/new')

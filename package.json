@@ -18,7 +18,7 @@
     "express": "~4.13.1",
     "express-flash": "0.0.2",
     "express-session": "^1.14.2",
-    "mongoose": "4.3.5",
+    "mongoose": "^4.3.5",
     "morgan": "~1.6.1",
     "nodemailer": "^2.7.0",
     "passport": "^0.3.2",
@@ -26,6 +26,7 @@
     "q": "^1.4.1",
     "sendgrid": "^4.7.1",
     "socket.io": "^1.7.2",
+    "twilio": "^3.11.2",
     "validator": "^6.2.0"
   }
 }
