@@ -1,6 +1,7 @@
 var Q = require('q');
 
 var Session = require('../models/Session');
+var twilio = require('../services/twilioSend')
 
 // A socket session tracks a session with its users and sockets
 var SocketSession = function(options){
@@ -72,7 +73,7 @@ SessionManager.prototype.connect = function(options){
   var session = options.session
       user = options.user,
       socket = options.socket;
-
+      console.log('connect');
   var socketSession = this._sessions[session._id];
   if (!socketSession){
     socketSession = new SocketSession({
@@ -90,7 +91,7 @@ SessionManager.prototype.connect = function(options){
 
 SessionManager.prototype.disconnect = function(options){
   var socket = options.socket;
-
+  console.log('disconnect');
   var socketSession,
       session;
   Object.keys(this._sessions).some(function(sessionId){
@@ -172,6 +173,7 @@ SessionManager.prototype.getUserBySocket = function(socket){
 var sessionManager = new SessionManager();
 
 module.exports = {
+
   create: function(options, cb){
     var user = options.user || {},
         userId = user._id,
@@ -190,13 +192,14 @@ module.exports = {
       student: userId,
       type: type
     });
-
+    console.log('create');
+    
     session.save(cb);
   },
 
   get: function(options, cb){
     var sessionId = options.sessionId;
-
+    console.log('get');
     var activeSession = sessionManager.getById(sessionId);
     if (activeSession){
       cb(null, activeSession.session);
@@ -243,7 +246,7 @@ module.exports = {
 
   leaveSession: function(options, cb){
     var socket = options.socket;
-
+    console.log('leave');
     var user = sessionManager.getUserBySocket(socket);
 
     var session = sessionManager.disconnect({

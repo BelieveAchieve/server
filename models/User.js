@@ -16,6 +16,7 @@ var userSchema = new mongoose.Schema({
       message: '{VALUE} is not a valid email'
     }
   },
+  phone: String,
   password: String,
 
   verified: {
@@ -139,6 +140,7 @@ userSchema.methods.parseProfile = function(){
   return {
     _id: this._id,
     email: this.email,
+    phone: this.phone,
     verified: this.verified,
     firstname: this.firstname,
     lastname: this.lastname,

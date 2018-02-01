@@ -83,9 +83,9 @@ sessionSchema.methods.leaveUser = function(user, cb){
   // should set this.endedAt to Date.now and end the session, both users see the session ended regardless of who ended it 
   // student can receive a message telling them they can request help again 
   if (user.isVolunteer){
-    this.volunteer = null;
+    this.volunteer = user;
   } else {
-    this.student = null;
+    this.student = user;
   }
   this.save(cb);
 };

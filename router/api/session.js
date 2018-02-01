@@ -6,7 +6,7 @@ module.exports = function(router){
 			var data = req.body || {},
 					sessionType = data.sessionType,
 					user = req.user;
-
+		
 			SessionCtrl.create({
 				user: user,
 				type: sessionType
@@ -18,11 +18,12 @@ module.exports = function(router){
 				} else {
 					res.json({
 						sessionId: session._id
-					});
+					})
+					console.log('new session');
 				}
 			});
 		});
-
+	
 	router.route('/session/check')
 		.post(function(req, res){
 			var data = req.body || {},
@@ -43,6 +44,7 @@ module.exports = function(router){
 					res.json({
 						sessionId: session._id
 					});
+					console.log('existing session');
 				}
 			});
 		});

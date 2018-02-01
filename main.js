@@ -35,6 +35,8 @@ app.use(cors({
   credentials: true
 }));
 
+
+
 var server = http.createServer(app);
 
 var port = app.get('port');
@@ -43,3 +45,5 @@ console.log('Listening on port ' + port);
 
 // Load server router
 require('./router')(app);
+
+
