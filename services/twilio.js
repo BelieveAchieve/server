@@ -7,7 +7,7 @@ const twilioClient = twilio(config.accountSid,config.authToken)
 
 module.exports  = {
 
-	notify: function(type){
+	notify: function(type){ 
 
 		//Time check
 		var date = new Date()
@@ -28,11 +28,13 @@ module.exports  = {
 		var days = ['Sunday', 'Monday', 'Tuesday','Wednesday','Thursday','Friday','Saturday']
 		var time = `${hour-12}-${hour -11}`;
 		var avail = `availability.${days[day]}.${hour}`;
+		var certified = `${type}.passed`;
 
 		var query = User.find({'serviceInterests': type,
-								[avail]: 'true'
+								[avail]: 'true',
+								[certified]: 'true'
 		})
-		const PERSON_LIMIT = 3;
+		const PERSON_LIMIT = 3; 
 		query.exec(function (err, persons) {
 			if (err){
 				console.log('Error conducting query: ' + err);
@@ -42,6 +44,7 @@ module.exports  = {
 				if (persons[i].phone != undefined){
 					var phoneNumber = persons[i].phone;
 					var name = persons[i].firstname;
+					var email = persons[i].email;
 					send(phoneNumber,name);
 					c++;
 				}
