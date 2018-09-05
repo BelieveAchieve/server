@@ -11,8 +11,8 @@ var numQuestions = {
   calculus: 3,
   esl: 3,
   planning: 4,
-  essay: 3,
-  application: 2,
+  essays: 3,
+  applications: 2,
   biology: 1,
   chemistry: 2
 }

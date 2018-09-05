@@ -2,49 +2,49 @@
 "questionText": "When is the most common regular decision application deadline for most colleges?",
 "possibleAnswers": [{"txt": "November", "val": "a"}, {"txt": "January", "val": "b"},{"txt": "March", "val": "c"}],
 "correctAnswer": "b",
-"category": "application",
+"category": "applications",
 "subcategory": "timeline"
 },
 {
 "questionText": "When are the typical deadlines for Early Decision applicants?",
 "possibleAnswers": [{"txt": "September", "val": "a"}, {"txt": "November", "val": "b"},{"txt": "January", "val": "c"}],
 "correctAnswer": "b",
-"category": "application",
+"category": "applications",
 "subcategory": "timeline"
 },
 {
 "questionText": "True or False. Quantity is more important than quality when it comes to extracurricular activities..",
 "possibleAnswers": [{"txt": "true", "val": "a"}, {"txt": "false", "val": "b"}],
 "correctAnswer": "b",
-"category": "application",
+"category": "applications",
 "subcategory": "resume"
 },
 {
 "questionText": "What is maximum number of schools we recommend a student apply to?",
 "possibleAnswers": [{"txt": "4", "val": "a"}, {"txt": "6", "val": "b"}, {"txt": "8", "val": "c"},{"txt": "10", "val": "d"}, {"txt": "10", "val": "12"}],
 "correctAnswer": "c",
-"category": "application",
+"category": "applications",
 "subcategory": "schools"
 },
 {
 "questionText": "What safety + match + reach model do we recommend to our students?",
 "possibleAnswers": [{"txt": "2+4+2", "val": "a"}, {"txt": "3+5+1", "val": "b"}, {"txt": "1+7+1", "val": "c"}, {"txt": "4+2+2", "val": "d"}],
 "correctAnswer": "a",
-"category": "application",
+"category": "applications",
 "subcategory": "schools"
 },
 {
 "questionText": "True or false. All schools accept the College Board application fee waivers.",
 "possibleAnswers": [{"txt": "true", "val": "a"}, {"txt": "false", "val": "b"}],
 "correctAnswer": "b",
-"category": "application",
+"category": "applications",
 "subcategory": "fees"
 },
 {
 "questionText": "When does filing begin for FAFSA?",
 "possibleAnswers": [{"txt": "September 1", "val": "a"}, {"txt": "October 1", "val": "b"}, {"txt": "November 1", "val": "c"}, {"txt": "December 1", "val": "d"}, {"txt": "January 1", "val": "d"}],
 "correctAnswer": "b",
-"category": "application",
+"category": "applications",
 "subcategory": "FinAid"
 },
 
@@ -52,7 +52,7 @@
 "questionText": "For priority consideration, when should students submit their FAFSA applications by?",
 "possibleAnswers": [{"txt": "January 1", "val": "a"}, {"txt": "February 1", "val": "b"}, {"txt": "March 1", "val": "c"}, {"txt": "April 1", "val": "d"}, {"txt": "May 1", "val": "d"}],
 "correctAnswer": "a",
-"category": "application",
+"category": "applications",
 "subcategory": "FinAid"
 },
 
@@ -60,7 +60,7 @@
 "questionText": "FAFSA is based on prior-prior year taxes. For Fall 2019, FAFSA would be on a family’s ______ taxes. ",
 "possibleAnswers": [{"txt": "2015", "val": "a"}, {"txt": "2016", "val": "b"}, {"txt": "2017", "val": "c"}, {"txt": "2018", "val": "d"}, {"txt": "2019", "val": "e"}],
 "correctAnswer": "c",
-"category": "application",
+"category": "applications",
 "subcategory": "FinAid"
 },
 
@@ -68,7 +68,7 @@
 "questionText": "For FAFSA purposes, a student is considered as a dependent if they are under the age of _____ (unless there are special circumstances)",
 "possibleAnswers": [{"txt": "18", "val": "a"}, {"txt": "20", "val": "b"}, {"txt": "21", "val": "c"}, {"txt": "24", "val": "d"}, {"txt": "25", "val": "e"}],
 "correctAnswer": "d",
-"category": "application",
+"category": "applications",
 "subcategory": "FinAid"
 },
 
@@ -76,7 +76,7 @@
 "questionText": "Question?",
 "possibleAnswers": [{"txt": "answer1", "val": "a"}, {"txt": "answer2", "val": "b"}, {"txt": "answer3", "val": "c"}, {"txt": "answer4", "val": "d"}, {"txt": "answer5", "val": "e"}],
 "correctAnswer": "letter",
-"category": "application",
+"category": "applications",
 "subcategory": "FinAid"
 },
 
@@ -84,7 +84,7 @@
 "questionText": "Do financial aid packages include loans?",
 "possibleAnswers": [{"txt": "Always.", "val": "a"}, {"txt": "Some of them.", "val": "b"}, {"txt": "Never", "val": "c"}],
 "correctAnswer": "b",
-"category": "application",
+"category": "applications",
 "subcategory": "FinAid"
 },
 
@@ -92,7 +92,7 @@
 "questionText": "What is not a type of federal funding",
 "possibleAnswers": [{"txt": "State-funded Scholarship", "val": "a"}, {"txt": "Pell Grant", "val": "b"}, {"txt": "Federal Work Study", "val": "c"}, {"txt": "Subsidized Loans", "val": "d"}, {"txt": "Private Institution Scholarship", "val": "e"}],
 "correctAnswer": "e",
-"category": "application",
+"category": "applications",
 "subcategory": "FinAid"
 },
 
@@ -100,7 +100,7 @@
 "questionText": "A student shouldn’t ask __________ for a recommendation letter.",
 "possibleAnswers": [{"txt": "the guidance counselor", "val": "a"}, {"txt": "their basketball coach", "val": "b"}, {"txt": "their older brother", "val": "c"}, {"txt": "their internship supervisor", "val": "d"}, {"txt": "their favorite teacher", "val": "e"}],
 "correctAnswer": "c",
-"category": "application",
+"category": "applications",
 "subcategory": "LOR"
 },
 
@@ -108,7 +108,7 @@
 "questionText": "How much time should a student provide their recommender to write the recommendation letter?",
 "possibleAnswers": [{"txt": "The school day.", "val": "a"}, {"txt": "One week.", "val": "b"}, {"txt": "Two weeks.", "val": "c"}, {"txt": "Three weeks.", "val": "d"}, {"txt": "4-5 Weeks.", "val": "e"}],
 "correctAnswer": "e",
-"category": "application",
+"category": "applications",
 "subcategory": "LOR"
 },
 
@@ -116,7 +116,7 @@
 "questionText": "The student should provide their recommenders a list of schools, instructions on how to submit the letters (online/offline), school’s deadlines, and _____________.",
 "possibleAnswers": [{"txt": "a headshot", "val": "a"}, {"txt": "a link to their Facebook", "val": "b"}, {"txt": "a list of every single achievement of the student’s life since they were 2", "val": "c"}, {"txt": "resume/brag sheet", "val": "d"}],
 "correctAnswer": "d",
-"category": "application",
+"category": "applications",
 "subcategory": "LOR"
 },
 
@@ -124,7 +124,7 @@
 "questionText": "For college applications and other professional matters, which of the following is not a good e-mail address? The student’s name is Josephine Emily Smith.",
 "possibleAnswers": [{"txt": "JosephineSmith@gmail.com", "val": "a"}, {"txt": "JSmith@gmail.com", "val": "b"}, {"txt": "JoJoSmith148184@gmail.com", "val": "c"}, {"txt": "JESmith@gmail.com", "val": "d"}],
 "correctAnswer": "c",
-"category": "application",
+"category": "applications",
 "subcategory": "basic"
 },
 
@@ -132,7 +132,7 @@
 "questionText": "What is a similarity between Early Action & Early Decision?",
 "possibleAnswers": [{"txt": "If accepted, ED & EA applicants will be required to commit to that school.", "val": "a"}, {"txt": "If accepted, ED & EA applicants must cancel their other college applicants.", "val": "b"}, {"txt": "ED & EA applicants must take the SAT/ACT Subject Test by October of Senior Year.", "val": "c"}, {"txt": "ED & EA applicants have to commit to the school before receiving their financial aid package.", "val": "d"}, {"txt": "ED & EA applicants will always be admitted to the school", "val": "e"}],
 "correctAnswer": "c",
-"category": "application",
+"category": "applications",
 "subcategory": "timeline"
 },
 
@@ -140,7 +140,7 @@
 "questionText": "What does early action mean?",
 "possibleAnswers": [{"txt": "If a student is accepted, they must commit to the school immediately.", "val": "a"}, {"txt": "A student will find out their admissions decision sooner, but will not be required to commit to the school immediately.", "val": "b"}, {"txt": "If a student is accepted, they will be required to start school the following spring semester.", "val": "c"}, {"txt": "If a student applies early, they will always be accepted to the school. The school follows the rule of ‘first come, first served’.", "val": "d"}],
 "correctAnswer": "b",
-"category": "application",
+"category": "applications",
 "subcategory": "timeline"
 },
 
@@ -148,6 +148,6 @@
 "questionText": "A student should put in extra effort whenever there’s a chance. Which option is not a good example?",
 "possibleAnswers": [{"txt": "Visit the campus.", "val": "a"}, {"txt": "Respond to an optional short-response question/essay.", "val": "b"}, {"txt": "Send the admissions recruiter 2,000 e-mails per day.", "val": "c"}, {"txt": "Send in an optional recommendation letter.", "val": "d"}, {"txt": "Schedule an optional interview", "val": "e"}],
 "correctAnswer": "c",
-"category": "application",
+"category": "applications",
 "subcategory": "basic"
 }]
