@@ -96,6 +96,7 @@ var userSchema = new mongoose.Schema({
       '8p': Boolean, '9p': Boolean, '10p': Boolean, '11p': Boolean}
   },
   hasSchedule: false,
+  timezone: String,
 
   algebra: {
     passed: {
