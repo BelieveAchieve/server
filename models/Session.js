@@ -34,7 +34,11 @@ var sessionSchema = new mongoose.Schema({
   },
 
   messages: [Message.schema],
-  // whiteboardImg: Buffer,
+
+  whiteboardUrl: {
+    type: String,
+    default: ""
+  },
 
   createdAt: {
     type: Date,
@@ -66,6 +70,16 @@ sessionSchema.methods.saveMessage = function(messageObj, cb) {
 
     var savedMessage = session.messages[savedMessageIndex];
     cb(null, savedMessage);
+  });
+};
+
+sessionSchema.methods.saveWhiteboardUrl = function(whiteboardUrl, cb) {
+  var session = this;
+  this.whiteboardUrl = whiteboardUrl
+  this.save(function(err) {
+    if (cb) {
+      cb(null, session.whiteboardUrl);
+    }
   });
 };
 

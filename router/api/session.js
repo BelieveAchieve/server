@@ -42,7 +42,8 @@ module.exports = function(router){
 					});
 				} else {
 					res.json({
-						sessionId: session._id
+						sessionId: session._id,
+            whiteboardUrl: session.whiteboardUrl
 					});
 				}
 			});

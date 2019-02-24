@@ -28,7 +28,6 @@ module.exports = function(app) {
           } else {
             socket.join(data.sessionId);
             console.log("Session joined:", session._id);
-            console.log(session);
             io.emit("sessions", SessionCtrl.getSocketSessions());
             io.to(session._id).emit("session-change", session);
           }
@@ -120,7 +119,15 @@ module.exports = function(app) {
 
     socket.on("end", function(data) {
       if (!data || !data.sessionId) return;
-      socket.broadcast.to(data.sessionId).emit("end");
+
+      SessionCtrl.get(
+        { sessionId: data.sessionId },
+        function(err, session) {
+          session.saveWhiteboardUrl(data.whiteboardUrl);
+          socket.broadcast.to(data.sessionId).emit("end", data);
+        }
+      );
+
     });
 
     socket.on("changeColor", function(data) {
