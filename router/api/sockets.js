@@ -129,7 +129,6 @@ module.exports = function(app) {
           socket.broadcast.to(data.sessionId).emit("end", data);
         }
       );
-
     });
 
     socket.on("changeColor", function(data) {
