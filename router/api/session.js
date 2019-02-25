@@ -43,7 +43,7 @@ module.exports = function(router){
 				} else {
 					res.json({
 						sessionId: session._id,
-            whiteboardUrl: session.whiteboardUrl
+						whiteboardUrl: session.whiteboardUrl
 					});
 				}
 			});
