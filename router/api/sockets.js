@@ -121,7 +121,9 @@ module.exports = function(app) {
       if (!data || !data.sessionId) return;
 
       SessionCtrl.get(
-        { sessionId: data.sessionId },
+        {
+          sessionId: data.sessionId
+        },
         function(err, session) {
           session.saveWhiteboardUrl(data.whiteboardUrl);
           socket.broadcast.to(data.sessionId).emit("end", data);
