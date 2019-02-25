@@ -18,16 +18,17 @@
     "express": "^4.16.4",
     "express-flash": "0.0.2",
     "express-session": "^1.14.2",
+    "kerberos": "0.0.24",
     "moment-timezone": "^0.5.23",
-    "mongoose": "4.3.5",
+    "mongoose": "^5.4.15",
     "morgan": "^1.9.1",
     "nodemailer": "^2.7.0",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "q": "^1.4.1",
-    "sendgrid": "^4.7.1",
-    "socket.io": "^1.7.2",
-    "twilio": "^3.19.1",
+    "sendgrid": "^5.2.3",
+    "socket.io": "^2.2.0",
+    "twilio": "^3.28.1",
     "validator": "^6.2.0"
   }
 }
