@@ -212,6 +212,15 @@ module.exports = {
     }
   },
 
+  findLatest: function(attrs, cb){
+    Session
+      .find(attrs)
+      .sort({ createdAt: -1 })
+      .limit(1)
+      .findOne()
+      .exec(cb);
+  },
+
   // Return all current socket sessions as array
   getSocketSessions: function(){
     return sessionManager.list();
@@ -252,7 +261,7 @@ module.exports = {
     var socket = options.socket;
 
     var user = sessionManager.getUserBySocket(socket);
-    
+
     var session = sessionManager.disconnect({
       socket: socket
     });

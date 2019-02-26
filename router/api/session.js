@@ -66,4 +66,27 @@ module.exports = function(router){
 				}
 			});
 		});
+
+router
+  .route('/session/current')
+  .post(function(req, res){
+    const data = req.body || {};
+    const studentId = data.userId;
+
+    SessionCtrl
+      .findLatest(
+        { student: studentId, endedAt: null },
+        function(err, session){
+          if (err){
+            res.json({err: err});
+          } else if (!session) {
+            res.json({err: 'No session found'});
+          } else {
+            res.json({
+              sessionId: session._id,
+              data: session
+            });
+          }
+        });
+    });
 };

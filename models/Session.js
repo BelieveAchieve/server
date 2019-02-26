@@ -92,7 +92,7 @@ sessionSchema.methods.leaveUser = function(user, cb) {
 
 sessionSchema.methods.endSession = function(cb) {
   this.endedAt = new Date();
-  this.save(cb);
+  this.save(() => console.log(`Ended session ${this._id} at ${this.endedAt}`));
 };
 
 sessionSchema.methods.isActive = function(cb) {};
