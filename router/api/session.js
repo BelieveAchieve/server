@@ -24,7 +24,26 @@ module.exports = function(router){
 			});
 		});
 
-	router.route('/session/check')
+  router.route('/session/end')
+    .post(function(req, res){
+      var data = req.body || {},
+          sessionId = data.sessionId;
+
+      SessionCtrl.get({
+        sessionId: sessionId
+      }, function(err, session){
+        if (err){
+          res.json({err: err});
+        } else if (!session) {
+          res.json({err: 'No session found'});
+        } else {
+          session.endSession();
+          res.json({ sessionId: session._id });
+        }
+      });
+    });
+
+  router.route('/session/check')
 		.post(function(req, res){
 			var data = req.body || {},
 					sessionId = data.sessionId;
