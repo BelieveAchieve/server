@@ -34,12 +34,17 @@ var sessionSchema = new mongoose.Schema({
   },
 
   messages: [Message.schema],
-  // whiteboardImg: Buffer,
+
+  whiteboardUrl: {
+    type: String,
+    default: ""
+  },
 
   createdAt: {
     type: Date,
     default: Date.now
   },
+
   endedAt: {
     type: Date
   }
@@ -69,6 +74,16 @@ sessionSchema.methods.saveMessage = function(messageObj, cb) {
   });
 };
 
+sessionSchema.methods.saveWhiteboardUrl = function(whiteboardUrl, cb) {
+  var session = this;
+  this.whiteboardUrl = whiteboardUrl
+  this.save(function(err) {
+    if (cb) {
+      cb(null, session.whiteboardUrl);
+    }
+  });
+};
+
 //
 sessionSchema.methods.joinUser = function(user, cb) {
   if (user.isVolunteer) {
@@ -91,7 +106,7 @@ sessionSchema.methods.leaveUser = function(user, cb) {
 
 sessionSchema.methods.endSession = function(cb) {
   this.endedAt = new Date();
-  this.save(cb);
+  this.save(() => console.log(`Ended session ${this._id} at ${this.endedAt}`));
 };
 
 sessionSchema.methods.isActive = function(cb) {};
