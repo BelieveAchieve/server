@@ -50,6 +50,7 @@ module.exports = {
       }
       user.availability = availability;
       user.hasSchedule = true;
+      user.timezone = '';
       user.save(function(err, user){
         if (err){
           callback(err, null)
@@ -89,6 +90,38 @@ module.exports = {
           callback(null, availability)
         }
       });
+    });
+  },
+  updateTimezone: function(options, callback) {
+    var userid = options.userid;
+    var tz = options.tz;
+    User.findOne({_id: userid}, function(err, user){
+      if (err){
+        return callback(err);
+      }
+      if (!user) {
+        return callback(new Error('No account with that id found.'));
+      }
+      user.timezone = tz;
+      user.save(function(err, user){
+        if (err) {
+          callback(err, null);
+        } else {
+          callback(null, tz);
+        }
+      });
+    });
+  },
+  getTimezone: function(options, callback){
+    var userid = options.userid;
+    User.findOne({_id: userid}, function(err, user){
+      if (err){
+        return callback(err);
+      }
+      if (!user) {
+        return callback(new Error('No account with that id found.'));
+      }
+      callback(null, user.timezone);
     });
   }
 };
