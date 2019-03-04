@@ -3,43 +3,39 @@ UPchieve web server
 
 > Web server providing endpoints for the UPchieve web client
 
-<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
-- [UPchieve web server](#upchieve-web-server)
-    - [Local Development](#local-development)
-        - [Dependencies](#dependencies)
-        - [Build Setup](#build-setup)
-        - [Test Users](#test-users)
-    - [Structure](#structure)
-        - [config.js](#configjs)
-        - [models](#models)
-        - [router](#router)
-        - [controllers](#controllers)
-        - [services](#services)
-    - [Endpoints](#endpoints)
-        - [POST /auth/login](#post-authlogin)
-        - [GET /auth/logout](#get-authlogout)
-        - [POST /auth/register/checkcred](#post-authregistercheckcred)
-        - [POST /auth/register](#post-authregister)
-        - [POST /auth/reset/send](#post-authresetsend)
-        - [POST /auth/reset/confirm](#post-authresetconfirm)
-        - [POST /api/session/new](#post-apisessionnew)
-        - [POST /api/session/check](#post-apisessioncheck)
-        - [POST /api/training/questions](#post-apitrainingquestions)
-        - [POST /api/training/score](#post-apitrainingscore)
-        - [POST /api/calendar/init](#post-apicalendarinit)
-        - [POST /api/calendar/get](#post-apicalendarget)
-        - [POST /api/calendar/save](#post-apicalendarsave)
-        - [POST /api/feedback](#post-apifeedback)
-        - [GET /api/user](#get-apiuser)
-        - [PUT /api/user](#put-apiuser)
-        - [GET /api/user/:id](#get-apiuserid)
-        - [POST /api/verify/send](#post-apiverifysend)
-        - [POST /api/verify/confirm](#post-apiverifyconfirm)
-        - [POST /moderate/message](#post-moderatemessage)
-
-<!-- markdown-toc end -->
+- [Local Development](#local-development)
+    - [Dependencies](#dependencies)
+    - [Build Setup](#build-setup)
+    - [Test Users](#test-users)
+- [Structure](#structure)
+    - [config.js](#configjs)
+    - [models](#models)
+    - [router](#router)
+    - [controllers](#controllers)
+    - [services](#services)
+- [Endpoints](#endpoints)
+    - [POST /auth/login](#post-authlogin)
+    - [GET /auth/logout](#get-authlogout)
+    - [POST /auth/register/checkcred](#post-authregistercheckcred)
+    - [POST /auth/register](#post-authregister)
+    - [POST /auth/reset/send](#post-authresetsend)
+    - [POST /auth/reset/confirm](#post-authresetconfirm)
+    - [POST /api/session/new](#post-apisessionnew)
+    - [POST /api/session/check](#post-apisessioncheck)
+    - [POST /api/training/questions](#post-apitrainingquestions)
+    - [POST /api/training/score](#post-apitrainingscore)
+    - [POST /api/calendar/init](#post-apicalendarinit)
+    - [POST /api/calendar/get](#post-apicalendarget)
+    - [POST /api/calendar/save](#post-apicalendarsave)
+    - [POST /api/feedback](#post-apifeedback)
+    - [GET /api/user](#get-apiuser)
+    - [PUT /api/user](#put-apiuser)
+    - [GET /api/user/:id](#get-apiuserid)
+    - [POST /api/verify/send](#post-apiverifysend)
+    - [POST /api/verify/confirm](#post-apiverifyconfirm)
+    - [POST /moderate/message](#post-moderatemessage)
 
 
 Local Development
@@ -56,10 +52,13 @@ Local Development
    are installed. (See their repos for installation instructions.)
 2. If needed, install the appropriate version of Node.js:
    `asdf install nodejs 6.10.0`
-3. Run `bin/setup` to set up database with test users and install dependencies
-4. Populate `config.js` with auth tokens (This is a WIP. Ask a teammate if you
-   need any.)
-5. Run `npm start` to start the dev server on http://localhost:3000
+3. Run `bin/setup` to set up database with test users and install dependencies.
+   Run with `--verbose` to debug if needed.
+4. Populate `config.js` with auth tokens (ask a teammate if you need
+   any--improvements forthcoming).
+5. Run `npm start` to start the dev server on `http://localhost:3000`.
+6. See [the web client repo](https://github.com/UPchieve/web) for client
+   installation
 
 [asdf]: https://github.com/asdf-vm/asdf
 [asdf-nodejs]: https://github.com/asdf-vm/asdf-nodejs
@@ -68,11 +67,11 @@ Local Development
 
 The database is populated with the following users for local development:
 
-- student1@upchieve.org
-- volunteer1@upchieve.org
-- volunteer2@upchieve.org
-
-(The password for all is `Password123`.)
+| email                     | password      |
+|:--------------------------|:--------------|
+| `student1@upchieve.org`   | `Password123` |
+| `volunteer1@upchieve.org` | `Password123` |
+| `volunteer2@upchieve.org` | `Password123` |
 
 Structure
 ---------
@@ -101,7 +100,7 @@ acceptance/rejection and error handling.
 Routes use controllers to perform the business logic of the server, providing
 separation of concerns: the controllers have no need to be aware of how the
 endpoints work. Instead, a controller provides ways to allow the routes to
-trigger something (a user update, )
+trigger something (a user update, e.g.)
 
 ### services
 
