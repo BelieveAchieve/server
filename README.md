@@ -43,25 +43,45 @@ Local Development
 
 ### Dependencies
 
-1. [`asdf`][asdf] for version management
-2. Node.js 6.10.0
+1. Node.js 6.10.0
+2. MongoDB 3.6.6
 
-### Build Setup
+### Version management
 
-1. If needed, ensure [`asdf`][asdf] and the [`asdf-nodejs`][asdf-nodejs] plugin
-   are installed. (See their repos for installation instructions.)
-2. If needed, install the appropriate version of Node.js:
-   `asdf install nodejs 6.10.0`
-3. Run `bin/setup` to set up database with test users and install dependencies.
-   Run with `--verbose` to debug if needed.
-4. Populate `config.js` with auth tokens (ask a teammate if you need
-   any--improvements forthcoming).
-5. Run `npm start` to start the dev server on `http://localhost:3000`.
-6. See [the web client repo](https://github.com/UPchieve/web) for client
-   installation
+The recommended tool for version managment is [`asdf`][asdf].
+
+To install the appropriate versions of Node and Mongo, ensure their asdf plugins
+are installed. (See their repos for complete installation instructions.)
+
+- [`asdf-nodejs`][asdf-nodejs]
+
+```shell-script
+asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
+asdf install nodejs 6.10.0
+```
+
+- [`asdf-mongodb`][asdf-mongodb]
+
+```shell-script
+asdf plugin-add mongodb https://github.com/jmromer/asdf-mongodb
+asdf install mongodb 3.6.6
+```
 
 [asdf]: https://github.com/asdf-vm/asdf
 [asdf-nodejs]: https://github.com/asdf-vm/asdf-nodejs
+[asdf-mongodb]: https://github.com/jmromer/asdf-mongodb
+
+### Setup
+
+1. Run `bin/setup` to set up database with test users and install dependencies.
+   Run with `--verbose` to debug if needed.
+2. Populate `config.js` with auth tokens (ask a teammate if you need
+   any--improvements forthcoming).
+3. Run `npm start` to start the dev server on `http://localhost:3000`.
+4. See [the web client repo](https://github.com/UPchieve/web) for client
+   installation
+
 
 ### Test Users
 
