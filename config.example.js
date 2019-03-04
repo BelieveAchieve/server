@@ -2,8 +2,8 @@
 
 module.exports = {
 	host: process.env.SERVER_HOST || 'localhost:3000',
-	database: 'mongodb://user:password@mongodb/database',
-	sessionSecret: process.env.SESSION_SECRET || '',
+	database: 'mongodb://localhost:27017/upchieve',
+	sessionSecret: process.env.SESSION_SECRET || 'secret',
 	saltRounds: 10,
 	sendgrid: {
 		apiKey: process.env.SENDGRID_API_KEY || '',
@@ -18,7 +18,7 @@ module.exports = {
 		host: 'localhost:8080'
 	},
 	socketsPort: 3001,
-	
+
 	//Twilio Credentials
 	accountSid: '',
 	authToken: '',

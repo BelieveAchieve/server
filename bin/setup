@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# switch to projct root directory
+root_dir=$(git rev-parse --show-toplevel)
+cd "$root_dir" || exit 1
+
+# load testing functions
+# shellcheck source=./utilities.sh
+. "${root_dir}/bin/utilities.sh"
+
+if [[ "$*" =~ '--verbose' ]]; then
+   export VERBOSE=true
+fi
+
+step 'Copying config.example.js to config.js'
+if [ -f config.js ]; then
+    success '' 'Aborting. config.js found.'
+else
+    execute cp config.example.js config.js
+fi
+
+step 'Setting up test users'
+execute bash bin/seed_test_users.sh
+
+step 'Installing dependencies'
+execute npm install
