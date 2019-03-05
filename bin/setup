@@ -4,7 +4,7 @@
 root_dir=$(git rev-parse --show-toplevel)
 cd "$root_dir" || exit 1
 
-# load testing functions
+# load utility functions
 # shellcheck source=./utilities.sh
 . "${root_dir}/bin/utilities.sh"
 
@@ -14,13 +14,19 @@ fi
 
 step 'Copying config.example.js to config.js'
 if [ -f config.js ]; then
-    success '' 'Aborting. config.js found.'
+    success '' 'Skipping: config.js found.'
 else
     execute cp config.example.js config.js
 fi
 
 step 'Setting up test users'
-execute bash bin/seed_test_users.sh
+printf "\n${RED}Warning${RESET}: This will drop existing users. Continue? (y/N): "
+read -r response
+if [[ "$response" =~ ^[yY]$ ]]; then
+    execute bash bin/seed_test_users.sh
+else
+    success '' 'Skipping.'
+fi
 
 step 'Installing dependencies'
 execute npm install
