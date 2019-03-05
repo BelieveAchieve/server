@@ -78,7 +78,7 @@ asdf install mongodb 3.6.6
    Run with `--verbose` to debug if needed.
 2. Populate `config.js` with auth tokens (ask a teammate if you need
    any--improvements forthcoming).
-3. Run `npm start` to start the dev server on `http://localhost:3000`.
+3. Run `npm run dev` to start the dev server on `http://localhost:3000`.
 4. See [the web client repo](https://github.com/UPchieve/web) for client
    installation
 
