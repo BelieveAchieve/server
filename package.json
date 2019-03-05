@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node main.js"
+    "start": "node main.js",
+    "dev": "nodemon main"
   },
   "dependencies": {
     "async": "^1.5.0",
@@ -30,5 +31,8 @@
     "socket.io": "^2.2.0",
     "twilio": "^3.28.1",
     "validator": "^6.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
   }
 }
