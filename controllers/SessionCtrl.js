@@ -126,13 +126,21 @@ SessionManager.prototype.pruneDeadSessions = function(){
       return this._sessions[activeSessionId];
     }, this);
 
-  this._sessions = activeSessions;
+  // this._sessions is an Object indexed by session _id
+  const activeSessionsMap =
+        activeSessions
+        .reduce((acc, socketSession) => {
+          acc[socketSession.session._id] = socketSession
+          return acc
+        }, {})
+
+  this._sessions = activeSessionsMap;
 };
 
 SessionManager.prototype.list = function(){
+
   var sessions = this._sessions;
   return Object.keys(sessions).map(function(id){
-    console.log(sessions[id].session);
     return sessions[id].session;
   });
 };
