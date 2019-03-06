@@ -117,6 +117,10 @@ SessionManager.prototype.disconnect = function(options){
 //
 // Return a reference to the SocketSession instance.
 SessionManager.prototype.pruneDeadSessions = () => {
+  if (!this._sessions) {
+    return this
+  }
+
   const sessionIds = Object.keys(this._sessions)
   const deadSessionIds =
         sessionIds
