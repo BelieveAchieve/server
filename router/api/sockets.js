@@ -2,8 +2,6 @@ var http = require('http')
 var socket = require('socket.io')
 
 var config = require('../../config.js')
-
-var User = require('../../models/User.js')
 var SessionCtrl = require('../../controllers/SessionCtrl.js')
 
 module.exports = function (app) {
@@ -177,7 +175,7 @@ module.exports = function (app) {
       })
     })
 
-    socket.on('resetScreen', function () {
+    socket.on('resetScreen', function (data) {
       io.to(data.sessionId).emit('reset')
     })
   })

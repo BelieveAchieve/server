@@ -173,7 +173,7 @@ module.exports = {
         '10p': false,
         '11p': false }
     }
-    var hasSchedule = true
+
     User.findOne({ _id: userid }, function (err, user) {
       if (err) {
         return callback(err)
@@ -193,6 +193,7 @@ module.exports = {
       })
     })
   },
+
   getAvailability: function (options, callback) {
     var userid = options.userid
     User.findOne({ _id: userid }, function (err, user) {
@@ -205,6 +206,7 @@ module.exports = {
       callback(null, user.availability)
     })
   },
+
   updateAvailability: function (options, callback) {
     var userid = options.userid
     var availability = options.availability
@@ -225,6 +227,7 @@ module.exports = {
       })
     })
   },
+
   updateTimezone: function (options, callback) {
     var userid = options.userid
     var tz = options.tz
@@ -245,6 +248,7 @@ module.exports = {
       })
     })
   },
+
   getTimezone: function (options, callback) {
     var userid = options.userid
     User.findOne({ _id: userid }, function (err, user) {

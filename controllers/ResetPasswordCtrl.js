@@ -10,16 +10,18 @@ module.exports = {
     var email = options.email
 
     async.waterfall([
-
       // Find the user whose password is to be reset
       function (done) {
         User.findOne({ email: email }, function (err, user) {
           if (err) {
+            console.log(`ERROR: ${err}`)
             return done(err)
           }
+
           if (!user) {
             return done(new Error('No account with that id found.'))
           }
+
           done(null, user)
         })
       },
@@ -28,7 +30,6 @@ module.exports = {
       function (user, done) {
         crypto.randomBytes(16, function (err, buf) {
           var token = buf.toString('hex')
-
           user.passwordResetToken = token
 
           user.save(function (err) {
@@ -62,7 +63,7 @@ module.exports = {
             return done(new Error('No user found with that password reset token'))
           } else if (err) {
             return done(err)
-          } else if (user.email != email) {
+          } else if (user.email !== email) {
             return done(new Error('Email did not match the password reset token'))
           }
           done(null, user)

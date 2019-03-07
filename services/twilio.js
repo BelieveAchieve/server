@@ -1,5 +1,3 @@
-
-var mongoose = require('mongoose')
 var config = require('../config.js')
 var User = require('../models/User')
 var twilio = require('twilio')
@@ -16,8 +14,8 @@ const client = twilio(config.accountSid, config.authToken)
 // logging
 
 function getAvailability () {
-  var date_string = new Date().toUTCString()
-  var date = moment.utc(date_string).tz('America/New_York')
+  var dateString = new Date().toUTCString()
+  var date = moment.utc(dateString).tz('America/New_York')
   var day = date.isoWeekday() - 1
   var hour = date.hour()
   var min = date.minute() / 60
@@ -32,7 +30,7 @@ function getAvailability () {
   }
 
   var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-  var time = `${hour - 12}-${hour - 11}`
+
   return `availability.${days[day]}.${hour}`
 }
 

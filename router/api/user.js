@@ -47,7 +47,7 @@ module.exports = function (router) {
         advancedCoursesText: data.advancedCoursesText,
         favoriteAcademicSubject: data.favoriteAcademicSubject,
         extracurricularActivitesText: data.extracurricularActivitesText,
-			    heardFrom: data.heardFrom,
+        heardFrom: data.heardFrom,
         referred: data.referred
 
       }

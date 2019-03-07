@@ -1,6 +1,5 @@
 var Question = require('../models/Question')
 var User = require('../models/User')
-var ObjectId = require('mongodb').ObjectID
 
 // change depending on how many of each subcategory are wanted
 var numQuestions = {
@@ -28,7 +27,7 @@ function shuffle (origArray) {
   var randomIndex
 
   // while there are still elements to shuffle
-  while (currIndex != 0) {
+  while (currIndex !== 0) {
     // pick a remaining element
     randomIndex = Math.floor(Math.random() * currIndex)
     currIndex -= 1
@@ -83,10 +82,9 @@ module.exports = {
     var idAnswerMap = options.idAnswerMap
     var category = options.category
     var score = 0
-    var answer
-    var obj_ids = Object.keys(idAnswerMap)
-    var idCorrectAnswerMap = new Object()
-    Question.find({ '_id': { $in: obj_ids } }, function (err, questions) {
+    var objIDs = Object.keys(idAnswerMap)
+    var idCorrectAnswerMap = {}
+    Question.find({ '_id': { $in: objIDs } }, function (err, questions) {
       if (err) {
         return callback(err)
       } else {
@@ -94,7 +92,7 @@ module.exports = {
           var correctAnswer = question.correctAnswer
           idCorrectAnswerMap[question._id] = question.correctAnswer
           var userAnswer = idAnswerMap[question._id]
-          if (correctAnswer == userAnswer) {
+          if (correctAnswer === userAnswer) {
             score = score + 1
           }
         })

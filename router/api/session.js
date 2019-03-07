@@ -5,12 +5,10 @@ module.exports = function (router) {
   router.route('/session/new')
     .post(function (req, res) {
       var data = req.body || {}
-
       var sessionType = data.sessionType
-
       var sessionSubTopic = data.sessionSubTopic
-
       var user = req.user
+
       SessionCtrl.create({
         user: user,
         type: sessionType,
@@ -31,7 +29,6 @@ module.exports = function (router) {
   router.route('/session/end')
     .post(function (req, res) {
       var data = req.body || {}
-
       var sessionId = data.sessionId
 
       SessionCtrl.get({
@@ -51,7 +48,6 @@ module.exports = function (router) {
   router.route('/session/check')
     .post(function (req, res) {
       var data = req.body || {}
-
       var sessionId = data.sessionId
 
       SessionCtrl.get({
@@ -78,15 +74,16 @@ module.exports = function (router) {
     .route('/session/current')
     .post(function (req, res) {
       const data = req.body || {}
-      const { user_id, is_volunteer } = data
+      const userId = data.user_id
+      const isVolunteer = data.is_volunteer
 
       let studentId = null
       let volunteerId = null
 
-      if (is_volunteer) {
-        volunteerId = ObjectId(user_id)
+      if (isVolunteer) {
+        volunteerId = ObjectId(userId)
       } else {
-        studentId = ObjectId(user_id)
+        studentId = ObjectId(userId)
       }
 
       SessionCtrl

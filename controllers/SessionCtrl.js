@@ -1,5 +1,3 @@
-var Q = require('q')
-
 var Session = require('../models/Session')
 var twilioService = require('../services/twilio')
 
@@ -13,15 +11,13 @@ var SocketSession = function (options) {
 // Add a socket and user to the session. If the user already has a socket, disconnect and replace it
 SocketSession.prototype.join = function (options) {
   var user = options.user
-
   var socket = options.socket
-
   var userIndex = this.users.findIndex(function (joinedUser) {
     return joinedUser._id === user._id
   })
 
   if (userIndex !== -1) {
-    var socket = this.sockets[user._id]
+    socket = this.sockets[user._id]
     if (socket) {
       socket.disconnect(0)
     }
@@ -70,11 +66,11 @@ var SessionManager = function () {
 }
 
 SessionManager.prototype.connect = function (options) {
-  var session = options.session
-  user = options.user,
-  socket = options.socket
+  const session = options.session
+  const user = options.user
+  const socket = options.socket
+  let socketSession = this._sessions[session._id]
 
-  var socketSession = this._sessions[session._id]
   if (!socketSession) {
     socketSession = new SocketSession({
       session: session
@@ -83,6 +79,7 @@ SessionManager.prototype.connect = function (options) {
   } else {
     socketSession.session = session
   }
+
   socketSession.join({
     user: user,
     socket: socket
@@ -177,11 +174,8 @@ var sessionManager = new SessionManager()
 module.exports = {
   create: function (options, cb) {
     var user = options.user || {}
-
     var userId = user._id
-
     var type = options.type
-
     var subTopic = options.subTopic
 
     if (!userId) {
@@ -233,9 +227,7 @@ module.exports = {
   // Given a sessionId, create a socket session and join the session
   joinSession: function (options, cb) {
     var sessionId = options.sessionId
-
     var user = options.user
-
     var socket = options.socket
 
     Session.findOne({ _id: sessionId }, function (err, session) {
@@ -265,9 +257,7 @@ module.exports = {
 
   leaveSession: function (options, cb) {
     var socket = options.socket
-
     var user = sessionManager.getUserBySocket(socket)
-
     var session = sessionManager.disconnect({
       socket: socket
     })
@@ -279,10 +269,5 @@ module.exports = {
     } else {
       cb(null, session)
     }
-  },
-
-  // Get list of all sessions that are not ended, with recent activity
-  getRecentSessions: function () {
-
   }
 }

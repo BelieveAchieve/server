@@ -6,22 +6,17 @@ var sendgrid = require('sendgrid')(config.sendgrid.apiKey)
 
 var getMailHelper = function (options) {
   options = options || {}
-
   var fromEmail = new helper.Email(options.from || config.mail.senders.noreply)
-
   var toEmail = new helper.Email(options.to)
-
   var subject = options.subject || '[UPchieve] New message'
-
   var content = new helper.Content('text/plain', options.content || '<p></p>')
-
   return new helper.Mail(fromEmail, subject, toEmail, content)
 }
 
 var getTemplateMailHelper = function (mail, id, substitutions) {
   var templatedMail = mail
-
   templatedMail.setTemplateId(id)
+
   Object.keys(substitutions).forEach(function (subKey) {
     var subHelper = new helper.Substitution(subKey, substitutions[subKey])
     templatedMail.personalizations[0].addSubstitution(subHelper)
@@ -53,14 +48,11 @@ var sendEmail = function (mail, callback) {
 module.exports = {
   sendVerification: function (options, callback) {
     var email = options.email
-
     var token = options.token
-
     var url = 'http://' + config.client.host + '/#/action/verify/' + token
-
     console.log(url)
 
-  	var mail = getMailHelper({
+    var mail = getMailHelper({
       to: email,
       subject: '[UPchieve] Verify your email address'
     })
@@ -74,9 +66,7 @@ module.exports = {
 
   sendReset: function (options, callback) {
     var email = options.email
-
     var token = options.token
-
     var url = 'http://' + config.client.host + '/#/setpassword/' + token
 
     var emailContent = [

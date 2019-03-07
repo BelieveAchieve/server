@@ -21,20 +21,20 @@ function checkPassword (password) {
   for (var i = 0; i < password.length; i++) {
     if (!isNaN(password[i])) {
       numNumber += 1
-    } else if (password[i].toUpperCase() == password[i]) {
+    } else if (password[i].toUpperCase() === password[i]) {
       numUpper += 1
-    } else if (password[i].toLowerCase() == password[i]) {
+    } else if (password[i].toLowerCase() === password[i]) {
       numLower += 1
     }
   }
 
-  if (numUpper == 0) {
+  if (numUpper === 0) {
     return 'Password must contain at least one uppercase letter'
   }
-  if (numLower == 0) {
+  if (numLower === 0) {
     return 'Password must contain at least one lowercase letter'
   }
-  if (numNumber == 0) {
+  if (numNumber === 0) {
     return 'Password must contain at least one number'
   }
   return true
@@ -97,7 +97,7 @@ module.exports = function (app) {
     }
 
     User.find({ 'email': email }, function (req, users) {
-      if (users.length == 0) {
+      if (users.length === 0) {
         return res.json({
           checked: true
         })
@@ -273,7 +273,7 @@ module.exports = function (app) {
       return res.json({
         err: 'Must reenter password for password reset'
       })
-    } else if (newpassword != password) {
+    } else if (newpassword !== password) {
       return res.json({
         err: 'Passwords do not match'
       })
@@ -292,24 +292,24 @@ module.exports = function (app) {
     for (var i = 0; i < password.length; i++) {
       if (!isNaN(password[i])) {
         numNumber += 1
-      } else if (password[i].toUpperCase() == password[i]) {
+      } else if (password[i].toUpperCase() === password[i]) {
         numUpper += 1
-      } else if (password[i].toLowerCase() == password[i]) {
+      } else if (password[i].toLowerCase() === password[i]) {
         numLower += 1
       }
     }
 
-    if (numUpper == 0) {
+    if (numUpper === 0) {
       return res.json({
         err: 'Password must contain at least one uppercase letter'
       })
     }
-    if (numLower == 0) {
+    if (numLower === 0) {
       return res.json({
         err: 'Password must contain at least one lowercase letter'
       })
     }
-    if (numNumber == 0) {
+    if (numNumber === 0) {
       return res.json({
         err: 'Password must contain at least one number'
       })

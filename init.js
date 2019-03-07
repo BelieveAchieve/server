@@ -19,13 +19,13 @@ db.once('open', function () {
       console.log(e)
     }
     collection.insertMany(json, function (err, result) {
-	    console.log(json)
-	    if (err) {
-	      throw new Error(err)
-	    } else {
-	      console.log('Successfully imported data')
-	      process.exit()
-	    }
-	  })
+      console.log(json)
+      if (err) {
+        throw new Error(err)
+      } else {
+        console.log('Successfully imported data')
+        process.exit()
+      }
+    })
   }
 })
