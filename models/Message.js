@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
 
 var messageSchema = new mongoose.Schema({
   user: {
@@ -15,6 +15,6 @@ var messageSchema = new mongoose.Schema({
     default: Date.now
   }
 
-});
+})
 
-module.exports = mongoose.model('Message', messageSchema);
+module.exports = mongoose.model('Message', messageSchema)

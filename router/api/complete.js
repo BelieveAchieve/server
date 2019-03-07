@@ -1,17 +1,14 @@
-const completeCtrl = require('../../controllers/CompleteCtrl');
+const completeCtrl = require('../../controllers/CompleteCtrl')
 
 module.exports = (router) => {
-  
   router.post('/complete', (req, res) => {
-    
     completeCtrl.getSuggestions(req.body.query, (err, suggestions) => {
-      if (err) { 
-        console.log(err);
-        res.json({err});
+      if (err) {
+        console.log(err)
+        res.json({ err })
+      } else {
+        res.json({ suggestions })
       }
-      else {
-        res.json({suggestions});
-      }
-    });
-  });
+    })
+  })
 }

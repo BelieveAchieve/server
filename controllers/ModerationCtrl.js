@@ -1,10 +1,9 @@
-const https = require('https');
-const API_KEY = require('../config').cleanSpeakApiKey;
+const https = require('https')
+const API_KEY = require('../config').cleanSpeakApiKey
 
 module.exports = {
-  
-  moderateMessage: (data, callback) => {
 
+  moderateMessage: (data, callback) => {
     const req = https.request({
       hostname: 'upchieve-cleanspeak-api.inversoft.io',
       path: '/content/item/filter',
@@ -15,36 +14,32 @@ module.exports = {
       }
     },
     (res) => {
-
-      let resBody = '';
+      let resBody = ''
       res.on('data', (chunk) => {
-        resBody += chunk;
-      });
+        resBody += chunk
+      })
 
       res.on('end', () => {
-        console.log('CleanSpeak response body:', resBody);
+        console.log('CleanSpeak response body:', resBody)
 
         if (res.statusCode === 200) {
-          resBody = JSON.parse(resBody);
+          resBody = JSON.parse(resBody)
 
           if (resBody.matches.length === 0) {
-            callback(null, true);
+            callback(null, true)
+          } else {
+            callback(null, false)
           }
-          else {
-            callback(null, false);
-          }
+        } else {
+          callback(`CleanSpeak API didn't send desired response: { statusCode: ${res.statusCode}, body: ${resBody} }`)
         }
+      })
+    })
 
-        else {
-          callback(`CleanSpeak API didn't send desired response: { statusCode: ${res.statusCode}, body: ${resBody} }`);
-        }  
-      });
-    });
-
-    req.on('error', (err) => { 
-      callback(err); 
-    });
-    req.write(JSON.stringify(data));
-    req.end();
+    req.on('error', (err) => {
+      callback(err)
+    })
+    req.write(JSON.stringify(data))
+    req.end()
   }
 }

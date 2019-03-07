@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const schoolSchema = new mongoose.Schema({
   SCHOOL_YEAR: String,
@@ -66,8 +66,8 @@ const schoolSchema = new mongoose.Schema({
   GSHI: Number,
   LEVEL: String,
   IGOFFERED: String
-});
+})
 
-schoolSchema.index({ 'SCH_NAME': 'text' });
+schoolSchema.index({ 'SCH_NAME': 'text' })
 
-module.exports = mongoose.model('School', schoolSchema);
+module.exports = mongoose.model('School', schoolSchema)

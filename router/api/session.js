@@ -1,113 +1,118 @@
-var SessionCtrl = require('../../controllers/SessionCtrl');
-var ObjectId = require('mongodb').ObjectId;
+var SessionCtrl = require('../../controllers/SessionCtrl')
+var ObjectId = require('mongodb').ObjectId
 
-module.exports = function(router){
-	router.route('/session/new')
-		.post(function(req, res){
-			var data = req.body || {},
-					sessionType = data.sessionType,
-					sessionSubTopic = data.sessionSubTopic,
-					user = req.user;
-			SessionCtrl.create({
-				user: user,
-				type: sessionType,
-				subTopic: sessionSubTopic
-			}, function(err, session){
-				if (err){
-					res.json({
-						err: err
-					});
-				} else {
-					res.json({
-						sessionId: session._id
-					});
-				}
-			});
-		});
+module.exports = function (router) {
+  router.route('/session/new')
+    .post(function (req, res) {
+      var data = req.body || {}
+
+      var sessionType = data.sessionType
+
+      var sessionSubTopic = data.sessionSubTopic
+
+      var user = req.user
+      SessionCtrl.create({
+        user: user,
+        type: sessionType,
+        subTopic: sessionSubTopic
+      }, function (err, session) {
+        if (err) {
+          res.json({
+            err: err
+          })
+        } else {
+          res.json({
+            sessionId: session._id
+          })
+        }
+      })
+    })
 
   router.route('/session/end')
-    .post(function(req, res){
-      var data = req.body || {},
-          sessionId = data.sessionId;
+    .post(function (req, res) {
+      var data = req.body || {}
+
+      var sessionId = data.sessionId
 
       SessionCtrl.get({
         sessionId: sessionId
-      }, function(err, session){
-        if (err){
-          res.json({err: err});
+      }, function (err, session) {
+        if (err) {
+          res.json({ err: err })
         } else if (!session) {
-          res.json({err: 'No session found'});
+          res.json({ err: 'No session found' })
         } else {
-          session.endSession();
-          res.json({ sessionId: session._id });
+          session.endSession()
+          res.json({ sessionId: session._id })
         }
-      });
-    });
+      })
+    })
 
   router.route('/session/check')
-		.post(function(req, res){
-			var data = req.body || {},
-					sessionId = data.sessionId;
+    .post(function (req, res) {
+      var data = req.body || {}
 
-			SessionCtrl.get({
-				sessionId: sessionId
-			}, function(err, session){
-				if (err){
-					res.json({
-						err: err
-					});
-				} else if (!session) {
-					res.json({
-						err: 'No session found'
-					});
-				} else {
-					res.json({
-						sessionId: session._id,
-						whiteboardUrl: session.whiteboardUrl
-					});
-				}
-			});
-		});
+      var sessionId = data.sessionId
 
-router
-  .route('/session/current')
-  .post(function(req, res){
-    const data = req.body || {};
-    const { user_id, is_volunteer } = data;
+      SessionCtrl.get({
+        sessionId: sessionId
+      }, function (err, session) {
+        if (err) {
+          res.json({
+            err: err
+          })
+        } else if (!session) {
+          res.json({
+            err: 'No session found'
+          })
+        } else {
+          res.json({
+            sessionId: session._id,
+            whiteboardUrl: session.whiteboardUrl
+          })
+        }
+      })
+    })
 
-    let studentId = null;
-    let volunteerId = null;
+  router
+    .route('/session/current')
+    .post(function (req, res) {
+      const data = req.body || {}
+      const { user_id, is_volunteer } = data
 
-    if (is_volunteer) {
-      volunteerId = ObjectId(user_id)
-    } else {
-      studentId = ObjectId(user_id)
-    }
+      let studentId = null
+      let volunteerId = null
 
-    SessionCtrl
-      .findLatest(
-        {
-          $and: [
-            { endedAt: null },
-            {
-              $or: [
-                { student: studentId },
-                { volunteer: volunteerId }
-              ]
+      if (is_volunteer) {
+        volunteerId = ObjectId(user_id)
+      } else {
+        studentId = ObjectId(user_id)
+      }
+
+      SessionCtrl
+        .findLatest(
+          {
+            $and: [
+              { endedAt: null },
+              {
+                $or: [
+                  { student: studentId },
+                  { volunteer: volunteerId }
+                ]
+              }
+            ]
+          },
+          function (err, session) {
+            if (err) {
+              res.json({ err: err })
+            } else if (!session) {
+              res.json({ err: 'No session found' })
+            } else {
+              res.json({
+                sessionId: session._id,
+                data: session
+              })
             }
-          ]
-        },
-        function(err, session){
-          if (err){
-            res.json({err: err});
-          } else if (!session) {
-            res.json({err: 'No session found'});
-          } else {
-            res.json({
-              sessionId: session._id,
-              data: session
-            });
-          }
-        });
-    });
-};
+          })
+    })
+}

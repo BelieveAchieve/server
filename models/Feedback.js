@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
 
 var feedbackSchema = new mongoose.Schema({
 
@@ -26,7 +26,7 @@ var feedbackSchema = new mongoose.Schema({
     type: String,
     default: ''
   }
-  
-});
 
-module.exports = mongoose.model('Feedback', feedbackSchema);
+})
+
+module.exports = mongoose.model('Feedback', feedbackSchema)

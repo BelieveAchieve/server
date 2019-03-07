@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
-var bcrypt = require('bcrypt');
-var validator = require('validator');
+var mongoose = require('mongoose')
+var bcrypt = require('bcrypt')
+var validator = require('validator')
 
-var config = require('../config.js');
+var config = require('../config.js')
 
 var userSchema = new mongoose.Schema({
   email: {
@@ -10,8 +10,8 @@ var userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     validate: {
-      validator: function(v){
-        return validator.isEmail(v);
+      validator: function (v) {
+        return validator.isEmail(v)
       },
       message: '{VALUE} is not a valid email'
     }
@@ -59,41 +59,174 @@ var userSchema = new mongoose.Schema({
   referred: String,
   preferredContactMethod: [String],
   availability: {
-    Sunday: { '12a': Boolean, '1a': Boolean, '2a': Boolean, '3a': Boolean, '4a': Boolean,
-      '5a': Boolean, '6a': Boolean, '7a': Boolean, '8a': Boolean, '9a': Boolean,
-      '10a': Boolean, '11a': Boolean, '12p': Boolean, '1p': Boolean, '2p': Boolean,
-      '3p': Boolean, '4p': Boolean, '5p': Boolean, '6p': Boolean, '7p': Boolean,
-      '8p': Boolean, '9p': Boolean, '10p': Boolean, '11p': Boolean},
-    Monday: { '12a': Boolean, '1a': Boolean, '2a': Boolean, '3a': Boolean, '4a': Boolean,
-      '5a': Boolean, '6a': Boolean, '7a': Boolean, '8a': Boolean, '9a': Boolean,
-      '10a': Boolean, '11a': Boolean, '12p': Boolean, '1p': Boolean, '2p': Boolean,
-      '3p': Boolean, '4p': Boolean, '5p': Boolean, '6p': Boolean, '7p': Boolean,
-      '8p': Boolean, '9p': Boolean, '10p': Boolean, '11p': Boolean},
-    Tuesday: { '12a': Boolean, '1a': Boolean, '2a': Boolean, '3a': Boolean, '4a': Boolean,
-      '5a': Boolean, '6a': Boolean, '7a': Boolean, '8a': Boolean, '9a': Boolean,
-      '10a': Boolean, '11a': Boolean, '12p': Boolean, '1p': Boolean, '2p': Boolean,
-      '3p': Boolean, '4p': Boolean, '5p': Boolean, '6p': Boolean, '7p': Boolean,
-      '8p': Boolean, '9p': Boolean, '10p': Boolean, '11p': Boolean},
-    Wednesday: { '12a': Boolean, '1a': Boolean, '2a': Boolean, '3a': Boolean, '4a': Boolean,
-      '5a': Boolean, '6a': Boolean, '7a': Boolean, '8a': Boolean, '9a': Boolean,
-      '10a': Boolean, '11a': Boolean, '12p': Boolean, '1p': Boolean, '2p': Boolean,
-      '3p': Boolean, '4p': Boolean, '5p': Boolean, '6p': Boolean, '7p': Boolean,
-      '8p': Boolean, '9p': Boolean, '10p': Boolean, '11p': Boolean},
-    Thursday: { '12a': Boolean, '1a': Boolean, '2a': Boolean, '3a': Boolean, '4a': Boolean,
-      '5a': Boolean, '6a': Boolean, '7a': Boolean, '8a': Boolean, '9a': Boolean,
-      '10a': Boolean, '11a': Boolean, '12p': Boolean, '1p': Boolean, '2p': Boolean,
-      '3p': Boolean, '4p': Boolean, '5p': Boolean, '6p': Boolean, '7p': Boolean,
-      '8p': Boolean, '9p': Boolean, '10p': Boolean, '11p': Boolean},
-    Friday: { '12a': Boolean, '1a': Boolean, '2a': Boolean, '3a': Boolean, '4a': Boolean,
-      '5a': Boolean, '6a': Boolean, '7a': Boolean, '8a': Boolean, '9a': Boolean,
-      '10a': Boolean, '11a': Boolean, '12p': Boolean, '1p': Boolean, '2p': Boolean,
-      '3p': Boolean, '4p': Boolean, '5p': Boolean, '6p': Boolean, '7p': Boolean,
-      '8p': Boolean, '9p': Boolean, '10p': Boolean, '11p': Boolean},
-    Saturday: { '12a': Boolean, '1a': Boolean, '2a': Boolean, '3a': Boolean, '4a': Boolean,
-      '5a': Boolean, '6a': Boolean, '7a': Boolean, '8a': Boolean, '9a': Boolean,
-      '10a': Boolean, '11a': Boolean, '12p': Boolean, '1p': Boolean, '2p': Boolean,
-      '3p': Boolean, '4p': Boolean, '5p': Boolean, '6p': Boolean, '7p': Boolean,
-      '8p': Boolean, '9p': Boolean, '10p': Boolean, '11p': Boolean}
+    Sunday: { '12a': Boolean,
+      '1a': Boolean,
+      '2a': Boolean,
+      '3a': Boolean,
+      '4a': Boolean,
+      '5a': Boolean,
+      '6a': Boolean,
+      '7a': Boolean,
+      '8a': Boolean,
+      '9a': Boolean,
+      '10a': Boolean,
+      '11a': Boolean,
+      '12p': Boolean,
+      '1p': Boolean,
+      '2p': Boolean,
+      '3p': Boolean,
+      '4p': Boolean,
+      '5p': Boolean,
+      '6p': Boolean,
+      '7p': Boolean,
+      '8p': Boolean,
+      '9p': Boolean,
+      '10p': Boolean,
+      '11p': Boolean },
+    Monday: { '12a': Boolean,
+      '1a': Boolean,
+      '2a': Boolean,
+      '3a': Boolean,
+      '4a': Boolean,
+      '5a': Boolean,
+      '6a': Boolean,
+      '7a': Boolean,
+      '8a': Boolean,
+      '9a': Boolean,
+      '10a': Boolean,
+      '11a': Boolean,
+      '12p': Boolean,
+      '1p': Boolean,
+      '2p': Boolean,
+      '3p': Boolean,
+      '4p': Boolean,
+      '5p': Boolean,
+      '6p': Boolean,
+      '7p': Boolean,
+      '8p': Boolean,
+      '9p': Boolean,
+      '10p': Boolean,
+      '11p': Boolean },
+    Tuesday: { '12a': Boolean,
+      '1a': Boolean,
+      '2a': Boolean,
+      '3a': Boolean,
+      '4a': Boolean,
+      '5a': Boolean,
+      '6a': Boolean,
+      '7a': Boolean,
+      '8a': Boolean,
+      '9a': Boolean,
+      '10a': Boolean,
+      '11a': Boolean,
+      '12p': Boolean,
+      '1p': Boolean,
+      '2p': Boolean,
+      '3p': Boolean,
+      '4p': Boolean,
+      '5p': Boolean,
+      '6p': Boolean,
+      '7p': Boolean,
+      '8p': Boolean,
+      '9p': Boolean,
+      '10p': Boolean,
+      '11p': Boolean },
+    Wednesday: { '12a': Boolean,
+      '1a': Boolean,
+      '2a': Boolean,
+      '3a': Boolean,
+      '4a': Boolean,
+      '5a': Boolean,
+      '6a': Boolean,
+      '7a': Boolean,
+      '8a': Boolean,
+      '9a': Boolean,
+      '10a': Boolean,
+      '11a': Boolean,
+      '12p': Boolean,
+      '1p': Boolean,
+      '2p': Boolean,
+      '3p': Boolean,
+      '4p': Boolean,
+      '5p': Boolean,
+      '6p': Boolean,
+      '7p': Boolean,
+      '8p': Boolean,
+      '9p': Boolean,
+      '10p': Boolean,
+      '11p': Boolean },
+    Thursday: { '12a': Boolean,
+      '1a': Boolean,
+      '2a': Boolean,
+      '3a': Boolean,
+      '4a': Boolean,
+      '5a': Boolean,
+      '6a': Boolean,
+      '7a': Boolean,
+      '8a': Boolean,
+      '9a': Boolean,
+      '10a': Boolean,
+      '11a': Boolean,
+      '12p': Boolean,
+      '1p': Boolean,
+      '2p': Boolean,
+      '3p': Boolean,
+      '4p': Boolean,
+      '5p': Boolean,
+      '6p': Boolean,
+      '7p': Boolean,
+      '8p': Boolean,
+      '9p': Boolean,
+      '10p': Boolean,
+      '11p': Boolean },
+    Friday: { '12a': Boolean,
+      '1a': Boolean,
+      '2a': Boolean,
+      '3a': Boolean,
+      '4a': Boolean,
+      '5a': Boolean,
+      '6a': Boolean,
+      '7a': Boolean,
+      '8a': Boolean,
+      '9a': Boolean,
+      '10a': Boolean,
+      '11a': Boolean,
+      '12p': Boolean,
+      '1p': Boolean,
+      '2p': Boolean,
+      '3p': Boolean,
+      '4p': Boolean,
+      '5p': Boolean,
+      '6p': Boolean,
+      '7p': Boolean,
+      '8p': Boolean,
+      '9p': Boolean,
+      '10p': Boolean,
+      '11p': Boolean },
+    Saturday: { '12a': Boolean,
+      '1a': Boolean,
+      '2a': Boolean,
+      '3a': Boolean,
+      '4a': Boolean,
+      '5a': Boolean,
+      '6a': Boolean,
+      '7a': Boolean,
+      '8a': Boolean,
+      '9a': Boolean,
+      '10a': Boolean,
+      '11a': Boolean,
+      '12p': Boolean,
+      '1p': Boolean,
+      '2p': Boolean,
+      '3p': Boolean,
+      '4p': Boolean,
+      '5p': Boolean,
+      '6p': Boolean,
+      '7p': Boolean,
+      '8p': Boolean,
+      '9p': Boolean,
+      '10p': Boolean,
+      '11p': Boolean }
   },
   hasSchedule: false,
   timezone: String,
@@ -109,48 +242,26 @@ var userSchema = new mongoose.Schema({
     }
   },
   applications: {
-   passed: {
-    type: Boolean,
-    default: false
-   },
-   tries: {
-    type: Number,
-    default: 0
-   }
- },
-biology: {
-   passed: {
-    type: Boolean,
-    default: false
-   },
-   tries: {
-    type: Number,
-    default: 0
-   }
- },
-chemistry: {
-   passed: {
-    type: Boolean,
-    default: false
-   },
-   tries: {
-    type: Number,
-    default: 0
-   }
- },
-
-  essays: {
-   passed: {
-    type: Boolean,
-    default: false
-   },
-   tries: {
-    type: Number,
-    default: 0
-   }
- },
-
-geometry: {
+    passed: {
+      type: Boolean,
+      default: false
+    },
+    tries: {
+      type: Number,
+      default: 0
+    }
+  },
+  biology: {
+    passed: {
+      type: Boolean,
+      default: false
+    },
+    tries: {
+      type: Number,
+      default: 0
+    }
+  },
+  chemistry: {
     passed: {
       type: Boolean,
       default: false
@@ -161,17 +272,39 @@ geometry: {
     }
   },
 
-planning: {
-   passed: {
-    type: Boolean,
-    default: false
-   },
-   tries: {
-    type: Number,
-    default: 0
-   }
- },
- trigonometry: {
+  essays: {
+    passed: {
+      type: Boolean,
+      default: false
+    },
+    tries: {
+      type: Number,
+      default: 0
+    }
+  },
+
+  geometry: {
+    passed: {
+      type: Boolean,
+      default: false
+    },
+    tries: {
+      type: Number,
+      default: 0
+    }
+  },
+
+  planning: {
+    passed: {
+      type: Boolean,
+      default: false
+    },
+    tries: {
+      type: Number,
+      default: 0
+    }
+  },
+  trigonometry: {
     passed: {
       type: Boolean,
       default: false
@@ -234,10 +367,10 @@ planning: {
     default: Date.now
   }
 
-});
+})
 
 // Given a user record, strip out sensitive data for public consumption
-userSchema.methods.parseProfile = function(){
+userSchema.methods.parseProfile = function () {
   return {
     _id: this._id,
     email: this.email,
@@ -287,63 +420,63 @@ userSchema.methods.parseProfile = function(){
     esl: this.esl,
     precalculus: this.precalculus,
     calculus: this.calculus
-  };
-};
-
-// Placeholder method to support asynchronous profile parsing
-userSchema.methods.getProfile = function(cb){
-  cb(null, this.parseProfile());
-};
-
-userSchema.methods.hashPassword = function(password, cb){
-  bcrypt.genSalt(config.saltRounds, function(err, salt){
-    if (err){
-      cb(err);
-    } else {
-      bcrypt.hash(password, salt, cb);
-    }
-  });
-};
-
-userSchema.methods.verifyPassword = function(candidatePassword, cb){
-  var user = this;
-
-  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-    if (err){
-      return cb(err);
-    } else if (isMatch){
-      return cb(null, user);
-    } else {
-      cb(null, false);
-    }
-  });
-};
-
-// Static method to determine if a registration code is valid
-userSchema.statics.checkCode = function(code, cb){
-  var studentCodes = [
-    'STUDENTTESTING18', 'OASIS18' , 'ONLINEAPP'
-  ];
-
-  var volunteerCodes = [
-    'COACH18','VOLUNTEERTESTING18'
-  ];
-
-  var isStudentCode = studentCodes.some(function(studentCode){
-    return studentCode.toUpperCase() === code.toUpperCase();
-  });
-  var isVolunteerCode = volunteerCodes.some(function(volunteerCode){
-    return volunteerCode.toUpperCase() === code.toUpperCase();
-  });
-
-  if (isStudentCode || isVolunteerCode){
-    cb(null, {
-      studentCode: isStudentCode,
-      volunteerCode: isVolunteerCode
-    });
-  } else {
-    cb('Registration code is invalid', false);
   }
 }
 
-module.exports = mongoose.model('User', userSchema);
+// Placeholder method to support asynchronous profile parsing
+userSchema.methods.getProfile = function (cb) {
+  cb(null, this.parseProfile())
+}
+
+userSchema.methods.hashPassword = function (password, cb) {
+  bcrypt.genSalt(config.saltRounds, function (err, salt) {
+    if (err) {
+      cb(err)
+    } else {
+      bcrypt.hash(password, salt, cb)
+    }
+  })
+}
+
+userSchema.methods.verifyPassword = function (candidatePassword, cb) {
+  var user = this
+
+  bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
+    if (err) {
+      return cb(err)
+    } else if (isMatch) {
+      return cb(null, user)
+    } else {
+      cb(null, false)
+    }
+  })
+}
+
+// Static method to determine if a registration code is valid
+userSchema.statics.checkCode = function (code, cb) {
+  var studentCodes = [
+    'STUDENTTESTING18', 'OASIS18', 'ONLINEAPP'
+  ]
+
+  var volunteerCodes = [
+    'COACH18', 'VOLUNTEERTESTING18'
+  ]
+
+  var isStudentCode = studentCodes.some(function (studentCode) {
+    return studentCode.toUpperCase() === code.toUpperCase()
+  })
+  var isVolunteerCode = volunteerCodes.some(function (volunteerCode) {
+    return volunteerCode.toUpperCase() === code.toUpperCase()
+  })
+
+  if (isStudentCode || isVolunteerCode) {
+    cb(null, {
+      studentCode: isStudentCode,
+      volunteerCode: isVolunteerCode
+    })
+  } else {
+    cb('Registration code is invalid', false)
+  }
+}
+
+module.exports = mongoose.model('User', userSchema)
