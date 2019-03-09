@@ -3,7 +3,7 @@
 module.exports = {
   environment: process.env.UPCHIEVE_SERVER_ENV,
   serverHost: process.env.UPCHIEVE_SERVER_HOST,
-  serverPort: process.env.UPCHIEVE_SERVER_PORT,
+  serverPort: process.env.PORT || process.env.CLIENT_SERVER_PORT,
   clientHost: process.env.UPCHIEVE_CLIENT_HOST,
   clientPort: process.env.UPCHIEVE_CLIENT_PORT,
   dbHost: process.env.UPCHIEVE_SERVER_DB_HOST,
