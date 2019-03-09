@@ -21,17 +21,99 @@ questionSchema.methods.parseQuestion = function () {
 
 questionSchema.statics.getSubcategories = function (category) {
   var categoryToSubcategoryMap = {
-    algebra: ['linear equations', 'rational exponents and radicals', 'application of linear equations', 'two variable equations', 'rational expressions', 'complex numbers'],
-    geometry: ['congruence and similarity', 'vertices', 'angles', 'circles', 'triangles', 'rectangles'],
-    trigonometry: ['angles', 'triangles', 'right triangles', 'quadrants', 'radians', 'unit circle', 'inequalities'],
-    esl: ['Reading', 'Writing', 'Writing - vocabulary', 'Reading & Writing', 'Speaking - conversational'],
-    precalculus: ['rectangular coordinates', 'linear inequalities', 'functions', 'rational exponents', 'quadratic functions', 'logarithms and exponents'],
-    calculus: ['antiderivatives', 'derivatives', 'limits', 'critical numbers', 'functions'],
+    algebra: [
+      'linear equations',
+      'rational exponents and radicals',
+      'application of linear equations',
+      'two variable equations',
+      'rational expressions',
+      'complex numbers'
+    ],
+    geometry: [
+      'congruence and similarity',
+      'vertices',
+      'angles',
+      'circles',
+      'triangles',
+      'rectangles'
+    ],
+    trigonometry: [
+      'angles',
+      'triangles',
+      'right triangles',
+      'quadrants',
+      'radians',
+      'unit circle',
+      'inequalities'
+    ],
+    esl: [
+      'Reading',
+      'Writing',
+      'Writing - vocabulary',
+      'Reading & Writing',
+      'Speaking - conversational'
+    ],
+    precalculus: [
+      'rectangular coordinates',
+      'linear inequalities',
+      'functions',
+      'rational exponents',
+      'quadratic functions',
+      'logarithms and exponents'
+    ],
+    calculus: [
+      'antiderivatives',
+      'derivatives',
+      'limits',
+      'critical numbers',
+      'functions'
+    ],
     planning: ['exam', 'type', 'LOR', 'basic'],
-    essays: ['basic', 'commonapp', 'answer', 'dhistory', 'optional', 'supplemental'],
-    applications: ['timeline', 'resume', 'schools', 'fees', 'FinAid', 'LOR', 'basic'],
-    biology: ['biochemistry', 'cell', 'celldivision', 'cellrespiration', 'photosynthesis', 'classicalgenetics', 'moleculargenetics', 'plants', 'animalphysiology', 'humanphysiology', 'reproduction', 'immunesystem', 'behavior', 'evolution', 'taxonomy', 'ecology'],
-    chemistry: ['structure of matter', 'States of matter', 'Reaction types', 'Stoichiometry', 'Equilibrium and reaction rates', 'Thermochemistry', 'Descriptive chemistry', 'Laboratory']
+    essays: [
+      'basic',
+      'commonapp',
+      'answer',
+      'dhistory',
+      'optional',
+      'supplemental'
+    ],
+    applications: [
+      'timeline',
+      'resume',
+      'schools',
+      'fees',
+      'FinAid',
+      'LOR',
+      'basic'
+    ],
+    biology: [
+      'biochemistry',
+      'cell',
+      'celldivision',
+      'cellrespiration',
+      'photosynthesis',
+      'classicalgenetics',
+      'moleculargenetics',
+      'plants',
+      'animalphysiology',
+      'humanphysiology',
+      'reproduction',
+      'immunesystem',
+      'behavior',
+      'evolution',
+      'taxonomy',
+      'ecology'
+    ],
+    chemistry: [
+      'structure of matter',
+      'States of matter',
+      'Reaction types',
+      'Stoichiometry',
+      'Equilibrium and reaction rates',
+      'Thermochemistry',
+      'Descriptive chemistry',
+      'Laboratory'
+    ]
   }
   var subcategories = categoryToSubcategoryMap[category]
   return subcategories

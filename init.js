@@ -4,13 +4,23 @@ var mongoose = require('mongoose')
 var config = require('./config')
 
 // Database
-mongoose.connect(config.database, { useNewUrlParser: true })
+mongoose.connect(config.dbHost, { useNewUrlParser: true })
 var db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', function () {
   console.log('Connected to database')
   var collection = db.collection('question')
-  var jsonArr = ['geometry', 'algebra', 'trigonometry', 'esl', 'precalculus', 'calculus', 'planning', 'essays', 'applications']
+  var jsonArr = [
+    'geometry',
+    'algebra',
+    'trigonometry',
+    'esl',
+    'precalculus',
+    'calculus',
+    'planning',
+    'essays',
+    'applications'
+  ]
   for (var i = 0; i < jsonArr.length; i++) {
     try {
       var json = require('./seeds/questions/' + jsonArr[i] + '.json')

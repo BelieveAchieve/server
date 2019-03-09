@@ -4,7 +4,8 @@ module.exports = {
   initAvailability: function (options, callback) {
     var userid = options.userid
     var availability = {
-      Sunday: { '12a': false,
+      Sunday: {
+        '12a': false,
         '1a': false,
         '2a': false,
         '3a': false,
@@ -27,8 +28,10 @@ module.exports = {
         '8p': false,
         '9p': false,
         '10p': false,
-        '11p': false },
-      Monday: { '12a': false,
+        '11p': false
+      },
+      Monday: {
+        '12a': false,
         '1a': false,
         '2a': false,
         '3a': false,
@@ -51,8 +54,10 @@ module.exports = {
         '8p': false,
         '9p': false,
         '10p': false,
-        '11p': false },
-      Tuesday: { '12a': false,
+        '11p': false
+      },
+      Tuesday: {
+        '12a': false,
         '1a': false,
         '2a': false,
         '3a': false,
@@ -75,8 +80,10 @@ module.exports = {
         '8p': false,
         '9p': false,
         '10p': false,
-        '11p': false },
-      Wednesday: { '12a': false,
+        '11p': false
+      },
+      Wednesday: {
+        '12a': false,
         '1a': false,
         '2a': false,
         '3a': false,
@@ -99,8 +106,10 @@ module.exports = {
         '8p': false,
         '9p': false,
         '10p': false,
-        '11p': false },
-      Thursday: { '12a': false,
+        '11p': false
+      },
+      Thursday: {
+        '12a': false,
         '1a': false,
         '2a': false,
         '3a': false,
@@ -123,8 +132,10 @@ module.exports = {
         '8p': false,
         '9p': false,
         '10p': false,
-        '11p': false },
-      Friday: { '12a': false,
+        '11p': false
+      },
+      Friday: {
+        '12a': false,
         '1a': false,
         '2a': false,
         '3a': false,
@@ -147,8 +158,10 @@ module.exports = {
         '8p': false,
         '9p': false,
         '10p': false,
-        '11p': false },
-      Saturday: { '12a': false,
+        '11p': false
+      },
+      Saturday: {
+        '12a': false,
         '1a': false,
         '2a': false,
         '3a': false,
@@ -171,7 +184,8 @@ module.exports = {
         '8p': false,
         '9p': false,
         '10p': false,
-        '11p': false }
+        '11p': false
+      }
     }
 
     User.findOne({ _id: userid }, function (err, user) {

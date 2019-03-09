@@ -68,6 +68,6 @@ const schoolSchema = new mongoose.Schema({
   IGOFFERED: String
 })
 
-schoolSchema.index({ 'SCH_NAME': 'text' })
+schoolSchema.index({ SCH_NAME: 'text' })
 
 module.exports = mongoose.model('School', schoolSchema)

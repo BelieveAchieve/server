@@ -1,12 +1,12 @@
 var config = require('../config')
 var helper = require('sendgrid').mail
-var sendgrid = require('sendgrid')(config.sendgrid.apiKey)
+var sendgrid = require('sendgrid')(config.sendgridApiKey)
 
 // Utility functions for sendgrid
 
 var getMailHelper = function (options) {
   options = options || {}
-  var fromEmail = new helper.Email(options.from || config.mail.senders.noreply)
+  var fromEmail = new helper.Email(options.from || config.upchieveNoreplySender)
   var toEmail = new helper.Email(options.to)
   var subject = options.subject || '[UPchieve] New message'
   var content = new helper.Content('text/plain', options.content || '<p></p>')
@@ -49,15 +49,16 @@ module.exports = {
   sendVerification: function (options, callback) {
     var email = options.email
     var token = options.token
-    var url = 'http://' + config.client.host + '/#/action/verify/' + token
-    console.log(url)
+    var url = `http://${config.clientHost}:${
+      config.clientPort
+    }/#/action/verify/${token}`
 
     var mail = getMailHelper({
       to: email,
       subject: '[UPchieve] Verify your email address'
     })
 
-    var templatedMail = getTemplateMailHelper(mail, config.sendgrid.templateId, {
+    var templatedMail = getTemplateMailHelper(mail, config.sendgridTemplateId, {
       '-userEmail-': email,
       '-verifyLink-': url
     })
@@ -67,10 +68,13 @@ module.exports = {
   sendReset: function (options, callback) {
     var email = options.email
     var token = options.token
-    var url = 'http://' + config.client.host + '/#/setpassword/' + token
+    var url = `http://${config.clientHost}:${
+      config.clientPort
+    }/#/setpassword/${token}`
 
     var emailContent = [
-      'Click on this link to choose a new password!', url,
+      'Click on this link to choose a new password!',
+      url,
       'If you received this email by accident, you can just ignore it and your password will not change.'
     ].join('\n\n')
 
@@ -81,5 +85,4 @@ module.exports = {
     })
     sendEmail(mail, callback)
   }
-
 }

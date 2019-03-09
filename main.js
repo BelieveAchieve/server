@@ -13,15 +13,20 @@ var mongoose = require('mongoose')
 var config = require('./config')
 
 // Database
-mongoose.connect(config.database, { useNewUrlParser: true })
+mongoose.connect(config.dbHost, { useNewUrlParser: true })
+
 var db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
-db.once('open', function () {
-  console.log('Connected to database')
-})
+db.once('open', () => console.log('Connected to database'))
+
+if (config.isProd()) {
+  // TODO: Add production branch
+} else {
+  // TODO: Add non-prod branch
+}
 
 var app = express()
-app.set('port', process.env.PORT || 3000)
+app.set('port', config.serverPort)
 
 // Setup middleware
 app.use(logger('dev'))
@@ -30,10 +35,12 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser(config.sessionSecret))
 app.use(express.static(path.join(__dirname, 'dist')))
 app.use(busboy())
-app.use(cors({
-  origin: true,
-  credentials: true
-}))
+app.use(
+  cors({
+    origin: true,
+    credentials: true
+  })
+)
 
 var server = http.createServer(app)
 

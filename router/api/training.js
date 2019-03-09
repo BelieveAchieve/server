@@ -2,7 +2,10 @@ var TrainingCtrl = require('../../controllers/TrainingCtrl')
 
 module.exports = function (router) {
   router.post('/training/questions', function (req, res) {
-    TrainingCtrl.getQuestions({ category: req.body.category }, function (err, questions) {
+    TrainingCtrl.getQuestions({ category: req.body.category }, function (
+      err,
+      questions
+    ) {
       if (err) {
         res.json({ err: err })
       } else {
@@ -14,18 +17,25 @@ module.exports = function (router) {
     })
   })
   router.post('/training/score', function (req, res) {
-    TrainingCtrl.getQuizScore({ userid: req.body.userid, idAnswerMap: req.body.idAnswerMap, category: req.body.category }, function (err, data) {
-      if (err) {
-        res.json({ err: err })
-      } else {
-        res.json({
-          msg: 'Score calculated and saved',
-          tries: data.tries,
-          passed: data.passed,
-          score: data.score,
-          idCorrectAnswerMap: data.idCorrectAnswerMap
-        })
+    TrainingCtrl.getQuizScore(
+      {
+        userid: req.body.userid,
+        idAnswerMap: req.body.idAnswerMap,
+        category: req.body.category
+      },
+      function (err, data) {
+        if (err) {
+          res.json({ err: err })
+        } else {
+          res.json({
+            msg: 'Score calculated and saved',
+            tries: data.tries,
+            passed: data.passed,
+            score: data.score,
+            idCorrectAnswerMap: data.idCorrectAnswerMap
+          })
+        }
       }
-    })
+    )
   })
 }
