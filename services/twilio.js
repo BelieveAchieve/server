@@ -2,7 +2,7 @@ var config = require('../config.js')
 var User = require('../models/User')
 var twilio = require('twilio')
 var moment = require('moment-timezone')
-const client = twilio(config.twilioAccountSid, config.twilioAuthToken)
+const client = twilio(config.TWILIO_ACCOUNT_SID, config.TWILIO_AUTH_TOKEN)
 
 // todo
 // limit instead of stopping at the index of 3
@@ -65,7 +65,7 @@ function send (phoneNumber, name, subtopic) {
   client.messages
     .create({
       to: `+1${phoneNumber}`,
-      from: config.twilioSendingNumber,
+      from: config.TWILIO_SENDING_NUMBER,
       body: `Hi ${name}, a student just requested help in ${subtopic} at app.upchieve.org. Please log in now to help them if you can!`
     })
     .then(message =>

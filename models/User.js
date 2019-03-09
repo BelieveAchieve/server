@@ -442,7 +442,7 @@ userSchema.methods.getProfile = function (cb) {
 }
 
 userSchema.methods.hashPassword = function (password, cb) {
-  bcrypt.genSalt(config.saltRounds, function (err, salt) {
+  bcrypt.genSalt(config.SALT_ROUNDS, function (err, salt) {
     if (err) {
       cb(err)
     } else {
@@ -467,8 +467,8 @@ userSchema.methods.verifyPassword = function (candidatePassword, cb) {
 
 // Static method to determine if a registration code is valid
 userSchema.statics.checkCode = function (code, cb) {
-  var studentCodes = config.studentCodes.split(',')
-  var volunteerCodes = config.volunteerCodes.split(',')
+  var studentCodes = config.STUDENT_CODES.split(',')
+  var volunteerCodes = config.VOLUNTEER_CODES.split(',')
   var isStudentCode = studentCodes.some(function (studentCode) {
     return studentCode.toUpperCase() === code.toUpperCase()
   })

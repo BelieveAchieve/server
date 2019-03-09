@@ -49,9 +49,9 @@ module.exports = function (app) {
     session({
       resave: true,
       saveUninitialized: true,
-      secret: config.sessionSecret,
+      secret: config.SESSION_SECRET,
       store: new MongoStore({
-        url: config.dbHost,
+        url: config.DB_HOST,
         autoReconnect: true,
         collection: 'auth-sessions'
       }),

@@ -9,7 +9,7 @@ module.exports = {
         path: '/content/item/filter',
         method: 'POST',
         headers: {
-          Authorization: config.cleanSpeakApiKey,
+          Authorization: config.CLEANSPEAK_API_KEY,
           'Content-Type': 'application/json'
         }
       },

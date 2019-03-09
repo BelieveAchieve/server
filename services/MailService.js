@@ -1,12 +1,14 @@
 var config = require('../config')
 var helper = require('sendgrid').mail
-var sendgrid = require('sendgrid')(config.sendgridApiKey)
+var sendgrid = require('sendgrid')(config.SENDGRID_API_KEY)
 
 // Utility functions for sendgrid
 
 var getMailHelper = function (options) {
   options = options || {}
-  var fromEmail = new helper.Email(options.from || config.upchieveNoreplySender)
+  var fromEmail = new helper.Email(
+    options.from || config.UPCHIEVE_NOREPLY_SENDER
+  )
   var toEmail = new helper.Email(options.to)
   var subject = options.subject || '[UPchieve] New message'
   var content = new helper.Content('text/plain', options.content || '<p></p>')
@@ -49,8 +51,8 @@ module.exports = {
   sendVerification: function (options, callback) {
     var email = options.email
     var token = options.token
-    var url = `http://${config.clientHost}:${
-      config.clientPort
+    var url = `http://${config.CLIENT_HOST}:${
+      config.CLIENT_PORT
     }/#/action/verify/${token}`
 
     var mail = getMailHelper({
@@ -58,18 +60,22 @@ module.exports = {
       subject: '[UPchieve] Verify your email address'
     })
 
-    var templatedMail = getTemplateMailHelper(mail, config.sendgridTemplateId, {
-      '-userEmail-': email,
-      '-verifyLink-': url
-    })
+    var templatedMail = getTemplateMailHelper(
+      mail,
+      config.SENDGRID_TEMPLATE_ID,
+      {
+        '-userEmail-': email,
+        '-verifyLink-': url
+      }
+    )
     sendEmail(templatedMail, callback)
   },
 
   sendReset: function (options, callback) {
     var email = options.email
     var token = options.token
-    var url = `http://${config.clientHost}:${
-      config.clientPort
+    var url = `http://${config.CLIENT_HOST}:${
+      config.CLIENT_PORT
     }/#/setpassword/${token}`
 
     var emailContent = [

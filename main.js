@@ -13,20 +13,20 @@ var mongoose = require('mongoose')
 var config = require('./config')
 
 // Database
-mongoose.connect(config.dbHost, { useNewUrlParser: true })
+mongoose.connect(config.DB_HOST, { useNewUrlParser: true })
 
 var db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', () => console.log('Connected to database'))
 
 var app = express()
-app.set('port', config.serverPort)
+app.set('port', config.PORT)
 
 // Setup middleware
 app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-app.use(cookieParser(config.sessionSecret))
+app.use(cookieParser(config.SESSION_SECRET))
 app.use(express.static(path.join(__dirname, 'dist')))
 app.use(busboy())
 app.use(

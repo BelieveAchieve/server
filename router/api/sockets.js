@@ -12,11 +12,9 @@ module.exports = function (app) {
   if (config.isProd()) {
     server = https.createServer(
       {
-        key: fs.readFileSync(`${config.UPCHIEVE_LETSENCRYPT_DIR}/privkey.pem`),
-        cert: fs.readFileSync(
-          `${config.UPCHIEVE_LETSENCRYPT_DIR}/fullchain.pem`
-        ),
-        ca: fs.readFileSync(`${config.UPCHIEVE_LETSENCRYPT_DIR}/chain.pem`)
+        key: fs.readFileSync(`${config.LETSENCRYPT_DIR}/privkey.pem`),
+        cert: fs.readFileSync(`${config.LETSENCRYPT_DIR}/fullchain.pem`),
+        ca: fs.readFileSync(`${config.LETSENCRYPT_DIR}/chain.pem`)
       },
       app
     )
@@ -198,7 +196,7 @@ module.exports = function (app) {
     })
   })
 
-  var port = config.socketsPort
+  var port = config.SOCKET_PORT
   server.listen(port)
 
   console.log('Sockets.io listening on port ' + port)

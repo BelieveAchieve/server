@@ -4,7 +4,7 @@ var mongoose = require('mongoose')
 var config = require('./config')
 
 // Database
-mongoose.connect(config.dbHost, { useNewUrlParser: true })
+mongoose.connect(config.DB_HOST, { useNewUrlParser: true })
 var db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', function () {
