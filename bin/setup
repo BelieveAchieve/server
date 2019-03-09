@@ -12,13 +12,6 @@ if [[ "$*" =~ '--verbose' ]]; then
    export VERBOSE=true
 fi
 
-step 'Copying config.example.js to config.js'
-if [ -f config.js ]; then
-    success '' 'Skipping: config.js found.'
-else
-    execute cp config.example.js config.js
-fi
-
 step 'Setting up test users'
 printf "\n${RED}Warning${RESET}: This will drop existing users. Continue? (y/N): "
 read -r response

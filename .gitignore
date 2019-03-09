@@ -1,10 +1,10 @@
 node_modules
 npm-debug.log
-config.js
 dist
 sendgrid.env
 *.swp
 public/uploads
+env/production.sh
 
 # Created by https://www.gitignore.io/api/node,emacs,vim,visualstudiocode,sublimetext,vuejs
 # Edit at https://www.gitignore.io/?templates=node,emacs,vim,visualstudiocode,sublimetext,vuejs
@@ -202,11 +202,5 @@ tags
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
-
-### Vuejs ###
-node_modules
-.DS_Store
-docs/_book
-test/
 
 # End of https://www.gitignore.io/api/node,emacs,vim,visualstudiocode,sublimetext,vuejs
