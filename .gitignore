@@ -5,6 +5,8 @@ sendgrid.env
 *.swp
 public/uploads
 env/production.sh
+.env.production
+.env.staging
 
 # Created by https://www.gitignore.io/api/node,emacs,vim,visualstudiocode,sublimetext,vuejs
 # Edit at https://www.gitignore.io/?templates=node,emacs,vim,visualstudiocode,sublimetext,vuejs
