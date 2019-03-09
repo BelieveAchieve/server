@@ -1,5 +1,5 @@
 const https = require('https')
-const API_KEY = require('../config').cleanSpeakApiKey
+const config = require('../config')
 
 module.exports = {
   moderateMessage: (data, callback) => {
@@ -9,7 +9,7 @@ module.exports = {
         path: '/content/item/filter',
         method: 'POST',
         headers: {
-          Authorization: API_KEY,
+          Authorization: config.cleanSpeakApiKey,
           'Content-Type': 'application/json'
         }
       },
@@ -44,6 +44,7 @@ module.exports = {
     req.on('error', err => {
       callback(err)
     })
+
     req.write(JSON.stringify(data))
     req.end()
   }
