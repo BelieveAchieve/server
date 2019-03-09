@@ -17,5 +17,6 @@ module.exports = {
   twilioAuthToken: process.env.UPCHIEVE_TWILIO_AUTH_TOKEN,
   twilioSendingNumber: process.env.UPCHIEVE_TWILIO_SENDING_NUMBER,
   cleanSpeakApiKey: process.env.UPCHIEVE_CLEANSPEAK_API_KEY,
+  letsencryptDir: process.env.UPCHIEVE_LETSENCRYPT_DIR,
   isProd: () => this.environment === 'production'
 }

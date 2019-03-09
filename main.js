@@ -19,12 +19,6 @@ var db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', () => console.log('Connected to database'))
 
-if (config.isProd()) {
-  // TODO: Add production branch
-} else {
-  // TODO: Add non-prod branch
-}
-
 var app = express()
 app.set('port', config.serverPort)
 

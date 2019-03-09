@@ -1,11 +1,29 @@
 var http = require('http')
+var https = require('https')
 var socket = require('socket.io')
+var fs = require('fs')
 
 var config = require('../../config.js')
 var SessionCtrl = require('../../controllers/SessionCtrl.js')
 
 module.exports = function (app) {
-  var server = http.createServer(app)
+  let server
+
+  if (config.isProd()) {
+    server = https.createServer(
+      {
+        key: fs.readFileSync(`${config.UPCHIEVE_LETSENCRYPT_DIR}/privkey.pem`),
+        cert: fs.readFileSync(
+          `${config.UPCHIEVE_LETSENCRYPT_DIR}/fullchain.pem`
+        ),
+        ca: fs.readFileSync(`${config.UPCHIEVE_LETSENCRYPT_DIR}/chain.pem`)
+      },
+      app
+    )
+  } else {
+    server = http.createServer(app)
+  }
+
   var io = socket(server)
 
   io.on('connection', function (socket) {
