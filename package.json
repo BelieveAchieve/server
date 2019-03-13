@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node main.js",
     "dev": "nodemon main",
-    "test": "nyc ava --verbose"
+    "test": "nyc ava --verbose",
+    "format": "prettier-standard '*.js' '{controllers,models,router,services,seeds}/**/*.js'"
   },
   "dependencies": {
     "async": "^1.5.0",
