@@ -4,7 +4,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:6-browsers
+      - image: circleci/node:11
       - image: circleci/mongo:3.6-stretch-ram
 
     working_directory: ~/repo
