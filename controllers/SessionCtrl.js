@@ -89,8 +89,7 @@ SessionManager.prototype.connect = function (options) {
 SessionManager.prototype.disconnect = function (options) {
   var socket = options.socket
 
-  var socketSession,
-    session
+  var socketSession, session
   Object.keys(this._sessions).some(function (sessionId) {
     var s = this._sessions[sessionId]
     if (s.hasSocket(socket)) {
@@ -119,12 +118,11 @@ SessionManager.prototype.pruneDeadSessions = () => {
   }
 
   const sessionIds = Object.keys(this._sessions)
-  const deadSessionIds =
-        sessionIds
-          .filter(sessionId => this._sessions[sessionId].isDead())
+  const deadSessionIds = sessionIds.filter(sessionId =>
+    this._sessions[sessionId].isDead()
+  )
 
-  deadSessionIds
-    .forEach(sessionId => delete this._sessions[sessionId])
+  deadSessionIds.forEach(sessionId => delete this._sessions[sessionId])
 
   return this
 }
@@ -211,8 +209,7 @@ module.exports = {
   },
 
   findLatest: function (attrs, cb) {
-    Session
-      .find(attrs)
+    Session.find(attrs)
       .sort({ createdAt: -1 })
       .limit(1)
       .findOne()
@@ -243,7 +240,10 @@ module.exports = {
             socket: socket
           })
         }
-        Session.populate(savedSession, 'student volunteer', function (err, populatedSession) {
+        Session.populate(savedSession, 'student volunteer', function (
+          err,
+          populatedSession
+        ) {
           sessionManager.connect({
             session: session,
             user: user,

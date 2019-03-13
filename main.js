@@ -30,10 +30,12 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser(config.sessionSecret))
 app.use(express.static(path.join(__dirname, 'dist')))
 app.use(busboy())
-app.use(cors({
-  origin: true,
-  credentials: true
-}))
+app.use(
+  cors({
+    origin: true,
+    credentials: true
+  })
+)
 
 var server = http.createServer(app)
 

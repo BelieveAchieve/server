@@ -13,7 +13,10 @@ module.exports = function (router) {
     })
   })
   router.post('/calendar/get', function (req, res) {
-    CalendarCtrl.getAvailability({ userid: req.body.userid }, function (err, availability) {
+    CalendarCtrl.getAvailability({ userid: req.body.userid }, function (
+      err,
+      availability
+    ) {
       if (err) {
         res.json({ err: err })
       } else {
@@ -25,15 +28,18 @@ module.exports = function (router) {
     })
   })
   router.post('/calendar/save', function (req, res) {
-    CalendarCtrl.updateAvailability({ userid: req.body.userid, availability: req.body.availability }, function (err, avail) {
-      if (err) {
-        res.json({ err: err })
-      } else {
-        res.json({
-          msg: 'Availability saved'
-        })
+    CalendarCtrl.updateAvailability(
+      { userid: req.body.userid, availability: req.body.availability },
+      function (err, avail) {
+        if (err) {
+          res.json({ err: err })
+        } else {
+          res.json({
+            msg: 'Availability saved'
+          })
+        }
       }
-    })
+    )
   })
   router.post('/calendar/tz/get', function (req, res) {
     CalendarCtrl.getTimezone({ userid: req.body.userid }, function (err, tz) {
@@ -48,14 +54,17 @@ module.exports = function (router) {
     })
   })
   router.post('/calendar/tz/save', function (req, res) {
-    CalendarCtrl.updateTimezone({ userid: req.body.userid, tz: req.body.tz }, function (err, tz) {
-      if (err) {
-        res.json({ err: err })
-      } else {
-        res.json({
-          msg: 'Timezone saved'
-        })
+    CalendarCtrl.updateTimezone(
+      { userid: req.body.userid, tz: req.body.tz },
+      function (err, tz) {
+        if (err) {
+          res.json({ err: err })
+        } else {
+          res.json({
+            msg: 'Timezone saved'
+          })
+        }
       }
-    })
+    )
   })
 }

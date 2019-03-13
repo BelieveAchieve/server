@@ -1,7 +1,6 @@
 var mongoose = require('mongoose')
 
 var feedbackSchema = new mongoose.Schema({
-
   sessionId: {
     type: String,
     default: ''
@@ -26,7 +25,6 @@ var feedbackSchema = new mongoose.Schema({
     type: String,
     default: ''
   }
-
 })
 
 module.exports = mongoose.model('Feedback', feedbackSchema)

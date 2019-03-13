@@ -45,15 +45,21 @@ module.exports = function (app) {
 
   require('./passport')
 
-  app.use(session({
-    resave: true,
-    saveUninitialized: true,
-    secret: config.sessionSecret,
-    store: new MongoStore({ url: config.database, autoReconnect: true, collection: 'auth-sessions' }),
-    cookie: {
-      httpOnly: false
-    }
-  }))
+  app.use(
+    session({
+      resave: true,
+      saveUninitialized: true,
+      secret: config.sessionSecret,
+      store: new MongoStore({
+        url: config.database,
+        autoReconnect: true,
+        collection: 'auth-sessions'
+      }),
+      cookie: {
+        httpOnly: false
+      }
+    })
+  )
   app.use(passport.initialize())
   app.use(passport.session())
   app.use(flash())
@@ -67,10 +73,11 @@ module.exports = function (app) {
     })
   })
 
-  router.post('/login',
+  router.post(
+    '/login',
     passport.authenticate('local'), // Delegate auth logic to passport middleware
     function (req, res) {
-    // If successfully authed, return user object (otherwise 401 is returned from middleware)
+      // If successfully authed, return user object (otherwise 401 is returned from middleware)
       res.json({
         user: req.user
       })
@@ -96,7 +103,7 @@ module.exports = function (app) {
       })
     }
 
-    User.find({ 'email': email }, function (req, users) {
+    User.find({ email: email }, function (req, users) {
       if (users.length === 0) {
         return res.json({
           checked: true
@@ -143,7 +150,7 @@ module.exports = function (app) {
     user.highschool = highSchool
     user.firstname = firstName
     user.lastname = lastName
-    user.verified = (code === undefined)
+    user.verified = code === undefined
 
     user.hashPassword(password, function (err, hash) {
       user.password = hash // Note the salt is embedded in the final hash
@@ -165,39 +172,46 @@ module.exports = function (app) {
             if (err) {
               console.log(err)
               res.json({
-              // msg: msg,
+                // msg: msg,
                 err: err
               })
             } else {
               if (user.isVolunteer) {
-                VerificationCtrl.initiateVerification({
-                  userId: user._id,
-                  email: user.email
-                }, function (err, email) {
-                  var msg
-                  if (err) {
-                    msg = 'Registration successful. Error sending verification email: ' + err
-                  } else {
-                    msg = 'Registration successful. Verification email sent to ' + email
-                  }
-
-                  req.login(user, function (err) {
+                VerificationCtrl.initiateVerification(
+                  {
+                    userId: user._id,
+                    email: user.email
+                  },
+                  function (err, email) {
+                    var msg
                     if (err) {
-                      res.json({
-                        msg: msg,
-                        err: err
-                      })
+                      msg =
+                        'Registration successful. Error sending verification email: ' +
+                        err
                     } else {
-                      res.json({
-                        msg: msg,
-                        user: user
-                      })
+                      msg =
+                        'Registration successful. Verification email sent to ' +
+                        email
                     }
-                  })
-                })
+
+                    req.login(user, function (err) {
+                      if (err) {
+                        res.json({
+                          msg: msg,
+                          err: err
+                        })
+                      } else {
+                        res.json({
+                          msg: msg,
+                          user: user
+                        })
+                      }
+                    })
+                  }
+                )
               } else {
                 res.json({
-                // msg: msg,
+                  // msg: msg,
                   user: user
                 })
               }
@@ -237,19 +251,22 @@ module.exports = function (app) {
         err: 'Must supply an email for password reset'
       })
     }
-    ResetPasswordCtrl.initiateReset({
-      email: email
-    }, function (err, data) {
-      if (err) {
-        res.json({
-          err: err
-        })
-      } else {
-        res.json({
-          msg: 'Password reset email sent'
-        })
+    ResetPasswordCtrl.initiateReset(
+      {
+        email: email
+      },
+      function (err, data) {
+        if (err) {
+          res.json({
+            err: err
+          })
+        } else {
+          res.json({
+            msg: 'Password reset email sent'
+          })
+        }
       }
-    })
+    )
   })
 
   router.post('/reset/confirm', function (req, res) {
@@ -315,36 +332,39 @@ module.exports = function (app) {
       })
     }
 
-    ResetPasswordCtrl.finishReset({
-      token: token,
-      email: email
-    }, function (err, user) {
-      if (err) {
-        res.json({
-          err: err
-        })
-      } else {
-        user.hashPassword(password, function (err, hash) {
-          if (err) {
-            res.json({
-              err: 'Could not hash password'
-            })
-          } else {
-            user.password = hash // Note the salt is embedded in the final hash
-            user.save(function (err) {
-              if (err) {
-                return res.json({
-                  err: 'Could not save user'
-                })
-              }
-              return res.json({
-                user: user
+    ResetPasswordCtrl.finishReset(
+      {
+        token: token,
+        email: email
+      },
+      function (err, user) {
+        if (err) {
+          res.json({
+            err: err
+          })
+        } else {
+          user.hashPassword(password, function (err, hash) {
+            if (err) {
+              res.json({
+                err: 'Could not hash password'
               })
-            })
-          }
-        })
+            } else {
+              user.password = hash // Note the salt is embedded in the final hash
+              user.save(function (err) {
+                if (err) {
+                  return res.json({
+                    err: 'Could not save user'
+                  })
+                }
+                return res.json({
+                  user: user
+                })
+              })
+            }
+          })
+        }
       }
-    })
+    )
   })
 
   app.use('/auth', router)

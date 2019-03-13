@@ -57,10 +57,14 @@ module.exports = {
       subject: '[UPchieve] Verify your email address'
     })
 
-    var templatedMail = getTemplateMailHelper(mail, config.sendgrid.templateId, {
-      '-userEmail-': email,
-      '-verifyLink-': url
-    })
+    var templatedMail = getTemplateMailHelper(
+      mail,
+      config.sendgrid.templateId,
+      {
+        '-userEmail-': email,
+        '-verifyLink-': url
+      }
+    )
     sendEmail(templatedMail, callback)
   },
 
@@ -70,7 +74,8 @@ module.exports = {
     var url = 'http://' + config.client.host + '/#/setpassword/' + token
 
     var emailContent = [
-      'Click on this link to choose a new password!', url,
+      'Click on this link to choose a new password!',
+      url,
       'If you received this email by accident, you can just ignore it and your password will not change.'
     ].join('\n\n')
 
@@ -81,5 +86,4 @@ module.exports = {
     })
     sendEmail(mail, callback)
   }
-
 }

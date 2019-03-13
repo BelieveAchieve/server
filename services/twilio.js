@@ -29,7 +29,15 @@ function getAvailability () {
     hour = `${hour}a`
   }
 
-  var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+  var days = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday'
+  ]
 
   return `availability.${days[day]}.${hour}`
 }
@@ -46,7 +54,9 @@ var getAvailableVolunteersFromDb = function (subtopic) {
     registrationCode: 'COACH18'
   }
 
-  var query = User.find(userQuery).select({ phone: 1, firstname: 1 }).limit(5)
+  var query = User.find(userQuery)
+    .select({ phone: 1, firstname: 1 })
+    .limit(5)
 
   return query
 }
@@ -58,12 +68,15 @@ function send (phoneNumber, name, subtopic) {
       from: config.sendingNumber,
       body: `Hi ${name}, a student just requested help in ${subtopic} at app.upchieve.org. Please log in now to help them if you can!`
     })
-    .then(message => console.log(`Message sent to ${phoneNumber} with message id \n` + message.sid))
+    .then(message =>
+      console.log(
+        `Message sent to ${phoneNumber} with message id \n` + message.sid
+      )
+    )
     .catch(err => console.log(err))
 }
 
 module.exports = {
-
   notify: function (type, subtopic) {
     getAvailableVolunteersFromDb(subtopic).exec(function (err, persons) {
       persons.forEach(function (person) {

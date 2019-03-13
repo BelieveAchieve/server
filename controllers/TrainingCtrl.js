@@ -15,7 +15,7 @@ var numQuestions = {
   biology: 1,
   chemistry: 2
 }
-const PASS_THRESHOLD = 0.80
+const PASS_THRESHOLD = 0.8
 
 // Fisher-Yates shuffle
 function shuffle (origArray) {
@@ -45,7 +45,7 @@ module.exports = {
   getQuestions: function (options, callback) {
     var subcategories = Question.getSubcategories(options.category)
 
-    Question.find({ 'category': options.category }, function (err, questions) {
+    Question.find({ category: options.category }, function (err, questions) {
       if (err) {
         return callback(err)
       } else {
@@ -67,8 +67,13 @@ module.exports = {
         subcategories.map(function (subcategory) {
           var questions = questionsBySubcategory[subcategory]
           questions = shuffle(questions)
-          var minQuestions = Math.min(questions.length, numQuestions[options.category])
-          randomQuestions = randomQuestions.concat(questions.slice(0, minQuestions))
+          var minQuestions = Math.min(
+            questions.length,
+            numQuestions[options.category]
+          )
+          randomQuestions = randomQuestions.concat(
+            questions.slice(0, minQuestions)
+          )
         })
 
         randomQuestions = shuffle(randomQuestions)
@@ -84,7 +89,7 @@ module.exports = {
     var score = 0
     var objIDs = Object.keys(idAnswerMap)
     var idCorrectAnswerMap = {}
-    Question.find({ '_id': { $in: objIDs } }, function (err, questions) {
+    Question.find({ _id: { $in: objIDs } }, function (err, questions) {
       if (err) {
         return callback(err)
       } else {
@@ -101,7 +106,7 @@ module.exports = {
         if (percent >= PASS_THRESHOLD) {
           hasPassed = true
         }
-        User.findOne({ '_id': userid }, function (err, user) {
+        User.findOne({ _id: userid }, function (err, user) {
           if (err) {
             return callback(err)
           }

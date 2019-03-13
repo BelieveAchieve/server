@@ -59,7 +59,8 @@ var userSchema = new mongoose.Schema({
   referred: String,
   preferredContactMethod: [String],
   availability: {
-    Sunday: { '12a': Boolean,
+    Sunday: {
+      '12a': Boolean,
       '1a': Boolean,
       '2a': Boolean,
       '3a': Boolean,
@@ -82,8 +83,10 @@ var userSchema = new mongoose.Schema({
       '8p': Boolean,
       '9p': Boolean,
       '10p': Boolean,
-      '11p': Boolean },
-    Monday: { '12a': Boolean,
+      '11p': Boolean
+    },
+    Monday: {
+      '12a': Boolean,
       '1a': Boolean,
       '2a': Boolean,
       '3a': Boolean,
@@ -106,8 +109,10 @@ var userSchema = new mongoose.Schema({
       '8p': Boolean,
       '9p': Boolean,
       '10p': Boolean,
-      '11p': Boolean },
-    Tuesday: { '12a': Boolean,
+      '11p': Boolean
+    },
+    Tuesday: {
+      '12a': Boolean,
       '1a': Boolean,
       '2a': Boolean,
       '3a': Boolean,
@@ -130,8 +135,10 @@ var userSchema = new mongoose.Schema({
       '8p': Boolean,
       '9p': Boolean,
       '10p': Boolean,
-      '11p': Boolean },
-    Wednesday: { '12a': Boolean,
+      '11p': Boolean
+    },
+    Wednesday: {
+      '12a': Boolean,
       '1a': Boolean,
       '2a': Boolean,
       '3a': Boolean,
@@ -154,8 +161,10 @@ var userSchema = new mongoose.Schema({
       '8p': Boolean,
       '9p': Boolean,
       '10p': Boolean,
-      '11p': Boolean },
-    Thursday: { '12a': Boolean,
+      '11p': Boolean
+    },
+    Thursday: {
+      '12a': Boolean,
       '1a': Boolean,
       '2a': Boolean,
       '3a': Boolean,
@@ -178,8 +187,10 @@ var userSchema = new mongoose.Schema({
       '8p': Boolean,
       '9p': Boolean,
       '10p': Boolean,
-      '11p': Boolean },
-    Friday: { '12a': Boolean,
+      '11p': Boolean
+    },
+    Friday: {
+      '12a': Boolean,
       '1a': Boolean,
       '2a': Boolean,
       '3a': Boolean,
@@ -202,8 +213,10 @@ var userSchema = new mongoose.Schema({
       '8p': Boolean,
       '9p': Boolean,
       '10p': Boolean,
-      '11p': Boolean },
-    Saturday: { '12a': Boolean,
+      '11p': Boolean
+    },
+    Saturday: {
+      '12a': Boolean,
       '1a': Boolean,
       '2a': Boolean,
       '3a': Boolean,
@@ -226,7 +239,8 @@ var userSchema = new mongoose.Schema({
       '8p': Boolean,
       '9p': Boolean,
       '10p': Boolean,
-      '11p': Boolean }
+      '11p': Boolean
+    }
   },
   hasSchedule: false,
   timezone: String,
@@ -366,7 +380,6 @@ var userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
-
 })
 
 // Given a user record, strip out sensitive data for public consumption
@@ -454,13 +467,9 @@ userSchema.methods.verifyPassword = function (candidatePassword, cb) {
 
 // Static method to determine if a registration code is valid
 userSchema.statics.checkCode = function (code, cb) {
-  var studentCodes = [
-    'STUDENTTESTING18', 'OASIS18', 'ONLINEAPP'
-  ]
+  var studentCodes = ['STUDENTTESTING18', 'OASIS18', 'ONLINEAPP']
 
-  var volunteerCodes = [
-    'COACH18', 'VOLUNTEERTESTING18'
-  ]
+  var volunteerCodes = ['COACH18', 'VOLUNTEERTESTING18']
 
   var isStudentCode = studentCodes.some(function (studentCode) {
     return studentCode.toUpperCase() === code.toUpperCase()
