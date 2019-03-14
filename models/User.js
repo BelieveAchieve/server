@@ -467,9 +467,8 @@ userSchema.methods.verifyPassword = function (candidatePassword, cb) {
 
 // Static method to determine if a registration code is valid
 userSchema.statics.checkCode = function (code, cb) {
-  var studentCodes = ['STUDENTTESTING18', 'OASIS18', 'ONLINEAPP']
-
-  var volunteerCodes = ['COACH18', 'VOLUNTEERTESTING18']
+  var studentCodes = config.STUDENT_CODES.split(',')
+  var volunteerCodes = config.VOLUNTEER_CODES.split(',')
 
   var isStudentCode = studentCodes.some(function (studentCode) {
     return studentCode.toUpperCase() === code.toUpperCase()
