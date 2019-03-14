@@ -47,6 +47,10 @@ var sessionSchema = new mongoose.Schema({
 
   endedAt: {
     type: Date
+  },
+
+  volunteerJoinedAt: {
+    created: { type: Date }
   }
 
   // Scheduled sessions
@@ -88,6 +92,7 @@ sessionSchema.methods.saveWhiteboardUrl = function (whiteboardUrl, cb) {
 sessionSchema.methods.joinUser = function (user, cb) {
   if (user.isVolunteer) {
     this.volunteer = user
+    this.volunteerJoinedAt = new Date()
   } else {
     this.student = user
   }

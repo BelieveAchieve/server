@@ -8,7 +8,8 @@ var SocketSession = function (options) {
   this.sockets = {} // userId => socket
 }
 
-// Add a socket and user to the session. If the user already has a socket, disconnect and replace it
+// Add a socket and user to the session. If the user already has a socket,
+// disconnect and replace it
 SocketSession.prototype.join = function (options) {
   var user = options.user
   var socket = options.socket
