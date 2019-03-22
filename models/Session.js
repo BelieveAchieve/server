@@ -50,7 +50,7 @@ var sessionSchema = new mongoose.Schema({
   },
 
   volunteerJoinedAt: {
-    created: { type: Date }
+    type: Date
   }
 
   // Scheduled sessions
