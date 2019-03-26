@@ -49,7 +49,7 @@
 },
 {
   "questionText": "Solve v/3=7 for v",
-  "possibleAnswers": [{"txt": "no solutions", "val": "a"}, {"txt": "21", "val": "b"}, {"txt": "21", "val": "c"}, {"txt": "-10", "val": "d"}],
+  "possibleAnswers": [{"txt": "no solutions", "val": "a"}, {"txt": "-21", "val": "b"}, {"txt": "21", "val": "c"}, {"txt": "-10", "val": "d"}],
   "correctAnswer": "c",
   "category": "algebra",
   "subcategory": "linear equations"
