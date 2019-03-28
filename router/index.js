@@ -5,6 +5,7 @@ module.exports = function (app) {
 
   require('./auth')(app)
   require('./api')(app)
+  require('./admin')(app)
 
   // Determine if incoming request is a static asset
   var isStaticReq = function (req) {
