@@ -11,66 +11,96 @@
     <title>UPchieve Admin | Questions</title>
 
     <style type="text/css" media="screen">
-      label {
-        display: block;
-        font-weight: bold;
-      }
-      .question-form {
-        border-width: .2rem;
-        border: solid #f7f7f9;
-        margin: 2.5rem 0;
-        padding: 1.5rem;
-      }
+        label {
+            display: block;
+            font-weight: bold;
+        }
+
+        .question-tile {
+            border-width: .2rem;
+            border: solid #f7f7f9;
+        }
     </style>
 </head>
 
 <body class="container">
     <h1>Questions</h1>
 
-    <div>
-        <% questions.forEach(question => { %>
-        <form class="question-form">
+    <% questions.forEach(question => { %>
+    <div class="question-tile mt-4 mb-4 js-question-tile" id="question-<%= question._id %>">
+        <div class="m-4 p-4 js-question-rendered">
+            <div class="m-4">
+                <%= question.questionText %>
+            </div>
+
+            <% if (question.image) { %>
+            <img src="/static/question_images/<%= question.image %>" />
+            <% } %>
+
+            <div class="m-4">
+                <ul>
+                    <% question.possibleAnswers.forEach(({txt, val}) => { %>
+                    <div>
+                      <% if (val === question.correctAnswer) { %>
+                        <strong><%= val %>. <%= txt %></strong>
+                      <% } else { %>
+                        <%= val %>. <%= txt %>
+                      <% } %>
+                    </div>
+                    <% }) %>
+                </ul>
+            </div>
+
+            <button type="button" class="m-4 btn btn-primary js-edit-button">Edit</button>
+        </div>
+
+        <form class="m-4 p-4 js-question-form d-none">
             <div class="form-group">
-              <label for="question_text">Question text</label>
-              <textarea cols="60" id="" name="question_text" class="form-control"><%= question.questionText %></textarea>
+                <label for="question_text">Question text</label>
+                <textarea name="question_text" class="form-control"><%= question.questionText %></textarea>
             </div>
 
             <div class="form-group">
                 <% if (question.image) { %>
-                    <img src="/static/question_images/<%= question.image %>"/>
+                <img src="/static/question_images/<%= question.image %>" />
                 <% } %>
                 <label for="question_text">Image file</label>
                 <input name="question_text" type="text" value="<%= question.image %>" class="form-control" />
             </div>
 
             <div class="form-group">
-              <label for="answer-choices">Answer choices</label>
-              <% question.possibleAnswers.forEach(({txt, val}) => { %>
+                <label for="answer-choices">Answer choices</label>
+                <% question.possibleAnswers.forEach(({txt, val}) => { %>
                 <div class="input-group mb-3">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text" id="basic-addon1"><%= val %></span>
-                  </div>
-                  <input name="answer[<%= val %>][]" type="text" value="<%= txt %>" class="form-control" />
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">
+                            <%= val %></span>
+                    </div>
+                    <input name="answer[<%= val %>][]" type="text" value="<%= txt %>" class="form-control" />
                 </div>
-              <% }) %>
+                <% }) %>
             </div>
 
             <div class="form-group">
-              <label for="correct-answer">Correct Answer</label>
-              <input name="correct-answer" type="text" value="<%= question.correctAnswer %>" class="form-control" />
+                <label for="correct-answer">Correct Answer</label>
+                <input name="correct-answer" type="text" value="<%= question.correctAnswer %>" class="form-control" />
             </div>
 
             <div class="form-group">
-              <label for="category">Category</label>
-              <input name="category" type="text" value="<%= question.category %>" class="form-control" />
+                <label for="category">Category</label>
+                <input name="category" type="text" value="<%= question.category %>" class="form-control" />
             </div>
 
             <div class="form-group">
-              <label for="subcategory">Subcategory</label>
-              <input name="subcategory" type="text" value="<%= question.subcategory %>" class="form-control"/>
+                <label for="subcategory">Subcategory</label>
+                <input name="subcategory" type="text" value="<%= question.subcategory %>" class="form-control" />
             </div>
+
+            <button type="button" class="mt-4 btn btn-primary js-save-button">Save</button>
+            <button type="button" class="mt-4 btn btn-secondary js-cancel-button">Cancel</button>
         </form>
-        <% }) %>
+    </div>
+    <% }) %>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -79,3 +109,20 @@
 </body>
 
 </html>
+
+<script>
+  $('.question-tile').on('click', '.js-edit-button', e => {
+    e.preventDefault()
+    const $tile = $(e.target).closest('.question-tile')
+    $tile.find('.js-question-form').removeClass('d-none')
+    $tile.find('.js-question-rendered').addClass('d-none')
+  })
+
+  $('.question-tile').on('click', '.js-save-button,.js-cancel-button', e => {
+    e.preventDefault()
+    const $tile = $(e.target).closest('.question-tile')
+    $tile.find('.js-question-form').addClass('d-none')
+    $tile.find('.js-question-rendered').removeClass('d-none')
+  })
+
+</script>
