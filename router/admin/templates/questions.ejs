@@ -20,6 +20,12 @@
             border-width: .2rem;
             border: solid #f7f7f9;
         }
+
+        .alert {
+          top: 14px;
+          padding-top: 0.55rem;
+          padding-bottom: 0.55rem;
+        }
     </style>
 </head>
 
@@ -27,102 +33,244 @@
     <h1>Questions</h1>
 
     <% questions.forEach(question => { %>
-    <div class="question-tile mt-4 mb-4 js-question-tile" id="question-<%= question._id %>">
+    <div class="question-tile mt-4 mb-4 js-question-tile" id="<%= question._id %>">
         <div class="m-4 p-4 js-question-rendered">
-            <div class="m-4">
+            <div class="ml-4 small">
+              <span id="<%= question._id %>-category"><%= question.category %></span>
+              &gt;
+              <span id="<%= question._id %>-subcategory"><%= question.subcategory %></span>
+            </div>
+
+            <div class="m-4" id="<%= question._id %>-questionText">
                 <%= question.questionText %>
             </div>
 
             <% if (question.image) { %>
-            <img src="/static/question_images/<%= question.image %>" />
+              <img
+                data-image-path="/static/question_images"
+                src="/static/question_images/<%= question.image %>" />
             <% } %>
 
             <div class="m-4">
                 <ul>
                     <% question.possibleAnswers.forEach(({txt, val}) => { %>
-                    <div>
-                      <% if (val === question.correctAnswer) { %>
-                        <strong><%= val %>. <%= txt %></strong>
-                      <% } else { %>
-                        <%= val %>. <%= txt %>
-                      <% } %>
+                    <div
+                      id="<%= question._id %>-possibleAnswers-<%= val %>"
+                      class="<%= (val === question.correctAnswer) ? 'font-weight-bold' : '' %>"
+                    >
+                      <%= val %>. <%= txt %>
                     </div>
                     <% }) %>
                 </ul>
             </div>
 
-            <button type="button" class="m-4 btn btn-primary js-edit-button">Edit</button>
+            <button type="button" class="mt-4 ml-4 mb-0 btn btn-primary js-edit-button">Edit</button>
+            <span class="js-tile-flash"></span>
         </div>
 
-        <form class="m-4 p-4 js-question-form d-none">
+        <form class="m-4 p-4 js-question-form d-none" action="/question/<%= question._id %>" method="put">
             <div class="form-group">
-                <label for="question_text">Question text</label>
-                <textarea name="question_text" class="form-control"><%= question.questionText %></textarea>
+                <label for="questionText">Question text</label>
+                <textarea name="questionText" class="form-control"><%= question.questionText %></textarea>
             </div>
 
             <div class="form-group">
                 <% if (question.image) { %>
-                <img src="/static/question_images/<%= question.image %>" />
+                  <img
+                    data-image-path="/static/question_images"
+                    src="/static/question_images/<%= question.image %>" />
                 <% } %>
-                <label for="question_text">Image file</label>
-                <input name="question_text" type="text" value="<%= question.image %>" class="form-control" />
+                <label for="image">Image filename</label>
+                <input
+                  type="text"
+                  name="image"
+                  value="<%= question.image %>"
+                  class="form-control" />
             </div>
 
             <div class="form-group">
-                <label for="answer-choices">Answer choices</label>
-                <% question.possibleAnswers.forEach(({txt, val}) => { %>
+                <label for="possibleAnswers">Answer choices</label>
+                <% question.possibleAnswers.forEach(({txt, val}, i) => { %>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">
-                            <%= val %></span>
+                      <span class="input-group-text">
+                        <%= val %>
+                      </span>
                     </div>
-                    <input name="answer[<%= val %>][]" type="text" value="<%= txt %>" class="form-control" />
+                    <input
+                      type="hidden"
+                      name="possibleAnswers[][val]"
+                      value="<%= val %>"/>
+                    <input
+                      type="text"
+                      name="possibleAnswers[][txt]"
+                      value="<%= txt %>"
+                      class="form-control" />
                 </div>
                 <% }) %>
             </div>
 
             <div class="form-group">
-                <label for="correct-answer">Correct Answer</label>
-                <input name="correct-answer" type="text" value="<%= question.correctAnswer %>" class="form-control" />
+                <label for="correctAnswer">Correct Answer</label>
+                <input
+                  type="text"
+                  name="correctAnswer"
+                  value="<%= question.correctAnswer %>"
+                  class="form-control" />
             </div>
 
             <div class="form-group">
                 <label for="category">Category</label>
-                <input name="category" type="text" value="<%= question.category %>" class="form-control" />
+                <input
+                  type="text"
+                  name="category"
+                  value="<%= question.category %>"
+                  class="form-control" />
             </div>
 
             <div class="form-group">
                 <label for="subcategory">Subcategory</label>
-                <input name="subcategory" type="text" value="<%= question.subcategory %>" class="form-control" />
+                <input
+                  type="text"
+                  name="subcategory"
+                  value="<%= question.subcategory %>"
+                  class="form-control" />
             </div>
 
             <button type="button" class="mt-4 btn btn-primary js-save-button">Save</button>
             <button type="button" class="mt-4 btn btn-secondary js-cancel-button">Cancel</button>
+            <span class="mt-4 mb-0 js-form-flash"></span>
         </form>
     </div>
     <% }) %>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <script>
+      const formData = ($form) => {
+        const data = {}
+
+        $form.serializeArray().forEach((e, i) => {
+          const [key, subkeyAttr] = e['name'].split('[]')
+          const value = e['value']
+          const matchData = (subkeyAttr || '').match(/\[(\w+)\]/)
+          const subkey = matchData && matchData[1]
+
+          if (!subkey) {
+            data[key] = value
+            return
+          }
+
+          const collection = data[key]
+          if (collection === undefined) {
+            const entry = {}
+            entry[subkey] = value
+            data[key] = [entry]
+            return
+          }
+
+          if (Array.isArray(collection)) {
+            const lastEntry = collection[collection.length-1]
+
+            if (!lastEntry[subkey]) {
+              lastEntry[subkey] = value
+            } else {
+              // Don't overwrite keys
+              const newEntry = {}
+              newEntry[subkey] = value
+              collection.push(newEntry)
+            }
+          }
+        })
+
+        return data
+      }
+
+      $('.js-question-tile').on('click', '.js-edit-button', e => {
+        e.preventDefault()
+        const $tile = $(e.target).closest('.js-question-tile')
+        $tile.find('.js-question-form').removeClass('d-none')
+        $tile.find('.js-question-rendered').addClass('d-none')
+      })
+
+      $('.js-question-tile').on('click', '.js-cancel-button', e => {
+        e.preventDefault()
+        const $tile = $(e.target).closest('.js-question-tile')
+        $tile.find('.js-question-form').addClass('d-none')
+        $tile.find('.js-question-rendered').removeClass('d-none')
+      })
+
+      $('.js-question-tile').on('click', '.js-save-button', e => {
+        e.preventDefault()
+
+        const $tile = $(e.target).closest('.js-question-tile')
+        const $form = $tile.find('.js-question-form').first()
+        const $formFlash = $form.find('.js-form-flash')
+        const $tileFlash = $tile.find('.js-tile-flash')
+        $formFlash.removeClass('alert alert-danger alert-success')
+        $tileFlash.removeClass('alert alert-danger alert-success')
+
+        const questionId = $tile.attr('id')
+
+        const request = {
+          type: 'PUT',
+          contentType: 'application/json; charset=utf-8',
+          url: `/admin/question/${questionId}`,
+          data: JSON.stringify({ question: formData($form) }),
+          dataType: 'json'
+        }
+
+        $.ajax(request).done(resp => {
+          const {
+            _id,
+            category,
+            subcategory,
+            questionText,
+            possibleAnswers,
+            correctAnswer,
+            image
+          } = resp.question
+
+          $tile.find(`#${_id}-category`).text(category)
+          $tile.find(`#${_id}-subcategory`).text(subcategory)
+          $tile.find(`#${_id}-questionText`).text(questionText)
+          if (image) {
+            $tile.find('img').removeClass('d-none')
+            $form.find('img').removeClass('d-none')
+
+            const path = $tile.find('img').data('image-path')
+            $tile.find('img').attr('src', `${path}/${image}`)
+            $form.find('img').attr('src', `${path}/${image}`)
+          } else {
+            $tile.find('img').addClass('d-none')
+            $form.find('img').addClass('d-none')
+          }
+          possibleAnswers.forEach(({val, txt}) => {
+            const $option = $tile.find(`#${_id}-possibleAnswers-${val}`)
+            $option.text(`${val}. ${txt}`).removeClass('font-weight-bold')
+            if (val === correctAnswer) {
+              $option.addClass('font-weight-bold')
+            }
+          })
+
+          $tileFlash.text('Update succeeded.')
+          $tileFlash.addClass('alert alert-success')
+
+          $tile.find('.js-question-form').addClass('d-none')
+          $tile.find('.js-question-rendered').removeClass('d-none')
+        }).fail(resp => {
+          console.error('Request failed. Sent:', request)
+          console.error(`Received ${resp.status} response: `, resp.responseText)
+
+          $formFlash.text('Update failed.')
+          $formFlash.addClass('alert alert-danger')
+        })
+
+      })
+    </script>
 </body>
 
 </html>
-
-<script>
-  $('.question-tile').on('click', '.js-edit-button', e => {
-    e.preventDefault()
-    const $tile = $(e.target).closest('.question-tile')
-    $tile.find('.js-question-form').removeClass('d-none')
-    $tile.find('.js-question-rendered').addClass('d-none')
-  })
-
-  $('.question-tile').on('click', '.js-save-button,.js-cancel-button', e => {
-    e.preventDefault()
-    const $tile = $(e.target).closest('.question-tile')
-    $tile.find('.js-question-form').addClass('d-none')
-    $tile.find('.js-question-rendered').removeClass('d-none')
-  })
-
-</script>
