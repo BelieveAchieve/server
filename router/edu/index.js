@@ -47,6 +47,5 @@ module.exports = app => {
 
   require('./questions')(router)
 
-  // TODO: Add authentication for /edu, /edu/questions, and update endpoint
-  app.use('/edu', passport.isAuthenticated, router)
+  app.use('/edu', [passport.isAuthenticated, passport.isAdmin], router)
 }
