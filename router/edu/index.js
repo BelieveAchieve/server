@@ -13,9 +13,7 @@ module.exports = app => {
   const router = new express.Router()
 
   router.get('/', async (req, res) => {
-    const templateName = 'index'
-    const templatesDir = path.join(path.resolve(__dirname), 'templates')
-    const templateFile = path.join(templatesDir, `${templateName}.ejs`)
+    const templateFile = path.join(path.resolve(__dirname), 'index.html.ejs')
 
     const adminPages = [{ path: 'questions', label: 'All Questions' }]
     let categories = []
@@ -50,6 +48,5 @@ module.exports = app => {
   require('./questions')(router)
 
   // TODO: Add authentication for /edu, /edu/questions, and update endpoint
-  // TODO: Add KaTeX/MathJax to the client app for the volunteer quizzes
   app.use('/edu', passport.isAuthenticated, router)
 }

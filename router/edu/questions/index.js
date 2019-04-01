@@ -2,13 +2,11 @@ const path = require('path')
 
 const ejs = require('ejs')
 
-const QuestionCtrl = require('../../controllers/QuestionCtrl')
+const QuestionCtrl = require('../../../controllers/QuestionCtrl')
 
 module.exports = router => {
   router.route('/questions').get(async (req, res) => {
-    const templateName = 'questions'
-    const templatesDir = path.join(path.resolve(__dirname), 'templates')
-    const templateFile = path.join(templatesDir, `${templateName}.ejs`)
+    const templateFile = path.join(path.resolve(__dirname), 'index.html.ejs')
     let questions = []
 
     try {
@@ -28,7 +26,7 @@ module.exports = router => {
     }
   })
 
-  router.route('/question/:id').put(async (req, res) => {
+  router.route('/questions/:id').put(async (req, res) => {
     try {
       const updatedQuestion = await QuestionCtrl.update({
         id: req.params.id,

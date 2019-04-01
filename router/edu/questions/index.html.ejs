@@ -48,7 +48,7 @@
               &gt;
               <a
                 id="<%= question._id %>-subcategory-link"
-                href="/edu/questions?subcategory=<%= encodeURIComponent(question.category) %>">
+                href="/edu/questions?subcategory=<%= encodeURIComponent(question.subcategory) %>">
                 <span id="<%= question._id %>-subcategory">
                   <%= question.subcategory %>
                 </span>
@@ -82,7 +82,7 @@
             <span class="js-tile-flash"></span>
         </div>
 
-        <form class="m-4 p-4 js-question-form d-none" action="/question/<%= question._id %>" method="put">
+        <form class="m-4 p-4 js-question-form d-none" action="/questions/<%= question._id %>" method="put">
             <div class="form-group">
                 <label for="questionText">Question text</label>
                 <textarea name="questionText" class="form-control"><%= question.questionText %></textarea>
@@ -232,7 +232,7 @@
         const request = {
           type: 'PUT',
           contentType: 'application/json; charset=utf-8',
-          url: `/edu/question/${questionId}`,
+          url: `/edu/questions/${questionId}`,
           data: JSON.stringify({ question: formData($form) }),
           dataType: 'json'
         }
