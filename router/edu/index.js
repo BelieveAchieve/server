@@ -24,17 +24,15 @@ module.exports = app => {
       categories = await QuestionCtrl.categories()
     } catch (_error) {}
 
-    categories.forEach((subLabels, categoryLabel) => {
+    categories.forEach((subs, cat) => {
       const category = {
-        path: `questions?category=${uri(categoryLabel)}`,
-        label: categoryLabel
+        path: `questions?category=${uri(cat)}`,
+        label: cat
       }
 
-      const subcategories = [...subLabels].map(subcategory => ({
-        path: `questions?category=${uri(categoryLabel)}&subcategory=${uri(
-          subcategory
-        )}`,
-        label: subcategory
+      const subcategories = [...subs].map(sub => ({
+        path: `questions?category=${uri(cat)}&subcategory=${uri(sub)}`,
+        label: sub
       }))
 
       adminPages.push(category)
@@ -51,5 +49,7 @@ module.exports = app => {
 
   require('./questions')(router)
 
+  // TODO: Add authentication for /edu, /edu/questions, and update endpoint
+  // TODO: Add KaTeX/MathJax to the client app for the volunteer quizzes
   app.use('/edu', passport.isAuthenticated, router)
 }
