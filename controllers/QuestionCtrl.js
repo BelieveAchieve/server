@@ -4,6 +4,10 @@ const list = async (filters, cb) => {
   return Question.find(filters)
 }
 
+const create = async attrs => {
+  return Question.create(attrs)
+}
+
 const update = async options => {
   const { id, question } = options
 
@@ -36,6 +40,7 @@ const categories = async () => {
 
 module.exports = {
   list: list,
+  create: create,
   update: update,
   categories: categories
 }

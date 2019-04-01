@@ -8,7 +8,7 @@
 
     <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
 
-    <title>UPchieve EDU Admin | Questions</title>
+    <title>UPchieve EDU Admin | New Question</title>
 
     <style type="text/css" media="screen">
         label {
@@ -30,33 +30,33 @@
 </head>
 
 <body class="container p-5">
-    <h1>Questions</h1>
-    <a href="/edu" class="btn btn-secondary d-inline" style="height: 35px;">index</a>
-    <a href="/edu/questions" class="btn btn-secondary d-inline" style="height: 35px;">clear filters</a>
+    <h1>New Question</h1>
+    <a href="/edu" class="btn btn-secondary d-inline" style="height: 35px;">edu admin</a>
+    <a href="/edu/questions" class="btn btn-secondary d-inline" style="height: 35px;">all questions</a>
     <a href="/edu/questions/new" class="btn btn-secondary d-inline" style="height: 35px;">new question</a>
 
     <% questions.forEach(question => { %>
-    <div class="question-tile mt-4 mb-4 js-question-tile" id="<%= question._id %>">
-        <div class="m-4 p-4 js-question-rendered">
+    <div class="question-tile mt-4 mb-4 js-question-tile" id="new">
+        <div class="m-4 p-4 js-question-rendered d-none">
             <div class="ml-4 small">
               <a
-                id="<%= question._id %>-category-link"
+                id="new-category-link"
                 href="/edu/questions?category=<%= encodeURIComponent(question.category) %>">
-                <span id="<%= question._id %>-category">
+                <span id="new-category">
                   <%= question.category %>
                 </span>
               </a>
               &gt;
               <a
-                id="<%= question._id %>-subcategory-link"
+                id="new-subcategory-link"
                 href="/edu/questions?subcategory=<%= encodeURIComponent(question.subcategory) %>">
-                <span id="<%= question._id %>-subcategory">
+                <span id="new-subcategory">
                   <%= question.subcategory %>
                 </span>
               </a>
             </div>
 
-            <div class="m-4" id="<%= question._id %>-questionText">
+            <div class="m-4" id="new-questionText">
                 <%= question.questionText %>
             </div>
 
@@ -70,7 +70,7 @@
                 <ul>
                     <% question.possibleAnswers.forEach(({txt, val}) => { %>
                     <div
-                      id="<%= question._id %>-possibleAnswers-<%= val %>"
+                      id="new-possibleAnswers-<%= val %>"
                       class="<%= (val === question.correctAnswer) ? 'font-weight-bold' : '' %>"
                     >
                       <%= val %>. <%= txt %>
@@ -83,7 +83,7 @@
             <span class="js-tile-flash"></span>
         </div>
 
-        <form class="m-4 p-4 js-question-form d-none" action="/questions/<%= question._id %>" method="put">
+        <form class="m-4 p-4 js-question-form" action="/edu/questions" method="post">
             <div class="form-group">
                 <label for="questionText">Question text</label>
                 <textarea name="questionText" class="form-control"><%= question.questionText %></textarea>
@@ -223,6 +223,7 @@
 
         const $tile = $(e.target).closest('.js-question-tile')
         const $form = $tile.find('.js-question-form').first()
+
         const $formFlash = $form.find('.js-form-flash')
         const $tileFlash = $tile.find('.js-tile-flash')
         $formFlash.removeClass('alert alert-danger alert-success')
@@ -240,7 +241,6 @@
 
         $.ajax(request).done(resp => {
           const {
-            _id,
             category,
             subcategory,
             questionText,
@@ -251,11 +251,11 @@
 
           const categoryUri = encodeURIComponent(category)
           const subUri = encodeURIComponent(subcategory)
-          $tile.find(`#${_id}-category-link`).attr('href', `/edu/questions?category=${categoryUri}`)
-          $tile.find(`#${_id}-subcategory-link`).attr('href', `/edu/questions?subcategory=${subUri}`)
-          $tile.find(`#${_id}-category`).text(category)
-          $tile.find(`#${_id}-subcategory`).text(subcategory)
-          $tile.find(`#${_id}-questionText`).text(questionText)
+          $tile.find(`#new-category-link`).attr('href', `/edu/questions?category=${categoryUri}`)
+          $tile.find(`#new-subcategory-link`).attr('href', `/edu/questions?subcategory=${subUri}`)
+          $tile.find(`#new-category`).text(category)
+          $tile.find(`#new-subcategory`).text(subcategory)
+          $tile.find(`#new-questionText`).text(questionText)
 
           if (image) {
             $tile.find('img').removeClass('d-none')
@@ -270,7 +270,7 @@
           }
 
           possibleAnswers.forEach(({val, txt}) => {
-            const $option = $tile.find(`#${_id}-possibleAnswers-${val}`)
+            const $option = $tile.find(`#new-possibleAnswers-${val}`)
             $option.text(`${val}. ${txt}`).removeClass('font-weight-bold')
             if (val === correctAnswer) {
               $option.addClass('font-weight-bold')
@@ -292,7 +292,6 @@
           $formFlash.text('Update failed.')
           $formFlash.addClass('alert alert-danger')
         })
-
       })
     </script>
 </body>
