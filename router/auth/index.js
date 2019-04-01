@@ -67,6 +67,7 @@ module.exports = function (app) {
   var router = new express.Router()
 
   router.get('/logout', function (req, res) {
+    req.session.destroy()
     req.logout()
     res.json({
       msg: 'You have been logged out'
