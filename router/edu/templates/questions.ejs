@@ -29,9 +29,10 @@
     </style>
 </head>
 
-<body class="container">
+<body class="container p-5">
     <h1>Questions</h1>
-    <a href="/edu/questions" class="btn btn-secondary">clear filters</a>
+    <a href="/edu" class="btn btn-secondary d-inline" style="height: 35px;">index</a>
+    <a href="/edu/questions" class="btn btn-secondary d-inline" style="height: 35px;">clear filters</a>
 
     <% questions.forEach(question => { %>
     <div class="question-tile mt-4 mb-4 js-question-tile" id="<%= question._id %>">
