@@ -18,6 +18,10 @@ const update = async options => {
   )
 }
 
+const destroy = async questionId => {
+  return Question.findByIdAndDelete(questionId)
+}
+
 const categories = async () => {
   const grouped = new Map()
 
@@ -42,5 +46,6 @@ module.exports = {
   list: list,
   create: create,
   update: update,
+  destroy: destroy,
   categories: categories
 }

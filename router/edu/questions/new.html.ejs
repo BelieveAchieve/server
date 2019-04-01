@@ -215,14 +215,12 @@
         e.preventDefault()
 
         const $tile = $(e.target).closest('.js-question-tile')
-        const $form = $tile.find('.js-question-form').first()
-
-        const $formFlash = $form.find('.js-form-flash')
         const $tileFlash = $tile.find('.js-tile-flash')
-        $formFlash.removeClass('alert alert-danger alert-success')
         $tileFlash.removeClass('alert alert-danger alert-success')
 
-        const questionId = $tile.attr('id')
+        const $form = $tile.find('.js-question-form').first()
+        const $formFlash = $form.find('.js-form-flash')
+        $formFlash.removeClass('alert alert-danger alert-success')
 
         const request = {
           type: $form.attr('method'),
@@ -234,6 +232,7 @@
 
         $.ajax(request).done(resp => {
           const {
+            _id,
             category,
             subcategory,
             questionText,
@@ -244,6 +243,7 @@
 
           const categoryUri = encodeURIComponent(category)
           const subUri = encodeURIComponent(subcategory)
+          $tile.attr('id', _id)
           $tile.find(`#new-category-link`).attr('href', `/edu/questions?category=${categoryUri}`)
           $tile.find(`#new-subcategory-link`).attr('href', `/edu/questions?subcategory=${subUri}`)
           $tile.find(`#new-category`).text(category)
@@ -281,7 +281,35 @@
         }).fail(resp => {
           console.error('Request failed. Sent:', request)
           console.error(`Received ${resp.status} response: `, resp.responseText)
+          $formFlash.text('Update failed.')
+          $formFlash.addClass('alert alert-danger')
+        })
+      })
 
+      $('.js-question-tile').on('click', '.js-delete-button', e => {
+        e.preventDefault()
+        const $tile = $(e.target).closest('.js-question-tile')
+        const $tileFlash = $tile.find('.js-tile-flash')
+        const questionId = $tile.attr('id')
+        $tileFlash.removeClass('alert alert-danger alert-success')
+
+        const $form = $tile.find('.js-question-form').first()
+        const $formFlash = $form.find('.js-form-flash')
+        $formFlash.removeClass('alert alert-danger alert-success')
+
+        const request = {
+          type: 'delete',
+          contentType: 'application/json; charset=utf-8',
+          url: `/edu/questions/${questionId}`,
+          dataType: 'json'
+        }
+
+        $.ajax(request).done(resp => {
+          $tileFlash.text('Successfully deleted')
+          $tileFlash.addClass('alert alert-success')
+        }).fail(resp => {
+          console.error('Request failed. Sent:', request)
+          console.error(`Received ${resp.status} response: `, resp.responseText)
           $formFlash.text('Update failed.')
           $formFlash.addClass('alert alert-danger')
         })

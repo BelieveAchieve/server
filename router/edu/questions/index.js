@@ -67,4 +67,13 @@ module.exports = router => {
       res.status(422).json({ error: 'Unprocessable entity' })
     }
   })
+
+  router.route('/questions/:id').delete(async (req, res) => {
+    try {
+      const question = await QuestionCtrl.destroy(req.params.id)
+      res.status(200).json({ question: question })
+    } catch (error) {
+      res.status(422).json({ error: 'Unprocessable entity' })
+    }
+  })
 }
