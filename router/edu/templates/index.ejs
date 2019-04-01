@@ -5,19 +5,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <title>UPchieve Admin</title>
+    <title>UPchieve EDU Admin</title>
 </head>
 
 <body class="container">
-    <h1>UPchieve Admin</h1>
+    <h1>UPchieve EDU Admin</h1>
 
     <ul>
-        <% adminPages.forEach(({path, label}) => { %>
-        <li>
-            <a href="/admin/<%= path %>">
-              <%= label %>
-            </a>
-        </li>
+        <% adminPages.forEach(entry => { %>
+         <% if (Array.isArray(entry)) { %>
+           <ul>
+            <% entry.forEach(e => { %>
+              <li><a href="/edu/<%= e.path %>"><%= e.label %></a></li>
+            <% }) %>
+           </ul>
+         <% } else { %>
+           <li><a href="/edu/<%= entry.path %>"><%= entry.label %></a></li>
+         <% } %>
         <% }) %>
     </ul>
 

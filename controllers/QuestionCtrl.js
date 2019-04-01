@@ -1,7 +1,7 @@
 const Question = require('../models/Question')
 
-const list = async (options, cb) => {
-  return Question.find({})
+const list = async (filters, cb) => {
+  return Question.find(filters)
 }
 
 const update = async options => {
@@ -14,7 +14,28 @@ const update = async options => {
   )
 }
 
+const categories = async () => {
+  const grouped = new Map()
+
+  const categories = await Question.find(
+    {},
+    { _id: 0, category: 1, subcategory: 1 },
+    { $group: 'category' }
+  )
+
+  categories.forEach(({ category, subcategory }) => {
+    if (!grouped.has(category)) {
+      grouped.set(category, new Set())
+    }
+
+    grouped.get(category).add(subcategory)
+  })
+
+  return grouped
+}
+
 module.exports = {
   list: list,
-  update: update
+  update: update,
+  categories: categories
 }

@@ -12,7 +12,9 @@ module.exports = router => {
     let questions = []
 
     try {
-      questions = await QuestionCtrl.list()
+      const filters = req.query || {}
+      console.log(filters)
+      questions = await QuestionCtrl.list(filters)
 
       ejs.renderFile(templateFile, { questions }, null, (err, str) => {
         if (err) {
