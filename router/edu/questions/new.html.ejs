@@ -79,7 +79,7 @@
                 </ul>
             </div>
 
-            <button type="button" class="mt-4 ml-4 mb-0 btn btn-primary js-edit-button">Edit</button>
+            <button type="button" class="mt-4 ml-4 mr-4 mb-0 btn btn-danger js-delete-button">Delete</button>
             <span class="js-tile-flash"></span>
         </div>
 
@@ -203,13 +203,6 @@
 
         return data
       }
-
-      $('.js-question-tile').on('click', '.js-edit-button', e => {
-        e.preventDefault()
-        const $tile = $(e.target).closest('.js-question-tile')
-        $tile.find('.js-question-form').removeClass('d-none')
-        $tile.find('.js-question-rendered').addClass('d-none')
-      })
 
       $('.js-question-tile').on('click', '.js-cancel-button', e => {
         e.preventDefault()
