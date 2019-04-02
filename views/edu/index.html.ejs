@@ -1,0 +1,25 @@
+<%- contentFor('title') %>
+UPchieve EDU Admin
+
+<%- contentFor('body') %>
+
+<h1>UPchieve EDU Admin</h1>
+<a href="/edu/questions/new" class="btn btn-secondary d-inline" style="height: 35px;">new question</a>
+
+<ul class="list-group list-group-flush mt-5">
+  <% adminPages.forEach(entry => { %>
+    <% if (Array.isArray(entry)) { %>
+      <ul class="list-group list-group-horizontal-md">
+        <% entry.forEach(e => { %>
+          <li class="list-group-item small border-0">
+            <a href="/edu/<%= e.path %>"><%= e.label %></a>
+          </li>
+        <% }) %>
+      </ul>
+    <% } else { %>
+      <li class="list-group-item font-weight-bold border-bottom-0">
+        <a href="/edu/<%= entry.path %>"><%= entry.label %></a>
+      </li>
+    <% } %>
+  <% }) %>
+</ul>

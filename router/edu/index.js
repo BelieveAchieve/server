@@ -1,8 +1,7 @@
-const path = require('path')
 const uri = require('querystring').escape
 
-const ejs = require('ejs')
 const express = require('express')
+const expressLayouts = require('express-ejs-layouts')
 
 const passport = require('../auth/passport')
 const QuestionCtrl = require('../../controllers/QuestionCtrl')
@@ -10,17 +9,20 @@ const QuestionCtrl = require('../../controllers/QuestionCtrl')
 module.exports = app => {
   console.log('Edu Admin module')
 
+  app.set('view engine', 'ejs')
+  app.set('layout', 'layouts/edu.html.ejs')
+  app.use(expressLayouts)
+
   const router = new express.Router()
 
   router.get('/', async (req, res) => {
-    const templateFile = path.join(path.resolve(__dirname), 'index.html.ejs')
-
-    const adminPages = [{ path: 'questions', label: 'All Questions' }]
     let categories = []
 
     try {
       categories = await QuestionCtrl.categories()
     } catch (_error) {}
+
+    const adminPages = [{ path: 'questions', label: 'All Questions' }]
 
     categories.forEach((subs, cat) => {
       const category = {
@@ -37,15 +39,64 @@ module.exports = app => {
       adminPages.push([...subcategories])
     })
 
-    ejs.renderFile(templateFile, { adminPages }, null, (err, str) => {
-      if (err) {
-        res.send('404 Not Found')
-      }
-      res.send(str)
-    })
+    res.render('edu/index.html.ejs', { adminPages })
   })
 
-  require('./questions')(router)
+  router.route('/questions').get(async (req, res) => {
+    try {
+      let questions = []
+      const filters = req.query || {}
+      questions = await QuestionCtrl.list(filters)
+      res.render('edu/questions/index.html.ejs', { questions })
+    } catch (_error) {
+      res.send('500 Internal Server Error')
+    }
+  })
+
+  router.route('/questions/new').get((req, res) => {
+    const questions = [
+      {
+        possibleAnswers: [
+          { val: 'a' },
+          { val: 'b' },
+          { val: 'c' },
+          { val: 'd' }
+        ]
+      }
+    ]
+
+    res.render('edu/questions/new.html.ejs', { questions })
+  })
+
+  router.route('/questions').post(async (req, res) => {
+    try {
+      const question = await QuestionCtrl.create(req.body.question)
+      res.status(200).json({ question: question })
+    } catch (error) {
+      res.status(422).json({ error: 'Unprocessable entity' })
+    }
+  })
+
+  router.route('/questions/:id').put(async (req, res) => {
+    try {
+      const updatedQuestion = await QuestionCtrl.update({
+        id: req.params.id,
+        question: req.body.question
+      })
+      res.status(200).json({ question: updatedQuestion })
+    } catch (error) {
+      res.status(422).json({ error: 'Unprocessable entity' })
+    }
+  })
+
+  router.route('/questions/:id').delete(async (req, res) => {
+    try {
+      const question = await QuestionCtrl.destroy(req.params.id)
+      res.status(200).json({ question: question })
+    } catch (error) {
+      res.status(422).json({ error: 'Unprocessable entity' })
+    }
+  })
 
   app.use('/edu', [passport.isAuthenticated, passport.isAdmin], router)
 }
