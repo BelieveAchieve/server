@@ -8,6 +8,23 @@ const QuestionCtrl = require('../../controllers/QuestionCtrl')
 
 console.log('Edu Admin module')
 
+const questionsPath = (category, subcategory) => {
+  const query = []
+
+  if (category) {
+    query.push(`category=${uri(category)}`)
+  }
+
+  if (subcategory) {
+    query.push(`subcategory=${uri(subcategory)}`)
+  }
+
+  return {
+    path: `questions?${query.join('&')}`,
+    label: subcategory || category
+  }
+}
+
 module.exports = app => {
   app.set('view engine', 'ejs')
   app.set('layout', 'layouts/edu.html.ejs')
@@ -24,19 +41,13 @@ module.exports = app => {
 
     const adminPages = [{ path: 'questions', label: 'All Questions' }]
 
-    categories.forEach((subs, cat) => {
-      const category = {
-        path: `questions?category=${uri(cat)}`,
-        label: cat
-      }
-
-      const subcategories = [...subs].map(sub => ({
-        path: `questions?category=${uri(cat)}&subcategory=${uri(sub)}`,
-        label: sub
-      }))
-
-      adminPages.push(category)
-      adminPages.push([...subcategories])
+    // Add category / subcategory pages to adminPages
+    categories.forEach(([cat, subs]) => {
+      const entry = [
+        questionsPath(cat),
+        subs.map(sub => questionsPath(cat, sub))
+      ]
+      adminPages.push(...entry)
     })
 
     res.render('edu/index.html.ejs', { adminPages })

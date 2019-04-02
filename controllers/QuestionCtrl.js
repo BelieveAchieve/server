@@ -22,24 +22,36 @@ const destroy = async questionId => {
   return Question.findByIdAndDelete(questionId)
 }
 
+// Return an array of tuples, with each tuple containing a category and array of
+// subcategories.
+//
+// Example:
+//
+//      [
+//         ['algebra', ['linear', 'rational']],
+//         ['applications', ['LOR', 'basic']]
+//      ]
+//
 const categories = async () => {
-  const grouped = new Map()
-
   const categories = await Question.find(
     {},
     { _id: 0, category: 1, subcategory: 1 },
     { $group: 'category' }
   )
 
+  const groupedCategories = {}
   categories.forEach(({ category, subcategory }) => {
-    if (!grouped.has(category)) {
-      grouped.set(category, new Set())
+    if (!groupedCategories[category]) {
+      groupedCategories[category] = new Set()
     }
-
-    grouped.get(category).add(subcategory)
+    groupedCategories[category].add(subcategory)
   })
 
-  return grouped
+  const tuples = Object.keys(groupedCategories)
+    .sort()
+    .map(categoryName => [categoryName, [...groupedCategories[categoryName]]])
+
+  return tuples
 }
 
 module.exports = {
