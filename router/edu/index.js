@@ -6,9 +6,9 @@ const expressLayouts = require('express-ejs-layouts')
 const passport = require('../auth/passport')
 const QuestionCtrl = require('../../controllers/QuestionCtrl')
 
-module.exports = app => {
-  console.log('Edu Admin module')
+console.log('Edu Admin module')
 
+module.exports = app => {
   app.set('view engine', 'ejs')
   app.set('layout', 'layouts/edu.html.ejs')
   app.use(expressLayouts)
@@ -44,28 +44,19 @@ module.exports = app => {
 
   router.route('/questions').get(async (req, res) => {
     try {
-      let questions = []
-      const filters = req.query || {}
-      questions = await QuestionCtrl.list(filters)
+      const questions = await QuestionCtrl.list(req.query || {})
       res.render('edu/questions/index.html.ejs', { questions })
-    } catch (_error) {
-      res.send('500 Internal Server Error')
+    } catch (error) {
+      res.status(500).send(`Internal Server Error: ${error}`)
     }
   })
 
   router.route('/questions/new').get((req, res) => {
-    const questions = [
-      {
-        possibleAnswers: [
-          { val: 'a' },
-          { val: 'b' },
-          { val: 'c' },
-          { val: 'd' }
-        ]
-      }
-    ]
+    const question = {
+      possibleAnswers: [{ val: 'a' }, { val: 'b' }, { val: 'c' }, { val: 'd' }]
+    }
 
-    res.render('edu/questions/new.html.ejs', { questions })
+    res.render('edu/questions/new.html.ejs', { questions: [question] })
   })
 
   router.route('/questions').post(async (req, res) => {
@@ -73,7 +64,7 @@ module.exports = app => {
       const question = await QuestionCtrl.create(req.body.question)
       res.status(200).json({ question: question })
     } catch (error) {
-      res.status(422).json({ error: 'Unprocessable entity' })
+      res.status(422).json({ error })
     }
   })
 
@@ -85,7 +76,7 @@ module.exports = app => {
       })
       res.status(200).json({ question: updatedQuestion })
     } catch (error) {
-      res.status(422).json({ error: 'Unprocessable entity' })
+      res.status(422).json({ error })
     }
   })
 
@@ -94,7 +85,7 @@ module.exports = app => {
       const question = await QuestionCtrl.destroy(req.params.id)
       res.status(200).json({ question: question })
     } catch (error) {
-      res.status(422).json({ error: 'Unprocessable entity' })
+      res.status(422).json({ error })
     }
   })
 
