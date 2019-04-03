@@ -8,7 +8,7 @@ UPchieve EDU Admin | Questions
     <%- include('question-rendered', { question, questionId: question._id }) %>
   </div>
 
-  <form class="m-4 p-4 js-question-form d-none" action="/edu/questions/<%=question._id %>" method="put">
+  <form class="m-4 p-4 js-question-form d-none" action="/edu/questions/<%=question._id %>" method="put" novalidate>
     <%- include('question-form', { question }) %>
   </form>
 </div>
@@ -42,7 +42,16 @@ UPchieve EDU Admin | Questions
     $tileFlash.removeClass('alert alert-danger alert-success')
 
     const $form = $tile.find('.js-question-form').first()
-    if (!$form.valid()) { return }
+
+    // Validate form has all required values
+    const $requiredInputs = $form.find('input[required],textarea[required]')
+    $requiredInputs.toArray().forEach(e => $(e).removeClass('invalid'))
+    const missingValues = $requiredInputs.toArray().filter(e => !e.value)
+
+    if (missingValues.length > 0) {
+      missingValues.forEach(e => $(e).addClass('invalid'))
+      return
+    }
 
     const $formFlash = $form.find('.js-form-flash')
     $formFlash.removeClass('alert alert-danger alert-success')
