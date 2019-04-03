@@ -1,0 +1,39 @@
+<div class="ml-4 small">
+    <a id="<%= questionId %>-category-link"
+      href="/edu/questions?category=<%= encodeURIComponent(question.category) %>">
+        <span id="<%= questionId %>-category">
+            <%= question.category %>
+        </span>
+    </a>
+    &gt;
+    <a id="<%= questionId %>-subcategory-link" href="/edu/questions?subcategory=<%= encodeURIComponent(question.subcategory) %>">
+        <span id="<%= questionId %>-subcategory">
+            <%= question.subcategory %>
+        </span>
+    </a>
+</div>
+
+<div class="m-4" id="<%= questionId %>-questionText">
+    <%= question.questionText %>
+</div>
+
+<% if (question.image) { %>
+  <img data-image-path="/static/question_images"
+    src="/static/question_images/<%= question.image %>" />
+<% } %>
+
+<div class="m-4">
+    <ul>
+        <% question.possibleAnswers.forEach(({txt, val}) => { %>
+          <div
+            id="<%= questionId %>-possibleAnswers-<%= val %>"
+            class="<%= (val === question.correctAnswer) ? 'font-weight-bold' : '' %>">
+            <%= val %>. <%= txt %>
+        </div>
+        <% }) %>
+    </ul>
+</div>
+
+<button type="button" class="mt-4 ml-4 mr-0 mb-0 btn btn-primary js-edit-button">Edit</button>
+<button type="button" class="mt-4 ml-0 mr-4 mb-0 btn btn-danger js-delete-button">Delete</button>
+<span class="js-tile-flash"></span>

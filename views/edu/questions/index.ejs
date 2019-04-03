@@ -1,0 +1,150 @@
+<%- contentFor('title') %>
+UPchieve EDU Admin | Questions
+
+<%- contentFor('body') %>
+<h1>Questions</h1>
+<a href="/edu" class="btn btn-secondary d-inline" style="height: 35px;">index</a>
+<a href="/edu/questions" class="btn btn-secondary d-inline" style="height: 35px;">clear filters</a>
+<a href="/edu/questions/new" class="btn btn-secondary d-inline" style="height: 35px;">new question</a>
+
+<% questions.forEach(question => { %>
+<div class="question-tile mt-4 mb-4 js-question-tile" id="<%= question._id %>">
+  <div class="m-4 p-4 js-question-rendered">
+    <%- include('question-rendered', { question, questionId: question._id }) %>
+  </div>
+
+  <form class="m-4 p-4 js-question-form d-none" action="/edu/questions/<%=question._id %>" method="put">
+    <%- include('question-form', { question }) %>
+  </form>
+</div>
+<% }) %>
+
+<%- contentFor('scripts') %>
+<script>
+  $('.js-question-tile').on('click', '.js-edit-button', e => {
+    e.preventDefault()
+    const $tile = $(e.target).closest('.js-question-tile')
+    const $tileFlash = $tile.find('.js-tile-flash')
+    $tileFlash.text('').removeClass('alert alert-danger alert-success')
+    $tile.find('.js-question-form').removeClass('d-none')
+    $tile.find('.js-question-rendered').addClass('d-none')
+  })
+
+  $('.js-question-tile').on('click', '.js-cancel-button', e => {
+    e.preventDefault()
+    const $tile = $(e.target).closest('.js-question-tile')
+    const $form = $tile.find('.js-question-form').first()
+    const $formFlash = $form.find('.js-form-flash')
+    $formFlash.text('').removeClass('alert alert-danger alert-success')
+    $tile.find('.js-question-form').addClass('d-none')
+    $tile.find('.js-question-rendered').removeClass('d-none')
+  })
+
+  $('.js-question-tile').on('click', '.js-save-button', e => {
+    e.preventDefault()
+    const $tile = $(e.target).closest('.js-question-tile')
+    const $tileFlash = $tile.find('.js-tile-flash')
+    $tileFlash.removeClass('alert alert-danger alert-success')
+
+    const $form = $tile.find('.js-question-form').first()
+    if (!$form.valid()) { return }
+
+    const $formFlash = $form.find('.js-form-flash')
+    $formFlash.removeClass('alert alert-danger alert-success')
+
+    const question = $form.serializeJSON()
+    question.possibleAnswers = question.possibleAnswers.filter(e => e.txt)
+
+    const request = {
+      type: $form.attr('method'),
+      contentType: 'application/json; charset=utf-8',
+      url: $form.attr('action'),
+      data: JSON.stringify({ question }),
+      dataType: 'json'
+    }
+
+    $.ajax(request).done(resp => {
+      const {
+        _id,
+        category,
+        subcategory,
+        questionText,
+        possibleAnswers,
+        correctAnswer,
+        image
+      } = resp.question
+
+      const categoryUri = encodeURIComponent(category)
+      const subUri = encodeURIComponent(subcategory)
+      $tile.attr('id', _id)
+      $tile.find(`#${_id}-category-link`).attr('href', `/edu/questions?category=${categoryUri}`)
+      $tile.find(`#${_id}-subcategory-link`).attr('href', `/edu/questions?subcategory=${subUri}`)
+      $tile.find(`#${_id}-category`).text(category)
+      $tile.find(`#${_id}-subcategory`).text(subcategory)
+      $tile.find(`#${_id}-questionText`).text(questionText)
+
+      if (image) {
+        $tile.find('img').removeClass('d-none')
+        $form.find('img').removeClass('d-none')
+
+        const path = $tile.find('img').data('image-path')
+        $tile.find('img').attr('src', `${path}/${image}`)
+        $form.find('img').attr('src', `${path}/${image}`)
+      } else {
+        $tile.find('img').addClass('d-none')
+        $form.find('img').addClass('d-none')
+      }
+
+      possibleAnswers.forEach(({val, txt}) => {
+        const $option = $tile.find(`#${_id}-possibleAnswers-${val}`)
+        $option.text(`${val}. ${txt}`).removeClass('font-weight-bold')
+        if (val === correctAnswer) {
+          $option.addClass('font-weight-bold')
+        }
+      })
+
+      $tileFlash.text('Update succeeded.')
+      $tileFlash.addClass('alert alert-success')
+
+      $tile.find('.js-question-form').addClass('d-none')
+      $tile.find('.js-question-rendered').removeClass('d-none')
+
+      // re-typeset math
+      MathJax.Hub.Queue(['Typeset', MathJax.Hub, $tile[0]])
+    }).fail(resp => {
+      console.error('Request failed. Sent:', request)
+      console.error(`Received ${resp.status} response: `, resp.responseText)
+      $formFlash.text('Update failed.')
+      $formFlash.addClass('alert alert-danger')
+    })
+  })
+
+  $('.js-question-tile').on('click', '.js-delete-button', e => {
+    e.preventDefault()
+    const $tile = $(e.target).closest('.js-question-tile')
+    const $tileFlash = $tile.find('.js-tile-flash')
+    $tileFlash.removeClass('alert alert-danger alert-success')
+
+    const $form = $tile.find('.js-question-form').first()
+    const $formFlash = $form.find('.js-form-flash')
+    $formFlash.removeClass('alert alert-danger alert-success')
+
+    const questionId = $tile.attr('id')
+    const request = {
+      type: 'delete',
+      contentType: 'application/json; charset=utf-8',
+      url: `/edu/questions/${questionId}`,
+      dataType: 'json'
+    }
+
+    $.ajax(request).done(resp => {
+      $tileFlash.text('Successfully deleted')
+      $tileFlash.addClass('alert alert-success')
+    }).fail(resp => {
+      console.error('Request failed. Sent:', request)
+      console.error(`Received ${resp.status} response: `, resp.responseText)
+      $formFlash.text('Update failed.')
+      $formFlash.addClass('alert alert-danger')
+    })
+  })
+</script>

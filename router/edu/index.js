@@ -27,7 +27,7 @@ const questionsPath = (category, subcategory) => {
 
 module.exports = app => {
   app.set('view engine', 'ejs')
-  app.set('layout', 'layouts/edu.html.ejs')
+  app.set('layout', 'layouts/edu')
   app.use(expressLayouts)
 
   const router = new express.Router()
@@ -50,13 +50,13 @@ module.exports = app => {
       adminPages.push(...entry)
     })
 
-    res.render('edu/index.html.ejs', { adminPages })
+    res.render('edu/index', { adminPages })
   })
 
   router.route('/questions').get(async (req, res) => {
     try {
       const questions = await QuestionCtrl.list(req.query || {})
-      res.render('edu/questions/index.html.ejs', { questions })
+      res.render('edu/questions/index', { questions })
     } catch (error) {
       res.status(500).send(`Internal Server Error: ${error}`)
     }
@@ -67,7 +67,7 @@ module.exports = app => {
       possibleAnswers: [{ val: 'a' }, { val: 'b' }, { val: 'c' }, { val: 'd' }]
     }
 
-    res.render('edu/questions/new.html.ejs', { question })
+    res.render('edu/questions/new', { question })
   })
 
   router.route('/questions').post(async (req, res) => {
