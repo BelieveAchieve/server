@@ -26,7 +26,6 @@ UPchieve EDU Admin | New Question
 <a href="/edu/questions" class="btn btn-secondary d-inline" style="height: 35px;">all questions</a>
 <a href="/edu/questions/new" class="btn btn-secondary d-inline" style="height: 35px;">new question</a>
 
-<% questions.forEach(question => { %>
 <div class="question-tile mt-4 mb-4 js-question-tile" id="new">
     <div class="m-4 p-4 js-question-rendered d-none">
         <div class="ml-4 small">
@@ -77,7 +76,10 @@ UPchieve EDU Admin | New Question
     <form class="m-4 p-4 js-question-form" action="/edu/questions" method="post">
         <div class="form-group">
             <label for="questionText">Question text</label>
-            <textarea name="questionText" class="form-control"><%= question.questionText %></textarea>
+            <textarea
+              name="questionText"
+              class="form-control"
+              required><%= question.questionText %></textarea>
         </div>
 
         <div class="form-group">
@@ -91,11 +93,12 @@ UPchieve EDU Admin | New Question
               type="text"
               name="image"
               value="<%= question.image %>"
-              class="form-control" />
+              class="form-control"
+            />
         </div>
 
         <div class="form-group">
-            <label for="possibleAnswers">Answer choices</label>
+            <label for="possibleAnswers">Answer choices (at least two are required)</label>
             <% question.possibleAnswers.forEach(({txt, val}, i) => { %>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
@@ -106,12 +109,16 @@ UPchieve EDU Admin | New Question
                 <input
                   type="hidden"
                   name="possibleAnswers[][val]"
-                  value="<%= val %>"/>
+                  value="<%= val %>"
+                  <%= (i < 2) ? 'required' : '' %>
+                />
                 <input
                   type="text"
                   name="possibleAnswers[][txt]"
                   value="<%= txt %>"
-                  class="form-control" />
+                  class="form-control"
+                  <%= (i < 2) ? 'required' : '' %>
+                />
             </div>
             <% }) %>
         </div>
@@ -122,7 +129,9 @@ UPchieve EDU Admin | New Question
               type="text"
               name="correctAnswer"
               value="<%= question.correctAnswer %>"
-              class="form-control" />
+              class="form-control"
+              required
+            />
         </div>
 
         <div class="form-group">
@@ -131,7 +140,9 @@ UPchieve EDU Admin | New Question
               type="text"
               name="category"
               value="<%= question.category %>"
-              class="form-control" />
+              class="form-control"
+              required
+            />
         </div>
 
         <div class="form-group">
@@ -140,7 +151,9 @@ UPchieve EDU Admin | New Question
               type="text"
               name="subcategory"
               value="<%= question.subcategory %>"
-              class="form-control" />
+              class="form-control"
+              required
+            />
         </div>
 
         <button type="button" class="mt-4 btn btn-primary js-save-button">Save</button>
@@ -148,50 +161,9 @@ UPchieve EDU Admin | New Question
         <span class="mt-4 mb-0 js-form-flash"></span>
     </form>
 </div>
-<% }) %>
-</div>
 
-<%- contentFor('script') %>
+<%- contentFor('scripts') %>
 <script>
-  const formData = ($form) => {
-    const data = {}
-
-    $form.serializeArray().forEach((e, i) => {
-      const [key, subkeyAttr] = e['name'].split('[]')
-      const value = e['value']
-      const matchData = (subkeyAttr || '').match(/\[(\w+)\]/)
-      const subkey = matchData && matchData[1]
-
-      if (!subkey) {
-        data[key] = value
-        return
-      }
-
-      const collection = data[key]
-      if (collection === undefined) {
-        const entry = {}
-        entry[subkey] = value
-        data[key] = [entry]
-        return
-      }
-
-      if (Array.isArray(collection)) {
-        const lastEntry = collection[collection.length-1]
-
-        if (!lastEntry[subkey]) {
-          lastEntry[subkey] = value
-        } else {
-          // Don't overwrite keys
-          const newEntry = {}
-          newEntry[subkey] = value
-          collection.push(newEntry)
-        }
-      }
-    })
-
-    return data
-  }
-
   $('.js-question-tile').on('click', '.js-cancel-button', e => {
     e.preventDefault()
     const $tile = $(e.target).closest('.js-question-tile')
@@ -201,20 +173,24 @@ UPchieve EDU Admin | New Question
 
   $('.js-question-tile').on('click', '.js-save-button', e => {
     e.preventDefault()
-
     const $tile = $(e.target).closest('.js-question-tile')
     const $tileFlash = $tile.find('.js-tile-flash')
     $tileFlash.removeClass('alert alert-danger alert-success')
 
     const $form = $tile.find('.js-question-form').first()
+    if (!$form.valid()) { return }
+
     const $formFlash = $form.find('.js-form-flash')
     $formFlash.removeClass('alert alert-danger alert-success')
+
+    const question = $form.serializeJSON()
+    question.possibleAnswers = question.possibleAnswers.filter(e => e.txt)
 
     const request = {
       type: $form.attr('method'),
       contentType: 'application/json; charset=utf-8',
       url: $form.attr('action'),
-      data: JSON.stringify({ question: formData($form) }),
+      data: JSON.stringify({ question }),
       dataType: 'json'
     }
 

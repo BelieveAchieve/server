@@ -67,7 +67,7 @@ module.exports = app => {
       possibleAnswers: [{ val: 'a' }, { val: 'b' }, { val: 'c' }, { val: 'd' }]
     }
 
-    res.render('edu/questions/new.html.ejs', { questions: [question] })
+    res.render('edu/questions/new.html.ejs', { question })
   })
 
   router.route('/questions').post(async (req, res) => {
