@@ -25,6 +25,12 @@ const questionsPath = (category, subcategory) => {
   }
 }
 
+const isActivePage = req => {
+  return navUrl => {
+    return navUrl === req.path ? 'active' : ''
+  }
+}
+
 module.exports = app => {
   app.set('view engine', 'ejs')
   app.set('layout', 'layouts/edu')
@@ -50,13 +56,16 @@ module.exports = app => {
       adminPages.push(...entry)
     })
 
-    res.render('edu/index', { adminPages })
+    const isActive = isActivePage(req)
+    res.render('edu/index', { adminPages, isActive })
   })
 
   router.route('/questions').get(async (req, res) => {
     try {
       const questions = await QuestionCtrl.list(req.query || {})
-      res.render('edu/questions/index', { questions })
+
+      const isActive = isActivePage(req)
+      res.render('edu/questions/index', { questions, isActive })
     } catch (error) {
       res.status(500).send(`Internal Server Error: ${error}`)
     }
@@ -67,7 +76,8 @@ module.exports = app => {
       possibleAnswers: [{ val: 'a' }, { val: 'b' }, { val: 'c' }, { val: 'd' }]
     }
 
-    res.render('edu/questions/new', { question })
+    const isActive = isActivePage(req)
+    res.render('edu/questions/new', { question, isActive })
   })
 
   router.route('/questions').post(async (req, res) => {

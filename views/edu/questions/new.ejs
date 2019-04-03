@@ -2,11 +2,6 @@
 UPchieve EDU Admin | New Question
 
 <%- contentFor('body') %>
-<h1>New Question</h1>
-<a href="/edu" class="btn btn-secondary d-inline" style="height: 35px;">edu admin</a>
-<a href="/edu/questions" class="btn btn-secondary d-inline" style="height: 35px;">all questions</a>
-<a href="/edu/questions/new" class="btn btn-secondary d-inline" style="height: 35px;">new question</a>
-
 <div class="question-tile mt-4 mb-4 js-question-tile" id="new">
   <div class="m-4 p-4 js-question-rendered d-none">
     <%- include('question-rendered', { question, questionId: 'new' }) %>

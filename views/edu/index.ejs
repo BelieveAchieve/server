@@ -2,10 +2,6 @@
 UPchieve EDU Admin
 
 <%- contentFor('body') %>
-
-<h1>UPchieve EDU Admin</h1>
-<a href="/edu/questions/new" class="btn btn-secondary d-inline" style="height: 35px;">new question</a>
-
 <ul class="list-group list-group-flush mt-5">
   <% adminPages.forEach(entry => { %>
     <% if (Array.isArray(entry)) { %>
