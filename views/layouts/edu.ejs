@@ -91,6 +91,14 @@
     </script>
 
     <%- defineContent('scripts') %>
+
+    <script>
+      $('.js-mathjax-guide-container').on('click', '.js-mathjax-guide-toggle', e => {
+        const $container = $(e.target).closest('.js-mathjax-guide-container')
+        const $guide = $container.find('.js-mathjax-guide')
+        $guide.toggleClass('d-none')
+      })
+    </script>
 </body>
 
 </html>
