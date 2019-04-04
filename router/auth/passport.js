@@ -53,7 +53,23 @@ const isAdmin = (req, res, next) => {
   return res.status(401).json({ err: 'Unauthorized' })
 }
 
+const isAuthenticatedRedirect = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next()
+  }
+  return res.redirect('/')
+}
+
+const isAdminRedirect = (req, res, next) => {
+  if (req.user.isAdmin) {
+    return next()
+  }
+  return res.redirect('/')
+}
+
 module.exports = {
-  isAuthenticated: isAuthenticated,
-  isAdmin: isAdmin
+  isAuthenticated,
+  isAdmin,
+  isAuthenticatedRedirect,
+  isAdminRedirect
 }
