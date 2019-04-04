@@ -1,35 +1,11 @@
-const uri = require('querystring').escape
-
 const express = require('express')
 const expressLayouts = require('express-ejs-layouts')
 
 const passport = require('../auth/passport')
 const QuestionCtrl = require('../../controllers/QuestionCtrl')
+const { questionsPath, isActivePage } = require('./helpers')
 
 console.log('Edu Admin module')
-
-const questionsPath = (category, subcategory) => {
-  const query = []
-
-  if (category) {
-    query.push(`category=${uri(category)}`)
-  }
-
-  if (subcategory) {
-    query.push(`subcategory=${uri(subcategory)}`)
-  }
-
-  return {
-    path: `questions?${query.join('&')}`,
-    label: subcategory || category
-  }
-}
-
-const isActivePage = req => {
-  return navUrl => {
-    return navUrl === req.path ? 'active' : ''
-  }
-}
 
 module.exports = app => {
   app.set('view engine', 'ejs')
@@ -38,32 +14,34 @@ module.exports = app => {
 
   const router = new express.Router()
 
+  // GET /edu
   router.get('/', async (req, res) => {
-    let categories = []
-
     try {
-      categories = await QuestionCtrl.categories()
-    } catch (_error) {}
+      const categories = (await QuestionCtrl.categories()).reduce(
+        (acc, [category, subcategories]) => [
+          ...acc,
+          questionsPath(category),
+          subcategories.map(subcategory => questionsPath(category, subcategory))
+        ],
+        []
+      )
 
-    const adminPages = [{ path: 'questions', label: 'All Questions' }]
-
-    // Add category / subcategory pages to adminPages
-    categories.forEach(([cat, subs]) => {
-      const entry = [
-        questionsPath(cat),
-        subs.map(sub => questionsPath(cat, sub))
-      ]
-      adminPages.push(...entry)
-    })
-
-    const isActive = isActivePage(req)
-    res.render('edu/index', { adminPages, isActive })
+      res.render('edu/index', {
+        adminPages: [
+          { path: 'questions', label: 'All Questions' },
+          ...categories
+        ],
+        isActive: isActivePage(req)
+      })
+    } catch (error) {
+      res.status(500).send(`Internal Server Error: ${error}`)
+    }
   })
 
+  // GET /edu/questions
   router.route('/questions').get(async (req, res) => {
     try {
       const questions = await QuestionCtrl.list(req.query || {})
-
       const isActive = isActivePage(req)
       res.render('edu/questions/index', { questions, isActive })
     } catch (error) {
@@ -71,15 +49,16 @@ module.exports = app => {
     }
   })
 
+  // GET /edu/questions/new
   router.route('/questions/new').get((req, res) => {
     const question = {
       possibleAnswers: [{ val: 'a' }, { val: 'b' }, { val: 'c' }, { val: 'd' }]
     }
-
     const isActive = isActivePage(req)
     res.render('edu/questions/new', { question, isActive })
   })
 
+  // POST[JSON] /edu/questions
   router.route('/questions').post(async (req, res) => {
     try {
       const question = await QuestionCtrl.create(req.body.question)
@@ -89,6 +68,7 @@ module.exports = app => {
     }
   })
 
+  // PUT[JSON] /edu/questions/:id
   router.route('/questions/:id').put(async (req, res) => {
     try {
       const updatedQuestion = await QuestionCtrl.update({
@@ -101,6 +81,7 @@ module.exports = app => {
     }
   })
 
+  // DELETE[JSON] /edu/questions/:id
   router.route('/questions/:id').delete(async (req, res) => {
     try {
       const question = await QuestionCtrl.destroy(req.params.id)
