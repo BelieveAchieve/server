@@ -65,7 +65,7 @@ module.exports = {
 
         // get x unique, random objects from n objects in arrays
         subcategories.map(function (subcategory) {
-          var questions = questionsBySubcategory[subcategory]
+          var questions = questionsBySubcategory[subcategory] || []
           questions = shuffle(questions)
           var minQuestions = Math.min(
             questions.length,
