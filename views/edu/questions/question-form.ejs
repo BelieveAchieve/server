@@ -16,9 +16,12 @@
 </div>
 
 <div class="form-group">
-    <% if (question.imageSrc) { %>
-      <img src="<%= question.imageSrc %>" />
-    <% } %>
+    <div class="m-4 js-image">
+      <img
+        class="mw-100 w-50 <%= (!question.imageSrc) ? 'd-none' : '' %>"
+        src="<%= question.imageSrc %>" />
+    </div>
+
     <label for="imageSrc">Image URL</label>
     <input
       type="text"

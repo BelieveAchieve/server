@@ -1,34 +1,35 @@
 <div class="ml-4 small">
-    <a id="<%= questionId %>-category-link"
+    <a class="js-category-link"
       href="/edu/questions?category=<%= encodeURIComponent(question.category) %>">
-        <span id="<%= questionId %>-category">
+        <span class="js-category">
             <%= question.category %>
         </span>
     </a>
     &gt;
     <a
-      id="<%= questionId %>-subcategory-link"
+      class="js-subcategory-link"
       href="/edu/questions?subcategory=<%= encodeURIComponent(question.subcategory) %>">
-        <span id="<%= questionId %>-subcategory">
+        <span class="js-subcategory">
             <%= question.subcategory %>
         </span>
     </a>
 </div>
 
-<div class="m-4" id="<%= questionId %>-questionText">
+<div class="m-4 js-questionText">
     <%= question.questionText %>
 </div>
 
-<% if (question.imageSrc) { %>
-  <img src="<%= question.imageSrc %>" />
-<% } %>
+<div class="m-4 js-image">
+  <img
+    class="mw-100 w-50 <%= (!question.imageSrc) ? 'd-none' : '' %>"
+    src="<%= question.imageSrc %>" />
+</div>
 
 <div class="m-4">
     <ul>
         <% question.possibleAnswers.forEach(({txt, val}) => { %>
           <div
-            id="<%= questionId %>-possibleAnswers-<%= val %>"
-            class="<%= (val === question.correctAnswer) ? 'font-weight-bold' : '' %>">
+            class="<%= (val === question.correctAnswer) ? 'font-weight-bold' : '' %> js-possibleAnswers-<%= val %>">
             <%= val %>. <%= txt %>
         </div>
         <% }) %>
