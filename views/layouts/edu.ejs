@@ -214,9 +214,22 @@
             $form.find('.js-image img').addClass('d-none')
           }
 
+          // Clear possible answers
+          $tile
+            .find('.js-possibleAnswers')
+            .find('.js-possibleAnswer')
+            .toArray()
+            .forEach(option => $(option).text(''))
+
+          // Populate any persisted possible answers
           possibleAnswers.forEach(({val, txt}) => {
             const $option = $tile.find(`.js-possibleAnswers-${val}`)
-            $option.text(`${val}. ${txt}`).removeClass('font-weight-bold')
+            $option.removeClass('font-weight-bold')
+
+            if (txt) {
+              $option.text(`${val}. ${txt}`)
+            }
+
             if (val === correctAnswer) {
               $option.addClass('font-weight-bold')
             }
@@ -227,6 +240,7 @@
 
           $tile.find('.js-question-form').addClass('d-none')
           $tile.find('.js-question-rendered').removeClass('d-none')
+          $tile.find('.js-delete-button').removeClass('d-none')
 
           // re-typeset math
           MathJax.Hub.Queue(['Typeset', MathJax.Hub, $tile[0]])

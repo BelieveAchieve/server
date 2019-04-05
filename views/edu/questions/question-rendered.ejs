@@ -25,19 +25,29 @@
     src="<%= question.imageSrc %>" />
 </div>
 
-<div class="m-4">
-    <ul>
-        <% question.possibleAnswers.forEach(({txt, val}) => { %>
-          <div
-            class="<%= (val === question.correctAnswer) ? 'font-weight-bold' : '' %> js-possibleAnswers-<%= val %>">
-            <%= val %>. <%= txt %>
-        </div>
-        <% }) %>
-    </ul>
+<div class="m-4 js-possibleAnswers">
+    <% question.possibleAnswers.forEach(({txt, val}) => { %>
+      <div
+        class="
+          js-possibleAnswer
+          js-possibleAnswers-<%= val %>
+          <%= (val === question.correctAnswer) ? 'font-weight-bold' : '' %>
+        ">
+        <%= val %>. <%= txt %>
+    </div>
+    <% }) %>
 </div>
 
-<button type="button" class="mt-4 ml-4 mr-0 mb-0 btn btn-primary js-edit-button">Edit</button>
-<% if (questionId) { %>
-  <button type="button" class="mt-4 ml-0 mr-4 mb-0 btn btn-danger js-delete-button">Delete</button>
-<% } %>
+<button
+  type="button"
+  class="mt-4 ml-4 mr-0 mb-0 btn btn-primary js-edit-button">
+  Edit
+</button>
+
+<button
+  type="button"
+  class="mt-4 ml-0 mr-4 mb-0 btn btn-danger js-delete-button <%= (!questionId) ? 'd-none' : '' %>">
+  Delete
+</button>
+
 <span class="js-tile-flash"></span>
