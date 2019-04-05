@@ -55,9 +55,9 @@ const categories = async () => {
 }
 
 module.exports = {
-  list: list,
-  create: create,
-  update: update,
-  destroy: destroy,
-  categories: categories
+  list,
+  create,
+  update,
+  destroy,
+  categories
 }
