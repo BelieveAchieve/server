@@ -37,5 +37,7 @@
 </div>
 
 <button type="button" class="mt-4 ml-4 mr-0 mb-0 btn btn-primary js-edit-button">Edit</button>
-<button type="button" class="mt-4 ml-0 mr-4 mb-0 btn btn-danger js-delete-button">Delete</button>
+<% if (questionId) { %>
+  <button type="button" class="mt-4 ml-0 mr-4 mb-0 btn btn-danger js-delete-button">Delete</button>
+<% } %>
 <span class="js-tile-flash"></span>
