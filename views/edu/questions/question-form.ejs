@@ -16,18 +16,22 @@
 </div>
 
 <div class="form-group">
-    <% if (question.image) { %>
-      <img
-        data-image-path="/static/question_images"
-        src="/static/question_images/<%= question.image %>" />
+    <% if (question.imageSrc) { %>
+      <img src="<%= question.imageSrc %>" />
     <% } %>
-    <label for="image">Image filename</label>
+    <label for="imageSrc">Image URL</label>
     <input
       type="text"
-      name="image"
-      value="<%= question.image %>"
+      name="imageSrc"
+      value="<%= question.imageSrc %>"
       class="form-control"
     />
+    <div style="font-size: 80%;">
+      full URL
+      (<pre style="display: inline;">https://domain.com/image.png</pre>)
+      or absolute path
+      (<pre style="display: inline;">/static/question_images/image.png</pre>)
+    </div>
 </div>
 
 <div class="form-group">

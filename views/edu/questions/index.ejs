@@ -75,7 +75,7 @@ UPchieve EDU Admin | Questions
         questionText,
         possibleAnswers,
         correctAnswer,
-        image
+        imageSrc
       } = resp.question
 
       const categoryUri = encodeURIComponent(category)
@@ -87,13 +87,11 @@ UPchieve EDU Admin | Questions
       $tile.find(`#${_id}-subcategory`).text(subcategory)
       $tile.find(`#${_id}-questionText`).text(questionText)
 
-      if (image) {
+      if (imageSrc) {
         $tile.find('img').removeClass('d-none')
         $form.find('img').removeClass('d-none')
-
-        const path = $tile.find('img').data('image-path')
-        $tile.find('img').attr('src', `${path}/${image}`)
-        $form.find('img').attr('src', `${path}/${image}`)
+        $tile.find('img').attr('src', imageSrc)
+        $form.find('img').attr('src', imageSrc)
       } else {
         $tile.find('img').addClass('d-none')
         $form.find('img').addClass('d-none')

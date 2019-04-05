@@ -6,7 +6,9 @@
         </span>
     </a>
     &gt;
-    <a id="<%= questionId %>-subcategory-link" href="/edu/questions?subcategory=<%= encodeURIComponent(question.subcategory) %>">
+    <a
+      id="<%= questionId %>-subcategory-link"
+      href="/edu/questions?subcategory=<%= encodeURIComponent(question.subcategory) %>">
         <span id="<%= questionId %>-subcategory">
             <%= question.subcategory %>
         </span>
@@ -17,9 +19,8 @@
     <%= question.questionText %>
 </div>
 
-<% if (question.image) { %>
-  <img data-image-path="/static/question_images"
-    src="/static/question_images/<%= question.image %>" />
+<% if (question.imageSrc) { %>
+  <img src="<%= question.imageSrc %>" />
 <% } %>
 
 <div class="m-4">
