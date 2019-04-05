@@ -32,7 +32,7 @@ edu.get('/', async (req, res) => {
       isActive: isActivePage(req)
     })
   } catch (error) {
-    res.status(500).send(`Internal Server Error: ${error}`)
+    res.status(500).send(`<h1>Internal Server Error</h1> <pre>${error}</pre>`)
   }
 })
 
@@ -43,7 +43,7 @@ edu.route('/questions').get(async (req, res) => {
     const isActive = isActivePage(req)
     res.render('edu/questions/index', { questions, isActive })
   } catch (error) {
-    res.status(500).send(`Internal Server Error: ${error}`)
+    res.status(500).send(`<h1>Internal Server Error</h1> <pre>${error}</pre>`)
   }
 })
 
