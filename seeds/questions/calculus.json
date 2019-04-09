@@ -1,141 +1,379 @@
-[{
-"questionText": "True or False. If F(x) is an antiderivative of f(x) and c is any constant, then F(x) + c is also an antiderivative of f(x).",
-"possibleAnswers": [{"txt": "true", "val": "a"}, {"txt": "false", "val": "b"}],
-"correctAnswer": "a",
-"category": "calculus",
-"subcategory": "antiderivatives"
-},
-{
-"questionText": "True or False. If F(x) is an antiderivative of f(x), then (1/a) F(ax) is an antiderivative of f(ax).",
-"possibleAnswers": [{"txt": "true", "val": "a"}, {"txt": "false", "val": "b"}],
-"correctAnswer": "a",
-"category": "calculus",
-"subcategory": "antiderivatives"
-},
-{
-"questionText": "True or False. An antiderivative of function f divided by an antiderivative of function g is an antiderivative of function f/g.",
-"possibleAnswers": [{"txt": "true", "val": "a"}, {"txt": "false", "val": "b"}],
-"correctAnswer": "b",
-"category": "calculus",
-"subcategory": "antiderivatives"
-},
-{
-"questionText": "If functions f and g are such that f(x) = g(x) + k",
-"possibleAnswers": [{"txt": "f’(x) = g’(x) +k", "val": "a"}, {"txt": "f’(x) = g’(x)", "val": "b"}, {"txt": "none of the above", "val": "c"}],
-"correctAnswer": "b",
-"category": "calculus",
-"subcategory": "derivatives"
-},
-{
-"questionText": "If f(x) = g(u) and u=u(x), then:",
-"possibleAnswers": [{"txt": "f’(x) = g’(u)", "val": "a"}, {"txt": "f’(x) = u’(x)", "val": "b"}, {"txt": "f’(x)=u’(x)", "val": "c"}, {"txt": "none of the above", "val": "d"}],
-"correctAnswer": "b",
-"category": "calculus",
-"subcategory": "derivatives"
-},
-{
-"questionText": "lim [e x -1] / x as x approaches 0 is equal to",
-"possibleAnswers": [{"txt": "1", "val": "a"}, {"txt": "0", "val": "b"}, {"txt": "is of the form 0/0 and cannot be calculated", "val": "c"}, {"txt": "none of the above", "val": "d"}],
-"correctAnswer": "a",
-"category": "calculus",
-"subcategory": "limits"
-},
-{
-"questionText": "True or False. The derivative of [g(x)] 2 is equal to [g '(x)] 2.",
-"possibleAnswers": [{"txt": "true", "val": "a"}, {"txt": "false", "val": "b"}],
-"correctAnswer": "a",
-"category": "calculus",
-"subcategory": "derivatives"
-},
-{
-"questionText": "Below is the graph of function f. This graph has a maximum point at B. If xA, xB and xC are the x coordinates of points A, B and C respectively and f ' is the first derivative of f, then:",
-"possibleAnswers": [{"txt": "f '(xA) > 0 , f '(xB) > 0 and f '(xC) > 0", "val": "a"}, {"txt": "f '(xA) > 0 , f '(xB) = 0 and f '(xC) > 0", "val": "b"}, {"txt": "f '(xA) > 0 , f '(xB) = 0 and f '(xC) < 0", "val": "c"}, {"txt": "f '(xA) < 0 , f '(xB) = 0 and f '(xC) > 0", "val": "d"}],
-"correctAnswer": "c",
-"category": "calculus",
-"subcategory": "derivatives",
-"image": "Calc_1.png"
-},
-{
-"questionText": "True or false: If a function f is not defined at x = a then the limit lim f(x) as x approaches a never exists.",
-"possibleAnswers": [{"txt": "true", "val": "a"}, {"txt": "false", "val": "b"}],
-"correctAnswer": "b",
-"category": "calculus",
-"subcategory": "limits"
-},
-{
-"questionText": "True or False. The graph of a rational function may cross its vertical asymptote.",
-"possibleAnswers": [{"txt": "true", "val": "a"}, {"txt": "false", "val": "b"}],
-"correctAnswer": "a",
-"category": "calculus",
-"subcategory": "limits"
-},
-{
-"questionText": "True or False. For any polynomial function p(x), lim p(x) as x approaches a is always equal to p(a).",
-"possibleAnswers": [{"txt": "true", "val": "a"}, {"txt": "false", "val": "b"}],
-"correctAnswer": "a",
-"category": "calculus",
-"subcategory": "limits"
-},
-{
-"questionText": "A critical number c of a function is a number in the domain of f such that:",
-"possibleAnswers": [{"txt": "f '(c) = 0", "val": "a"}, {"txt": "f '(c) is undefined", "val": "b"}, {"txt": "both a and b", "val": "c"}, {"txt": "none of the above", "val": "d"}],
-"correctAnswer": "c",
-"category": "calculus",
-"subcategory": "critical numbers"
-},
-{
-"questionText": "True or False. If c is a critical number then f(c) is either a local maximum or a local minimum.",
-"possibleAnswers": [{"txt": "true", "val": "a"}, {"txt": "false", "val": "b"}],
-"correctAnswer": "b",
-"category": "calculus",
-"subcategory": "critical numbers"
-},
-{
-"questionText": "True or False. If c is not a critical number then f(c) is neither a local minimum nor a local maximum.",
-"possibleAnswers": [{"txt": "true", "val": "a"}, {"txt": "false", "val": "b"}],
-"correctAnswer": "a",
-"category": "calculus",
-"subcategory": "critical numbers"
-},
-{
-"questionText": "If f(x) has one critical point at x = c, then:",
-"possibleAnswers": [{"txt": "function f(x - a) has one critical point at x = c + a", "val": "a"}, {"txt": "function - f(x) has a critical point at x = - c", "val": "b"}, {"txt": "f(k x) has a critical point at x = c / k", "val": "c"}, {"txt": "a and c only", "val": "d"}],
-"correctAnswer": "d",
-"category": "calculus",
-"subcategory": "critical numbers"
-},
-{
-"questionText": "True or False. If a function f is not defined at x = a then it is not continuous at x = a.",
-"possibleAnswers": [{"txt": "true", "val": "a"}, {"txt": "false", "val": "b"}],
-"correctAnswer": "a",
-"category": "calculus",
-"subcategory": "critical numbers"
-},
-{
-"questionText": "True or False. All polynomial functions are continuous.",
-"possibleAnswers": [{"txt": "true", "val": "a"}, {"txt": "false", "val": "b"}],
-"correctAnswer": "a",
-"category": "calculus",
-"subcategory": "functions"
-},
-{
-"questionText": "If functions f(x) and g(x) are continuous everywhere then:",
-"possibleAnswers": [{"txt": "(f / g)(x) is also continuous everywhere", "val": "a"}, {"txt": "(f / g)(x) is also continuous everywhere except at the zeros of g(x). ", "val": "b"}, {"txt": "more information is needed to answer this question", "val": "c"}],
-"correctAnswer": "b",
-"category": "calculus",
-"subcategory": "functions"
-},
-{
-"questionText": "If functions f(x) and g(x) are continuous everywhere and f(1) = 2, f(3) = -4, f(4) = 8, g(0) = 4, g(3) = -6 and g(7) = 0 then lim (f + g)(x) as x approaches 3 is equal to:",
-"possibleAnswers": [{"txt": "-10", "val": "a"}, {"txt": "-11", "val": "b"}, {"txt": "cannot find a value for the above limit since only values of the functions are given", "val": "c"}],
-"correctAnswer": "a",
-"category": "calculus",
-"subcategory": "functions"
-},
-{
-"questionText": "The following statement is true: 'If f(x) = sin x, then f is a continuous function.' Which of the following is also true? ",
-"possibleAnswers": [{"txt": "if f(x) is not equal to sin x, then f is not continuous.", "val": "a"}, {"txt": "if f is not a continuous function, then f(x) is not equal to sin x.", "val": "b"}, {"txt": "if f is continuous, then f(x) = sin x", "val": "c"}],
-"correctAnswer": "b",
-"category": "calculus",
-"subcategory": "functions"
-}]
+[
+  {
+    "questionText": "True or False. If F(x) is an antiderivative of f(x) and c is any constant, then F(x) + c is also an antiderivative of f(x).",
+    "possibleAnswers": [
+      {
+        "txt": "true",
+        "val": "a"
+      },
+      {
+        "txt": "false",
+        "val": "b"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "calculus",
+    "subcategory": "antiderivatives"
+  },
+  {
+    "questionText": "True or False. If F(x) is an antiderivative of f(x), then (1/a) F(ax) is an antiderivative of f(ax).",
+    "possibleAnswers": [
+      {
+        "txt": "true",
+        "val": "a"
+      },
+      {
+        "txt": "false",
+        "val": "b"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "calculus",
+    "subcategory": "antiderivatives"
+  },
+  {
+    "questionText": "True or False. An antiderivative of function f divided by an antiderivative of function g is an antiderivative of function f/g.",
+    "possibleAnswers": [
+      {
+        "txt": "true",
+        "val": "a"
+      },
+      {
+        "txt": "false",
+        "val": "b"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "calculus",
+    "subcategory": "antiderivatives"
+  },
+  {
+    "questionText": "If functions f and g are such that f(x) = g(x) + k",
+    "possibleAnswers": [
+      {
+        "txt": "f’(x) = g’(x) +k",
+        "val": "a"
+      },
+      {
+        "txt": "f’(x) = g’(x)",
+        "val": "b"
+      },
+      {
+        "txt": "none of the above",
+        "val": "c"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "calculus",
+    "subcategory": "derivatives"
+  },
+  {
+    "questionText": "If f(x) = g(u) and u=u(x), then:",
+    "possibleAnswers": [
+      {
+        "txt": "f’(x) = g’(u)",
+        "val": "a"
+      },
+      {
+        "txt": "f’(x) = u’(x)",
+        "val": "b"
+      },
+      {
+        "txt": "f’(x)=u’(x)",
+        "val": "c"
+      },
+      {
+        "txt": "none of the above",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "calculus",
+    "subcategory": "derivatives"
+  },
+  {
+    "questionText": "lim [e x -1] / x as x approaches 0 is equal to",
+    "possibleAnswers": [
+      {
+        "txt": "1",
+        "val": "a"
+      },
+      {
+        "txt": "0",
+        "val": "b"
+      },
+      {
+        "txt": "is of the form 0/0 and cannot be calculated",
+        "val": "c"
+      },
+      {
+        "txt": "none of the above",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "calculus",
+    "subcategory": "limits"
+  },
+  {
+    "questionText": "True or False. The derivative of [g(x)] 2 is equal to [g '(x)] 2.",
+    "possibleAnswers": [
+      {
+        "txt": "true",
+        "val": "a"
+      },
+      {
+        "txt": "false",
+        "val": "b"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "calculus",
+    "subcategory": "derivatives"
+  },
+  {
+    "questionText": "Below is the graph of function f. This graph has a maximum point at B. If xA, xB and xC are the x coordinates of points A, B and C respectively and f ' is the first derivative of f, then:",
+    "possibleAnswers": [
+      {
+        "txt": "f '(xA) > 0 , f '(xB) > 0 and f '(xC) > 0",
+        "val": "a"
+      },
+      {
+        "txt": "f '(xA) > 0 , f '(xB) = 0 and f '(xC) > 0",
+        "val": "b"
+      },
+      {
+        "txt": "f '(xA) > 0 , f '(xB) = 0 and f '(xC) < 0",
+        "val": "c"
+      },
+      {
+        "txt": "f '(xA) < 0 , f '(xB) = 0 and f '(xC) > 0",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "c",
+    "category": "calculus",
+    "subcategory": "derivatives",
+    "image": "Calc_1.png"
+  },
+  {
+    "questionText": "True or false: If a function f is not defined at x = a then the limit lim f(x) as x approaches a never exists.",
+    "possibleAnswers": [
+      {
+        "txt": "true",
+        "val": "a"
+      },
+      {
+        "txt": "false",
+        "val": "b"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "calculus",
+    "subcategory": "limits"
+  },
+  {
+    "questionText": "True or False. The graph of a rational function may cross its vertical asymptote.",
+    "possibleAnswers": [
+      {
+        "txt": "true",
+        "val": "a"
+      },
+      {
+        "txt": "false",
+        "val": "b"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "calculus",
+    "subcategory": "limits"
+  },
+  {
+    "questionText": "True or False. For any polynomial function p(x), lim p(x) as x approaches a is always equal to p(a).",
+    "possibleAnswers": [
+      {
+        "txt": "true",
+        "val": "a"
+      },
+      {
+        "txt": "false",
+        "val": "b"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "calculus",
+    "subcategory": "limits"
+  },
+  {
+    "questionText": "A critical number c of a function is a number in the domain of f such that:",
+    "possibleAnswers": [
+      {
+        "txt": "f '(c) = 0",
+        "val": "a"
+      },
+      {
+        "txt": "f '(c) is undefined",
+        "val": "b"
+      },
+      {
+        "txt": "both a and b",
+        "val": "c"
+      },
+      {
+        "txt": "none of the above",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "c",
+    "category": "calculus",
+    "subcategory": "critical numbers"
+  },
+  {
+    "questionText": "True or False. If c is a critical number then f(c) is either a local maximum or a local minimum.",
+    "possibleAnswers": [
+      {
+        "txt": "true",
+        "val": "a"
+      },
+      {
+        "txt": "false",
+        "val": "b"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "calculus",
+    "subcategory": "critical numbers"
+  },
+  {
+    "questionText": "True or False. If c is not a critical number then f(c) is neither a local minimum nor a local maximum.",
+    "possibleAnswers": [
+      {
+        "txt": "true",
+        "val": "a"
+      },
+      {
+        "txt": "false",
+        "val": "b"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "calculus",
+    "subcategory": "critical numbers"
+  },
+  {
+    "questionText": "If f(x) has one critical point at x = c, then:",
+    "possibleAnswers": [
+      {
+        "txt": "function f(x - a) has one critical point at x = c + a",
+        "val": "a"
+      },
+      {
+        "txt": "function - f(x) has a critical point at x = - c",
+        "val": "b"
+      },
+      {
+        "txt": "f(k x) has a critical point at x = c / k",
+        "val": "c"
+      },
+      {
+        "txt": "a and c only",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "d",
+    "category": "calculus",
+    "subcategory": "critical numbers"
+  },
+  {
+    "questionText": "True or False. If a function f is not defined at x = a then it is not continuous at x = a.",
+    "possibleAnswers": [
+      {
+        "txt": "true",
+        "val": "a"
+      },
+      {
+        "txt": "false",
+        "val": "b"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "calculus",
+    "subcategory": "critical numbers"
+  },
+  {
+    "questionText": "True or False. All polynomial functions are continuous.",
+    "possibleAnswers": [
+      {
+        "txt": "true",
+        "val": "a"
+      },
+      {
+        "txt": "false",
+        "val": "b"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "calculus",
+    "subcategory": "functions"
+  },
+  {
+    "questionText": "If functions f(x) and g(x) are continuous everywhere then:",
+    "possibleAnswers": [
+      {
+        "txt": "(f / g)(x) is also continuous everywhere",
+        "val": "a"
+      },
+      {
+        "txt": "(f / g)(x) is also continuous everywhere except at the zeros of g(x). ",
+        "val": "b"
+      },
+      {
+        "txt": "more information is needed to answer this question",
+        "val": "c"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "calculus",
+    "subcategory": "functions"
+  },
+  {
+    "questionText": "If functions f(x) and g(x) are continuous everywhere and f(1) = 2, f(3) = -4, f(4) = 8, g(0) = 4, g(3) = -6 and g(7) = 0 then lim (f + g)(x) as x approaches 3 is equal to:",
+    "possibleAnswers": [
+      {
+        "txt": "-10",
+        "val": "a"
+      },
+      {
+        "txt": "-11",
+        "val": "b"
+      },
+      {
+        "txt": "cannot find a value for the above limit since only values of the functions are given",
+        "val": "c"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "calculus",
+    "subcategory": "functions"
+  },
+  {
+    "questionText": "The following statement is true: 'If f(x) = sin x, then f is a continuous function.' Which of the following is also true? ",
+    "possibleAnswers": [
+      {
+        "txt": "if f(x) is not equal to sin x, then f is not continuous.",
+        "val": "a"
+      },
+      {
+        "txt": "if f is not a continuous function, then f(x) is not equal to sin x.",
+        "val": "b"
+      },
+      {
+        "txt": "if f is continuous, then f(x) = sin x",
+        "val": "c"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "calculus",
+    "subcategory": "functions"
+  }
+]

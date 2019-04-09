@@ -1,139 +1,464 @@
-[{
-"questionText": "What is the measure of angle A in the right triangle in the image below?",
-"possibleAnswers": [{"txt": "17°", "val": "a"}, {"txt": "27°", "val": "b"}, {"txt": "17°", "val": "c"}, {"txt": "90°", "val": "d"}],
-"correctAnswer": "b",
-"category": "trigonometry",
-"subcategory": "angles",
-"image": "Trigonometry_1.png"
-},
-{
-"questionText": "What is the value of x in the figure below?",
-"possibleAnswers": [{"txt": "1", "val": "a"}, {"txt": "9", "val": "b"}, {"txt": "20", "val": "c"}, {"txt": "3", "val": "d"}],
-"correctAnswer": "d",
-"category": "trigonometry",
-"subcategory": "angles",
-"image": "Trigonometry_2.png"
-},
-{
-"questionText": "In a right triangle, the measure of one of the angles is 49° and the hypotenuse has a length of 50 cm. Which of the following is the nearest approximation to the length, in cm, of the leg opposite to this angle?",
-"possibleAnswers": [{"txt": "32.8", "val": "a"}, {"txt": "57.5", "val": "b"}, {"txt": "37.7", "val": "c"}, {"txt": "30.3", "val": "d"}],
-"correctAnswer": "c",
-"category": "trigonometry",
-"subcategory": "triangles"
-},
-{
-"questionText": "In the triangle ABC below, angle A measures 30° and the length of AC is 8 units. Find the length of BC.",
-"possibleAnswers": [{"txt": "8 / √ 3", "val": "a"}, {"txt": "4 / √ 3", "val": "b"}, {"txt": "4", "val": "c"}, {"txt": "8", "val": "d"}],
-"correctAnswer": "a",
-"category": "trigonometry",
-"subcategory": "triangles",
-"image": "Trigonometry_3.png"
-},
-{
-"questionText": "In the triangle below, what is sin α?",
-"possibleAnswers": [{"txt": "13/9", "val": "a"}, {"txt": "9/13", "val": "b"}, {"txt": "13 √10 / 50", "val": "c"}, {"txt": "13/24", "val": "d"}],
-"correctAnswer": "a",
-"category": "trigonometry",
-"subcategory": "triangles",
-"image": "Trigonometry_4.png"
-},
-{
-"questionText": "Find the length of AC in the right triangle below.",
-"possibleAnswers": [{"txt": "9", "val": "a"}, {"txt": "9√2 ", "val": "b"}, {"txt": "18√2", "val": "c"}, {"txt": "18", "val": "d"}],
-"correctAnswer": "b",
-"category": "trigonometry",
-"subcategory": "right triangles",
-"image": "Trigonometry_5.png"
-},
-{
-"questionText": "In the figure below BC is perpendicular to AD, CD = 8, the measure of angle D is 60° and the measure of angle A is 45°. Find the length of AB.",
-"possibleAnswers": [{"txt": "8√6", "val": "a"}, {"txt": "8√3", "val": "b"}, {"txt": "8√2", "val": "c"}, {"txt": "8", "val": "d"}],
-"correctAnswer": "a",
-"category": "trigonometry",
-"subcategory": "angles",
-"image": "Trigonometry_6.png"
-},
-{
-"questionText": "An angle in standard position whose measure is -30° has a its terminal side in:",
-"possibleAnswers": [{"txt": "Quadrant I", "val": "a"}, {"txt": "Quadrant II", "val": "b"}, {"txt": "Quadrant III", "val": "c"}, {"txt": "Quadrant IV", "val": "d"}],
-"correctAnswer": "d",
-"category": "trigonometry",
-"subcategory": "angles"
-},
-{
-"questionText": "In which quadrant is the terminal of an angle in standard position whose measure is 2π/3?",
-"possibleAnswers": [{"txt": "Quadrant I", "val": "a"}, {"txt": "Quadrant II", "val": "b"}, {"txt": "Quadrant III", "val": "c"}, {"txt": "Quadrant IV", "val": "d"}],
-"correctAnswer": "b",
-"category": "trigonometry",
-"subcategory": "quadrants"
-},
-{
-"questionText": "In which quadrant is the terminal of an angle in standard position whose measure is -55π/3?",
-"possibleAnswers": [{"txt": "Quadrant I", "val": "a"}, {"txt": "Quadrant II", "val": "b"}, {"txt": "Quadrant III", "val": "c"}, {"txt": "Quadrant IV", "val": "d"}],
-"correctAnswer": "d",
-"category": "trigonometry",
-"subcategory": "quadrants"
-},
-{
-"questionText": "What is the measure in degrees of the angle A = 7π/6?",
-"possibleAnswers": [{"txt": "150°", "val": "a"}, {"txt": "210°", "val": "b"}, {"txt": "100°", "val": "c"}, {"txt": "120°", "val": "d"}],
-"correctAnswer": "b",
-"category": "trigonometry",
-"subcategory": "radians"
-},
-{
-"questionText": "What is the degree measure of the angle A = -15π/2?",
-"possibleAnswers": [{"txt": "135°", "val": "a"}, {"txt": "1350°", "val": "b"}, {"txt": "-90°", "val": "c"}, {"txt": "-1350°", "val": "d"}],
-"correctAnswer": "d",
-"category": "trigonometry",
-"subcategory": "radians"
-},
-{
-"questionText": "Which of the following points is in the unit circle?",
-"possibleAnswers": [{"txt": "(-√2/2 , -√2/2)", "val": "a"}, {"txt": "(√2/3 , -√2/3)", "val": "b"}, {"txt": "(1/2 , 1/2) ", "val": "c"}, {"txt": "(3/2 , 2/3)", "val": "d"}],
-"correctAnswer": "a",
-"category": "trigonometry",
-"subcategory": "unit circle"
-},
-{
-"questionText": "If point (a , b) is on the Unit Circle associated with the rotation t and point (c , d) is also on the Unit circle associated with rotation t + π, then which of the following is correct?",
-"possibleAnswers": [{"txt": "c = - a and d = - b", "val": "a"}, {"txt": "c = - a and d = b", "val": "b"}, {"txt": "c = a and d = b", "val": "c"}, {"txt": "c = a and d = - b", "val": "d"}],
-"correctAnswer": "a",
-"category": "trigonometry",
-"subcategory": "unit circle"
-},
-{
-"questionText": "If point (a , b) is on the Unit Circle associated with the rotation t, then the point on the Unit circle associated with rotation t + π / 2, has the following coordinates:",
-"possibleAnswers": [{"txt": "(b,a)", "val": "a"}, {"txt": "(-b,a)", "val": "b"}, {"txt": "(-b,-a)", "val": "c"}, {"txt": "(-a,b)", "val": "d"}],
-"correctAnswer": "b",
-"category": "trigonometry",
-"subcategory": "unit circle"
-},
-{
-"questionText": "If 0 < t < 2π such that sin t = √2 / 2 and cot t < 0, then t = ?",
-"possibleAnswers": [{"txt": "π / 4", "val": "a"}, {"txt": "5 π / 4", "val": "b"}, {"txt": "7 π / 4", "val": "c"}, {"txt": "3 π / 4", "val": "d"}],
-"correctAnswer": "d",
-"category": "trigonometry",
-"subcategory": "angles"
-},
-{
-"questionText": "Find all angles θ such that -2π < θ < 2π and cos θ = √2 / 2.",
-"possibleAnswers": [{"txt": "{-7 π / 4, - π / 4 , π / 4 , 7 π / 4}", "val": "a"}, {"txt": "{- π / 4, - 3 π / 4 , π / 4 , 3 π / 4}", "val": "b"}, {"txt": "{-5 π / 4, π / 4 , 3 π / 4}", "val": "c"}, {"txt": "{π / 4 , π / 4 , 3 π / 4}", "val": "d"}],
-"correctAnswer": "a",
-"category": "trigonometry",
-"subcategory": "inequalities"
-},
-{
-"questionText": "If 0 < α < π and cos α = -√3 / 2, then α =",
-"possibleAnswers": [{"txt": "π/6", "val": "a"}, {"txt": "-π/6", "val": "b"}, {"txt": "7π/6", "val": "c"}, {"txt": "5π/6", "val": "d"}],
-"correctAnswer": "d",
-"category": "trigonometry",
-"subcategory": "inequalities"
-},
-{
-"questionText": "If cos t = 3/4, and sin t <0, then sin (3 t) = ?",
-"possibleAnswers": [{"txt": "√7/16", "val": "a"}, {"txt": "- 5√7/16", "val": "b"}, {"txt": "- 3√7/4 ", "val": "c"}, {"txt": "5√7/16", "val": "d"}],
-"correctAnswer": "b",
-"category": "trigonometry",
-"subcategory": "inequalities"
-}]
+[
+  {
+    "questionText": "What is the measure of angle A in the right triangle in the image below?",
+    "possibleAnswers": [
+      {
+        "txt": "17°",
+        "val": "a"
+      },
+      {
+        "txt": "27°",
+        "val": "b"
+      },
+      {
+        "txt": "17°",
+        "val": "c"
+      },
+      {
+        "txt": "90°",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "trigonometry",
+    "subcategory": "angles",
+    "image": "Trigonometry_1.png"
+  },
+  {
+    "questionText": "What is the value of x in the figure below?",
+    "possibleAnswers": [
+      {
+        "txt": "1",
+        "val": "a"
+      },
+      {
+        "txt": "9",
+        "val": "b"
+      },
+      {
+        "txt": "20",
+        "val": "c"
+      },
+      {
+        "txt": "3",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "d",
+    "category": "trigonometry",
+    "subcategory": "angles",
+    "image": "Trigonometry_2.png"
+  },
+  {
+    "questionText": "In a right triangle, the measure of one of the angles is 49° and the hypotenuse has a length of 50 cm. Which of the following is the nearest approximation to the length, in cm, of the leg opposite to this angle?",
+    "possibleAnswers": [
+      {
+        "txt": "32.8",
+        "val": "a"
+      },
+      {
+        "txt": "57.5",
+        "val": "b"
+      },
+      {
+        "txt": "37.7",
+        "val": "c"
+      },
+      {
+        "txt": "30.3",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "c",
+    "category": "trigonometry",
+    "subcategory": "triangles"
+  },
+  {
+    "questionText": "In the triangle ABC below, angle A measures 30° and the length of AC is 8 units. Find the length of BC.",
+    "possibleAnswers": [
+      {
+        "txt": "8 / √ 3",
+        "val": "a"
+      },
+      {
+        "txt": "4 / √ 3",
+        "val": "b"
+      },
+      {
+        "txt": "4",
+        "val": "c"
+      },
+      {
+        "txt": "8",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "trigonometry",
+    "subcategory": "triangles",
+    "image": "Trigonometry_3.png"
+  },
+  {
+    "questionText": "In the triangle below, what is sin α?",
+    "possibleAnswers": [
+      {
+        "txt": "13/9",
+        "val": "a"
+      },
+      {
+        "txt": "9/13",
+        "val": "b"
+      },
+      {
+        "txt": "13 √10 / 50",
+        "val": "c"
+      },
+      {
+        "txt": "13/24",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "trigonometry",
+    "subcategory": "triangles",
+    "image": "Trigonometry_4.png"
+  },
+  {
+    "questionText": "Find the length of AC in the right triangle below.",
+    "possibleAnswers": [
+      {
+        "txt": "9",
+        "val": "a"
+      },
+      {
+        "txt": "9√2 ",
+        "val": "b"
+      },
+      {
+        "txt": "18√2",
+        "val": "c"
+      },
+      {
+        "txt": "18",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "trigonometry",
+    "subcategory": "right triangles",
+    "image": "Trigonometry_5.png"
+  },
+  {
+    "questionText": "In the figure below BC is perpendicular to AD, CD = 8, the measure of angle D is 60° and the measure of angle A is 45°. Find the length of AB.",
+    "possibleAnswers": [
+      {
+        "txt": "8√6",
+        "val": "a"
+      },
+      {
+        "txt": "8√3",
+        "val": "b"
+      },
+      {
+        "txt": "8√2",
+        "val": "c"
+      },
+      {
+        "txt": "8",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "trigonometry",
+    "subcategory": "angles",
+    "image": "Trigonometry_6.png"
+  },
+  {
+    "questionText": "An angle in standard position whose measure is -30° has a its terminal side in:",
+    "possibleAnswers": [
+      {
+        "txt": "Quadrant I",
+        "val": "a"
+      },
+      {
+        "txt": "Quadrant II",
+        "val": "b"
+      },
+      {
+        "txt": "Quadrant III",
+        "val": "c"
+      },
+      {
+        "txt": "Quadrant IV",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "d",
+    "category": "trigonometry",
+    "subcategory": "angles"
+  },
+  {
+    "questionText": "In which quadrant is the terminal of an angle in standard position whose measure is 2π/3?",
+    "possibleAnswers": [
+      {
+        "txt": "Quadrant I",
+        "val": "a"
+      },
+      {
+        "txt": "Quadrant II",
+        "val": "b"
+      },
+      {
+        "txt": "Quadrant III",
+        "val": "c"
+      },
+      {
+        "txt": "Quadrant IV",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "trigonometry",
+    "subcategory": "quadrants"
+  },
+  {
+    "questionText": "In which quadrant is the terminal of an angle in standard position whose measure is -55π/3?",
+    "possibleAnswers": [
+      {
+        "txt": "Quadrant I",
+        "val": "a"
+      },
+      {
+        "txt": "Quadrant II",
+        "val": "b"
+      },
+      {
+        "txt": "Quadrant III",
+        "val": "c"
+      },
+      {
+        "txt": "Quadrant IV",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "d",
+    "category": "trigonometry",
+    "subcategory": "quadrants"
+  },
+  {
+    "questionText": "What is the measure in degrees of the angle A = 7π/6?",
+    "possibleAnswers": [
+      {
+        "txt": "150°",
+        "val": "a"
+      },
+      {
+        "txt": "210°",
+        "val": "b"
+      },
+      {
+        "txt": "100°",
+        "val": "c"
+      },
+      {
+        "txt": "120°",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "trigonometry",
+    "subcategory": "radians"
+  },
+  {
+    "questionText": "What is the degree measure of the angle A = -15π/2?",
+    "possibleAnswers": [
+      {
+        "txt": "135°",
+        "val": "a"
+      },
+      {
+        "txt": "1350°",
+        "val": "b"
+      },
+      {
+        "txt": "-90°",
+        "val": "c"
+      },
+      {
+        "txt": "-1350°",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "d",
+    "category": "trigonometry",
+    "subcategory": "radians"
+  },
+  {
+    "questionText": "Which of the following points is in the unit circle?",
+    "possibleAnswers": [
+      {
+        "txt": "(-√2/2 , -√2/2)",
+        "val": "a"
+      },
+      {
+        "txt": "(√2/3 , -√2/3)",
+        "val": "b"
+      },
+      {
+        "txt": "(1/2 , 1/2) ",
+        "val": "c"
+      },
+      {
+        "txt": "(3/2 , 2/3)",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "trigonometry",
+    "subcategory": "unit circle"
+  },
+  {
+    "questionText": "If point (a , b) is on the Unit Circle associated with the rotation t and point (c , d) is also on the Unit circle associated with rotation t + π, then which of the following is correct?",
+    "possibleAnswers": [
+      {
+        "txt": "c = - a and d = - b",
+        "val": "a"
+      },
+      {
+        "txt": "c = - a and d = b",
+        "val": "b"
+      },
+      {
+        "txt": "c = a and d = b",
+        "val": "c"
+      },
+      {
+        "txt": "c = a and d = - b",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "trigonometry",
+    "subcategory": "unit circle"
+  },
+  {
+    "questionText": "If point (a , b) is on the Unit Circle associated with the rotation t, then the point on the Unit circle associated with rotation t + π / 2, has the following coordinates:",
+    "possibleAnswers": [
+      {
+        "txt": "(b,a)",
+        "val": "a"
+      },
+      {
+        "txt": "(-b,a)",
+        "val": "b"
+      },
+      {
+        "txt": "(-b,-a)",
+        "val": "c"
+      },
+      {
+        "txt": "(-a,b)",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "trigonometry",
+    "subcategory": "unit circle"
+  },
+  {
+    "questionText": "If 0 < t < 2π such that sin t = √2 / 2 and cot t < 0, then t = ?",
+    "possibleAnswers": [
+      {
+        "txt": "π / 4",
+        "val": "a"
+      },
+      {
+        "txt": "5 π / 4",
+        "val": "b"
+      },
+      {
+        "txt": "7 π / 4",
+        "val": "c"
+      },
+      {
+        "txt": "3 π / 4",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "d",
+    "category": "trigonometry",
+    "subcategory": "angles"
+  },
+  {
+    "questionText": "Find all angles θ such that -2π < θ < 2π and cos θ = √2 / 2.",
+    "possibleAnswers": [
+      {
+        "txt": "{-7 π / 4, - π / 4 , π / 4 , 7 π / 4}",
+        "val": "a"
+      },
+      {
+        "txt": "{- π / 4, - 3 π / 4 , π / 4 , 3 π / 4}",
+        "val": "b"
+      },
+      {
+        "txt": "{-5 π / 4, π / 4 , 3 π / 4}",
+        "val": "c"
+      },
+      {
+        "txt": "{π / 4 , π / 4 , 3 π / 4}",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "trigonometry",
+    "subcategory": "inequalities"
+  },
+  {
+    "questionText": "If 0 < α < π and cos α = -√3 / 2, then α =",
+    "possibleAnswers": [
+      {
+        "txt": "π/6",
+        "val": "a"
+      },
+      {
+        "txt": "-π/6",
+        "val": "b"
+      },
+      {
+        "txt": "7π/6",
+        "val": "c"
+      },
+      {
+        "txt": "5π/6",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "d",
+    "category": "trigonometry",
+    "subcategory": "inequalities"
+  },
+  {
+    "questionText": "If cos t = 3/4, and sin t <0, then sin (3 t) = ?",
+    "possibleAnswers": [
+      {
+        "txt": "√7/16",
+        "val": "a"
+      },
+      {
+        "txt": "- 5√7/16",
+        "val": "b"
+      },
+      {
+        "txt": "- 3√7/4 ",
+        "val": "c"
+      },
+      {
+        "txt": "5√7/16",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "trigonometry",
+    "subcategory": "inequalities"
+  }
+]
