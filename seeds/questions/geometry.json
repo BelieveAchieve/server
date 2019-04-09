@@ -46,7 +46,7 @@
     "correctAnswer": "c",
     "category": "geometry",
     "subcategory": "congruence and similarity",
-    "image": "Geometry_1.png"
+    "imageSrc": "/static/question_images/Geometry_1.png"
   },
   {
     "questionText": "Which of the following conditions is true for similar triangles?",
@@ -95,7 +95,7 @@
     "correctAnswer": "a",
     "category": "geometry",
     "subcategory": "congruence and similarity",
-    "image": "Geometry_2.png"
+    "imageSrc": "/static/question_images/Geometry_2.png"
   },
   {
     "questionText": "Which of the following letters represents the vertex in the following picture?",
@@ -120,7 +120,7 @@
     "correctAnswer": "d",
     "category": "geometry",
     "subcategory": "vertices",
-    "image": "Geometry_3.png"
+    "imageSrc": "/static/question_images/Geometry_3.png"
   },
   {
     "questionText": "Which of the following letters represents the vertex in the following picture?",
@@ -145,7 +145,7 @@
     "correctAnswer": "d",
     "category": "geometry",
     "subcategory": "angles",
-    "image": "Geometry_3.png"
+    "imageSrc": "/static/question_images/Geometry_3.png"
   },
   {
     "questionText": "If a circle has the diameter of 8, what is the circumference?",
@@ -194,7 +194,7 @@
     "correctAnswer": "b",
     "category": "geometry",
     "subcategory": "triangles",
-    "image": "Geometry_4.png"
+    "imageSrc": "/static/question_images/Geometry_4.png"
   },
   {
     "questionText": "What is the measure of the solid line angle depicted by the following figure?",
@@ -219,7 +219,7 @@
     "correctAnswer": "d",
     "category": "geometry",
     "subcategory": "angles",
-    "image": "Geometry_5.png"
+    "imageSrc": "/static/question_images/Geometry_5.png"
   },
   {
     "questionText": "What is the measure of angle B in the following figure if angle A measures 135 degrees?",
@@ -244,7 +244,7 @@
     "correctAnswer": "b",
     "category": "geometry",
     "subcategory": "angles",
-    "image": "Geometry_6.png"
+    "imageSrc": "/static/question_images/Geometry_6.png"
   },
   {
     "questionText": "Given the triangle shown in the figure below, what is the length of side A?",
@@ -269,7 +269,7 @@
     "correctAnswer": "a",
     "category": "geometry",
     "subcategory": "triangles",
-    "image": "Geometry_7.png"
+    "imageSrc": "/static/question_images/Geometry_7.png"
   },
   {
     "questionText": "A circle is inscribed within a square, as shown.  What is the difference between the area of the square and that of a circle, where r is the radius of the circle?",
@@ -294,7 +294,7 @@
     "correctAnswer": "c",
     "category": "geometry",
     "subcategory": "circles",
-    "image": "Geometry_8.png"
+    "imageSrc": "/static/question_images/Geometry_8.png"
   },
   {
     "questionText": "Two angles of a triangle measure 15 and 70 degrees, respectively.  What is the size of the third angle?",
@@ -319,7 +319,7 @@
     "correctAnswer": "d",
     "category": "geometry",
     "subcategory": "angles",
-    "image": "Geometry_8.png"
+    "imageSrc": "/static/question_images/Geometry_8.png"
   },
   {
     "questionText": "A rectangle is divided into two squares, each with a perimeter of 20.  What is the perimeter of the  rectangle?",
@@ -344,7 +344,7 @@
     "correctAnswer": "b",
     "category": "geometry",
     "subcategory": "rectangles",
-    "image": "Geometry_8.png"
+    "imageSrc": "/static/question_images/Geometry_8.png"
   },
   {
     "questionText": "The diagram shows the outline of a racetrack for skaters, which consists of two long straight sections and two semi-circular turns.  Given the dimensions shown, which  of the following closely measures the perimeter of the entire track?",
@@ -369,7 +369,7 @@
     "correctAnswer": "c",
     "category": "geometry",
     "subcategory": "rectangles",
-    "image": "Geometry_9.png"
+    "imageSrc": "/static/question_images/Geometry_9.png"
   },
   {
     "questionText": "A tire on a car rotates at 500 RPM (revolutions per minute) when the car is traveling at 50 km/hr (kilometers per hour).  What is the circumference of the tire, in meters?",
@@ -394,7 +394,7 @@
     "correctAnswer": "d",
     "category": "geometry",
     "subcategory": "circles",
-    "image": "Geometry_10.png"
+    "imageSrc": "/static/question_images/Geometry_10.png"
   },
   {
     "questionText": "Which of the following expressions represents the ratio of the area of a circle to its circumference?",
@@ -443,7 +443,7 @@
     "correctAnswer": "c",
     "category": "geometry",
     "subcategory": "angles",
-    "image": "Geometry_11.png"
+    "imageSrc": "/static/question_images/Geometry_11.png"
   },
   {
     "questionText": "Which of the following in the image below are complementary angles?",
@@ -468,7 +468,7 @@
     "correctAnswer": "a",
     "category": "geometry",
     "subcategory": "angles",
-    "image": "Geometry_11.png"
+    "imageSrc": "/static/question_images/Geometry_11.png"
   },
   {
     "questionText": "Which of the following letters has a vertical line of symmetry?",

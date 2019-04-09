@@ -154,7 +154,7 @@
     "correctAnswer": "c",
     "category": "calculus",
     "subcategory": "derivatives",
-    "image": "Calc_1.png"
+    "imageSrc": "/static/question_images/Calc_1.png"
   },
   {
     "questionText": "True or false: If a function f is not defined at x = a then the limit lim f(x) as x approaches a never exists.",

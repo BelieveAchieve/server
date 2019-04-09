@@ -22,7 +22,7 @@
     "correctAnswer": "b",
     "category": "trigonometry",
     "subcategory": "angles",
-    "image": "Trigonometry_1.png"
+    "imageSrc": "/static/question_images/Trigonometry_1.png"
   },
   {
     "questionText": "What is the value of x in the figure below?",
@@ -47,7 +47,7 @@
     "correctAnswer": "d",
     "category": "trigonometry",
     "subcategory": "angles",
-    "image": "Trigonometry_2.png"
+    "imageSrc": "/static/question_images/Trigonometry_2.png"
   },
   {
     "questionText": "In a right triangle, the measure of one of the angles is 49° and the hypotenuse has a length of 50 cm. Which of the following is the nearest approximation to the length, in cm, of the leg opposite to this angle?",
@@ -96,7 +96,7 @@
     "correctAnswer": "a",
     "category": "trigonometry",
     "subcategory": "triangles",
-    "image": "Trigonometry_3.png"
+    "imageSrc": "/static/question_images/Trigonometry_3.png"
   },
   {
     "questionText": "In the triangle below, what is sin α?",
@@ -121,7 +121,7 @@
     "correctAnswer": "a",
     "category": "trigonometry",
     "subcategory": "triangles",
-    "image": "Trigonometry_4.png"
+    "imageSrc": "/static/question_images/Trigonometry_4.png"
   },
   {
     "questionText": "Find the length of AC in the right triangle below.",
@@ -146,7 +146,7 @@
     "correctAnswer": "b",
     "category": "trigonometry",
     "subcategory": "right triangles",
-    "image": "Trigonometry_5.png"
+    "imageSrc": "/static/question_images/Trigonometry_5.png"
   },
   {
     "questionText": "In the figure below BC is perpendicular to AD, CD = 8, the measure of angle D is 60° and the measure of angle A is 45°. Find the length of AB.",
@@ -171,7 +171,7 @@
     "correctAnswer": "a",
     "category": "trigonometry",
     "subcategory": "angles",
-    "image": "Trigonometry_6.png"
+    "imageSrc": "/static/question_images/Trigonometry_6.png"
   },
   {
     "questionText": "An angle in standard position whose measure is -30° has a its terminal side in:",

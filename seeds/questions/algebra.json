@@ -318,7 +318,7 @@
     "correctAnswer": "a",
     "category": "algebra",
     "subcategory": "rational expressions",
-    "image": "algebra_1.png"
+    "imageSrc": "/static/question_images/algebra_1.png"
   },
   {
     "questionText": "Reduce the following rational expression in the image below to lowest terms",
@@ -343,7 +343,7 @@
     "correctAnswer": "d",
     "category": "algebra",
     "subcategory": "rational expressions",
-    "image": "algebra_2.png"
+    "imageSrc": "/static/question_images/algebra_2.png"
   },
   {
     "questionText": "Find an equation of the line passing through the two points. Write the equation in standard form: (-5, 1) and (0, 8)",
@@ -536,7 +536,7 @@
     "correctAnswer": "a",
     "category": "algebra",
     "subcategory": "rational exponents and radicals",
-    "image": "algebra_3.png"
+    "imageSrc": "/static/question_images/algebra_3.png"
   },
   {
     "questionText": "Evaluate the equation in the image below",
@@ -561,7 +561,7 @@
     "correctAnswer": "a",
     "category": "algebra",
     "subcategory": "rational exponents and radicals",
-    "image": "algebra_4.png"
+    "imageSrc": "/static/question_images/algebra_4.png"
   },
   {
     "questionText": "Evaluate the equation in  the image below",
@@ -586,7 +586,7 @@
     "correctAnswer": "b",
     "category": "algebra",
     "subcategory": "rational exponents and radicals",
-    "image": "algebra_5.png"
+    "imageSrc": "/static/question_images/algebra_5.png"
   },
   {
     "questionText": "Evaluate the equation in the image below",
@@ -611,7 +611,7 @@
     "correctAnswer": "a",
     "category": "algebra",
     "subcategory": "rational exponents and radicals",
-    "image": "algebra_6.png"
+    "imageSrc": "/static/question_images/algebra_6.png"
   },
   {
     "questionText": "Evaluate the equation in the image below",
@@ -636,7 +636,7 @@
     "correctAnswer": "d",
     "category": "algebra",
     "subcategory": "rational exponents and radicals",
-    "image": "algebra_7.png"
+    "imageSrc": "/static/question_images/algebra_7.png"
   },
   {
     "questionText": "Evaluate the equation in the image below ",
@@ -661,7 +661,7 @@
     "correctAnswer": "a",
     "category": "algebra",
     "subcategory": "rational exponents and radicals",
-    "image": "algebra_8.png"
+    "imageSrc": "/static/question_images/algebra_8.png"
   },
   {
     "questionText": "Evaluate the equation in the image below ",
@@ -686,7 +686,7 @@
     "correctAnswer": "c",
     "category": "algebra",
     "subcategory": "rational exponents and radicals",
-    "image": "algebra_9.png"
+    "imageSrc": "/static/question_images/algebra_9.png"
   },
   {
     "questionText": "A fidget spinner is being sold in a store for $140.35 and has been marked up 7%.  How much did the store pay for the fidget spinner?",

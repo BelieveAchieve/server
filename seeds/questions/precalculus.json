@@ -22,7 +22,7 @@
     "correctAnswer": "c",
     "category": "precalculus",
     "subcategory": "rectangular coordinates",
-    "image": "Precalc_1.png"
+    "imageSrc": "/static/question_images/Precalc_1.png"
   },
   {
     "questionText": "Use the distance formula to find an equation of the perpendicular bisector of the line segment between the points (4,3) and (-2,5).",
@@ -119,7 +119,7 @@
     "correctAnswer": "a",
     "category": "precalculus",
     "subcategory": "functions",
-    "image": "Precalc_2.png"
+    "imageSrc": "/static/question_images/Precalc_2.png"
   },
   {
     "questionText": "Solve the equation in the image below.",
@@ -144,7 +144,7 @@
     "correctAnswer": "d",
     "category": "precalculus",
     "subcategory": "rational exponents",
-    "image": "Precalc_3.png"
+    "imageSrc": "/static/question_images/Precalc_3.png"
   },
   {
     "questionText": "Solve the equation in the image below.",
@@ -169,7 +169,7 @@
     "correctAnswer": "c",
     "category": "precalculus",
     "subcategory": "quadratic functions",
-    "image": "Precalc_4.png"
+    "imageSrc": "/static/question_images/Precalc_4.png"
   },
   {
     "questionText": "Find the vertex of the parabola whose equation is provided below.",
@@ -194,7 +194,7 @@
     "correctAnswer": "a",
     "category": "precalculus",
     "subcategory": "quadratic functions",
-    "image": "Precalc_5.png"
+    "imageSrc": "/static/question_images/Precalc_5.png"
   },
   {
     "questionText": "Find the minimum value of the function provided below.",
@@ -219,7 +219,7 @@
     "correctAnswer": "c",
     "category": "precalculus",
     "subcategory": "quadratic functions",
-    "image": "Precalc_6.png"
+    "imageSrc": "/static/question_images/Precalc_6.png"
   },
   {
     "questionText": "A rectangle with base x and height y has a perimeter of 120 ft. Express the area A of the rectangle as a function of x.",
@@ -268,7 +268,7 @@
     "correctAnswer": "c",
     "category": "precalculus",
     "subcategory": "logarithms and exponents",
-    "image": "Precalc_7.png"
+    "imageSrc": "/static/question_images/Precalc_7.png"
   },
   {
     "questionText": "Simplify the expression in the image below.",
@@ -293,7 +293,7 @@
     "correctAnswer": "c",
     "category": "precalculus",
     "subcategory": "logarithms and exponents",
-    "image": "Precalc_7.png"
+    "imageSrc": "/static/question_images/Precalc_7.png"
   },
   {
     "questionText": "Solve the equation in image below.",
@@ -318,7 +318,7 @@
     "correctAnswer": "a",
     "category": "precalculus",
     "subcategory": "logarithms and exponents",
-    "image": "Precalc_8.png"
+    "imageSrc": "/static/question_images/Precalc_8.png"
   },
   {
     "questionText": "Solve the equation in image below.",
@@ -343,7 +343,7 @@
     "correctAnswer": "b",
     "category": "precalculus",
     "subcategory": "rational exponents",
-    "image": "Precalc_9.png"
+    "imageSrc": "/static/question_images/Precalc_9.png"
   },
   {
     "questionText": "Find the equation of the circle with center (7,5) which is tangent to the x-axis.",
@@ -392,6 +392,6 @@
     "correctAnswer": "c",
     "category": "precalculus",
     "subcategory": "rational exponents",
-    "image": "Precalc_10.png"
+    "imageSrc": "/static/question_images/Precalc_10.png"
   }
 ]
