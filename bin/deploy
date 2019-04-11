@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+
+#
+# Deploy UPchieve. By default, deploys `master` on both web and server repos.
+#
+# Usage:
+#   deploy -w [WEB_BRANCH] -s [SERVER_BRANCH]
+#
+# Examples:
+#
+#   To deploy `server/feature_branch` and `web/master`:
+#
+#        deploy -s feature_branch
+#
+#   To deploy `web/feature_branch_1` and `server/feature_branch_2`:
+#
+#        deploy -w master -s feature_branch
+
+set -e
+
+# switch to projct root directory
+root_dir=$(git rev-parse --show-toplevel)
+cd "$root_dir" || exit 1
+
+# load utility functions
+# shellcheck source=./utilities.sh
+. "${root_dir}/bin/utilities.sh"
+
+usage() {
+  grep '^#' < "$0" | tail -n +2 | cut -c 3-
+}
+
+ensure_set() {
+  local env_var_name="${1}"
+  local env_var_val="${!env_var_name}"
+  step "$env_var_name: $env_var_val"
+
+  if [[ -z "$env_var_val" ]]; then
+    echo "Error: $env_var_name is unset"
+    exit 1
+  fi
+}
+
+switch_to_branch() {
+  local branch_name="${1}"
+  local available_branches
+  local local_branches
+
+  step "git fetch --prune --all"
+  git fetch --prune --all
+
+  step "git reset --hard"
+  git reset --hard
+
+  step "git checkout master"
+  git checkout master
+
+  step "git pull --rebase"
+  git pull --rebase
+
+  local_branches="$(git branch | grep --invert-match master | sed -E 's/^[\* ]+//')"
+  if [[ -n "$local_branches" ]]; then
+    for branch in $local_branches; do
+      step "git branch -D $branch"
+      git branch -D "$branch"
+    done
+  fi
+
+  available_branches="$(git branch --all | grep remotes/origin | awk '{ print $1 }' | tr '\n' ' ')"
+  if [[ ! $available_branches =~ $branch_name ]]; then
+    echo "Error: The provided branch does not exist at remote 'origin'."
+    exit 1
+  fi
+
+  if [[ "${branch_name}" != "master" ]]; then
+    step "git checkout -b ${branch_name} origin/${branch_name}"
+    git checkout -b "${branch_name}" "origin/${branch_name}"
+  fi
+
+  step "npm install"
+  npm install
+}
+
+
+WEB_BRANCH="master"
+SERVER_BRANCH="master"
+
+while getopts 'e:w:s:h' flag; do
+  case "${flag}" in
+    w) WEB_BRANCH="${OPTARG}";;
+    s) SERVER_BRANCH="${OPTARG}";;
+    h) usage && exit 2;;
+    *) usage && exit 1;;
+  esac
+done
+
+hrule
+step "Checking env vars..."
+ensure_set "NODE_ENV"
+ensure_set "SOCKET_ADDRESS"
+ensure_set "SERVER_ROOT"
+
+hrule
+step "Setting up web client repo..."
+cd ../web
+switch_to_branch "$WEB_BRANCH"
+npm run build
+
+hrule
+step "Setting up server repo..."
+cd ../server
+switch_to_branch "$SERVER_BRANCH"
+
+hrule
+step "Restarting server..."
+pm2 restart main
+
+hrule
+step "Inspecting logs..."
+pm2 logs
