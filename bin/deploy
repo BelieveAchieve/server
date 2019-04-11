@@ -27,6 +27,8 @@ cd "$root_dir" || exit 1
 # shellcheck source=./utilities.sh
 . "${root_dir}/bin/utilities.sh"
 
+ERROR_LOG=/root/.pm2/logs/main-error-0.log
+
 usage() {
   grep '^#' < "$0" | tail -n +2 | head -15 | cut -c 3-
 }
@@ -42,7 +44,17 @@ ensure_var_is_set() {
   fi
 }
 
-switch_to_branch() {
+slack_notify() {
+  # Send a notification to the UPchieve #tech-chatops room.
+  curl -X POST \
+       -H 'Content-type: application/json' \
+       --data "{\"text\": \"$1\"}" \
+       "$SLACK_DEPLOY_WEBHOOK_URL"
+}
+
+switch_to_branch_and_setup() {
+  # For the current Git repo, reset to clean state, clean up local branches,
+  # switch to the given branch and install dependencies using npm.
   local branch_name="${1}"
   local available_branches
   local local_branches
@@ -82,6 +94,34 @@ switch_to_branch() {
   npm install
 }
 
+deploy_repos() {
+  # Deploy the requested branches of the server and web client repositories.
+  rm "${ERROR_LOG}"
+
+  hrule
+  step "Checking env vars..."
+  ensure_var_is_set "UPCHIEVE_ENV"
+  ensure_var_is_set "NODE_ENV"
+  ensure_var_is_set "SOCKET_ADDRESS"
+  ensure_var_is_set "SERVER_ROOT"
+  ensure_var_is_set "SLACK_DEPLOY_WEBHOOK_URL"
+
+  hrule
+  step "Setting up web client repo..."
+  cd ../web
+  switch_to_branch_and_setup "$WEB_BRANCH"
+  npm run build
+
+  hrule
+  step "Setting up server repo..."
+  cd ../server
+  switch_to_branch_and_setup "$SERVER_BRANCH"
+
+  hrule
+  step "Restarting server..."
+  pm2 restart main
+}
+
 
 WEB_BRANCH="master"
 SERVER_BRANCH="master"
@@ -95,26 +135,13 @@ while getopts 'e:w:s:h' flag; do
   esac
 done
 
-hrule
-step "Checking env vars..."
-ensure_var_is_set "NODE_ENV"
-ensure_var_is_set "SOCKET_ADDRESS"
-ensure_var_is_set "SERVER_ROOT"
+slack_notify "<!here> Deploying web/$WEB_BRANCH and server/$SERVER_BRANCH to $UPCHIEVE_ENV..."
 
-hrule
-step "Setting up web client repo..."
-cd ../web
-switch_to_branch "$WEB_BRANCH"
-npm run build
-
-hrule
-step "Setting up server repo..."
-cd ../server
-switch_to_branch "$SERVER_BRANCH"
-
-hrule
-step "Restarting server..."
-pm2 restart main
+if $(deploy_repos); then
+  slack_notify "<!here> Deploy complete. web/$WEB_BRANCH and server/$SERVER_BRANCH are live on $UPCHIEVE_ENV."
+else
+  slack_notify "<!here> Deploy failed. Check deployment logs."
+fi
 
 hrule
 step "Inspecting logs..."
