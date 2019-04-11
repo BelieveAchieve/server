@@ -15,6 +15,7 @@
 #   To deploy `web/feature_branch_1` and `server/feature_branch_2`:
 #
 #        deploy -w master -s feature_branch
+#
 
 set -e
 
@@ -27,7 +28,7 @@ cd "$root_dir" || exit 1
 . "${root_dir}/bin/utilities.sh"
 
 usage() {
-  grep '^#' < "$0" | tail -n +2 | cut -c 3-
+  grep '^#' < "$0" | tail -n +2 | head -15 | cut -c 3-
 }
 
 ensure_set() {
