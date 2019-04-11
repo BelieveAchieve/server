@@ -1,8 +1,11 @@
-var http = require('http')
-var socket = require('socket.io')
+const fs = require('fs')
+const http = require('http')
+const https = require('https')
+const socket = require('socket.io')
 
-var config = require('../../config.js')
-var SessionCtrl = require('../../controllers/SessionCtrl.js')
+const config = require('../../config.js')
+const SessionCtrl = require('../../controllers/SessionCtrl.js')
+
 // Create an HTTPS server if in production, otherwise use HTTP.
 const createServer = app => {
   if (config.NODE_ENV === 'production') {
@@ -20,8 +23,8 @@ const createServer = app => {
 }
 
 module.exports = function (app) {
-  var io = socket(server)
   const server = createServer(app)
+  const io = socket(server)
 
   io.on('connection', function (socket) {
     // Session management
@@ -75,7 +78,7 @@ module.exports = function (app) {
     socket.on('message', function (data) {
       if (!data.sessionId) return
 
-      var message = {
+      const message = {
         user: data.user,
         contents: data.message
       }
@@ -195,7 +198,7 @@ module.exports = function (app) {
     })
   })
 
-  var port = config.socketsPort
+  const port = config.socketsPort
   server.listen(port)
 
   console.log('Sockets.io listening on port ' + port)
