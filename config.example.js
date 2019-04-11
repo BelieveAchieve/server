@@ -1,6 +1,8 @@
 // Server configuration
 
 module.exports = {
+  NODE_ENV: 'dev',
+  SSL_CERT_PATH: '',
   host: process.env.SERVER_HOST || 'localhost:3000',
   database: 'mongodb://localhost:27017/upchieve',
   sessionSecret: process.env.SESSION_SECRET || 'secret',

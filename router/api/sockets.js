@@ -3,10 +3,25 @@ var socket = require('socket.io')
 
 var config = require('../../config.js')
 var SessionCtrl = require('../../controllers/SessionCtrl.js')
+// Create an HTTPS server if in production, otherwise use HTTP.
+const createServer = app => {
+  if (config.NODE_ENV === 'production') {
+    return https.createServer(
+      {
+        key: fs.readFileSync(`${config.SSL_CERT_PATH}/privkey.pem`),
+        cert: fs.readFileSync(`${config.SSL_CERT_PATH}/fullchain.pem`),
+        ca: fs.readFileSync(`${config.SSL_CERT_PATH}/chain.pem`)
+      },
+      app
+    )
+  } else {
+    return http.createServer(app)
+  }
+}
 
 module.exports = function (app) {
-  var server = http.createServer(app)
   var io = socket(server)
+  const server = createServer(app)
 
   io.on('connection', function (socket) {
     // Session management
