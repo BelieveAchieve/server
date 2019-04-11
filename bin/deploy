@@ -31,7 +31,7 @@ usage() {
   grep '^#' < "$0" | tail -n +2 | head -15 | cut -c 3-
 }
 
-ensure_set() {
+ensure_var_is_set() {
   local env_var_name="${1}"
   local env_var_val="${!env_var_name}"
   step "$env_var_name: $env_var_val"
@@ -97,9 +97,9 @@ done
 
 hrule
 step "Checking env vars..."
-ensure_set "NODE_ENV"
-ensure_set "SOCKET_ADDRESS"
-ensure_set "SERVER_ROOT"
+ensure_var_is_set "NODE_ENV"
+ensure_var_is_set "SOCKET_ADDRESS"
+ensure_var_is_set "SERVER_ROOT"
 
 hrule
 step "Setting up web client repo..."
