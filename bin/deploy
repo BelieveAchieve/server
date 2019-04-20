@@ -100,7 +100,7 @@ switch_to_branch_and_setup() {
 }
 
 deploy_repos() {
-  slack_notify "[Build $BUILD_TIMESTAMP] Deploying web/$WEB_BRANCH and server/$SERVER_BRANCH to $UPCHIEVE_ENV..."
+  slack_notify "[Build $BUILD_TIMESTAMP] Deploying web/$WEB_BRANCH and server/$SERVER_BRANCH to $UPCHIEVE_ENV... (triggered by ${BUILD_USER})"
 
   # Deploy the requested branches of the server and web client repositories.
   slack_notify "[Build $BUILD_TIMESTAMP] Flushing logs..."
@@ -146,11 +146,13 @@ notify_failure () {
 
 WEB_BRANCH="master"
 SERVER_BRANCH="master"
+BUILD_USER="${USER}"
 
-while getopts 'e:w:s:h' flag; do
+while getopts 'w:s:u:h' flag; do
   case "${flag}" in
     w) WEB_BRANCH="${OPTARG}";;
     s) SERVER_BRANCH="${OPTARG}";;
+    u) BUILD_USER="${OPTARG}";;
     h) usage && exit 2;;
     *) usage && exit 1;;
   esac
