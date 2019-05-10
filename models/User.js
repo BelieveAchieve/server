@@ -467,19 +467,14 @@ userSchema.methods.verifyPassword = function (candidatePassword, cb) {
 
 // Static method to determine if a registration code is valid
 userSchema.statics.checkCode = function (code, cb) {
-  var studentCodes = config.STUDENT_CODES.split(',')
   var volunteerCodes = config.VOLUNTEER_CODES.split(',')
 
-  var isStudentCode = studentCodes.some(function (studentCode) {
-    return studentCode.toUpperCase() === code.toUpperCase()
-  })
   var isVolunteerCode = volunteerCodes.some(function (volunteerCode) {
     return volunteerCode.toUpperCase() === code.toUpperCase()
   })
 
-  if (isStudentCode || isVolunteerCode) {
+  if (isVolunteerCode) {
     cb(null, {
-      studentCode: isStudentCode,
       volunteerCode: isVolunteerCode
     })
   } else {
