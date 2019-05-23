@@ -1,50 +1,21 @@
-const https = require('https')
-const API_KEY = require('../config').cleanSpeakApiKey
-
 module.exports = {
   moderateMessage: (data, callback) => {
-    const req = https.request(
-      {
-        hostname: 'upchieve-cleanspeak-api.inversoft.io',
-        path: '/content/item/filter',
-        method: 'POST',
-        headers: {
-          Authorization: API_KEY,
-          'Content-Type': 'application/json'
-        }
-      },
-      res => {
-        let resBody = ''
-        res.on('data', chunk => {
-          resBody += chunk
-        })
 
-        res.on('end', () => {
-          console.log('CleanSpeak response body:', resBody)
+    const MESSAGE = data.content
 
-          if (res.statusCode === 200) {
-            resBody = JSON.parse(resBody)
+    // EMAIL_REGEX checks for standard and complex email formats
+    // Ex: yay-hoo@yahoo.hello.com
+    const EMAIL_REGEX = /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/g
 
-            if (resBody.matches.length === 0) {
-              callback(null, true)
-            } else {
-              callback(null, false)
-            }
-          } else {
-            callback(
-              `CleanSpeak API didn't send desired response: { statusCode: ${
-                res.statusCode
-              }, body: ${resBody} }`
-            )
-          }
-        })
-      }
-    )
+    // PHONE_REGEX checks for 7/10 digit phone numbers with/out parenthesis
+    const PHONE_REGEX = /(\(?\d{3}\)?[\-\. ]?)?\d{3}[\-\. ]?\d{4}/g
 
-    req.on('error', err => {
-      callback(err)
-    })
-    req.write(JSON.stringify(data))
-    req.end()
+    // .test returns a boolean
+    // true if there's a match and false if none
+    if (EMAIL_REGEX.test(MESSAGE) || PHONE_REGEX.test(MESSAGE)) {
+      callback(null, false)
+    } else {
+      callback(null, true)
+    }
   }
 }
