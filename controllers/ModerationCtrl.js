@@ -1,6 +1,4 @@
 module.exports = {
-  // Reuse moderateMessage for our own moderation logic
-  // moderateMessage: (data, callback) => {
-
-  // }
+  // Removed http request to cleanspeak api in moderateMessage()
+  // No longer using cleanspeak, and will be implementing our own moderation logic
 }
