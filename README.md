@@ -335,13 +335,7 @@ Expects the following request body:
 }
 ```
 
-Makes a call to [CleanSpeak's Filter Content API][cleanspeak], analyzes the
-API's response, and returns a boolean indicating whether or not the message is
-clean.
-
-[cleanspeak]: https://www.inversoft.com/docs/cleanspeak/3.x/tech/tutorials/filtering-content#using-the-filter-content-api
-
-The response body looks like this if no error occurred:
+TODO: re-implement the moderation/fitlering at this endpoint. We need to roll our own regex solution to replace what CleanSpeak previously provided. Main thing to filter is contact info (emails, phone numbers, etc). Also filter the worst slurs.
 
 ```javascript
 {
