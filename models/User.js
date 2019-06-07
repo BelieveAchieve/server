@@ -27,8 +27,8 @@ var userSchema = new mongoose.Schema({
   passwordResetToken: String,
 
   // Profile data
-  firstname: String,
-  lastname: String,
+  firstname: { type: String, required: [true, 'First name is required.'] },
+  lastname: { type: String, required: [true, 'Last name is required.'] },
   nickname: String,
   serviceInterests: [String],
   picture: String,
@@ -46,20 +46,22 @@ var userSchema = new mongoose.Schema({
          return re.test(v);
        },
        message: '{VALUE} is not a phone number in the format ###-###-####'
-     }
+     },
+     required: [function() { return this.isVolunteer; }, 'Phone number is required.']
   },
-  highschool: String,
+  highschool: { type: String, required: [function() { return !this.isVolunteer; }, 'High school is required.'] },
   currentGrade: String,
   expectedGraduation: String,
   difficultAcademicSubject: String,
   difficultCollegeProcess: [String],
   highestLevelEducation: [String],
   hasGuidanceCounselor: String,
-  favoriteAcademicSubject: String,
+  favoriteAcademicSubject: { type: String, required: [function() { return this.isVolunteer; }, 
+      'Favorite academic subject is required']},
   gpa: String,
   collegeApplicationsText: String,
   commonCollegeDocs: [String],
-  college: String,
+  college: { type: String, required: [function() { return this.isVolunteer; }, 'College is required.'] },
   academicInterestsText: String,
   testScoresText: String,
   advancedCoursesText: String,

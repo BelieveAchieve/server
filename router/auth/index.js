@@ -126,6 +126,12 @@ module.exports = function (app) {
     var code = req.body.code
 
     var highSchool = req.body.highSchool
+    
+    var college = req.body.college
+    
+    var phone = req.body.phone
+    
+    var favoriteAcademicSubject = req.body.favoriteAcademicSubject
 
     var firstName = req.body.firstName
 
@@ -158,6 +164,9 @@ module.exports = function (app) {
     user.isVolunteer = !(code === undefined)
     user.registrationCode = code
     user.highschool = highSchool
+    user.college = college
+    user.phone = phone
+    user.favoriteAcademicSubject = favoriteAcademicSubject
     user.firstname = firstName
     user.lastname = lastName
     user.verified = code === undefined
