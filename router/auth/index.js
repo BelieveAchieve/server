@@ -131,6 +131,13 @@ module.exports = function (app) {
 
     var lastName = req.body.lastName
     
+    var terms = req.body.terms;
+    
+    if (!terms) {
+      return res.json({
+        err: 'Must accept the user agreement'
+      })
+    }
 
     if (!email || !password) {
       return res.json({
