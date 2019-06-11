@@ -46,6 +46,19 @@ module.exports = function (app) {
             console.log('Session joined:', session._id)
             io.emit('sessions', SessionCtrl.getSocketSessions())
             io.to(session._id).emit('session-change', session)
+            session.saveMessage({
+              user: '',
+              contents: `${data.user.firstname} has joined!`
+            }, function (err, savedMessage) {
+              io.to(data.sessionId).emit('messageSend', {
+                contents: savedMessage.contents,
+                name: '',
+                email: '',
+                isVolunteer: '',
+                picture: '',
+                time: savedMessage.createdAt
+              })
+            })
           }
         }
       )
@@ -66,6 +79,19 @@ module.exports = function (app) {
             socket.leave(session._id)
             io.to(session._id).emit('session-change', session)
             io.emit('sessions', SessionCtrl.getSocketSessions())
+            session.saveMessage({
+              user: '',
+              contents: `${session.user.firstname} has left!`
+            }, function (err, savedMessage) {
+              io.to(session._id).emit('messageSend', {
+                contents: savedMessage.contents,
+                name: '',
+                email: '',
+                isVolunteer: '',
+                picture: '',
+                time: savedMessage.createdAt
+              })
+            })
           }
         }
       )

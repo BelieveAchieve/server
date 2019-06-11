@@ -92,6 +92,7 @@ SessionManager.prototype.disconnect = function (options) {
 
   var socketSession, session
   Object.keys(this._sessions).some(function (sessionId) {
+    console.log(`sessionid: ${sessionId}`)
     var s = this._sessions[sessionId]
     if (s.hasSocket(socket)) {
       socketSession = s
@@ -267,6 +268,8 @@ module.exports = {
 
     if (user) {
       session.leaveUser(user, cb)
+      session.user = user
+      cb(null, session)
     } else {
       cb(null, session)
     }
