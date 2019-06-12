@@ -8,9 +8,6 @@
     }
   ],
   "env": {
-    "UPCHIEVE_CLEANSPEAK_API_KEY": {
-      "required": true
-    },
     "UPCHIEVE_CLIENT_HOST": {
       "required": true
     },
