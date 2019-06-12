@@ -46,7 +46,7 @@ Local Development
 ### Dependencies
 
 1. Node.js
-2. MongoDB 
+2. MongoDB
 
 See `.tool-versions` for version info.
 
@@ -335,11 +335,8 @@ Expects the following request body:
 }
 ```
 
-Makes a call to [CleanSpeak's Filter Content API][cleanspeak], analyzes the
-API's response, and returns a boolean indicating whether or not the message is
+Returns a boolean indicating whether or not the message is
 clean.
-
-[cleanspeak]: https://www.inversoft.com/docs/cleanspeak/3.x/tech/tutorials/filtering-content#using-the-filter-content-api
 
 The response body looks like this if no error occurred:
 
