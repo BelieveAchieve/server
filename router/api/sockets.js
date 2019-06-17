@@ -112,12 +112,12 @@ module.exports = function (app) {
         function (err, session) {
 
           // Don't let anyone but the session's student or volunteer create messages
-          if (helpers.isNotSessionParticipant(session, data.user)) {
+          if (err || helpers.isNotSessionParticipant(session, data.user)) {
             console.log('Could not deliver message')
-            io.emit('error', err)
+            io.emit('error', err || 'Only session participants are allowed to send messages')
             return
           }
-        
+
           session.saveMessage(message, function (err, savedMessage) {
             io.to(data.sessionId).emit('messageSend', {
               contents: savedMessage.contents,
