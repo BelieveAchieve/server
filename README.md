@@ -9,7 +9,7 @@ UPchieve web server
 
 - [Local Development](#local-development)
     - [Dependencies](#dependencies)
-    - [Build Setup](#build-setup)
+    - [Setup](#setup)
     - [Test Users](#test-users)
 - [Structure](#structure)
     - [config.js](#configjs)
@@ -45,17 +45,12 @@ Local Development
 
 ### Dependencies
 
-1. Node.js
-2. MongoDB 
+The recommended tool for runtime version managment is [`asdf`][asdf]. To use `asdf` on Windows, first install the appropriate Linux shell distribution using [`WSL`][wsl] (Windows Subsystem for Linux).
 
-See `.tool-versions` for version info.
+Install the following asdf plugins:
 
-### Version management
-
-The recommended tool for version managment is [`asdf`][asdf]. For Windows, use [`WSL`][wsl] (Windows Subsystem for Linux), and install the appropriate Linux shell distribution.
-
-To install the appropriate versions of Node and Mongo, ensure their asdf plugins
-are installed. (See their repos for complete installation instructions.)
+1. Node.js (see version listed in `.tool-versions`)
+2. MongoDB (see version listed in `.tool-versions`)
 
 - [`asdf-nodejs`][asdf-nodejs]
 
@@ -84,7 +79,7 @@ asdf install mongodb [VERSION]
    Run with `--verbose` to debug if needed.
 3. Populate `config.js` with auth tokens (ask a teammate if you need
    any of these--improvements forthcoming).
-4. Run `npm run dev` to start the dev server on `http://localhost:3000`. For Windows, if you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
+4. Run `npm run dev` to start the dev server on `http://localhost:3000`. If you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
 5. See [the web client repo](https://github.com/UPchieve/web) for client
    installation
 
