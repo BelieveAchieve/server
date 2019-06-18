@@ -3,7 +3,6 @@ const ModerationCtrl = require('../../controllers/ModerationCtrl')
 module.exports = router => {
   router.route('/moderate/message').post((req, res) => {
     ModerationCtrl.moderateMessage(req.body, (err, isClean) => {
-      console.log(isClean)
       if (err) {
         res.json({ err })
       } else {
