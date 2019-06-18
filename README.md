@@ -52,7 +52,7 @@ See `.tool-versions` for version info.
 
 ### Version management
 
-The recommended tool for version managment is [`asdf`][asdf].
+The recommended tool for version managment is [`asdf`][asdf]. For Windows, use [`WSL`][wsl] (Windows Subsystem for Linux), and install the appropriate Linux shell distribution.
 
 To install the appropriate versions of Node and Mongo, ensure their asdf plugins
 are installed. (See their repos for complete installation instructions.)
@@ -72,6 +72,7 @@ asdf plugin-add mongodb https://github.com/UPchieve/asdf-mongodb
 asdf install mongodb [VERSION]
 ```
 
+[wsl]: https://docs.microsoft.com/en-us/windows/wsl/install-win10
 [asdf]: https://github.com/asdf-vm/asdf
 [asdf-nodejs]: https://github.com/asdf-vm/asdf-nodejs
 [asdf-mongodb]: https://github.com/UPchieve/asdf-mongodb
@@ -83,10 +84,11 @@ asdf install mongodb [VERSION]
    Run with `--verbose` to debug if needed.
 3. Populate `config.js` with auth tokens (ask a teammate if you need
    any of these--improvements forthcoming).
-4. Run `npm run dev` to start the dev server on `http://localhost:3000`.
+4. Run `npm run dev` to start the dev server on `http://localhost:3000`. For Windows, if you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
 5. See [the web client repo](https://github.com/UPchieve/web) for client
    installation
 
+[bcrypt]: https://www.npmjs.com/package/bcrypt
 
 ### Test Users
 
