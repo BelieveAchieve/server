@@ -76,11 +76,11 @@ module.exports = function (app) {
     })
 
     socket.on('typing', function (data) {
-      //TODO: handle typing
+      socket.broadcast.to(data.sessionId).emit('is-typing')
     })
 
     socket.on('notTyping', function (data) {
-      //TODO: handle not typing
+      socket.broadcast.to(data.sessionId).emit('not-typing')
     })
 
 
