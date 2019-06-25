@@ -16,16 +16,16 @@ var getMailHelper = function (options) {
 }
 
 var getTemplateMailHelper = function (mail, id, substitutions) {
-    var templatedMail = mail
-    templatedMail.setTemplateId(id)
+  var templatedMail = mail
+  templatedMail.setTemplateId(id)
   
-    Object.keys(substitutions).forEach(function (subKey) {
-      var subHelper = new helper.Substitution(subKey, substitutions[subKey])
-      templatedMail.personalizations[0].addSubstitution(subHelper)
-    })
+  Object.keys(substitutions).forEach(function (subKey) {
+    var subHelper = new helper.Substitution(subKey, substitutions[subKey])
+    templatedMail.personalizations[0].addSubstitution(subHelper)
+  })
   
-    return templatedMail
-  }
+  return templatedMail
+}
 
 var sendEmail = function (mail, callback) {
   var request = sendgrid.emptyRequest({
@@ -61,7 +61,7 @@ module.exports = {
 
     var templatedMail = getTemplateMailHelper(
       mail,
-      config.sendgrid.verifyTemplateId,
+      config.sendgrid.templateId,
       {
         '-userEmail-': email,
         '-verifyLink-': url
@@ -100,7 +100,7 @@ module.exports = {
       subject: 'Contact Form: ' + subjects ,
       content: emailContent,
     })
-    
+
     sendEmail(mail, callback)
   },
   sendReset: function (options, callback) {
