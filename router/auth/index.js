@@ -6,6 +6,7 @@ var MongoStore = require('connect-mongo')(session)
 
 var VerificationCtrl = require('../../controllers/VerificationCtrl')
 var ResetPasswordCtrl = require('../../controllers/ResetPasswordCtrl')
+var ContactCtrl = require('../../controllers/ContactCtrl')
 
 var config = require('../../config.js')
 var User = require('../../models/User.js')
@@ -243,6 +244,28 @@ module.exports = function (app) {
         })
       }
     })
+  })
+
+  router.post('/contact/send', function (req, res) {
+    var responseData = req.body.responseData
+    var email = 'nanarhmathis@gmail.com'
+    ContactCtrl.initiateContact(
+      {
+          email: email,
+          responseData: responseData
+      },
+      function (err, data) {
+        if (err) {
+          res.json({
+            err: err
+          })
+        } else {
+          res.json({
+            msg: 'Contact form has been sent'
+          })
+        }
+      }
+    )
   })
 
   router.post('/reset/send', function (req, res) {

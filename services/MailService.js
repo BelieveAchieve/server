@@ -9,21 +9,23 @@ var getMailHelper = function (options) {
   var fromEmail = new helper.Email(options.from || config.mail.senders.noreply)
   var toEmail = new helper.Email(options.to)
   var subject = options.subject || '[UPchieve] New message'
-  var content = new helper.Content('text/plain', options.content || '<p></p>')
-  return new helper.Mail(fromEmail, subject, toEmail, content)
+  var content = new helper.Content('text/html', options.content || '<p></p>')
+  var mail = new helper.Mail(fromEmail,subject,toEmail, content)
+    
+  return mail
 }
 
 var getTemplateMailHelper = function (mail, id, substitutions) {
-  var templatedMail = mail
-  templatedMail.setTemplateId(id)
-
-  Object.keys(substitutions).forEach(function (subKey) {
-    var subHelper = new helper.Substitution(subKey, substitutions[subKey])
-    templatedMail.personalizations[0].addSubstitution(subHelper)
-  })
-
-  return templatedMail
-}
+    var templatedMail = mail
+    templatedMail.setTemplateId(id)
+  
+    Object.keys(substitutions).forEach(function (subKey) {
+      var subHelper = new helper.Substitution(subKey, substitutions[subKey])
+      templatedMail.personalizations[0].addSubstitution(subHelper)
+    })
+  
+    return templatedMail
+  }
 
 var sendEmail = function (mail, callback) {
   var request = sendgrid.emptyRequest({
@@ -59,7 +61,7 @@ module.exports = {
 
     var templatedMail = getTemplateMailHelper(
       mail,
-      config.sendgrid.templateId,
+      config.sendgrid.verifyTemplateId,
       {
         '-userEmail-': email,
         '-verifyLink-': url
@@ -67,7 +69,40 @@ module.exports = {
     )
     sendEmail(templatedMail, callback)
   },
+  sendContactForm: function (options, callback) {
+    var email = options.email
+    var responseData = options.responseData
+    var from = responseData['email']
+    var subject = responseData['subject']
+    var more = responseData['more']
 
+    var subjects = Object.keys(subject)
+    for (var i = 0; i < subjects.length; i++) {
+        if (subjects[i] == "Other") {
+            subjects[i] += ': ' + subject['Other']
+        }
+    }
+    var topics = ''
+    for (var i = 0; i < subjects.length; i++) {
+        topics += '<li>' + subjects[i] + '</li>'
+    }
+
+    var emailContent = [
+        '<h3> FROM: ' + from + '</h3>',
+        '<h3> TOPICS: </h3>',
+        topics,
+        '<h3>ADDITIONAL INFORMATION: </h3>',
+        '<p>' + more + '</p>',
+      ].join('\n\n')
+
+    var mail = getMailHelper({
+      to: email,
+      subject: 'Contact Form: ' + subjects ,
+      content: emailContent,
+    })
+    
+    sendEmail(mail, callback)
+  },
   sendReset: function (options, callback) {
     var email = options.email
     var token = options.token
