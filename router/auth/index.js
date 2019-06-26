@@ -188,7 +188,7 @@ module.exports = function (app) {
                     var msg
                     if (err) {
                       msg =
-                        'Registration successful. Error sending verification email: ' +
+                        'Registration unsuccessful. Error sending verification email: ' +
                         err
                     } else {
                       msg =
