@@ -3,7 +3,6 @@ var session = require('express-session')
 var flash = require('express-flash')
 var passport = require('passport')
 var MongoStore = require('connect-mongo')(session)
-
 var VerificationCtrl = require('../../controllers/VerificationCtrl')
 var ResetPasswordCtrl = require('../../controllers/ResetPasswordCtrl')
 var ContactCtrl = require('../../controllers/ContactCtrl')
@@ -248,7 +247,7 @@ module.exports = function (app) {
 
   router.post('/contact/send', function (req, res) {
     var responseData = req.body.responseData
-    var email = 'nanarhmathis@gmail.com'
+    var email = config.mail.receivers.contact
     ContactCtrl.initiateContact(
       {
           email: email,
