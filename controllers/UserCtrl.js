@@ -62,7 +62,7 @@ module.exports = {
       return callback('No fields defined to update')
     }
 
-    User.findByIdAndUpdate(userId, update, { new: true }, function (err, user) {
+    User.findByIdAndUpdate(userId, update, { new: true, runValidators: true }, function (err, user) {
       if (err) {
         return callback(err)
       } else {

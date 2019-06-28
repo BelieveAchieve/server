@@ -10,6 +10,7 @@ var ContactCtrl = require('../../controllers/ContactCtrl')
 var config = require('../../config.js')
 var User = require('../../models/User.js')
 
+// Validation functions
 function checkPassword (password) {
   if (password.length < 8) {
     return 'Password must be 8 characters or longer'
@@ -125,10 +126,24 @@ module.exports = function (app) {
     var code = req.body.code
 
     var highSchool = req.body.highSchool
+    
+    var college = req.body.college
+    
+    var phone = req.body.phone
+    
+    var favoriteAcademicSubject = req.body.favoriteAcademicSubject
 
     var firstName = req.body.firstName
 
     var lastName = req.body.lastName
+    
+    var terms = req.body.terms;
+    
+    if (!terms) {
+      return res.json({
+        err: 'Must accept the user agreement'
+      })
+    }
 
     if (!email || !password) {
       return res.json({
@@ -143,12 +158,15 @@ module.exports = function (app) {
         err: checkResult
       })
     }
-
+    
     var user = new User()
-    user.email = email
+    user.email = email    
     user.isVolunteer = !(code === undefined)
     user.registrationCode = code
     user.highschool = highSchool
+    user.college = college
+    user.phone = phone
+    user.favoriteAcademicSubject = favoriteAcademicSubject
     user.firstname = firstName
     user.lastname = lastName
     user.verified = code === undefined

@@ -75,6 +75,15 @@ module.exports = function (app) {
       io.emit('sessions', SessionCtrl.getSocketSessions())
     })
 
+    socket.on('typing', function (data) {
+      socket.broadcast.to(data.sessionId).emit('is-typing', data.user.firstname)
+    })
+
+    socket.on('notTyping', function (data) {
+      socket.broadcast.to(data.sessionId).emit('not-typing')
+    })
+
+
     socket.on('message', function (data) {
       if (!data.sessionId) return
 
