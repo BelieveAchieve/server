@@ -126,19 +126,19 @@ module.exports = function (app) {
     var code = req.body.code
 
     var highSchool = req.body.highSchool
-    
+
     var college = req.body.college
-    
+
     var phone = req.body.phone
-    
+
     var favoriteAcademicSubject = req.body.favoriteAcademicSubject
 
     var firstName = req.body.firstName
 
     var lastName = req.body.lastName
-    
-    var terms = req.body.terms;
-    
+
+    var terms = req.body.terms
+
     if (!terms) {
       return res.json({
         err: 'Must accept the user agreement'
@@ -158,14 +158,14 @@ module.exports = function (app) {
         err: checkResult
       })
     }
-    
+
     var user = new User()
-    user.email = email    
+    user.email = email
     user.isVolunteer = !(code === undefined)
     user.registrationCode = code
     user.highschool = highSchool
     user.college = college
-    user.phone = phone
+    user.phonePretty = phone
     user.favoriteAcademicSubject = favoriteAcademicSubject
     user.firstname = firstName
     user.lastname = lastName
