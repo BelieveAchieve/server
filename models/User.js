@@ -449,7 +449,9 @@ userSchema.methods.parseProfile = function () {
     trigonometry: this.trigonometry,
     esl: this.esl,
     precalculus: this.precalculus,
-    calculus: this.calculus
+    calculus: this.calculus,
+
+    phonePretty: this.phonePretty
   }
 }
 
