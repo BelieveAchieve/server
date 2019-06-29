@@ -388,6 +388,15 @@ var userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
+},
+{
+  toJSON: {
+    virtuals: true
+  },
+
+  toObject: {
+    virtuals: true
+  }
 })
 
 // Given a user record, strip out sensitive data for public consumption
@@ -477,7 +486,7 @@ userSchema.methods.verifyPassword = function (candidatePassword, cb) {
 userSchema.virtual('phonePretty')
   .get(function () {
     var re = /^([0-9]{3})([0-9]{3})([0-9]{4})$/
-    var [ , area, prefix, line] = this.phone.match(re)
+    var [, area, prefix, line] = this.phone.match(re)
     return `${area}-${prefix}-${line}`
   })
   .set(function (v) {
@@ -485,7 +494,7 @@ userSchema.virtual('phonePretty')
     // see http://regexlib.com/REDetails.aspx?regexp_id=58
     // modified to ignore trailing/leading whitespace and disallow alphanumeric characters
     var re = /^\s*(?:[0-9](?: |-)?)?(?:\(?([0-9]{3})\)?|[0-9]{3})(?: |-)?(?:([0-9]{3})(?: |-)?([0-9]{4}))\s*$/
-    var [ , area, prefix, line] = v.match(re)
+    var [, area, prefix, line] = v.match(re)
     this.phone = `${area}${prefix}${line}`
   })
 
