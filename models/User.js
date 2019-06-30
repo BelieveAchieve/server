@@ -487,6 +487,10 @@ userSchema.methods.verifyPassword = function (candidatePassword, cb) {
 // virtual type for phone number formatted for readability
 userSchema.virtual('phonePretty')
   .get(function () {
+    if (!this.phone) {
+      return null
+    }
+
     var re = /^([0-9]{3})([0-9]{3})([0-9]{4})$/
     var [, area, prefix, line] = this.phone.match(re)
     return `${area}-${prefix}-${line}`
