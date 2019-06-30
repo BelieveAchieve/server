@@ -32,29 +32,6 @@ module.exports = {
 
     var hasUpdate = false
 
-    // Keys to virtual properties
-    var virtualProps = ['phonePretty']
-    if (virtualProps.some(function (key) { return data[key] })) {
-      // load model object into memory
-      User.findById(userId, function (err, user) {
-        if (err) {
-          callback(err)
-        }
-        else {
-          if (!user) {
-            update = new User()
-          }
-          else {
-            update = user
-          }
-          iterateKeysAndUpdate()
-        }
-      })
-    }
-    else {
-      iterateKeysAndUpdate()
-    }
-
     // Define and iterate through keys to add to update object
     var iterateKeysAndUpdate = function () {
       ;[
@@ -108,6 +85,29 @@ module.exports = {
         // update the model (more efficient, but ignores virtual props)
         User.findByIdAndUpdate(userId, update, { new: true, runValidators: true }, getProfileIfSuccessful(callback))
       }
+    }
+
+    // Keys to virtual properties
+    var virtualProps = ['phonePretty']
+    if (virtualProps.some(function (key) { return data[key] })) {
+      // load model object into memory
+      User.findById(userId, function (err, user) {
+        if (err) {
+          callback(err)
+        }
+        else {
+          if (!user) {
+            update = new User()
+          }
+          else {
+            update = user
+          }
+          iterateKeysAndUpdate()
+        }
+      })
+    }
+    else {
+      iterateKeysAndUpdate()
     }
   }
 }
