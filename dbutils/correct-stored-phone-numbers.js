@@ -5,6 +5,7 @@
 
 var mongoose = require('mongoose')
 var async = require('async')
+var chalk = require('chalk')
 
 var dbconnect = require('./dbconnect')
 
@@ -37,7 +38,7 @@ dbconnect(mongoose, function () {
                 if (err) {
                   return callback(err)
                 } else {
-                  console.log(`Phone number of user ${user.email} reformatted to ${user.phone} (was ${oldPhone}).`)
+                  console.log(chalk.cyan(`Phone number of user ${user.email} reformatted to ${user.phone} (was ${oldPhone}).`))
                 }
               })
             })
@@ -60,9 +61,9 @@ dbconnect(mongoose, function () {
           } else if (users && users.length) {
             users.forEach(function (user) {
               if (user.phone) {
-                console.error(`User ${user.email} has invalid phone number ${user.phone}.`)
+                console.error(chalk.yellow(`User ${user.email} has invalid phone number ${user.phone}.`))
               } else if (user.isVolunteer) {
-                console.error(`Volunteer ${user.email} has not provided a phone number.`)
+                console.error(chalk.yellow(`Volunteer ${user.email} has not provided a phone number.`))
               }
             })
           } else {
