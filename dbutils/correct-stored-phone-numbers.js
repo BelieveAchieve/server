@@ -39,13 +39,14 @@ dbconnect(mongoose, function () {
                   return callback(err)
                 } else {
                   console.log(chalk.cyan(`Phone number of user ${user.email} reformatted to ${user.phone} (was ${oldPhone}).`))
+                  callback()
                 }
               })
             })
           } else {
             console.log('All users with valid phone numbers are formatted correctly.')
+            callback()
           }
-          callback()
         })
     },
     function (callback) {
@@ -65,11 +66,12 @@ dbconnect(mongoose, function () {
               } else if (user.isVolunteer) {
                 console.error(chalk.yellow(`Volunteer ${user.email} has not provided a phone number.`))
               }
+              callback()
             })
           } else {
             console.log('All users have valid U. S. phone numbers.')
+            callback()
           }
-          callback()
         })
     }
   ], function (err) {
