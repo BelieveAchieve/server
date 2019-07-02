@@ -500,7 +500,7 @@ userSchema.virtual('phonePretty')
     // see http://regexlib.com/REDetails.aspx?regexp_id=58
     // modified to ignore trailing/leading whitespace and disallow alphanumeric characters
     var re = /^\s*(?:[0-9](?: |-)?)?(?:\(?([0-9]{3})\)?|[0-9]{3})(?: |-)?(?:([0-9]{3})(?: |-)?([0-9]{4}))\s*$/
-    var [, area, prefix, line] = v.match(re)
+    var [, area, prefix, line] = v.match(re) || []
     this.phone = `${area}${prefix}${line}`
   })
 
