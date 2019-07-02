@@ -31,6 +31,8 @@ dbconnect(mongoose, function () {
           if (err) {
             callback(err)
           } else if (users && users.length) {
+            var usersCorrected = 0
+
             users.forEach(function (user) {
               var oldPhone = user.phone
               user.phonePretty = oldPhone
@@ -38,8 +40,11 @@ dbconnect(mongoose, function () {
                 if (err) {
                   return callback(err)
                 } else {
+                  usersCorrected++
                   console.log(chalk.cyan(`Phone number of user ${user.email} reformatted to ${user.phone} (was ${oldPhone}).`))
-                  callback()
+                  if (usersCorrected === users.length) {
+                    callback()
+                  }
                 }
               })
             })
@@ -66,12 +71,11 @@ dbconnect(mongoose, function () {
               } else if (user.isVolunteer) {
                 console.error(chalk.yellow(`Volunteer ${user.email} has not provided a phone number.`))
               }
-              callback()
             })
           } else {
             console.log('All users have valid U. S. phone numbers.')
-            callback()
           }
+          callback()
         })
     }
   ], function (err) {
