@@ -1,5 +1,6 @@
 var config = require('../config.js')
 var User = require('../models/User')
+var Session = require('../models/Session')
 var twilio = require('twilio')
 var moment = require('moment-timezone')
 const client = twilio(config.accountSid, config.authToken)
@@ -56,32 +57,45 @@ var getAvailableVolunteersFromDb = function (subtopic) {
 
   var query = User.find(userQuery)
     .select({ phone: 1, firstname: 1 })
-    .limit(5)
+    console.log(query.count())
+    //.limit(5)
 
   return query
 }
 
+   var sessionQuery = Session.find().select({sessionActive:true})
+   return sessionQuery
+
 function send (phoneNumber, name, subtopic) {
-  client.messages
-    .create({
-      to: `+1${phoneNumber}`,
-      from: config.sendingNumber,
-      body: `Hi ${name}, a student just requested help in ${subtopic} at app.upchieve.org. Please log in now to help them if you can!`
-    })
-    .then(message =>
-      console.log(
-        `Message sent to ${phoneNumber} with message id \n` + message.sid
-      )
-    )
-    .catch(err => console.log(err))
+  //Send out texts to volunteer if no other volunteer has joined the session
+  if (!sessionQuery) {
+    client.messages
+      .create({
+        to: `+1${phoneNumber}`,
+        from: config.sendingNumber,
+        body: `Hi ${name}, a student just requested help in ${subtopic} at app.upchieve.org. Please log in now to help them if you can!`
+      })
+      .then(message = >
+    console.log(
+      `Message sent to ${phoneNumber} with message id \n` + message.sid))
+  .catch(err = > console.log(err))
+  }
 }
 
 module.exports = {
   notify: function (type, subtopic) {
     getAvailableVolunteersFromDb(subtopic).exec(function (err, persons) {
-      persons.forEach(function (person) {
+      var count = persons.count()
+      console.log(
+        `number of volunteers available` + count
+      )
+      //Send out invites in batches of 5
+      xrange(5).persons.forEach(function (person) {
         send(person.phone, person.firstname, subtopic)
       })
     })
   }
 }
+
+
+

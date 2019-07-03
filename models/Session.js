@@ -51,8 +51,11 @@ var sessionSchema = new mongoose.Schema({
 
   volunteerJoinedAt: {
     type: Date
-  }
+  },
 
+  sessionActive :{
+    type : Boolean
+  }
   // Scheduled sessions
   // startAt: {
   //   type: Date,
@@ -114,7 +117,13 @@ sessionSchema.methods.endSession = function (cb) {
   this.save(() => console.log(`Ended session ${this._id} at ${this.endedAt}`))
 }
 
-sessionSchema.methods.isActive = function (cb) {}
+sessionSchema.methods.isActive = function (cb) {
+  if(joinUser.volunteerJoinedAt){
+    this.sessionActive = true
+  } else {
+    this.sessionActive = false
+  }
+}
 
 sessionSchema.methods.isWaiting = function (cb) {}
 
