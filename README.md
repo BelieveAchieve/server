@@ -216,8 +216,8 @@ Possible errors:
 
 ```json
 {
-  "sessionType": "String",
-  "sessionSubTopic": "String"
+  "type": "String",
+  "subTopic": "String"
 }
 ```
 
