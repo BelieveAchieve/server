@@ -1,12 +1,11 @@
-var async = require('async')
+const async = require('async')
 
-var MailService = require('../services/MailService')
+const MailService = require('../services/MailService')
 
 module.exports = {
   initiateContact: function (options, callback) {
-    // var responseData = options.responseData
-    var email = options.email
-    var responseData = options.responseData
+    const email = options.email
+    const responseData = options.responseData
     async.waterfall(
       [
         // Send an email
