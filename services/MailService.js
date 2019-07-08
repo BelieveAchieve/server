@@ -2,14 +2,14 @@ var config = require('../config')
 const sgMail = require('@sendgrid/mail')
 // Utility functions for sendgrid
 
-var sendEmail = function(apiKey, toEmail, fromEmail, templateId, dynamicData, callback) {
+var sendEmail = function (apiKey, toEmail, fromEmail, templateId, dynamicData, callback) {
   sgMail.setApiKey(apiKey)
   console.log(apiKey)
   const msg = {
-      to: toEmail,
-      from:fromEmail ,
-      templateId: templateId,
-      dynamic_template_data: dynamicData
+    to: toEmail,
+    from: fromEmail,
+    templateId: templateId,
+    dynamic_template_data: dynamicData
   }
   console.log(msg)
   sgMail.send(msg,callback)
@@ -22,7 +22,7 @@ module.exports = {
     var token = options.token
     var url = 'http://' + config.client.host + '/#/action/verify/' + token
     console.log(url)
-    sendEmail(config.sendgrid.apiKey,email,config.mail.senders.noreply, 
+    sendEmail(config.sendgrid.apiKey, email, config.mail.senders.noreply,
       config.sendgrid.verifyTemplate, {
         'userEmail': email,
         'verifyLink': url
