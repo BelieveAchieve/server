@@ -510,7 +510,7 @@ userSchema.virtual('phonePretty')
         if (err) {
           console.log(err)
         } else {
-          console.log(`Phone number ${oldPhone} corrected to ${user}.`)
+          console.log(`Phone number ${oldPhone} corrected to ${user.phone}.`)
         }
       })
     }
