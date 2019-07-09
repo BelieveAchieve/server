@@ -506,11 +506,11 @@ userSchema.virtual('phonePretty')
       // autocorrect phone number format
       var oldPhone = this.phone
       this.phone = `${area}${prefix}${line}`
-      this.save(function (err, newPhone) {
+      this.save(function (err, user) {
         if (err) {
           console.log(err)
         } else {
-          console.log(`Phone number ${oldPhone} corrected to ${newPhone}.`)
+          console.log(`Phone number ${oldPhone} corrected to ${user}.`)
         }
       })
     }
