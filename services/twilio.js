@@ -89,9 +89,11 @@ module.exports = {
       console.log(
         `number of volunteers available` + count
       )
-      //Send out invites in batches of 5
+      //Send out invites in batches of 5 with 30 seconds delay
       xrange(5).persons.forEach(function (person) {
-        send(person.phone, person.firstname, subtopic)
+        var delayInMilliseconds = 30000
+        setTimeout(function(){
+          send(person.phone, person.firstname, subtopic)},delayInMilliseconds);
       })
     })
   }
