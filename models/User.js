@@ -496,7 +496,7 @@ userSchema.virtual('phonePretty')
       return null
     }
 
-    // first test user's phone number to see if it's a valid U.S. phone numer
+    // first test user's phone number to see if it's a valid U.S. phone number
     var matches = this.phone.match(PHONE_REGEX)
     if (!matches) {
       return null
