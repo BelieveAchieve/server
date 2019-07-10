@@ -484,6 +484,9 @@ userSchema.methods.verifyPassword = function (candidatePassword, cb) {
   })
 }
 
+// regular expression that accepts multiple valid U. S. phone number formats
+// see http://regexlib.com/REDetails.aspx?regexp_id=58
+// modified to ignore trailing/leading whitespace and disallow alphanumeric characters
 const PHONE_REGEX = /^\s*(?:[0-9](?: |-)?)?(?:\(?([0-9]{3})\)?|[0-9]{3})(?: |-)?(?:([0-9]{3})(?: |-)?([0-9]{4}))\s*$/
 
 // virtual type for phone number formatted for readability
@@ -499,6 +502,8 @@ userSchema.virtual('phonePretty')
       return null
     }
 
+    // ignore first element of matches, which is the full regex match,
+    // and destructure remaining portion
     var [, area, prefix, line] = matches
     // accepted phone number format in database
     var reStrict = /^([0-9]{3})([0-9]{3})([0-9]{4})$/
@@ -517,9 +522,8 @@ userSchema.virtual('phonePretty')
     return `${area}-${prefix}-${line}`
   })
   .set(function (v) {
-    // regular expression that accepts multiple valid U. S. phone number formats
-    // see http://regexlib.com/REDetails.aspx?regexp_id=58
-    // modified to ignore trailing/leading whitespace and disallow alphanumeric characters
+    // ignore first element of match result, which is the full match,
+    // and destructure the remaining portion
     var [, area, prefix, line] = v.match(PHONE_REGEX) || []
     this.phone = `${area}${prefix}${line}`
   })
