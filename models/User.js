@@ -38,30 +38,27 @@ var userSchema = new mongoose.Schema({
   groupIdentification: [String],
   computerAccess: [String],
   preferredTimes: [String],
-  phone: { 
-     type: String,
-     validate: {
-       validator: function(v) {
-         var re = /^[0-9]{3}-[0-9]{3}-[0-9]{4}$/;
-         return re.test(v);
-       },
-       message: '{VALUE} is not a phone number in the format ###-###-####'
-     },
-     required: [function() { return this.isVolunteer; }, 'Phone number is required.']
+  phone: {
+    type: String,
+    match: [ /^[0-9]{10}$/, '{VALUE} is not a phone number in the format ##########' ],
+    required: [function () { return this.isVolunteer }, 'Phone number is required.']
   },
-  highschool: { type: String, required: [function() { return !this.isVolunteer; }, 'High school is required.'] },
+
+  highschool: { type: String, required: [function () { return !this.isVolunteer }, 'High school is required.'] },
   currentGrade: String,
   expectedGraduation: String,
   difficultAcademicSubject: String,
   difficultCollegeProcess: [String],
   highestLevelEducation: [String],
   hasGuidanceCounselor: String,
-  favoriteAcademicSubject: { type: String, required: [function() { return this.isVolunteer; }, 
-      'Favorite academic subject is required']},
+  favoriteAcademicSubject: {
+    type: String,
+    required: [function () { return this.isVolunteer }, 'Favorite academic subject is required']
+  },
   gpa: String,
   collegeApplicationsText: String,
   commonCollegeDocs: [String],
-  college: { type: String, required: [function() { return this.isVolunteer; }, 'College is required.'] },
+  college: { type: String, required: [function () { return this.isVolunteer }, 'College is required.'] },
   academicInterestsText: String,
   testScoresText: String,
   advancedCoursesText: String,
@@ -391,6 +388,15 @@ var userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
+},
+{
+  toJSON: {
+    virtuals: true
+  },
+
+  toObject: {
+    virtuals: true
+  }
 })
 
 // Given a user record, strip out sensitive data for public consumption
@@ -443,7 +449,9 @@ userSchema.methods.parseProfile = function () {
     trigonometry: this.trigonometry,
     esl: this.esl,
     precalculus: this.precalculus,
-    calculus: this.calculus
+    calculus: this.calculus,
+
+    phonePretty: this.phonePretty
   }
 }
 
@@ -475,6 +483,26 @@ userSchema.methods.verifyPassword = function (candidatePassword, cb) {
     }
   })
 }
+
+// virtual type for phone number formatted for readability
+userSchema.virtual('phonePretty')
+  .get(function () {
+    if (!this.phone) {
+      return null
+    }
+
+    var re = /^([0-9]{3})([0-9]{3})([0-9]{4})$/
+    var [, area, prefix, line] = this.phone.match(re)
+    return `${area}-${prefix}-${line}`
+  })
+  .set(function (v) {
+    // regular expression that accepts multiple valid U. S. phone number formats
+    // see http://regexlib.com/REDetails.aspx?regexp_id=58
+    // modified to ignore trailing/leading whitespace and disallow alphanumeric characters
+    var re = /^\s*(?:[0-9](?: |-)?)?(?:\(?([0-9]{3})\)?|[0-9]{3})(?: |-)?(?:([0-9]{3})(?: |-)?([0-9]{4}))\s*$/
+    var [, area, prefix, line] = v.match(re) || []
+    this.phone = `${area}${prefix}${line}`
+  })
 
 // Static method to determine if a registration code is valid
 userSchema.statics.checkCode = function (code, cb) {

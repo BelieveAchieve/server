@@ -31,6 +31,7 @@ module.exports = function (router) {
           computerAccess: data.computerAccess,
           preferredTimes: data.preferredTimes,
           phone: data.phone,
+          phonePretty: data.phonePretty,
           highschool: data.highschool,
           currentGrade: data.currentGrade,
           expectedGraduation: data.expectedGraduation,

@@ -77,10 +77,11 @@ asdf install mongodb [VERSION]
 1. Start a local MongoDB server by running `mongod`. In a separate terminal, you can try connecting to the database by running `mongo` (`mongod` to start the database vs. `mongo` to connect via command line!). Run `quit()` to exit the shell. You can also interface with the database using a free MongoDB GUI such as [MongoDB Compass Community](https://docs.mongodb.com/manual/administration/install-community/)
 2. Run `bin/setup` to set up the database with test users and install dependencies.
    Run with `--verbose` to debug if needed.
-3. Populate `config.js` with auth tokens (ask a teammate if you need
+3. Run `node init` to add "questions" collection to database
+4. Populate `config.js` with auth tokens (ask a teammate if you need
    any of these--improvements forthcoming).
-4. Run `npm run dev` to start the dev server on `http://localhost:3000`. If you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
-5. See [the web client repo](https://github.com/UPchieve/web) for client
+5. Run `npm run dev` to start the dev server on `http://localhost:3000`. If you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
+6. See [the web client repo](https://github.com/UPchieve/web) for client
    installation
 
 [bcrypt]: https://www.npmjs.com/package/bcrypt
