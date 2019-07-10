@@ -375,6 +375,11 @@ var userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  //Fake Users (users that are for testing on production side)
+  fakeUser:{
+    type: Boolean,
+    default: false
+  },
   isAdmin: {
     type: Boolean,
     default: false
