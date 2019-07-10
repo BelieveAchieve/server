@@ -522,10 +522,14 @@ userSchema.virtual('phonePretty')
     return `${area}-${prefix}-${line}`
   })
   .set(function (v) {
-    // ignore first element of match result, which is the full match,
-    // and destructure the remaining portion
-    var [, area, prefix, line] = v.match(PHONE_REGEX) || []
-    this.phone = `${area}${prefix}${line}`
+    if (!v) {
+      this.phone = v
+    } else {
+      // ignore first element of match result, which is the full match,
+      // and destructure the remaining portion
+      var [, area, prefix, line] = v.match(PHONE_REGEX) || []
+	  this.phone = `${area}${prefix}${line}`
+    }
   })
 
 // Static method to determine if a registration code is valid
