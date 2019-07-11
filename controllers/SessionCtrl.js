@@ -114,7 +114,7 @@ SessionManager.prototype.disconnect = function (options) {
 // A dead session is a session with no users connected to it.
 //
 // Return a reference to the SocketSession instance.
-SessionManager.prototype.pruneDeadSessions = () => {
+SessionManager.prototype.pruneDeadSessions = function () {
   if (!this._sessions) {
     return this
   }
