@@ -1,7 +1,6 @@
 var SessionCtrl = require('../../controllers/SessionCtrl')
 
 var User = require('../../models/User')
-var Session = require('../../models/Session')
 
 var ObjectId = require('mongodb').ObjectId
 
@@ -31,35 +30,18 @@ module.exports = function (router) {
       }
     )
   })
-  function addSession (usertype, session) {
-    User.findById(usertype)
-      .populate({
-        path: 'pastSessions',
-        model: Session
-      })
-      .exec(function (err, user) {
+  function addSession (user, session) {
+    User.update({ _id: user._id },
+      { $addToSet: { pastSessions: session._id } },
+      function (err, results) {
         if (err) {
           throw err
-        } else if (Array.isArray(user.pastSessions)) {
-          // find if the session already exists in pastSessions
-          User.find({ 'pastSessions': session._id },
-            function (err, results) {
-              if (err) {
-                throw err
-              }
-              // if the session doesn't exist, add it to pastSessions
-              if (!results.length) {
-                user.pastSessions.push(session._id)
-                user.save(function (err, user) {
-                  if (err) {
-                    throw err
-                  }
-                })
-              }
-            })
         } else {
-          // if the user has no sessions at all, initialize the array with the current session
-          user.pastSessions = [session._id]
+          // print out what session was added to which user
+          if (results.nModified === 1) {
+            console.log(`${session._id} session was added to ` +
+            `${user._id}'s pastSessions`)
+          }
         }
       })
   }
@@ -78,10 +60,10 @@ module.exports = function (router) {
         } else {
           var student = session.student
           var volunteer = session.volunteer
-          // add session to the student and volunteer's information
-          addSession(student._id, session)
+          // add session to the student and volunteer's pastSessions
+          addSession(student, session)
           if (volunteer) {
-            addSession(volunteer._id, session)
+            addSession(volunteer, session)
           }
           session.endSession()
           res.json({ sessionId: session._id })
