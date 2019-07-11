@@ -18,9 +18,10 @@ SocketSession.prototype.join = function (options) {
   })
 
   if (userIndex !== -1) {
-    socket = this.sockets[user._id]
-    if (socket) {
-      socket.disconnect(0)
+    var oldSocket = this.sockets[user._id]
+    // only disconnect the user if the new socket isn't the same as the old one
+    if (oldSocket && oldSocket !== socket) {
+      oldSocket.disconnect(0)
     }
     this.users.splice(userIndex, 1)
   }
