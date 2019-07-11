@@ -3,10 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "npm run cron-job & npm run start-server",
-    "start-server": "node main.js",
-    "cron-job": "node cron-jobs-node/index.js",
-    "dev-cron": "npm run cron-job & npm run dev",
+    "start": "node main.js",
     "dev": "nodemon main",
     "test": "nyc ava --verbose",
     "format": "prettier-standard '*.js' '{controllers,models,router,services,seeds}/**/*.js'"
