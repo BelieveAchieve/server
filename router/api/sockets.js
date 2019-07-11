@@ -109,7 +109,6 @@ module.exports = function (app) {
       socket.broadcast.to(data.sessionId).emit('not-typing')
     })
 
-
     socket.on('message', function (data) {
       if (!data.sessionId) return
 
