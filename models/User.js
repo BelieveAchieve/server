@@ -27,8 +27,8 @@ var userSchema = new mongoose.Schema({
   passwordResetToken: String,
 
   // Profile data
-  firstname: String,
-  lastname: String,
+  firstname: { type: String, required: [true, 'First name is required.'] },
+  lastname: { type: String, required: [true, 'Last name is required.'] },
   nickname: String,
   serviceInterests: [String],
   picture: String,
@@ -38,19 +38,27 @@ var userSchema = new mongoose.Schema({
   groupIdentification: [String],
   computerAccess: [String],
   preferredTimes: [String],
-  phone: String,
-  highschool: String,
+  phone: {
+    type: String,
+    match: [ /^[0-9]{10}$/, '{VALUE} is not a phone number in the format ##########' ],
+    required: [function () { return this.isVolunteer }, 'Phone number is required.']
+  },
+
+  highschool: { type: String, required: [function () { return !this.isVolunteer }, 'High school is required.'] },
   currentGrade: String,
   expectedGraduation: String,
   difficultAcademicSubject: String,
   difficultCollegeProcess: [String],
   highestLevelEducation: [String],
   hasGuidanceCounselor: String,
-  favoriteAcademicSubject: String,
+  favoriteAcademicSubject: {
+    type: String,
+    required: [function () { return this.isVolunteer }, 'Favorite academic subject is required']
+  },
   gpa: String,
   collegeApplicationsText: String,
   commonCollegeDocs: [String],
-  college: String,
+  college: { type: String, required: [function () { return this.isVolunteer }, 'College is required.'] },
   academicInterestsText: String,
   testScoresText: String,
   advancedCoursesText: String,
@@ -380,6 +388,15 @@ var userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
+},
+{
+  toJSON: {
+    virtuals: true
+  },
+
+  toObject: {
+    virtuals: true
+  }
 })
 
 // Given a user record, strip out sensitive data for public consumption
@@ -432,7 +449,9 @@ userSchema.methods.parseProfile = function () {
     trigonometry: this.trigonometry,
     esl: this.esl,
     precalculus: this.precalculus,
-    calculus: this.calculus
+    calculus: this.calculus,
+
+    phonePretty: this.phonePretty
   }
 }
 
@@ -464,6 +483,54 @@ userSchema.methods.verifyPassword = function (candidatePassword, cb) {
     }
   })
 }
+
+// regular expression that accepts multiple valid U. S. phone number formats
+// see http://regexlib.com/REDetails.aspx?regexp_id=58
+// modified to ignore trailing/leading whitespace and disallow alphanumeric characters
+const PHONE_REGEX = /^\s*(?:[0-9](?: |-)?)?(?:\(?([0-9]{3})\)?|[0-9]{3})(?: |-)?(?:([0-9]{3})(?: |-)?([0-9]{4}))\s*$/
+
+// virtual type for phone number formatted for readability
+userSchema.virtual('phonePretty')
+  .get(function () {
+    if (!this.phone) {
+      return null
+    }
+
+    // first test user's phone number to see if it's a valid U.S. phone number
+    var matches = this.phone.match(PHONE_REGEX)
+    if (!matches) {
+      return null
+    }
+
+    // ignore first element of matches, which is the full regex match,
+    // and destructure remaining portion
+    var [, area, prefix, line] = matches
+    // accepted phone number format in database
+    var reStrict = /^([0-9]{3})([0-9]{3})([0-9]{4})$/
+    if (!this.phone.match(reStrict)) {
+      // autocorrect phone number format
+      var oldPhone = this.phone
+      this.phone = `${area}${prefix}${line}`
+      this.save(function (err, user) {
+        if (err) {
+          console.log(err)
+        } else {
+          console.log(`Phone number ${oldPhone} corrected to ${user.phone}.`)
+        }
+      })
+    }
+    return `${area}-${prefix}-${line}`
+  })
+  .set(function (v) {
+    if (!v) {
+      this.phone = v
+    } else {
+      // ignore first element of match result, which is the full match,
+      // and destructure the remaining portion
+      var [, area, prefix, line] = v.match(PHONE_REGEX) || []
+	  this.phone = `${area}${prefix}${line}`
+    }
+  })
 
 // Static method to determine if a registration code is valid
 userSchema.statics.checkCode = function (code, cb) {
