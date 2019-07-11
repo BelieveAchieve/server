@@ -51,7 +51,7 @@ module.exports = {
     var email = options.email
     var daysDiff = options.daysDiff
     // currently not sending an email but this is where sendgrid api would be called
-    var response = user.firstname+ ' signed up '+daysDiff+' days ago and has not had any sessions. They need to be emailed at '+ email
+    var response = user.firstname + ' signed up ' + daysDiff + ' days ago and has not had any sessions. They need to be emailed at ' + email
     console.log(response)
     callback()
     // TODO: make and use sendgrid email template
