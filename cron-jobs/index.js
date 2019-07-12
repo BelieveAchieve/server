@@ -34,7 +34,7 @@ function checkUsers (users) {
 }
 
 // scheduled to run every Monday at 4:30 pm
-var everyMon430 = '30 16 * * 1'
+var everyMon430 = '* * * * *'
 cron.schedule(everyMon430, function () {
   console.log('---------------------')
   console.log('Running Cron Job')
