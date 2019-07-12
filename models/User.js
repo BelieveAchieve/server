@@ -448,6 +448,7 @@ userSchema.methods.parseProfile = function () {
     extracurricularActivitesText: this.extracurricularActivitesText,
     favoriteAcademicSubject: this.favoriteAcademicSubject,
     heardFrom: this.heardFrom,
+    fakeUser: this.fakeUser,
 
     algebra: this.algebra,
     geometry: this.geometry,
@@ -455,7 +456,6 @@ userSchema.methods.parseProfile = function () {
     esl: this.esl,
     precalculus: this.precalculus,
     calculus: this.calculus,
-
     phonePretty: this.phonePretty
   }
 }
