@@ -489,6 +489,11 @@ userSchema.methods.verifyPassword = function (candidatePassword, cb) {
   })
 }
 
+// regular expression that accepts multiple valid U. S. phone number formats
+// see http://regexlib.com/REDetails.aspx?regexp_id=58
+// modified to ignore trailing/leading whitespace and disallow alphanumeric characters
+const PHONE_REGEX = /^\s*(?:[0-9](?: |-)?)?(?:\(?([0-9]{3})\)?|[0-9]{3})(?: |-)?(?:([0-9]{3})(?: |-)?([0-9]{4}))\s*$/
+
 // virtual type for phone number formatted for readability
 userSchema.virtual('phonePretty')
   .get(function () {
@@ -496,17 +501,40 @@ userSchema.virtual('phonePretty')
       return null
     }
 
-    var re = /^([0-9]{3})([0-9]{3})([0-9]{4})$/
-    var [, area, prefix, line] = this.phone.match(re)
+    // first test user's phone number to see if it's a valid U.S. phone number
+    var matches = this.phone.match(PHONE_REGEX)
+    if (!matches) {
+      return null
+    }
+
+    // ignore first element of matches, which is the full regex match,
+    // and destructure remaining portion
+    var [, area, prefix, line] = matches
+    // accepted phone number format in database
+    var reStrict = /^([0-9]{3})([0-9]{3})([0-9]{4})$/
+    if (!this.phone.match(reStrict)) {
+      // autocorrect phone number format
+      var oldPhone = this.phone
+      this.phone = `${area}${prefix}${line}`
+      this.save(function (err, user) {
+        if (err) {
+          console.log(err)
+        } else {
+          console.log(`Phone number ${oldPhone} corrected to ${user.phone}.`)
+        }
+      })
+    }
     return `${area}-${prefix}-${line}`
   })
   .set(function (v) {
-    // regular expression that accepts multiple valid U. S. phone number formats
-    // see http://regexlib.com/REDetails.aspx?regexp_id=58
-    // modified to ignore trailing/leading whitespace and disallow alphanumeric characters
-    var re = /^\s*(?:[0-9](?: |-)?)?(?:\(?([0-9]{3})\)?|[0-9]{3})(?: |-)?(?:([0-9]{3})(?: |-)?([0-9]{4}))\s*$/
-    var [, area, prefix, line] = v.match(re) || []
-    this.phone = `${area}${prefix}${line}`
+    if (!v) {
+      this.phone = v
+    } else {
+      // ignore first element of match result, which is the full match,
+      // and destructure the remaining portion
+      var [, area, prefix, line] = v.match(PHONE_REGEX) || []
+	  this.phone = `${area}${prefix}${line}`
+    }
   })
 
 // Static method to determine if a registration code is valid
