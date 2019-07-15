@@ -75,10 +75,10 @@ function send (phoneNumber, name, subtopic) {
         from: config.sendingNumber,
         body: `Hi ${name}, a student just requested help in ${subtopic} at app.upchieve.org. Please log in now to help them if you can!`
       })
-      .then(message = >
+      .then(message =>
     console.log(
       `Message sent to ${phoneNumber} with message id \n` + message.sid))
-  .catch(err = > console.log(err))
+  .catch(err => console.log(err))
   }
 }
 
@@ -98,6 +98,7 @@ module.exports = {
     })
   }
 }
+
 
 
 
