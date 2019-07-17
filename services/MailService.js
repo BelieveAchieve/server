@@ -60,7 +60,7 @@ module.exports = {
   sendVerification: function (options, callback) {
     var email = options.email
     var token = options.token
-    var url = 'http://' + config.client.host + '/#/action/verify/' + token
+    var url = 'http://' + config.client.host + '/action/verify/' + token
     console.log(url)
 
     var mail = getMailHelper({
@@ -82,7 +82,7 @@ module.exports = {
   sendReset: function (options, callback) {
     var email = options.email
     var token = options.token
-    var url = 'http://' + config.client.host + '/#/setpassword/' + token
+    var url = 'http://' + config.client.host + '/setpassword/' + token
 
     var emailContent = [
       'Click on this link to choose a new password!',
