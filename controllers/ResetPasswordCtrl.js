@@ -57,7 +57,6 @@ module.exports = {
   },
 
   finishReset: function (options, callback) {
-    var email = options.email
     var token = options.token
 
     async.waterfall(
@@ -71,10 +70,6 @@ module.exports = {
               )
             } else if (err) {
               return done(err)
-            } else if (user.email !== email) {
-              return done(
-                new Error('Email did not match the password reset token')
-              )
             }
             done(null, user)
           })

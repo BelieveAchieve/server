@@ -118,6 +118,7 @@ module.exports = function (app) {
     })
   })
 
+
   router.post('/register', function (req, res) {
     var email = req.body.email
 
@@ -274,13 +275,13 @@ module.exports = function (app) {
       {
         email: email
       },
-      function (err, data) {
+      function (err) {
         if (err) {
-          res.json({
-            err: err
+           res.json({
+            err: err.message
           })
         } else {
-          res.json({
+           res.json({
             msg: 'Password reset email sent'
           })
         }
@@ -288,9 +289,10 @@ module.exports = function (app) {
     )
   })
 
-  router.post('/reset/confirm', function (req, res) {
-    var email = req.body.email
 
+  
+  router.post('/reset/confirm', function (req, res) {
+    
     var password = req.body.password
 
     var newpassword = req.body.newpassword
@@ -301,9 +303,9 @@ module.exports = function (app) {
       return res.json({
         err: 'No password reset token given'
       })
-    } else if (!email || !password) {
+    } else if (!password) {
       return res.json({
-        err: 'Must supply an email and password for password reset'
+        err: 'Must supply a password for password reset'
       })
     } else if (!newpassword) {
       return res.json({
@@ -354,7 +356,6 @@ module.exports = function (app) {
     ResetPasswordCtrl.finishReset(
       {
         token: token,
-        email: email
       },
       function (err, user) {
         if (err) {

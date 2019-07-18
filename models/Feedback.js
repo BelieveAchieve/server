@@ -6,6 +6,16 @@ var feedbackSchema = new mongoose.Schema({
     default: ''
   },
 
+  topic: {
+    type: String,
+    default: ''
+  },
+
+  subTopic: {
+    type: String,
+    default: ''
+  },
+  
   responseData: {
     type: Object,
     default: ''
