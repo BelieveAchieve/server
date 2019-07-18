@@ -49,23 +49,6 @@ module.exports = function (app) {
             return
           }
 
-/*
-          const joinerIsNotSessionParticipant = helpers.isNotSessionParticipant(session, data.user)
-
-          console.log(
-            'joiner is a participant? ' + !joinerIsNotSessionParticipant
-          )
-
-          // Don't let anyone but the session's student or volunteer join the
-          // session
-          if (joinerIsNotSessionParticipant) {
-            console.log('Could not join session')
-            io.emit('error', err)
-            socket.emit('bump', err)
-            return
-          }
-*/
-
           socket.join(data.sessionId)
           io.emit('sessions', SessionCtrl.getSocketSessions())
           io.to(session._id).emit('session-change', session)
@@ -105,7 +88,6 @@ module.exports = function (app) {
       socket.broadcast.to(data.sessionId).emit('not-typing')
     })
 
-
     socket.on('message', function (data) {
       if (!data.sessionId) return
 
@@ -119,7 +101,6 @@ module.exports = function (app) {
           sessionId: data.sessionId
         },
         function (err, session) {
-
           // Don't let anyone but the session's student or volunteer create messages
           if (err || helpers.isNotSessionParticipant(session, data.user)) {
             console.log('Could not deliver message')
@@ -146,7 +127,7 @@ module.exports = function (app) {
 
     socket.on('drawClick', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function(err, session) {
+      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('draw', {
           x: data.x,
@@ -158,7 +139,7 @@ module.exports = function (app) {
 
     socket.on('saveImage', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function(err, session) {
+      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('save')
       })
@@ -166,7 +147,7 @@ module.exports = function (app) {
 
     socket.on('undoClick', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function(err, session) {
+      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('undo')
       })
@@ -174,7 +155,7 @@ module.exports = function (app) {
 
     socket.on('clearClick', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function(err, session) {
+      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         io.to(data.sessionId).emit('clear')
       })
@@ -182,7 +163,7 @@ module.exports = function (app) {
 
     socket.on('drawing', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function(err, session) {
+      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('draw')
       })
@@ -190,7 +171,7 @@ module.exports = function (app) {
 
     socket.on('end', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function(err, session) {
+      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err, session) {
         if (err) return
         session.saveWhiteboardUrl(data.whiteboardUrl)
         socket.broadcast.to(data.sessionId).emit('end', data)
@@ -199,7 +180,7 @@ module.exports = function (app) {
 
     socket.on('changeColor', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function(err, session) {
+      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('color', data.color)
       })
@@ -207,7 +188,7 @@ module.exports = function (app) {
 
     socket.on('changeWidth', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function(err, session) {
+      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('width', data.width)
       })
@@ -215,7 +196,7 @@ module.exports = function (app) {
 
     socket.on('dragStart', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function(err, session) {
+      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('dstart', {
           x: data.x,
@@ -227,7 +208,7 @@ module.exports = function (app) {
 
     socket.on('dragAction', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function(err, session) {
+      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('drag', {
           x: data.x,
@@ -239,7 +220,7 @@ module.exports = function (app) {
 
     socket.on('dragEnd', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function(err, session) {
+      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('dend', {
           x: data.x,
@@ -251,7 +232,7 @@ module.exports = function (app) {
 
     socket.on('insertText', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function(err, session) {
+      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         io.to(data.sessionId).emit('text', {
           text: data.text,
@@ -262,7 +243,7 @@ module.exports = function (app) {
     })
 
     socket.on('resetScreen', function (data) {
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function(err, session) {
+      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         io.to(data.sessionId).emit('reset')
       })
