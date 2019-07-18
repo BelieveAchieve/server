@@ -237,14 +237,11 @@ module.exports = {
 
       session.joinUser(user, function (err, savedSession) {
         if (err) {
-          console.log(err)
-          if (!savedSession) {
-            cb(err) // so that api/sockets knows there's an issue
-            return
-          }
           sessionManager.disconnect({
             socket: socket
           })
+          cb(err)
+          return
         }
         Session.populate(savedSession, 'student volunteer', function (
           err,

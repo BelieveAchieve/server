@@ -39,8 +39,6 @@ module.exports = function (router) {
         sessionId: sessionId
       },
       function (err, session) {
-        
-      
         if (err) {
           res.json({ err: err })
         } else if (!session) {
