@@ -17,17 +17,21 @@ SocketSession.prototype.join = function (options) {
     return joinedUser._id === user._id
   })
 
+  let oldSocket
   if (userIndex !== -1) {
-    var oldSocket = this.sockets[user._id]
-    // only disconnect the user if the new socket isn't the same as the old one
-    if (oldSocket && oldSocket !== socket) {
-      oldSocket.disconnect(0)
-    }
+    oldSocket = this.sockets[user._id]
+
     this.users.splice(userIndex, 1)
   }
 
   this.users.push(user)
   this.sockets[user._id] = socket
+
+  // try to prevent disconnecting the user if the new socket is
+  // the same as the old one
+  if (oldSocket && oldSocket.id !== socket.id) {
+    oldSocket.disconnect(0)
+  }
 }
 
 SocketSession.prototype.leave = function (socket) {
