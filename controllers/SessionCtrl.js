@@ -170,6 +170,44 @@ SessionManager.prototype.getUserBySocket = function (socket) {
 
 var sessionManager = new SessionManager()
 
+// A NewSessionTimeout keeps track of timeouts for notifications that need
+// to be sent
+var NewSessionTimeout = function (session, ...timeouts) {
+  this.session = session
+  this.timeouts = timeouts
+}
+
+NewSessionTimeout.prototype.clearTimeouts = function () {
+  this.timeouts.forEach((timeout) => clearTimeout(timeout))
+}
+
+// The NewSessionTimekeeper manages timing of notifications that are
+// triggered by sessions that are created but never joined by volunteers
+var NewSessionTimekeeper = function () {
+  this._newSessionTimeouts = {} // sessionId => newSessionTimeout
+}
+
+// set a timeout for a session that can be cancelled if a volunteer joins
+NewSessionTimekeeper.prototype.setSessionTimeout = function (session, delay, cb, ...args) {
+  let timeout = setTimeout((...a) => {
+    cb(a)
+    delete this._newSessionTimeouts[session._id]
+  }, delay, args)
+
+  this._newSessionTimeouts[session._id] = new NewSessionTimeout(session, timeout)
+}
+
+// clear all timeouts for a session
+NewSessionTimekeeper.prototype.clearSessionTimeouts = function (session) {
+  let newSessionTimeout = this._newSessionTimeouts[session._id]
+
+  if (newSessionTimeout) {
+    newSessionTimeout.clearTimeouts()
+  }
+}
+
+var newSessionTimekeeper = new NewSessionTimekeeper()
+
 module.exports = {
   create: function (options, cb) {
     var user = options.user || {}
@@ -178,11 +216,11 @@ module.exports = {
     var subTopic = options.subTopic
 
     if (!userId) {
-      cb('Cannot create a session without a user id', null)
+      return cb('Cannot create a session without a user id', null)
     } else if (user.isVolunteer) {
-      cb('Volunteers cannot create new sessions', null)
+      return cb('Volunteers cannot create new sessions', null)
     } else if (!type) {
-      cb('Must provide a type for a new session', null)
+      return cb('Must provide a type for a new session', null)
     }
 
     var session = new Session({
@@ -192,7 +230,15 @@ module.exports = {
     })
 
     if (!user.isTestUser) {
+      // standard notifications
       twilioService.notify(type, subTopic)
+
+      // initial failsafe notifications
+      twilioService.notifyFailsafe(user, type, subTopic)
+
+      // 5-minute SMS failsafe notifications
+      newSessionTimekeeper.setSessionTimeout(session, 300000,
+        twilioService.notifyFailsafe, user, type, subTopic, { desperate: true })
     }
 
     session.save(cb)

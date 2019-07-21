@@ -252,8 +252,8 @@ var userSchema = new mongoose.Schema({
   },
   hasSchedule: false,
   timezone: String,
-  pastSessions:  [{type: mongoose.Schema.Types.ObjectId,
-    ref: 'Session'}],
+  pastSessions: [{ type: mongoose.Schema.Types.ObjectId,
+    ref: 'Session' }],
 
   algebra: {
     passed: {
@@ -376,6 +376,16 @@ var userSchema = new mongoose.Schema({
   isVolunteer: {
     type: Boolean,
     default: false
+  },
+  isFailsafeVolunteer: {
+    type: Boolean,
+    default: false,
+    validate: {
+      validator: function (v) {
+        return this.isVolunteer || !v
+      },
+      message: 'A student cannot be a failsafe volunteer'
+    }
   },
   isAdmin: {
     type: Boolean,
@@ -531,7 +541,7 @@ userSchema.virtual('phonePretty')
       // ignore first element of match result, which is the full match,
       // and destructure the remaining portion
       var [, area, prefix, line] = v.match(PHONE_REGEX) || []
-	  this.phone = `${area}${prefix}${line}`
+      this.phone = `${area}${prefix}${line}`
     }
   })
 

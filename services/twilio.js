@@ -61,19 +61,63 @@ var getAvailableVolunteersFromDb = function (subtopic) {
   return query
 }
 
-function send (phoneNumber, name, subtopic) {
-  client.messages
+var getFailsafeVolunteersFromDb = function () {
+  var userQuery = {
+    'isFailsafeVolunteer': true
+  }
+  return User.find(userQuery)
+    .select({ phone: 1, firstname: 1 })
+}
+
+function sendTextMessage (phoneNumber, messageText) {
+  return client.messages
     .create({
       to: `+1${phoneNumber}`,
       from: config.sendingNumber,
-      body: `Hi ${name}, a student just requested help in ${subtopic} at app.upchieve.org. Please log in now to help them if you can!`
+      body: messageText
     })
     .then(message =>
       console.log(
         `Message sent to ${phoneNumber} with message id \n` + message.sid
       )
     )
-    .catch(err => console.log(err))
+}
+
+function send (phoneNumber, name, subtopic) {
+  var messageText = `Hi ${name}, a student just requested help in ` +
+    `${subtopic} at app.upchieve.org. Please log in now to help them if you can!`
+
+  sendTextMessage(phoneNumber, messageText).catch(err => console.log(err))
+}
+
+function sendFailsafe (phoneNumber, name, options) {
+  var studentFirstname = options.studentFirstname
+
+  var studentLastname = options.studentLastname
+
+  var studentHighSchool = options.studentHighSchool
+
+  var isFirstTimeRequester = options.isFirstTimeRequester
+
+  var type = options.type
+
+  var subtopic = options.subtopic
+
+  var desperate = options.desperate
+
+  let messageText
+  if (desperate) {
+    messageText = `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
+      `from ${studentHighSchool} really needs your ${type} help ` +
+      `on ${subtopic}. Please log in to app.upchieve.org and join the session ASAP!`
+  } else {
+    messageText = `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
+      `from ${studentHighSchool} has requested ${type} help ` +
+      `${isFirstTimeRequester ? 'for the first time' : ''} at app.upchieve.org ` +
+      `on ${subtopic}. Please log in if you can to help them out.`
+  }
+
+  return sendTextMessage(phoneNumber, messageText)
 }
 
 module.exports = {
@@ -83,5 +127,26 @@ module.exports = {
         send(person.phone, person.firstname, subtopic)
       })
     })
+  },
+  notifyFailsafe: function (student, type, subtopic, options) {
+    getFailsafeVolunteersFromDb().exec()
+      .then(function (persons) {
+        persons.forEach(function (person) {
+          var isFirstTimeRequester = !student.pastSessions || !student.pastSessions.length
+
+          sendFailsafe(
+            person.phone,
+            person.firstname,
+            {
+              studentFirstname: student.firstname,
+              studentLastname: student.lastname,
+              studentHighSchool: student.highschool,
+              isFirstTimeRequester,
+              type,
+              subtopic,
+              desperate: options.desperate
+            })
+        })
+      })
   }
 }
