@@ -26,6 +26,14 @@ module.exports = {
   authToken: '',
   sendingNumber: '',
 
+  // Failsafe notification options
+  // time until second (desperate) SMS message is sent
+  desperateSMSTimeout: 300000,
+  // time until voice call is made
+  desperateVoiceTimeout: 600000,
+  // voice to use to render speech
+  voice: 'man',
+
   VOLUNTEER_CODES: process.env.UPCHIEVE_VOLUNTEER_CODES || '',
   STUDENT_CODES: process.env.UPCHIEVE_STUDENT_CODES || ''
 }

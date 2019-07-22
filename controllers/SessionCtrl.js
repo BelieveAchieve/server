@@ -1,6 +1,8 @@
 var Session = require('../models/Session')
 var twilioService = require('../services/twilio')
 
+var config = require('../config')
+
 // A socket session tracks a session with its users and sockets
 var SocketSession = function (options) {
   this.session = options.session
@@ -237,7 +239,7 @@ module.exports = {
       twilioService.notifyFailsafe(user, type, subTopic)
 
       // 5-minute SMS failsafe notifications
-      newSessionTimekeeper.setSessionTimeout(session, 300000,
+      newSessionTimekeeper.setSessionTimeout(session, config.desperateSMSTimeout,
         twilioService.notifyFailsafe, user, type, subTopic, { desperate: true })
     }
 
