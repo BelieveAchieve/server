@@ -238,7 +238,7 @@ module.exports = {
       // initial failsafe notifications
       twilioService.notifyFailsafe(user, type, subTopic)
 
-      // 5-minute SMS failsafe notifications
+      // second SMS failsafe notifications
       newSessionTimekeeper.setSessionTimeout(session, config.desperateSMSTimeout,
         twilioService.notifyFailsafe, user, type, subTopic, { desperate: true })
     }
