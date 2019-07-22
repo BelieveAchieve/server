@@ -190,9 +190,9 @@ var NewSessionTimekeeper = function () {
 // set a timeout for a session that can be cancelled if a volunteer joins
 NewSessionTimekeeper.prototype.setSessionTimeout = function (session, delay, cb, ...args) {
   let timeout = setTimeout((...a) => {
-    cb(a)
+    cb(...a)
     delete this._newSessionTimeouts[session._id]
-  }, delay, args)
+  }, delay, ...args)
 
   this._newSessionTimeouts[session._id] = new NewSessionTimeout(session, timeout)
 }
