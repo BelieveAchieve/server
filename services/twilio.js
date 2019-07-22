@@ -70,6 +70,7 @@ var getFailsafeVolunteersFromDb = function () {
 }
 
 function sendTextMessage (phoneNumber, messageText) {
+  console.log(`sending sms to ${phoneNumber}...`)
   return client.messages
     .create({
       to: `+1${phoneNumber}`,
@@ -144,7 +145,7 @@ module.exports = {
               isFirstTimeRequester,
               type,
               subtopic,
-              desperate: options.desperate
+              desperate: options && options.desperate
             })
         })
       })

@@ -286,6 +286,8 @@ module.exports = {
           sessionManager.disconnect({
             socket: socket
           })
+          cb(err)
+          return
         }
         Session.populate(savedSession, 'student volunteer', function (
           err,
@@ -296,6 +298,11 @@ module.exports = {
             user: user,
             socket: socket
           })
+
+          if (user.isVolunteer) {
+            newSessionTimekeeper.clearSessionTimeouts(session)
+          }
+
           cb(err, populatedSession)
         })
       })
