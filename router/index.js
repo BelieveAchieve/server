@@ -6,10 +6,11 @@ module.exports = function (app) {
   require('./auth')(app)
   require('./api')(app)
   require('./edu')(app)
+  require('./twiml')(app)
 
   // Determine if incoming request is a static asset
   var isStaticReq = function (req) {
-    return ['/auth', '/api', '/js', '/css'].some(function (whitelist) {
+    return ['/auth', '/api', '/js', '/css', '/twiml'].some(function (whitelist) {
       return req.url.substr(0, whitelist.length) === whitelist
     })
   }

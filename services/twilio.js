@@ -70,7 +70,7 @@ var getFailsafeVolunteersFromDb = function () {
 }
 
 function sendTextMessage (phoneNumber, messageText) {
-  console.log(`sending sms to ${phoneNumber}...`)
+  console.log(`Sending SMS to ${phoneNumber}...`)
   return client.messages
     .create({
       to: `+1${phoneNumber}`,
@@ -82,6 +82,30 @@ function sendTextMessage (phoneNumber, messageText) {
         `Message sent to ${phoneNumber} with message id \n` + message.sid
       )
     )
+}
+
+function sendVoiceMessage (phoneNumber, messageText) {
+  console.log(`Initiating voice call to ${phoneNumber}...`)
+
+
+  let apiRoot
+  if (config.NODE_ENV === 'production') {
+    apiRoot = `https://${config.host}/twiml`
+  } else {
+    apiRoot = `http://${config.host}/twiml`
+  }
+
+  const url = apiRoot + '/message/' + encodeURIComponent(messageText)
+
+  return client.calls
+    .create({
+      url: url,
+      to: `+1${phoneNumber}`,
+      from: config.sendingNumber
+    })
+    .then((call) => {
+      console.log(`Voice call to ${phoneNumber} with id ${call.sid}`)
+    })
 }
 
 function send (phoneNumber, name, subtopic) {
@@ -106,6 +130,8 @@ function sendFailsafe (phoneNumber, name, options) {
 
   var desperate = options.desperate
 
+  var voice = options.voice
+
   let messageText
   if (desperate) {
     messageText = `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
@@ -118,7 +144,11 @@ function sendFailsafe (phoneNumber, name, options) {
       `on ${subtopic}. Please log in if you can to help them out.`
   }
 
-  return sendTextMessage(phoneNumber, messageText)
+  if (voice) {
+    return sendVoiceMessage(phoneNumber, messageText)
+  } else {
+    return sendTextMessage(phoneNumber, messageText)
+  }
 }
 
 module.exports = {
@@ -145,7 +175,8 @@ module.exports = {
               isFirstTimeRequester,
               type,
               subtopic,
-              desperate: options && options.desperate
+              desperate: options && options.desperate,
+              voice: options && options.voice
             })
         })
       })

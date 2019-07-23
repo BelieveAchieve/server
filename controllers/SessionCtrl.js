@@ -241,6 +241,11 @@ module.exports = {
       // second SMS failsafe notifications
       newSessionTimekeeper.setSessionTimeout(session, config.desperateSMSTimeout,
         twilioService.notifyFailsafe, user, type, subTopic, { desperate: true })
+
+      // failsafe voice notification
+      newSessionTimekeeper.setSessionTimeout(session, config.desperateVoiceTimeout,
+        twilioService.notifyFailsafe, user, type, subTopic, 
+        { desperate: true, voice: true })
     }
 
     session.save(cb)
