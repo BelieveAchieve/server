@@ -13,7 +13,7 @@ module.exports = function (app) {
 
   router.post('/message/:message', function (req, res, next) {
     var message = decodeURIComponent(req.params.message)
-    console.log('Making TwiML for message: ' + message)
+    console.log('Making TwiML for voice message')
 
     const twiml = new VoiceResponse()
 

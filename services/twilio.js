@@ -87,7 +87,6 @@ function sendTextMessage (phoneNumber, messageText) {
 function sendVoiceMessage (phoneNumber, messageText) {
   console.log(`Initiating voice call to ${phoneNumber}...`)
 
-
   let apiRoot
   if (config.NODE_ENV === 'production') {
     apiRoot = `https://${config.host}/twiml`
@@ -140,7 +139,7 @@ function sendFailsafe (phoneNumber, name, options) {
   } else {
     messageText = `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
       `from ${studentHighSchool} has requested ${type} help ` +
-      `${isFirstTimeRequester ? 'for the first time' : ''} at app.upchieve.org ` +
+      `${isFirstTimeRequester ? 'for the first time ' : ''}at app.upchieve.org ` +
       `on ${subtopic}. Please log in if you can to help them out.`
   }
 
