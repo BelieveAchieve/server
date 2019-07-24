@@ -1,4 +1,5 @@
 var Session = require('../models/Session')
+var User = require('../models/User')
 var twilioService = require('../services/twilio')
 
 var config = require('../config')
@@ -196,7 +197,15 @@ NewSessionTimekeeper.prototype.setSessionTimeout = function (session, delay, cb,
     delete this._newSessionTimeouts[session._id]
   }, delay, ...args)
 
-  this._newSessionTimeouts[session._id] = new NewSessionTimeout(session, timeout)
+  var newSessionTimeout = this._newSessionTimeouts[session._id]
+  if (!newSessionTimeout) {
+    // create the object
+    newSessionTimeout = new NewSessionTimeout(session, timeout)
+    this._newSessionTimeouts[session._id] = newSessionTimeout
+  } else {
+    // add timeout to existing object
+    newSessionTimeout.timeouts.push(timeout)
+  }
 }
 
 // clear all timeouts for a session
@@ -209,6 +218,22 @@ NewSessionTimekeeper.prototype.clearSessionTimeouts = function (session) {
 }
 
 var newSessionTimekeeper = new NewSessionTimekeeper()
+
+function addSession (user, session) {
+  User.update({ _id: user._id },
+    { $addToSet: { pastSessions: session._id } },
+    function (err, results) {
+      if (err) {
+        throw err
+      } else {
+        // print out what session was added to which user
+        if (results.nModified === 1) {
+          console.log(`${session._id} session was added to ` +
+          `${user._id}'s pastSessions`)
+        }
+      }
+    })
+}
 
 module.exports = {
   create: function (options, cb) {
@@ -249,6 +274,22 @@ module.exports = {
     }
 
     session.save(cb)
+  },
+
+  end: function (session, cb) {
+    var student = session.student
+    var volunteer = session.volunteer
+    // add session to the student and volunteer's pastSessions
+    addSession(student, session)
+    if (volunteer) {
+      addSession(volunteer, session)
+    }
+
+    // clear timeouts
+    newSessionTimekeeper.clearSessionTimeouts(session)
+
+    session.endSession()
+    cb(null, session)
   },
 
   get: function (options, cb) {
