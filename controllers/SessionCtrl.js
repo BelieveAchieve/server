@@ -276,20 +276,28 @@ module.exports = {
     session.save(cb)
   },
 
-  end: function (session, cb) {
-    var student = session.student
-    var volunteer = session.volunteer
-    // add session to the student and volunteer's pastSessions
-    addSession(student, session)
-    if (volunteer) {
-      addSession(volunteer, session)
-    }
+  end: function (options, cb) {
+    this.get(options, function (err, session) {
+      if (err) {
+        return cb(err)
+      } else if (!session) {
+        return cb('No session found')
+      }
 
-    // clear timeouts
-    newSessionTimekeeper.clearSessionTimeouts(session)
+      var student = session.student
+      var volunteer = session.volunteer
+      // add session to the student and volunteer's pastSessions
+      addSession(student, session)
+      if (volunteer) {
+        addSession(volunteer, session)
+      }
 
-    session.endSession()
-    cb(null, session)
+      // clear timeouts
+      newSessionTimekeeper.clearSessionTimeouts(session)
+
+      session.endSession()
+      cb(null, session)
+    })
   },
 
   get: function (options, cb) {

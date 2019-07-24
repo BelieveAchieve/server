@@ -34,23 +34,15 @@ module.exports = function (router) {
   router.route('/session/end').post(function (req, res) {
     var data = req.body || {}
     var sessionId = data.sessionId
-    SessionCtrl.get(
+    SessionCtrl.end(
       {
         sessionId: sessionId
       },
       function (err, session) {
         if (err) {
           res.json({ err: err })
-        } else if (!session) {
-          res.json({ err: 'No session found' })
         } else {
-          SessionCtrl.end(session, function (err, session) {
-            if (err) {
-              res.json({ err: err })
-            } else {
-              res.json({ sessionId: session._id })
-            }
-          })
+          res.json({ sessionId: session._id })
         }
       }
     )
