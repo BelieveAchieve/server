@@ -375,7 +375,11 @@ var userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  // Fake Users (users that are for testing on production side)
+  /* Fake Users
+   * These aren't the same as Test Users; they still receive Twilio texts, etc
+   * Fake Users are real, fully functional accounts that we decide not to track because they've been
+   * identified as accounts that aren't actual students/volunteers; just people trying out the service.
+   */
   isFakeUser: {
     type: Boolean,
     default: false
