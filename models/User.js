@@ -376,7 +376,7 @@ var userSchema = new mongoose.Schema({
     default: false
   },
   //Fake Users (users that are for testing on production side)
-  fakeUser:{
+  isFakeUser:{
     type: Boolean,
     default: false
   },
@@ -448,7 +448,7 @@ userSchema.methods.parseProfile = function () {
     extracurricularActivitesText: this.extracurricularActivitesText,
     favoriteAcademicSubject: this.favoriteAcademicSubject,
     heardFrom: this.heardFrom,
-    fakeUser: this.fakeUser,
+    isFakeUser: this.isFakeUser,
 
     algebra: this.algebra,
     geometry: this.geometry,
