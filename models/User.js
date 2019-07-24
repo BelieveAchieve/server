@@ -375,8 +375,8 @@ var userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  //Fake Users (users that are for testing on production side)
-  isFakeUser:{
+  // Fake Users (users that are for testing on production side)
+  isFakeUser: {
     type: Boolean,
     default: false
   },
@@ -533,7 +533,7 @@ userSchema.virtual('phonePretty')
       // ignore first element of match result, which is the full match,
       // and destructure the remaining portion
       var [, area, prefix, line] = v.match(PHONE_REGEX) || []
-	  this.phone = `${area}${prefix}${line}`
+      this.phone = `${area}${prefix}${line}`
     }
   })
 
