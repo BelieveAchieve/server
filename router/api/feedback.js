@@ -5,6 +5,8 @@ module.exports = function (router) {
     var body = req.body
     var feedback = new Feedback({
       sessionId: body['sessionId'],
+      type: body['topic'],
+      subTopic: body['subTopic'],
       responseData: body['responseData'],
       userType: body['userType'],
       studentId: body['studentId'],
