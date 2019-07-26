@@ -17,7 +17,7 @@ module.exports = function (app) {
 
     const twiml = new VoiceResponse()
 
-    twiml.say({ voice: config.voice, loop: 0 }, message)
+    twiml.say({ voice: config.voice }, message)
 
     res.type('text/xml')
     res.send(twiml.toString())
