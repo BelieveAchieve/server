@@ -278,6 +278,8 @@ Possible errors:
 ```json
 {
   "sessionId": "String",
+  "topic": "String",
+  "subTopic": "String",
   "responseData": "String"
 }
 ```

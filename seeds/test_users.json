@@ -46,7 +46,7 @@
     "highestLevelEducation": [],
     "highschool": "High School",
     "isAdmin": false,
-    "isTestUser": false,
+    "isTestUser": true,
     "isVolunteer": false,
     "lastname": "Upchieve",
     "nickname": "Student1",
