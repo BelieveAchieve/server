@@ -238,6 +238,8 @@ module.exports = {
           sessionManager.disconnect({
             socket: socket
           })
+          cb(err)
+          return
         }
         Session.populate(savedSession, 'student volunteer', function (
           err,
