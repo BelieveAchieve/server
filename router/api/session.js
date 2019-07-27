@@ -1,7 +1,4 @@
 var SessionCtrl = require('../../controllers/SessionCtrl')
-
-var User = require('../../models/User')
-
 var ObjectId = require('mongodb').ObjectId
 
 module.exports = function (router) {
@@ -30,7 +27,7 @@ module.exports = function (router) {
       }
     )
   })
-  
+
   router.route('/session/end').post(function (req, res) {
     var data = req.body || {}
     var sessionId = data.sessionId

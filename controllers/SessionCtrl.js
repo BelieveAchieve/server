@@ -258,19 +258,19 @@ module.exports = {
 
     if (!user.isTestUser) {
       // standard notifications
-      twilioService.notify(type, subTopic)
+      twilioService.notify(type, subTopic, { isTestUserRequest: user.isTestUser })
 
       // initial failsafe notifications
-      twilioService.notifyFailsafe(user, type, subTopic)
+      twilioService.notifyFailsafe(user, type, subTopic, { isTestUserRequest: user.isTestUser })
 
       // second SMS failsafe notifications
       newSessionTimekeeper.setSessionTimeout(session, config.desperateSMSTimeout,
-        twilioService.notifyFailsafe, user, type, subTopic, { desperate: true })
+        twilioService.notifyFailsafe, user, type, subTopic, { desperate: true, isTestUserRequest: user.isTestUser })
 
       // failsafe voice notification
       newSessionTimekeeper.setSessionTimeout(session, config.desperateVoiceTimeout,
-        twilioService.notifyFailsafe, user, type, subTopic, 
-        { desperate: true, voice: true })
+        twilioService.notifyFailsafe, user, type, subTopic,
+        { desperate: true, voice: true, isTestUserRequest: user.isTestUser })
     }
 
     session.save(cb)

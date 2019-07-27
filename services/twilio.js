@@ -42,16 +42,21 @@ function getAvailability () {
   return `availability.${days[day]}.${hour}`
 }
 
-var getAvailableVolunteersFromDb = function (subtopic) {
+var getAvailableVolunteersFromDb = function (subtopic, options) {
   var availability = getAvailability()
   console.log(availability)
 
   var certificationPassed = subtopic + '.passed'
 
+  // Only notify admins about requests from test users (for manual testing)
+  var shouldOnlyGetAdmins = options.isTestUserRequest || false
+
   var userQuery = {
+    isVolunteer: true,
     [certificationPassed]: true,
     [availability]: true,
-    registrationCode: 'COACH18'
+    isTestUser: false,
+    isAdmin: shouldOnlyGetAdmins
   }
 
   var query = User.find(userQuery)
@@ -107,9 +112,9 @@ function sendVoiceMessage (phoneNumber, messageText) {
     })
 }
 
-function send (phoneNumber, name, subtopic) {
-  var messageText = `Hi ${name}, a student just requested help in ` +
-    `${subtopic} at app.upchieve.org. Please log in now to help them if you can!`
+function send (phoneNumber, name, subtopic, isTestUserRequest) {
+  var testUserNotice = isTestUserRequest ? '[TEST USER] ' : '';
+  var messageText = `${testUserNotice}Hi ${name}, a student just requested help in ${subtopic} at app.upchieve.org. Please log in now to help them if you can!`
 
   sendTextMessage(phoneNumber, messageText).catch(err => console.log(err))
 }
@@ -131,13 +136,17 @@ function sendFailsafe (phoneNumber, name, options) {
 
   var voice = options.voice
 
+  var isTestUserRequest = options.isTestUserRequest
+
+  var testUserNotice = isTestUserRequest ? '[TEST USER] ' : '';
+
   let messageText
   if (desperate) {
-    messageText = `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
+    messageText = `${testUserNotice}Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
       `from ${studentHighSchool} really needs your ${type} help ` +
       `on ${subtopic}. Please log in to app.upchieve.org and join the session ASAP!`
   } else {
-    messageText = `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
+    messageText = `${testUserNotice}Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
       `from ${studentHighSchool} has requested ${type} help ` +
       `${isFirstTimeRequester ? 'for the first time ' : ''}at app.upchieve.org ` +
       `on ${subtopic}. Please log in if you can to help them out.`
@@ -151,10 +160,12 @@ function sendFailsafe (phoneNumber, name, options) {
 }
 
 module.exports = {
-  notify: function (type, subtopic) {
-    getAvailableVolunteersFromDb(subtopic).exec(function (err, persons) {
+  notify: function (type, subtopic, options) {
+    var isTestUserRequest = options.isTestUserRequest || false
+
+    getAvailableVolunteersFromDb(subtopic, { isTestUserRequest }).exec(function (err, persons) {
       persons.forEach(function (person) {
-        send(person.phone, person.firstname, subtopic)
+        send(person.phone, person.firstname, subtopic, isTestUserRequest)
       })
     })
   },
@@ -175,7 +186,8 @@ module.exports = {
               type,
               subtopic,
               desperate: options && options.desperate,
-              voice: options && options.voice
+              voice: options && options.voice,
+              isTestUserRequest: options && options.isTestUserRequest
             })
         })
       })
