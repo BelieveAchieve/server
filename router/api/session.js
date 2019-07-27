@@ -31,9 +31,11 @@ module.exports = function (router) {
   router.route('/session/end').post(function (req, res) {
     var data = req.body || {}
     var sessionId = data.sessionId
+    var user = req.user
     SessionCtrl.end(
       {
-        sessionId: sessionId
+        sessionId: sessionId,
+        user: user
       },
       function (err, session) {
         if (err) {

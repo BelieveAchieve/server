@@ -277,11 +277,16 @@ module.exports = {
   },
 
   end: function (options, cb) {
+    var user = options.user
+    var self = this
+
     this.get(options, function (err, session) {
       if (err) {
         return cb(err)
       } else if (!session) {
         return cb('No session found')
+      } else if (self.isNotSessionParticipant(session, user)) {
+        return cb('User is not a session participant')
       }
 
       var student = session.student
@@ -379,5 +384,37 @@ module.exports = {
     } else {
       cb(null, session)
     }
+  },
+
+  // helpers
+  isNotSessionParticipant: function(session, user) {
+    const sessionParticipants = [
+      session.volunteer || { _id: '' },
+      session.student || { _id: '' }
+    ]
+    console.log('Session participants: ')
+    console.log(sessionParticipants.map(e => e._id.toString()))
+
+    return sessionParticipants.findIndex(
+      participant => participant._id.toString() === user._id.toString()
+    ) === -1
+  },
+
+  verifySessionParticipantBySessionId: function(sessionId, user, cb) {
+    const self = this
+
+    this.get({
+      sessionId: sessionId
+    }, function(err, session) {
+      if (err) {
+        cb(err)
+      } else if (!user) {
+        cb('This action requires a user ID')
+      } else if (self.isNotSessionParticipant(session, user)) {
+        cb('Only session participants can perform this action')
+      } else {
+        cb(null, session)
+      }
+    })
   }
 }
