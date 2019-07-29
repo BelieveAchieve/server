@@ -120,7 +120,14 @@ deploy_repos() {
   step "Setting up web client repo..."
   cd ../web
   switch_to_branch_and_setup "$WEB_BRANCH"
-  npm run build
+  if [[ "${NODE_ENV}" == "production" ]]; then
+    step "Building web client for production..."
+    npm run build
+  else
+    step "Building web client for staging..."
+    npm run build:staging
+  fi
+  
 
   slack_notify "[Build $BUILD_TIMESTAMP] Deploying server/$SERVER_BRANCH to $UPCHIEVE_ENV..."
   hrule

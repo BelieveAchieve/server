@@ -377,6 +377,15 @@ var userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  /* Fake Users
+   * These aren't the same as Test Users; they still receive Twilio texts, etc
+   * Fake Users are real, fully functional accounts that we decide not to track because they've been
+   * identified as accounts that aren't actual students/volunteers; just people trying out the service.
+   */
+  isFakeUser: {
+    type: Boolean,
+    default: false
+  },
   isAdmin: {
     type: Boolean,
     default: false
@@ -446,6 +455,7 @@ userSchema.methods.parseProfile = function () {
     extracurricularActivitesText: this.extracurricularActivitesText,
     favoriteAcademicSubject: this.favoriteAcademicSubject,
     heardFrom: this.heardFrom,
+    isFakeUser: this.isFakeUser,
 
     algebra: this.algebra,
     geometry: this.geometry,
@@ -453,7 +463,6 @@ userSchema.methods.parseProfile = function () {
     esl: this.esl,
     precalculus: this.precalculus,
     calculus: this.calculus,
-
     phonePretty: this.phonePretty
   }
 }
@@ -531,7 +540,7 @@ userSchema.virtual('phonePretty')
       // ignore first element of match result, which is the full match,
       // and destructure the remaining portion
       var [, area, prefix, line] = v.match(PHONE_REGEX) || []
-	  this.phone = `${area}${prefix}${line}`
+      this.phone = `${area}${prefix}${line}`
     }
   })
 
