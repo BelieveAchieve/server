@@ -36,6 +36,11 @@ app.use(
     credentials: true
   })
 )
+// see https://stackoverflow.com/questions/51023943/nodejs-getting-username-of-logged-in-user-within-route
+app.use(function (req, res, next) {
+  res.locals.user = req.user || null
+  next()
+})
 
 var server = http.createServer(app)
 

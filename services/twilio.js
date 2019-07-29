@@ -42,16 +42,21 @@ function getAvailability () {
   return `availability.${days[day]}.${hour}`
 }
 
-var getAvailableVolunteersFromDb = function (subtopic) {
+var getAvailableVolunteersFromDb = function (subtopic, options) {
   var availability = getAvailability()
   console.log(availability)
 
   var certificationPassed = subtopic + '.passed'
 
+  // Only notify admins about requests from test users (for manual testing)
+  var shouldOnlyGetAdmins = options.isTestUserRequest || false
+
   var userQuery = {
+    isVolunteer: true,
     [certificationPassed]: true,
     [availability]: true,
-    registrationCode: 'COACH18'
+    isTestUser: false,
+    isAdmin: shouldOnlyGetAdmins
   }
 
   var query = User.find(userQuery)
@@ -61,12 +66,15 @@ var getAvailableVolunteersFromDb = function (subtopic) {
   return query
 }
 
-function send (phoneNumber, name, subtopic) {
+function send (phoneNumber, name, subtopic, isTestUserRequest) {
+  var testUserNotice = isTestUserRequest ? '[TEST USER] ' : '';
+  var textBody = `${testUserNotice}Hi ${name}, a student just requested help in ${subtopic} at app.upchieve.org. Please log in now to help them if you can!`
+
   client.messages
     .create({
       to: `+1${phoneNumber}`,
       from: config.sendingNumber,
-      body: `Hi ${name}, a student just requested help in ${subtopic} at app.upchieve.org. Please log in now to help them if you can!`
+      body: textBody
     })
     .then(message =>
       console.log(
@@ -77,10 +85,12 @@ function send (phoneNumber, name, subtopic) {
 }
 
 module.exports = {
-  notify: function (type, subtopic) {
-    getAvailableVolunteersFromDb(subtopic).exec(function (err, persons) {
+  notify: function (type, subtopic, options) {
+    var isTestUserRequest = options.isTestUserRequest || false
+
+    getAvailableVolunteersFromDb(subtopic, { isTestUserRequest }).exec(function (err, persons) {
       persons.forEach(function (person) {
-        send(person.phone, person.firstname, subtopic)
+        send(person.phone, person.firstname, subtopic, isTestUserRequest)
       })
     })
   }
