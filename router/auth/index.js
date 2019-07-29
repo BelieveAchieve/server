@@ -205,7 +205,7 @@ module.exports = function (app) {
                     var msg
                     if (err) {
                       msg =
-                        'Registration unsuccessful. Error sending verification email: ' +
+                        'Registration successful. Error sending verification email: ' +
                         err
                     } else {
                       msg =
@@ -268,8 +268,8 @@ module.exports = function (app) {
     var email = config.mail.receivers.contact
     ContactCtrl.initiateContact(
       {
-          email: email,
-          responseData: responseData
+        email: email,
+        responseData: responseData
       },
       function (err, data) {
         if (err) {
