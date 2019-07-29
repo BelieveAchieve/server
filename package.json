@@ -8,6 +8,19 @@
     "test": "nyc ava --verbose",
     "format": "prettier-standard '*.js' '{controllers,models,router,services,seeds}/**/*.js'"
   },
+  "nyc": {
+    "check-coverage": true,
+    "extension": [
+      ".js"
+    ],
+    "reporter": [
+      "html",
+      "lcov",
+      "text",
+      "text-summary"
+    ],
+    "report-dir": "coverage"
+  },
   "dependencies": {
     "async": "^1.5.0",
     "bcrypt": "3.0.4",
