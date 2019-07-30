@@ -194,7 +194,14 @@ var NewSessionTimekeeper = function () {
 NewSessionTimekeeper.prototype.setSessionTimeout = function (session, delay, cb, ...args) {
   let timeout = setTimeout((...a) => {
     cb(...a)
-    delete this._newSessionTimeouts[session._id]
+
+    // remove the timeout from memory
+    let timeoutIndex = this._newSessionTimeouts[session._id].timeouts
+      .findIndex(t => timeout === t)
+    if (timeoutIndex > -1) {
+      this._newSessionTimeouts[session._id].splice(timeoutIndex, 1)
+    }
+    delete timeout
   }, delay, ...args)
 
   var newSessionTimeout = this._newSessionTimeouts[session._id]
