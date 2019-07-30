@@ -199,7 +199,7 @@ NewSessionTimekeeper.prototype.setSessionTimeout = function (session, delay, cb,
     let timeoutIndex = this._newSessionTimeouts[session._id].timeouts
       .findIndex(t => timeout === t)
     if (timeoutIndex > -1) {
-      this._newSessionTimeouts[session._id].splice(timeoutIndex, 1)
+      this._newSessionTimeouts[session._id].timeouts.splice(timeoutIndex, 1)
     }
   }, delay, ...args)
 
