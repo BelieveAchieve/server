@@ -51,12 +51,19 @@ var getAvailableVolunteersFromDb = function (subtopic, options) {
   // Only notify admins about requests from test users (for manual testing)
   var shouldOnlyGetAdmins = options.isTestUserRequest || false
 
+  // Don't notify failsafes with the message intended for standard users
+  var excludeFailsafe = options.excludeFailsafe
+
   var userQuery = {
     isVolunteer: true,
     [certificationPassed]: true,
     [availability]: true,
     isTestUser: false,
     isAdmin: shouldOnlyGetAdmins
+  }
+
+  if (excludeFailsafe) {
+    userQuery.isFailsafeVolunteer = false
   }
 
   var query = User.find(userQuery)
@@ -160,14 +167,22 @@ function sendFailsafe (phoneNumber, name, options) {
 }
 
 module.exports = {
-  notify: function (type, subtopic, options) {
+  notify: function (student, type, subtopic, options) {
     var isTestUserRequest = options.isTestUserRequest || false
 
-    getAvailableVolunteersFromDb(subtopic, { isTestUserRequest }).exec(function (err, persons) {
+    // standard notifications for non-failsafe volunteers
+    getAvailableVolunteersFromDb(subtopic, {
+      isTestUserRequest,
+      excludeFailsafe: true
+    })
+      .exec(function (err, persons) {
       persons.forEach(function (person) {
         send(person.phone, person.firstname, subtopic, isTestUserRequest)
       })
     })
+
+    // failsafe notifications
+    this.notifyFailsafe(student, type, subtopic, options)
   },
   notifyFailsafe: function (student, type, subtopic, options) {
     getFailsafeVolunteersFromDb().exec()
