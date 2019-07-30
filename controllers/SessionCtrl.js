@@ -201,7 +201,6 @@ NewSessionTimekeeper.prototype.setSessionTimeout = function (session, delay, cb,
     if (timeoutIndex > -1) {
       this._newSessionTimeouts[session._id].splice(timeoutIndex, 1)
     }
-    delete timeout
   }, delay, ...args)
 
   var newSessionTimeout = this._newSessionTimeouts[session._id]
