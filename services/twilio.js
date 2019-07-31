@@ -120,7 +120,7 @@ function sendVoiceMessage (phoneNumber, messageText) {
 }
 
 function send (phoneNumber, name, subtopic, isTestUserRequest) {
-  var testUserNotice = isTestUserRequest ? '[TEST USER] ' : '';
+  var testUserNotice = isTestUserRequest ? '[TEST USER] ' : ''
   var messageText = `${testUserNotice}Hi ${name}, a student just requested help in ${subtopic} at app.upchieve.org. Please log in now to help them if you can!`
 
   sendTextMessage(phoneNumber, messageText).catch(err => console.log(err))
@@ -145,7 +145,7 @@ function sendFailsafe (phoneNumber, name, options) {
 
   var isTestUserRequest = options.isTestUserRequest
 
-  var testUserNotice = isTestUserRequest ? '[TEST USER] ' : '';
+  var testUserNotice = isTestUserRequest ? '[TEST USER] ' : ''
 
   let messageText
   if (desperate) {

@@ -404,7 +404,7 @@ module.exports = {
   },
 
   // helpers
-  isNotSessionParticipant: function(session, user) {
+  isNotSessionParticipant: function (session, user) {
     const sessionParticipants = [
       session.volunteer || { _id: '' },
       session.student || { _id: '' }
@@ -417,12 +417,12 @@ module.exports = {
     ) === -1
   },
 
-  verifySessionParticipantBySessionId: function(sessionId, user, cb) {
+  verifySessionParticipantBySessionId: function (sessionId, user, cb) {
     const self = this
 
     this.get({
       sessionId: sessionId
-    }, function(err, session) {
+    }, function (err, session) {
       if (err) {
         cb(err)
       } else if (!user) {
