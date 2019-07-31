@@ -52,7 +52,7 @@ var getAvailableVolunteersFromDb = function (subtopic, options) {
   var shouldOnlyGetAdmins = options.isTestUserRequest || false
 
   // Don't notify failsafes with the message intended for standard users
-  var excludeFailsafe = options.excludeFailsafe
+  var shouldGetFailsafe = options.shouldGetFailsafe
 
   var userQuery = {
     isVolunteer: true,
@@ -62,7 +62,7 @@ var getAvailableVolunteersFromDb = function (subtopic, options) {
     isAdmin: shouldOnlyGetAdmins
   }
 
-  if (excludeFailsafe) {
+  if (!shouldGetFailsafe) {
     userQuery.isFailsafeVolunteer = false
   }
 
@@ -173,7 +173,7 @@ module.exports = {
     // standard notifications for non-failsafe volunteers
     getAvailableVolunteersFromDb(subtopic, {
       isTestUserRequest,
-      excludeFailsafe: true
+      shouldGetFailsafe: false
     })
       .exec(function (err, persons) {
       persons.forEach(function (person) {
