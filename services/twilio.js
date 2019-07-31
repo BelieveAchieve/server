@@ -51,7 +51,7 @@ var getAvailableVolunteersFromDb = function (subtopic, options) {
   // Only notify admins about requests from test users (for manual testing)
   var shouldOnlyGetAdmins = options.isTestUserRequest || false
 
-  // Don't notify failsafes with the message intended for standard users
+  // True if the query should include failsafe users
   var shouldGetFailsafe = options.shouldGetFailsafe
 
   var userQuery = {

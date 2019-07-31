@@ -184,6 +184,19 @@ NewSessionTimeout.prototype.clearTimeouts = function () {
   this.timeouts.forEach((timeout) => clearTimeout(timeout))
 }
 
+// remove a timeout from the session with which it is associated
+NewSessionTimeout.prototype.removeTimeout = function (timeout) {
+  let timeoutIndex = this.timeouts.findIndex(t => timeout === t)
+  if (timeoutIndex > -1) {
+    this.timeouts.splice(timeoutIndex, 1)
+  }
+}
+
+// checks if a session has no timeouts
+NewSessionTimeout.prototype.hasNoTimeouts = function () {
+  return this.timeouts.length === 0
+}
+
 // The NewSessionTimekeeper manages timing of notifications that are
 // triggered by sessions that are created but never joined by volunteers
 var NewSessionTimekeeper = function () {
@@ -195,11 +208,13 @@ NewSessionTimekeeper.prototype.setSessionTimeout = function (session, delay, cb,
   let timeout = setTimeout((...a) => {
     cb(...a)
 
-    // remove the timeout from memory
-    let timeoutIndex = this._newSessionTimeouts[session._id].timeouts
-      .findIndex(t => timeout === t)
-    if (timeoutIndex > -1) {
-      this._newSessionTimeouts[session._id].timeouts.splice(timeoutIndex, 1)
+    // remove the timeout from memory after callback executes
+    let newSessionTimeout = this._newSessionTimeouts[session._id]
+    newSessionTimeout.removeTimeout(timeout)
+
+    // delete the NewSessionTimeout object if there are no remaining timeouts
+    if (newSessionTimeout.hasNoTimeouts()) {
+      delete this._newSessionTimeouts[session._id]
     }
   }, delay, ...args)
 
@@ -220,6 +235,7 @@ NewSessionTimekeeper.prototype.clearSessionTimeouts = function (session) {
 
   if (newSessionTimeout) {
     newSessionTimeout.clearTimeouts()
+    delete this._newSessionTimeouts[session._id]
   }
 }
 
