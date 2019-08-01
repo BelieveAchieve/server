@@ -67,8 +67,9 @@ var getAvailableVolunteersFromDb = function (subtopic, options) {
 }
 
 function send (phoneNumber, name, subtopic, isTestUserRequest) {
-  var testUserNotice = isTestUserRequest ? '[TEST USER] ' : '';
-  var textBody = `${testUserNotice}Hi ${name}, a student just requested help in ${subtopic} at app.upchieve.org. Please log in now to help them if you can!`
+  var environmentUrl = config.NODE_ENV==='Dev' ? 'http://localhost:8080' : 'http://167.99.228.44:3000/'
+  var testUserNotice = isTestUserRequest ? '[DEVELOPMENT REQUEST] ' : '';
+  var textBody = `${testUserNotice}Hi ${name}, a student just requested help in ${subtopic} at ${environmentUrl}. Please log in now to help them if you can!`
 
   client.messages
     .create({
