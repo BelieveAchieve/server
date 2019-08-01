@@ -7,32 +7,35 @@ var User = require('../models/User')
  * @param {*} availability
  */
 function aggregateAvailabilities (availability, aggAvailabilities) {
-  for (const day in availability) {
-    for (const time in availability[day]) {
-      // '$init' property and others are not skipped when nested
-      if (time !== '$init' && availability[day].hasOwnProperty([time])) {
-        // create headers based on the user's availability object
-        if (!aggAvailabilities.daysOfWeek) {
-          aggAvailabilities.daysOfWeek = Object.keys(availability)
-          aggAvailabilities.daysOfWeek.shift() // gets rid of $init enum param
-        }
-        if (!aggAvailabilities.timesOfDay) {
-          aggAvailabilities.timesOfDay = Object.keys(availability[day])
-          aggAvailabilities.timesOfDay.shift() // gets rid of $init enum param
-        }
-        // gets corresponding day and time index inorder to store in aggAvailabilities table
-        let dayIndex = aggAvailabilities.daysOfWeek.indexOf(day)
-        let timeIndex = aggAvailabilities.timesOfDay.indexOf(time)
-
-        if (availability[day][time]) {
-          aggAvailabilities.table[dayIndex][timeIndex]++
-        }
+  // for (const day in availability) {
+  Object.keys(availability).map(day => {
+    Object.keys(availability[day]).map(time => {
+      // create headers based on the user's availability object
+      if (!aggAvailabilities.daysOfWeek) {
+        aggAvailabilities.daysOfWeek = Object.keys(availability)
+        aggAvailabilities.daysOfWeek.shift() // gets rid of $init enum param
       }
-    }
-  }
+      if (!aggAvailabilities.timesOfDay) {
+        aggAvailabilities.timesOfDay = Object.keys(availability[day])
+        aggAvailabilities.timesOfDay.shift() // gets rid of $init enum param
+      }
+      // gets corresponding day and time index inorder to store in aggAvailabilities table
+      let dayIndex = aggAvailabilities.daysOfWeek.indexOf(day)
+      let timeIndex = aggAvailabilities.timesOfDay.indexOf(time)
+
+      if (availability[day][time]) {
+        aggAvailabilities.table[dayIndex][timeIndex]++
+      }
+    })
+  })
   return aggAvailabilities
 }
 
+/**
+ * Helper function that finds the minimum and maxmimum number of
+ * volunteers who signed up that week
+ * @param {*} aggAvailabilities
+ */
 function findMinAndMax (aggAvailabilities) {
   let flatTable = aggAvailabilities.table.flat()
   aggAvailabilities.min = Math.min.apply(Math, flatTable)
@@ -50,7 +53,7 @@ module.exports = {
    */
   getVolunteersAvailability: function (options, callback) {
     var certifiedSubjectQuery = options.certifiedSubject + '.passed'
-    User.find({ isVolunteer: true, hasSchedule: true, [certifiedSubjectQuery]: true }, function (err, users) {
+    User.find({ isVolunteer: true, hasSchedule: true, [certifiedSubjectQuery]: true, availability: { $exists: true } }, function (err, users) {
       // defining and resetting variables
       var aggAvailabilities = {}
       aggAvailabilities.table = Array(7).fill(0).map(() => Array(24).fill(0))
@@ -60,11 +63,9 @@ module.exports = {
       if (err) {
         return callback(null, err)
       } else {
-        users.forEach(function (user) {
-          if (user.availability) {
-            aggAvailabilities = aggregateAvailabilities(user.availability, aggAvailabilities)
-          }
-        })
+        aggAvailabilities = users.reduce(function (aggAvailabilities, user) {
+          return aggregateAvailabilities(user.availability, aggAvailabilities)
+        }, aggAvailabilities)
         aggAvailabilities = findMinAndMax(aggAvailabilities)
         return callback(aggAvailabilities, null)
       }
