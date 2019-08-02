@@ -436,7 +436,6 @@ userSchema.methods.parseProfile = function () {
     preferredContactMethod: this.preferredContactMethod,
     availability: this.availability,
     hasSchedule: this.hasSchedule,
-    pastSessions: this.pastSessions,
 
     highschool: this.highschool,
     currentGrade: this.currentGrade,
