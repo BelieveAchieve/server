@@ -35,7 +35,7 @@ dbconnect(mongoose, function () {
       User.update(
         {},
         { $set: { pastSessions: [] } },
-        { upsert: false, multi: true }
+        { upsert: true, multi: true }
       )
       callback()
     },
