@@ -81,13 +81,16 @@ var getFailsafeVolunteersFromDb = function () {
     .select({ phone: 1, firstname: 1 })
 }
 
-function sendTextMessage (phoneNumber, messageText) {
+function sendTextMessage (phoneNumber, messageText, isTestUserRequest) {
   console.log(`Sending SMS to ${phoneNumber}...`)
+
+  const testUserNotice = isTestUserRequest ? '[TEST USER] ' : ''
+
   return client.messages
     .create({
       to: `+1${phoneNumber}`,
       from: config.sendingNumber,
-      body: messageText
+      body: testUserNotice + messageText
     })
     .then(message =>
       console.log(
@@ -106,8 +109,11 @@ function sendVoiceMessage (phoneNumber, messageText) {
     apiRoot = `http://${config.host}/twiml`
   }
 
+  // URL for Twilio to retrieve the TwiML with the message text and voice
   const url = apiRoot + '/message/' + encodeURIComponent(messageText)
 
+  // initiate call, giving Twilio the aforementioned URL which Twilio
+  // opens when the calll is answered to get the TwiML instructions
   return client.calls
     .create({
       url: url,
@@ -120,10 +126,9 @@ function sendVoiceMessage (phoneNumber, messageText) {
 }
 
 function send (phoneNumber, name, subtopic, isTestUserRequest) {
-  var testUserNotice = isTestUserRequest ? '[TEST USER] ' : ''
-  var messageText = `${testUserNotice}Hi ${name}, a student just requested help in ${subtopic} at app.upchieve.org. Please log in now to help them if you can!`
+  var messageText = `Hi ${name}, a student just requested help in ${subtopic} at app.upchieve.org. Please log in now to help them if you can!`
 
-  sendTextMessage(phoneNumber, messageText).catch(err => console.log(err))
+  sendTextMessage(phoneNumber, messageText, isTestUserRequest).catch(err => console.log(err))
 }
 
 function sendFailsafe (phoneNumber, name, options) {
@@ -145,24 +150,24 @@ function sendFailsafe (phoneNumber, name, options) {
 
   var isTestUserRequest = options.isTestUserRequest
 
-  var testUserNotice = isTestUserRequest ? '[TEST USER] ' : ''
+  const firstTimeNotice = isFirstTimeRequester ? 'for the first time ' : ''
 
   let messageText
   if (desperate) {
-    messageText = `${testUserNotice}Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
+    messageText = `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
       `from ${studentHighSchool} really needs your ${type} help ` +
       `on ${subtopic}. Please log in to app.upchieve.org and join the session ASAP!`
   } else {
-    messageText = `${testUserNotice}Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
+    messageText = `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
       `from ${studentHighSchool} has requested ${type} help ` +
-      `${isFirstTimeRequester ? 'for the first time ' : ''}at app.upchieve.org ` +
+      `${firstTimeNotice}at app.upchieve.org ` +
       `on ${subtopic}. Please log in if you can to help them out.`
   }
 
   if (voice) {
     return sendVoiceMessage(phoneNumber, messageText)
   } else {
-    return sendTextMessage(phoneNumber, messageText)
+    return sendTextMessage(phoneNumber, messageText, isTestUserRequest)
   }
 }
 
@@ -177,10 +182,10 @@ module.exports = {
       shouldGetFailsafe: false
     })
       .exec(function (err, persons) {
-      persons.forEach(function (person) {
-        send(person.phone, person.firstname, subtopic, isTestUserRequest)
+        persons.forEach(function (person) {
+          send(person.phone, person.firstname, subtopic, isTestUserRequest)
+        })
       })
-    })
 
     // failsafe notifications
     this.notifyFailsafe(student, type, subtopic, options)
