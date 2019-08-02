@@ -185,6 +185,7 @@ module.exports = {
     // failsafe notifications
     this.notifyFailsafe(student, type, subtopic, options)
   },
+  // notify failsafe volunteers
   notifyFailsafe: function (student, type, subtopic, options) {
     getFailsafeVolunteersFromDb().exec()
       .then(function (persons) {
