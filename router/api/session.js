@@ -35,9 +35,15 @@ module.exports = function (router) {
   function addSession (user, session) {
     User.update({ _id: user._id },
       { $addToSet: { pastSessions: session._id } },
-      function (err) {
+      function (err, results) {
         if (err) {
           throw err
+        } else {
+          // print out what session was added to which user
+          if (results.nModified === 1) {
+            console.log(`${session._id} session was added to ` +
+            `${user._id}'s pastSessions`)
+          }
         }
       })
   }
