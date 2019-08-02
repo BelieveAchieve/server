@@ -1,4 +1,5 @@
 var SessionCtrl = require('../../controllers/SessionCtrl')
+
 var ObjectId = require('mongodb').ObjectId
 
 module.exports = function (router) {
