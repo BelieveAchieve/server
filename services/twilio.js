@@ -113,7 +113,7 @@ function sendVoiceMessage (phoneNumber, messageText) {
   const url = apiRoot + '/message/' + encodeURIComponent(messageText)
 
   // initiate call, giving Twilio the aforementioned URL which Twilio
-  // opens when the calll is answered to get the TwiML instructions
+  // opens when the call is answered to get the TwiML instructions
   return client.calls
     .create({
       url: url,
