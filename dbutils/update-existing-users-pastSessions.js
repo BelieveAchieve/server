@@ -45,12 +45,17 @@ dbconnect(mongoose, function () {
         if (err) {
           callback(err)
         } else {
+          // add session to the student and volunteer's pastSessions
           for (var i = 0; i < sessions.length; i++) {
-            // add session to the student and volunteer's pastSessions
             var volunteer = sessions[i].volunteer
             var student = sessions[i].student
-            addSession(student, sessions[i])
-            // check if volunteer exists in session
+
+            // if student exists, add to their sessions
+            if (student) {
+              addSession(student, sessions[i])
+            }
+
+            // if volunteer exists, add to their sessions
             if (volunteer) {
               addSession(volunteer, sessions[i])
             }
