@@ -186,7 +186,7 @@ NewSessionTimeout.prototype.clearTimeouts = function () {
 
 // remove a timeout from the session with which it is associated
 NewSessionTimeout.prototype.removeTimeout = function (timeout) {
-  let timeoutIndex = this.timeouts.findIndex(t => timeout === t)
+  const timeoutIndex = this.timeouts.findIndex(t => timeout === t)
   if (timeoutIndex > -1) {
     this.timeouts.splice(timeoutIndex, 1)
   }
@@ -205,11 +205,11 @@ var NewSessionTimekeeper = function () {
 
 // set a timeout for a session that can be cancelled if a volunteer joins
 NewSessionTimekeeper.prototype.setSessionTimeout = function (session, delay, cb, ...args) {
-  let timeout = setTimeout((...a) => {
+  const timeout = setTimeout((...a) => {
     cb(...a)
 
     // remove the timeout from memory after callback executes
-    let newSessionTimeout = this._newSessionTimeouts[session._id]
+    const newSessionTimeout = this._newSessionTimeouts[session._id]
     newSessionTimeout.removeTimeout(timeout)
 
     // delete the NewSessionTimeout object if there are no remaining timeouts
@@ -231,7 +231,7 @@ NewSessionTimekeeper.prototype.setSessionTimeout = function (session, delay, cb,
 
 // clear all timeouts for a session
 NewSessionTimekeeper.prototype.clearSessionTimeouts = function (session) {
-  let newSessionTimeout = this._newSessionTimeouts[session._id]
+  const newSessionTimeout = this._newSessionTimeouts[session._id]
 
   if (newSessionTimeout) {
     newSessionTimeout.clearTimeouts()

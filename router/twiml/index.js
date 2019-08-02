@@ -9,10 +9,10 @@ const config = require('../../config')
 module.exports = function (app) {
   console.log('TwiML module')
 
-  var router = new express.Router()
+  const router = new express.Router()
 
   router.post('/message/:message', function (req, res, next) {
-    var message = decodeURIComponent(req.params.message)
+    const message = decodeURIComponent(req.params.message)
     console.log('Making TwiML for voice message')
 
     const twiml = new VoiceResponse()
