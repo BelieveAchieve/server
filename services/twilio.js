@@ -167,6 +167,7 @@ function sendFailsafe (phoneNumber, name, options) {
 }
 
 module.exports = {
+  // notify both standard and failsafe volunteers
   notify: function (student, type, subtopic, options) {
     var isTestUserRequest = options.isTestUserRequest || false
 
