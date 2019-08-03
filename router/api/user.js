@@ -49,7 +49,8 @@ module.exports = function (router) {
           favoriteAcademicSubject: data.favoriteAcademicSubject,
           extracurricularActivitesText: data.extracurricularActivitesText,
           heardFrom: data.heardFrom,
-          referred: data.referred
+          referred: data.referred,
+          pastSessions: data.pastSessions
         }
       },
       function (err, user) {

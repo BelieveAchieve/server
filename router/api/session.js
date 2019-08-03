@@ -1,4 +1,7 @@
 var SessionCtrl = require('../../controllers/SessionCtrl')
+
+var User = require('../../models/User')
+
 var ObjectId = require('mongodb').ObjectId
 
 var helpers = require('./helpers.js')
@@ -29,11 +32,24 @@ module.exports = function (router) {
       }
     )
   })
-
+  function addSession (user, session) {
+    User.update({ _id: user._id },
+      { $addToSet: { pastSessions: session._id } },
+      function (err, results) {
+        if (err) {
+          throw err
+        } else {
+          // print out what session was added to which user
+          if (results.nModified === 1) {
+            console.log(`${session._id} session was added to ` +
+            `${user._id}'s pastSessions`)
+          }
+        }
+      })
+  }
   router.route('/session/end').post(function (req, res) {
     var data = req.body || {}
     var sessionId = data.sessionId
-
     SessionCtrl.get(
       {
         sessionId: sessionId
@@ -47,6 +63,13 @@ module.exports = function (router) {
           console.log([req.user._id])
           res.json({ err: 'Only a session participant can end a session' })
         } else {
+          var student = session.student
+          var volunteer = session.volunteer
+          // add session to the student and volunteer's pastSessions
+          addSession(student, session)
+          if (volunteer) {
+            addSession(volunteer, session)
+          }
           session.endSession()
           res.json({ sessionId: session._id })
         }
