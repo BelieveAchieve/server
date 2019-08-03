@@ -41,8 +41,6 @@ UPchieve web server
     - [POST /api/verify/confirm](#post-apiverifyconfirm)
     - [POST /moderate/message](#post-moderatemessage)
 
-
-
 Local Development
 -----------------
 
@@ -357,5 +355,3 @@ The response body looks like this if no error occurred:
   "isClean": true // or false
 }
 ```
-
-

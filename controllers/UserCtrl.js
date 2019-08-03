@@ -73,7 +73,6 @@ module.exports = {
     })
   },
 
-  
   update: function (options, callback) {
     var userId = options.userId
 
