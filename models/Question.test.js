@@ -2,34 +2,32 @@ const test = require('ava')
 const Question = require('./Question')
 
 test('Called getSubcategories using good data', t => {
-	let subcategories = Question.getSubcategories("algebra")
+	const subcategories = Question.getSubcategories("algebra")
   t.is(subcategories[0], 'linear equations')
 })
 
 
 test('Called getSubcategories using nonexistant category', t => {
-	let subcategories = Question.getSubcategories("math")
-  t.is(subcategories[0], 'linear equations')
+	const error = t.throws(() => {
+		Question.getSubcategories("math")
+	}, ReferenceError);
+  t.is(error.message, 'math is not a subcategory.')
 })
 
 test('Called getSubcategories using wrong capitalization data', t => {
-	let subcategories = Question.getSubcategories("Algebra")
+	const subcategories = Question.getSubcategories("Algebra")
   t.is(subcategories[0], 'linear equations')
 })
 
-test('Called getSubcategories using numbers', t => {
-	let subcategories = Question.getSubcategories("Algebra")
-  t.is(subcategories[0], 'linear equations')
+test('Called getSubcategories using wrong type', t => {
+	const error = t.throws(() => {
+		Question.getSubcategories(1)
+	}, TypeError);
+  t.is(error.message, 'Category has a value of 1. It must be a string, not number')
 })
-
-test('Called getSubcategories using negative numbers', t => {
-	let subcategories = Question.getSubcategories("Algebra")
-  t.is(subcategories[0], 'linear equations')
-})
-
 
 test('Checks that parse questions contains only insensitive data', t => {
-	let q = new Question({
+	const q = new Question({
 			questionText: "test",
 			possibleAnswers:{txt:"righttest", val:"1"},
 			correctAnswer: "correctAnswer",
@@ -37,7 +35,7 @@ test('Checks that parse questions contains only insensitive data', t => {
 			imageSrc:"imagesrc",
   })
 
-	let qt = q.parseQuestion()
+	const qt = q.parseQuestion()
 
 	t.is(qt.questionText, q.questionText)
 
