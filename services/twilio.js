@@ -123,6 +123,9 @@ function sendVoiceMessage (phoneNumber, messageText) {
     .then((call) => {
       console.log(`Voice call to ${phoneNumber} with id ${call.sid}`)
     })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 
 function send (phoneNumber, name, subtopic, isTestUserRequest) {
