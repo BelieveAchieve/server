@@ -6,7 +6,6 @@ test('Called getSubcategories using good data', t => {
   t.is(subcategories[0], 'linear equations')
 })
 
-
 test('Called getSubcategories using nonexistant category', t => {
 	const error = t.throws(() => {
 		Question.getSubcategories("math")
