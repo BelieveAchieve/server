@@ -5,7 +5,7 @@ module.exports = function (app) {
   console.log('API module')
 
   var router = new express.Router()
-
+  require('./volunteers')(router)
   require('./user')(router)
   require('./verify')(router)
   require('./session')(router)

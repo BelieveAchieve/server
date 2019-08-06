@@ -5,7 +5,6 @@ const socket = require('socket.io')
 
 const config = require('../../config.js')
 const SessionCtrl = require('../../controllers/SessionCtrl.js')
-const helpers = require('./helpers.js')
 
 // Create an HTTPS server if in production, otherwise use HTTP.
 const createServer = app => {
@@ -128,7 +127,7 @@ module.exports = function (app) {
         },
         function (err, session) {
           // Don't let anyone but the session's student or volunteer create messages
-          if (err || helpers.isNotSessionParticipant(session, data.user)) {
+          if (err || SessionCtrl.isNotSessionParticipant(session, data.user)) {
             console.log('Could not deliver message')
             io.emit('error', err || 'Only session participants are allowed to send messages')
             return
@@ -153,7 +152,7 @@ module.exports = function (app) {
 
     socket.on('drawClick', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
+      SessionCtrl.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('draw', {
           x: data.x,
@@ -165,7 +164,7 @@ module.exports = function (app) {
 
     socket.on('saveImage', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
+      SessionCtrl.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('save')
       })
@@ -173,7 +172,7 @@ module.exports = function (app) {
 
     socket.on('undoClick', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
+      SessionCtrl.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('undo')
       })
@@ -181,7 +180,7 @@ module.exports = function (app) {
 
     socket.on('clearClick', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
+      SessionCtrl.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         io.to(data.sessionId).emit('clear')
       })
@@ -189,7 +188,7 @@ module.exports = function (app) {
 
     socket.on('drawing', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
+      SessionCtrl.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('draw')
       })
@@ -197,7 +196,7 @@ module.exports = function (app) {
 
     socket.on('end', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err, session) {
+      SessionCtrl.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err, session) {
         if (err) return
         session.saveWhiteboardUrl(data.whiteboardUrl)
         socket.broadcast.to(data.sessionId).emit('end', data)
@@ -206,7 +205,7 @@ module.exports = function (app) {
 
     socket.on('changeColor', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
+      SessionCtrl.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('color', data.color)
       })
@@ -214,7 +213,7 @@ module.exports = function (app) {
 
     socket.on('changeWidth', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
+      SessionCtrl.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('width', data.width)
       })
@@ -222,7 +221,7 @@ module.exports = function (app) {
 
     socket.on('dragStart', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
+      SessionCtrl.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('dstart', {
           x: data.x,
@@ -234,7 +233,7 @@ module.exports = function (app) {
 
     socket.on('dragAction', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
+      SessionCtrl.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('drag', {
           x: data.x,
@@ -246,7 +245,7 @@ module.exports = function (app) {
 
     socket.on('dragEnd', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
+      SessionCtrl.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         socket.broadcast.to(data.sessionId).emit('dend', {
           x: data.x,
@@ -258,7 +257,7 @@ module.exports = function (app) {
 
     socket.on('insertText', function (data) {
       if (!data || !data.sessionId) return
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
+      SessionCtrl.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         io.to(data.sessionId).emit('text', {
           text: data.text,
@@ -269,7 +268,7 @@ module.exports = function (app) {
     })
 
     socket.on('resetScreen', function (data) {
-      helpers.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
+      SessionCtrl.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
         if (err) return
         io.to(data.sessionId).emit('reset')
       })

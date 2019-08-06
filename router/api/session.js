@@ -1,7 +1,6 @@
 var SessionCtrl = require('../../controllers/SessionCtrl')
-var ObjectId = require('mongodb').ObjectId
 
-var helpers = require('./helpers.js')
+var ObjectId = require('mongodb').ObjectId
 
 module.exports = function (router) {
   router.route('/session/new').post(function (req, res) {
@@ -33,21 +32,16 @@ module.exports = function (router) {
   router.route('/session/end').post(function (req, res) {
     var data = req.body || {}
     var sessionId = data.sessionId
-
-    SessionCtrl.get(
+    var user = req.user
+    SessionCtrl.end(
       {
-        sessionId: sessionId
+        sessionId: sessionId,
+        user: user
       },
       function (err, session) {
         if (err) {
           res.json({ err: err })
-        } else if (!session) {
-          res.json({ err: 'No session found' })
-        } else if (helpers.isNotSessionParticipant(session, req.user)) {
-          console.log([req.user._id])
-          res.json({ err: 'Only a session participant can end a session' })
         } else {
-          session.endSession()
           res.json({ sessionId: session._id })
         }
       }

@@ -35,10 +35,11 @@ UPchieve web server
     - [GET /api/user](#get-apiuser)
     - [PUT /api/user](#put-apiuser)
     - [GET /api/user/:id](#get-apiuserid)
+    - [POST /api/volunteers](#post-apivolunteers)
+    - [POST /api/volunteers/availability](#post-apivolunteersavailibility)
     - [POST /api/verify/send](#post-apiverifysend)
     - [POST /api/verify/confirm](#post-apiverifyconfirm)
     - [POST /moderate/message](#post-moderatemessage)
-
 
 Local Development
 -----------------
@@ -80,6 +81,7 @@ asdf install mongodb [VERSION]
 3. Run `node init` to add "questions" collection to database
 4. Populate `config.js` with auth tokens (ask a teammate if you need
    any of these--improvements forthcoming).
+  1. If you want to test Twilio voice calling functionality, set the `host` property to `[your public IP address]:3000` (minus the brackets), and configure your router/firewall to allow connections to port 3000 from the Internet. Twilio will need to connect to your system to obtain TwiML instructions.
 5. Run `npm run dev` to start the dev server on `http://localhost:3000`. If you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
 6. See [the web client repo](https://github.com/UPchieve/web) for client
    installation
@@ -304,6 +306,14 @@ currently authenticated user:
 Returns a sanitized public user record for a user with the given id. May perform
 checks on the authorization level of the current user to strip out priveliged
 information.
+
+### POST /api/volunteers
+
+Returns an object with all the users who are volunteers. All the keys are user ids.
+
+### POST /api/volunteers/availability
+
+Returns a map with the availability of all the volunteers. All the keys are user ids.
 
 ### POST /api/verify/send
 
