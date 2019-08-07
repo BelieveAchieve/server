@@ -47,19 +47,6 @@ module.exports = function (app) {
             socket.emit('bump', err)
             return
           }
-          session.saveMessage({
-            user: '',
-            contents: `${data.user.firstname} has joined!`
-          }, function (err, savedMessage) {
-            io.to(data.sessionId).emit('messageSend', {
-              contents: savedMessage.contents,
-              name: '',
-              email: '',
-              isVolunteer: '',
-              picture: '',
-              time: savedMessage.createdAt
-            })
-          })
 
           socket.join(data.sessionId)
           io.emit('sessions', SessionCtrl.getSocketSessions())
@@ -83,19 +70,6 @@ module.exports = function (app) {
             socket.leave(session._id)
             io.to(session._id).emit('session-change', session)
             io.emit('sessions', SessionCtrl.getSocketSessions())
-            session.saveMessage({
-              user: '',
-              contents: `${session.user.firstname} has left!`
-            }, function (err, savedMessage) {
-              io.to(session._id).emit('messageSend', {
-                contents: savedMessage.contents,
-                name: '',
-                email: '',
-                isVolunteer: '',
-                picture: '',
-                time: savedMessage.createdAt
-              })
-            })
           }
         }
       )
