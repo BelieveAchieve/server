@@ -119,10 +119,14 @@ schoolSchema.virtual('name').get(function () {
 
 schoolSchema.virtual('districtName').get(function () {
   return this.districtNameStored || this.LEA_NAME
+}).set(function (value) {
+  this.districtNameStored = value
 })
 
 schoolSchema.virtual('state').get(function () {
   return this.stateStored || this.ST
+}).set(function (value) {
+  this.state = value
 })
 
 schoolSchema.methods.findByUpchieveId = function (id, cb) {
