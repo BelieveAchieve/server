@@ -19,6 +19,9 @@ const schoolSchema = new mongoose.Schema({
     match: /^((A[LKSZR])|(C[AOT])|(D[EC])|(F[ML])|(G[AU])|(HI)|(I[DLNA])|(K[SY])|(LA)|(M[EHDAINSOT])|(N[EVHJMYCD])|(MP)|(O[HKR])|(P[WAR])|(RI)|(S[CD])|(T[NX])|(UT)|(V[TIA])|(W[AVIY]))$/
   },
 
+  // is this school eligibile for UPchieve?
+  isApproved: Boolean,
+
   // email addresses to notify for approval
   approvalNotifyEmails: [{
     email: {
