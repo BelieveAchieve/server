@@ -10,7 +10,7 @@ const schoolSchema = new mongoose.Schema({
     match: /^[0-9]{8}$/
   },
 
-  // manually entered data
+  // fields allowing a school to be entered manually if not in NCES database
   nameStored: String,
   districtNameStored: String,
   stateStored: {
