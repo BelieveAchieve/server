@@ -1,6 +1,39 @@
 const mongoose = require('mongoose')
+const validator = require('validator')
 
 const schoolSchema = new mongoose.Schema({
+  // 8-digit unique identifier
+  upchieveId: {
+    type: String,
+    unique: true,
+    required: true,
+    match: /^[0-9]{8}$/
+  },
+
+  // manually entered data
+  nameStored: String,
+  districtNameStored: String,
+  stateStored: {
+    type: String,
+    // http://regexlib.com/REDetails.aspx?regexp_id=2176
+    match: /^((A[LKSZR])|(C[AOT])|(D[EC])|(F[ML])|(G[AU])|(HI)|(I[DLNA])|(K[SY])|(LA)|(M[EHDAINSOT])|(N[EVHJMYCD])|(MP)|(O[HKR])|(P[WAR])|(RI)|(S[CD])|(T[NX])|(UT)|(V[TIA])|(W[AVIY]))$/
+  },
+
+  // email addresses to notify for approval
+  approvalNotifyEmails: [{
+    email: {
+      type: String,
+      lowercase: true,
+      validate: {
+        validator: function (v) {
+          return validator.isEmail(v)
+        },
+        message: '{VALUE} is not a valid email'
+      }
+    }
+  }],
+
+  // NCES variable names
   SCHOOL_YEAR: String,
   FIPST: Number,
   STATENAME: String,
@@ -66,8 +99,34 @@ const schoolSchema = new mongoose.Schema({
   GSHI: Number,
   LEVEL: String,
   IGOFFERED: String
+}, {
+  toObject: {
+    virtuals: true
+  },
+  toJSON: {
+    virtuals: true
+  }
 })
 
-schoolSchema.index({ SCH_NAME: 'text' })
+schoolSchema.index({ nameStored: 'text', SCH_NAME: 'text' })
+
+// virtual properties that can reference either stored information or NCES variables
+schoolSchema.virtual('name').get(function () {
+  return this.nameStored || this.SCH_NAME
+}).set(function (value) {
+  this.nameStored = value
+})
+
+schoolSchema.virtual('districtName').get(function () {
+  return this.districtNameStored || this.LEA_NAME
+})
+
+schoolSchema.virtual('state').get(function () {
+  return this.stateStored || this.ST
+})
+
+schoolSchema.methods.findByUpchieveId = function (id, cb) {
+  this.findOne({ upchieveId: id }, cb)
+}
 
 module.exports = mongoose.model('School', schoolSchema)
