@@ -1,5 +1,8 @@
 var Session = require('../models/Session')
+var User = require('../models/User')
 var twilioService = require('../services/twilio')
+
+var config = require('../config')
 
 // A socket session tracks a session with its users and sockets
 var SocketSession = function (options) {
@@ -170,6 +173,90 @@ SessionManager.prototype.getUserBySocket = function (socket) {
 
 var sessionManager = new SessionManager()
 
+// A NewSessionTimeout keeps track of timeouts for notifications that need
+// to be sent
+var NewSessionTimeout = function (session, ...timeouts) {
+  this.session = session
+  this.timeouts = timeouts
+}
+
+NewSessionTimeout.prototype.clearTimeouts = function () {
+  this.timeouts.forEach((timeout) => clearTimeout(timeout))
+}
+
+// remove a timeout from the session with which it is associated
+NewSessionTimeout.prototype.removeTimeout = function (timeout) {
+  const timeoutIndex = this.timeouts.findIndex(t => timeout === t)
+  if (timeoutIndex > -1) {
+    this.timeouts.splice(timeoutIndex, 1)
+  }
+}
+
+// checks if a session has no timeouts
+NewSessionTimeout.prototype.hasNoTimeouts = function () {
+  return this.timeouts.length === 0
+}
+
+// The NewSessionTimekeeper manages timing of notifications that are
+// triggered by sessions that are created but never joined by volunteers
+var NewSessionTimekeeper = function () {
+  this._newSessionTimeouts = {} // sessionId => newSessionTimeout
+}
+
+// set a timeout for a session that can be cancelled if a volunteer joins
+NewSessionTimekeeper.prototype.setSessionTimeout = function (session, delay, cb, ...args) {
+  const timeout = setTimeout((...a) => {
+    cb(...a)
+
+    // remove the timeout from memory after callback executes
+    const newSessionTimeout = this._newSessionTimeouts[session._id]
+    newSessionTimeout.removeTimeout(timeout)
+
+    // delete the NewSessionTimeout object if there are no remaining timeouts
+    if (newSessionTimeout.hasNoTimeouts()) {
+      delete this._newSessionTimeouts[session._id]
+    }
+  }, delay, ...args)
+
+  var newSessionTimeout = this._newSessionTimeouts[session._id]
+  if (!newSessionTimeout) {
+    // create the object
+    newSessionTimeout = new NewSessionTimeout(session, timeout)
+    this._newSessionTimeouts[session._id] = newSessionTimeout
+  } else {
+    // add timeout to existing object
+    newSessionTimeout.timeouts.push(timeout)
+  }
+}
+
+// clear all timeouts for a session
+NewSessionTimekeeper.prototype.clearSessionTimeouts = function (session) {
+  const newSessionTimeout = this._newSessionTimeouts[session._id]
+
+  if (newSessionTimeout) {
+    newSessionTimeout.clearTimeouts()
+    delete this._newSessionTimeouts[session._id]
+  }
+}
+
+var newSessionTimekeeper = new NewSessionTimekeeper()
+
+function addSession (user, session) {
+  User.update({ _id: user._id },
+    { $addToSet: { pastSessions: session._id } },
+    function (err, results) {
+      if (err) {
+        throw err
+      } else {
+        // print out what session was added to which user
+        if (results.nModified === 1) {
+          console.log(`${session._id} session was added to ` +
+          `${user._id}'s pastSessions`)
+        }
+      }
+    })
+}
+
 module.exports = {
   create: function (options, cb) {
     var user = options.user || {}
@@ -178,11 +265,11 @@ module.exports = {
     var subTopic = options.subTopic
 
     if (!userId) {
-      cb('Cannot create a session without a user id', null)
+      return cb('Cannot create a session without a user id', null)
     } else if (user.isVolunteer) {
-      cb('Volunteers cannot create new sessions', null)
+      return cb('Volunteers cannot create new sessions', null)
     } else if (!type) {
-      cb('Must provide a type for a new session', null)
+      return cb('Must provide a type for a new session', null)
     }
 
     var session = new Session({
@@ -191,9 +278,48 @@ module.exports = {
       subTopic: subTopic
     })
 
-    twilioService.notify(type, subTopic, { isTestUserRequest: user.isTestUser })
+    // notify both available and failsafe volunteers
+    twilioService.notify(user, type, subTopic, { isTestUserRequest: user.isTestUser })
+
+    // second SMS failsafe notifications
+    newSessionTimekeeper.setSessionTimeout(session, config.desperateSMSTimeout,
+      twilioService.notifyFailsafe, user, type, subTopic, { desperate: true, isTestUserRequest: user.isTestUser })
+
+    // failsafe voice notification
+    newSessionTimekeeper.setSessionTimeout(session, config.desperateVoiceTimeout,
+      twilioService.notifyFailsafe, user, type, subTopic,
+      { desperate: true, voice: true, isTestUserRequest: user.isTestUser })
 
     session.save(cb)
+  },
+
+  end: function (options, cb) {
+    var user = options.user
+    var self = this
+
+    this.get(options, function (err, session) {
+      if (err) {
+        return cb(err)
+      } else if (!session) {
+        return cb('No session found')
+      } else if (self.isNotSessionParticipant(session, user)) {
+        return cb('User is not a session participant')
+      }
+
+      var student = session.student
+      var volunteer = session.volunteer
+      // add session to the student and volunteer's pastSessions
+      addSession(student, session)
+      if (volunteer) {
+        addSession(volunteer, session)
+      }
+
+      // clear timeouts
+      newSessionTimekeeper.clearSessionTimeouts(session)
+
+      session.endSession()
+      cb(null, session)
+    })
   },
 
   get: function (options, cb) {
@@ -250,6 +376,11 @@ module.exports = {
             user: user,
             socket: socket
           })
+
+          if (user.isVolunteer) {
+            newSessionTimekeeper.clearSessionTimeouts(session)
+          }
+
           cb(err, populatedSession)
         })
       })
@@ -270,5 +401,37 @@ module.exports = {
     } else {
       cb(null, session)
     }
+  },
+
+  // helpers
+  isNotSessionParticipant: function (session, user) {
+    const sessionParticipants = [
+      session.volunteer || { _id: '' },
+      session.student || { _id: '' }
+    ]
+    console.log('Session participants: ')
+    console.log(sessionParticipants.map(e => e._id.toString()))
+
+    return sessionParticipants.findIndex(
+      participant => participant._id.toString() === user._id.toString()
+    ) === -1
+  },
+
+  verifySessionParticipantBySessionId: function (sessionId, user, cb) {
+    const self = this
+
+    this.get({
+      sessionId: sessionId
+    }, function (err, session) {
+      if (err) {
+        cb(err)
+      } else if (!user) {
+        cb('This action requires a user ID')
+      } else if (self.isNotSessionParticipant(session, user)) {
+        cb('Only session participants can perform this action')
+      } else {
+        cb(null, session)
+      }
+    })
   }
 }
