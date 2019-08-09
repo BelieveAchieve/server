@@ -98,7 +98,8 @@ const schoolSchema = new mongoose.Schema({
   G_13_OFFERED: String,
   G_UG_OFFERED: String,
   G_AE_OFFERED: String,
-  GSLO: Number,
+  // school may offer PK or KG as well as high school
+  GSLO: String,
   GSHI: Number,
   LEVEL: String,
   IGOFFERED: String
