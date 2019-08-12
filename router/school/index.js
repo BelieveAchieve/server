@@ -22,6 +22,7 @@ module.exports = function (app) {
     })
   })
 
+  // route to add an email to the list for notifying when approved
   router.route('/approvalnotify').post(function (req, res) {
     const schoolUpchieveId = req.body.schoolUpchieveId
 
