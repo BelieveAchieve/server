@@ -11,6 +11,8 @@ const csvParse = require('csv-parse')
 // for generating unique upchieveId
 const crypto = require('crypto')
 
+const cliProgress = require('cli-progress')
+
 const dbconnect = require('./dbconnect')
 
 const School = require('../models/School')
@@ -35,8 +37,8 @@ function addNewSchool (school, done) {
 
     newSchool.save((err) => {
       if (err) {
-        console.log(err)
         if (err.code !== 11000) {
+          console.log(err)
           return callback(err)
         }
 
@@ -46,7 +48,6 @@ function addNewSchool (school, done) {
           .padStart(8, '0')
         callback(null, false)
       } else {
-        console.log(`New school record ${upchieveId} (${newSchool.SCH_NAME})`)
         callback(null, true)
       }
     })
@@ -233,11 +234,12 @@ dbconnect(mongoose, function () {
     },
     // add schools to database
     function (schools, done) {
-      console.log('Updating records')
-      let nSchoolsUpdated = 0
+      console.log('Updating records...')
+      const progressBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic)
+
+      progressBar.start(schools.length, 0)
 
       async.mapSeries(schools, function (school, callback) {
-        console.log(`Updating record ${nSchoolsUpdated + 1} of ${schools.length}`)
         School.find({
           ST_SCHID: school.ST_SCHID
         }, function (err, results) {
@@ -254,17 +256,20 @@ dbconnect(mongoose, function () {
             })
 
             data.save((err) => {
-              nSchoolsUpdated++
-              callback(err) 
+              progressBar.increment()
+              callback(err)
             })
           } else {
             addNewSchool(school, (err) => {
-              nSchoolsUpdated++
+              progressBar.increment()
               callback(err)
             })
           }
         })
-      }, done)
+      }, (err) => {
+        progressBar.stop()
+        done(err)
+      })
     }
   ],
   function (err) {

@@ -13,6 +13,7 @@
     "bcrypt": "3.0.4",
     "body-parser": "^1.18.3",
     "chalk": "^2.4.2",
+    "cli-progress": "^3.0.0",
     "connect-busboy": "0.0.2",
     "connect-livereload": "^0.5.4",
     "connect-mongo": "1.1.0",
