@@ -20,16 +20,21 @@ SocketSession.prototype.join = function (options) {
     return joinedUser._id === user._id
   })
 
+  let oldSocket
   if (userIndex !== -1) {
-    socket = this.sockets[user._id]
-    if (socket) {
-      socket.disconnect(0)
-    }
+    oldSocket = this.sockets[user._id]
+
     this.users.splice(userIndex, 1)
   }
 
   this.users.push(user)
   this.sockets[user._id] = socket
+
+  // try to prevent disconnecting the user if the new socket is
+  // the same as the old one
+  if (oldSocket && oldSocket.id !== socket.id) {
+    oldSocket.disconnect(0)
+  }
 }
 
 SocketSession.prototype.leave = function (socket) {
@@ -95,6 +100,7 @@ SessionManager.prototype.disconnect = function (options) {
 
   var socketSession, session
   Object.keys(this._sessions).some(function (sessionId) {
+    console.log(`sessionid: ${sessionId}`)
     var s = this._sessions[sessionId]
     if (s.hasSocket(socket)) {
       socketSession = s
@@ -116,7 +122,7 @@ SessionManager.prototype.disconnect = function (options) {
 // A dead session is a session with no users connected to it.
 //
 // Return a reference to the SocketSession instance.
-SessionManager.prototype.pruneDeadSessions = () => {
+SessionManager.prototype.pruneDeadSessions = function () {
   if (!this._sessions) {
     return this
   }
@@ -398,6 +404,8 @@ module.exports = {
 
     if (user) {
       session.leaveUser(user, cb)
+      session.user = user
+      cb(null, session)
     } else {
       cb(null, session)
     }
