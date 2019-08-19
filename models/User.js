@@ -44,7 +44,13 @@ var userSchema = new mongoose.Schema({
     required: [function () { return this.isVolunteer }, 'Phone number is required.']
   },
 
-  highschool: { type: String, required: [function () { return !this.isVolunteer }, 'High school is required.'] },
+  highschoolName: String,
+  approvedHighschool: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'School'
+    /* TODO validate approvedHighschool.isApproved: true
+     * if this.isVolunteer is false */
+  },
   currentGrade: String,
   expectedGraduation: String,
   difficultAcademicSubject: String,

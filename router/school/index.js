@@ -22,6 +22,7 @@ module.exports = function (app) {
     })
   })
 
+  // route to add an email to the list for notifying when approved
   router.route('/approvalnotify').post(function (req, res) {
     const schoolUpchieveId = req.body.schoolUpchieveId
 
@@ -40,5 +41,18 @@ module.exports = function (app) {
           })
         }
       })
+  })
+
+  // Check if a school is approved
+  router.route('/check').post(function (req, res) {
+    const schoolUpchieveId = req.body.schoolUpchieveId
+
+    School.findByUpchieveId(schoolUpchieveId, function (err, school) {
+      if (err) {
+        res.json({ err: err })
+      } else {
+        res.json({ approved: school.isApproved })
+      }
+    })
   })
 }
