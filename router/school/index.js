@@ -4,7 +4,7 @@ const SchoolCtrl = require('../../controllers/SchoolCtrl')
 const School = require('../../models/School')
 
 module.exports = function (app) {
-  const router = express.Router()
+  const router = new express.Router()
 
   router.route('/search').get(function (req, res) {
     const q = req.query.q
@@ -55,4 +55,6 @@ module.exports = function (app) {
       }
     })
   })
+
+  app.use('/school', router)
 }
