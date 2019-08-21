@@ -562,7 +562,11 @@ userSchema.virtual('phonePretty')
 
 userSchema.virtual('highschoolName')
   .get(function () {
-    return this.approvedHighschool.name
+    if (this.approvedHighschool) {
+      return this.approvedHighschool.name
+    } else {
+      return null
+    }
   })
 
 // Static method to determine if a registration code is valid
