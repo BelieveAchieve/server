@@ -140,7 +140,7 @@ schoolSchema.virtual('city').get(function () {
 schoolSchema.virtual('state').get(function () {
   return this.stateStored || this.ST
 }).set(function (value) {
-  this.state = value
+  this.stateStored = value
 })
 
 // Virtual property giving a searchable name including the school's city
