@@ -372,7 +372,22 @@ where `SEARCH_STRING` is the string to be searched.
 
 Searches the database of schools for a name or `upchieveId` matching the search string. The search string may match only part of the school's name, but if searching for an `upchieveId` the string must match exactly.
 
-Returns the list of schools matching the search string.
+If there are no errors, the response body contains the list of schools matching the search string in the format:
+
+```json
+{
+  "results": [
+    {
+      "upchieveId": "UPchieve ID",
+      "name": "high school name",
+      "districtName": "district name",
+      "city": "city name",
+      "state": "state postal code"
+    },
+    // ...
+  ]
+}
+```
 
 ### POST /school/approvalnotify
 
