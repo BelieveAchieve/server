@@ -44,7 +44,6 @@ var userSchema = new mongoose.Schema({
     required: [function () { return this.isVolunteer }, 'Phone number is required.']
   },
 
-  highschoolName: String,
   approvedHighschool: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'School'
@@ -454,7 +453,7 @@ userSchema.methods.parseProfile = function () {
     hasSchedule: this.hasSchedule,
     pastSessions: this.pastSessions,
 
-    highschool: this.highschool,
+    highschoolName: this.highschoolName,
     currentGrade: this.currentGrade,
     expectedGraduation: this.expectedGraduation,
     difficultAcademicSubject: this.difficultAcademicSubject,
@@ -559,6 +558,11 @@ userSchema.virtual('phonePretty')
       var [, area, prefix, line] = v.match(PHONE_REGEX) || []
       this.phone = `${area}${prefix}${line}`
     }
+  })
+
+userSchema.virtual('highschoolName')
+  .get(function () {
+    return this.approvedHighschool.name
   })
 
 // Static method to determine if a registration code is valid
