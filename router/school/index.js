@@ -28,8 +28,9 @@ module.exports = function (app) {
 
     const email = req.body.email
 
-    School.updateOne({ upchieveId: schoolUpchieveId },
-      { $push: { approvalNotifyEmails: email } },
+    School.findOneAndUpdate({ upchieveId: schoolUpchieveId },
+      { $push: { approvalNotifyEmails: { email } } },
+      { runValidators: true },
       function (err, school) {
         if (err) {
           res.json({
