@@ -133,7 +133,7 @@ schoolSchema.virtual('state').get(function () {
   this.state = value
 })
 
-schoolSchema.methods.findByUpchieveId = function (id, cb) {
+schoolSchema.statics.findByUpchieveId = function (id, cb) {
   this.findOne({ upchieveId: id }, cb)
 }
 
