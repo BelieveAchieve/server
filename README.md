@@ -374,7 +374,7 @@ Searches the database of schools for a name or `upchieveId` matching the search 
 
 If there are no errors, the response body contains the list of schools matching the search string in the format:
 
-```json
+```javascript
 {
   "results": [
     {
@@ -416,13 +416,13 @@ Expects the following request body:
 
 ```json
 {
-  "schoolUpchieveId"
+  "schoolUpchieveId": "String"
 }
 ```
 
 Checks if a school has been approved by UPchieve. If no error occurs, the response looks like:
 
-```json
+```javascript
 {
   "approved": true // or false
 }
