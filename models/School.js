@@ -20,7 +20,10 @@ const schoolSchema = new mongoose.Schema({
   },
 
   // is this school eligibile for UPchieve?
-  isApproved: Boolean,
+  isApproved: {
+    type: Boolean,
+    default: false
+  },
 
   // email addresses to notify for approval
   approvalNotifyEmails: [{
