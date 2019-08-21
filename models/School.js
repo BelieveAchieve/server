@@ -13,6 +13,7 @@ const schoolSchema = new mongoose.Schema({
   // fields allowing a school to be entered manually if not in NCES database
   nameStored: String,
   districtNameStored: String,
+  cityNameStored: String,
   stateStored: {
     type: String,
     // http://regexlib.com/REDetails.aspx?regexp_id=2176
@@ -130,11 +131,24 @@ schoolSchema.virtual('districtName').get(function () {
   this.districtNameStored = value
 })
 
+schoolSchema.virtual('city').get(function () {
+  return this.cityNameStored || this.LCITY
+}).set(function (value) {
+  this.cityNameStored = value
+})
+
 schoolSchema.virtual('state').get(function () {
   return this.stateStored || this.ST
 }).set(function (value) {
   this.state = value
 })
+
+// Virtual property giving a searchable name including the school's city
+// name first
+userSchema.virtual('searchableName')
+  .get(function () {
+    return `${this.city} ${this.name}`
+  })
 
 schoolSchema.statics.findByUpchieveId = function (id, cb) {
   this.findOne({ upchieveId: id }, cb)
