@@ -42,7 +42,7 @@ UPchieve web server
     - [POST /moderate/message](#post-moderatemessage)
     - [GET /school/search](#get-schoolsearch)
     - [POST /school/approvalnotify](#post-schoolapprovalnotify)
-    - [POST /school/check](#get-schoolcheck)
+    - [POST /school/check](#post-schoolcheck)
 
 Local Development
 -----------------
