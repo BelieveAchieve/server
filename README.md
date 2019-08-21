@@ -40,6 +40,9 @@ UPchieve web server
     - [POST /api/verify/send](#post-apiverifysend)
     - [POST /api/verify/confirm](#post-apiverifyconfirm)
     - [POST /moderate/message](#post-moderatemessage)
+    - [GET /school/search](#get-schoolsearch)
+    - [POST /school/approvalnotify](#post-schoolapprovalnotify)
+    - [POST /school/check](#get-schoolcheck)
 
 Local Development
 -----------------
@@ -354,5 +357,58 @@ The response body looks like this if no error occurred:
 ```javascript
 {
   "isClean": true // or false
+}
+```
+
+### GET /school/search
+
+Expects the following query string:
+
+```
+?q=SEARCH_STRING
+```
+
+where `SEARCH_STRING` is the string to be searched.
+
+Searches the database of schools for a name or `upchieveId` matching the search string. The search string may match only part of the school's name, but if searching for an `upchieveId` the string must match exactly.
+
+Returns the list of schools matching the search string.
+
+### POST /school/approvalnotify
+
+Expects the following request body:
+
+```json
+{
+  "schoolUpchieveId": "String",
+  "email": "String"
+}
+```
+
+Adds an email address to the list of email addresses to notify when the school is approved by UPchieve. 
+
+If no error occurred, the response body looks like:
+
+```json
+{
+  "schoolId": "school's UPchieve ID"
+}
+```
+
+### POST /school/check
+
+Expects the following request body:
+
+```json
+{
+  "schoolUpchieveId"
+}
+```
+
+Checks if a school has been approved by UPchieve. If no error occurs, the response looks like:
+
+```json
+{
+  "approved": true // or false
 }
 ```
