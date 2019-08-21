@@ -145,7 +145,7 @@ schoolSchema.virtual('state').get(function () {
 
 // Virtual property giving a searchable name including the school's city
 // name first
-userSchema.virtual('searchableName')
+schoolSchema.virtual('searchableName')
   .get(function () {
     return `${this.city} ${this.name}`
   })
