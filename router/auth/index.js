@@ -164,7 +164,11 @@ module.exports = function (app) {
     const promise = new Promise((resolve, reject) => {
       if (!(code === undefined)) {
         // don't look up high schools for volunteers
-        resolve(true)
+        resolve({
+          isVolunteer: true
+        })
+
+        // early exit
         return
       }
 
@@ -174,13 +178,16 @@ module.exports = function (app) {
         } else if (!school.isApproved) {
           reject(new Error(`School ${highSchoolUpchieveId} is not approved`))
         } else {
-          resolve(false, school)
+          resolve({
+            isVolunteer: false,
+            school
+          })
         }
       })
     })
 
-    promise.then((isVolunteer, school) => {
-      var user = new User()
+    promise.then(({ isVolunteer, school }) => {
+      const user = new User()
       user.email = email
       user.isVolunteer = isVolunteer
       user.registrationCode = code

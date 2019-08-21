@@ -12,6 +12,9 @@ const edu = express()
 edu.set('view engine', 'ejs')
 edu.set('layout', 'layouts/edu')
 edu.use(expressLayouts)
+edu.locals = {
+  homeLink: config.NODE_ENV === 'dev' ? 'http://localhost:8080' : '/'
+}
 
 // GET /edu
 edu.get('/', async (req, res) => {
@@ -30,7 +33,6 @@ edu.get('/', async (req, res) => {
         { path: 'questions', label: 'All Questions' },
         ...categories
       ],
-      homeLink: config.NODE_ENV === 'dev' ? 'http://localhost:8080' : '/',
       isActive: isActivePage(req)
     })
   } catch (error) {
