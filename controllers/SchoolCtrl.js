@@ -19,7 +19,17 @@ module.exports = {
         if (err) {
           cb(err)
         } else {
-          cb(null, results.sort((s1, s2) => s1.name - s2.name))
+          cb(null, results.sort((s1, s2) => s1.name - s2.name)
+            .map((school) => {
+              return {
+                upchieveId: school.upchieveId,
+                name: school.name,
+                districtName: school.districtName,
+                city: school.city,
+                state: school.state
+              }
+            })
+          )
         }
       })
     }
