@@ -43,6 +43,7 @@ UPchieve web server
     - [GET /school/search](#get-schoolsearch)
     - [POST /school/approvalnotify](#post-schoolapprovalnotify)
     - [POST /school/check](#post-schoolcheck)
+    - [GET /school/studentusers/:schoolUpchieveId](#get-schoolstudentusersschoolupchieveid)
 
 Local Development
 -----------------
@@ -425,5 +426,24 @@ Checks if a school has been approved by UPchieve. If no error occurs, the respon
 ```javascript
 {
   "approved": true // or false
+}
+```
+
+### GET /school/studentusers/:schoolUpchieveId
+
+Lists all student users registered with a school. Restricted to admins only. If no error occurs, the response looks like:
+
+```javascript
+{
+  "upchieveId": "8-digit identifier",
+  "studentUsers": [
+    {
+      "email": "student@example.com",
+      "firstname": "Firstname",
+      "lastname": "Lastname",
+      "userId": "MongoDB User ID"
+    },
+    // ...
+  ]
 }
 ```
