@@ -1,4 +1,5 @@
 const express = require('express')
+const passport = require('../auth/passport')
 
 const SchoolCtrl = require('../../controllers/SchoolCtrl')
 const School = require('../../models/School')
@@ -56,6 +57,33 @@ module.exports = function (app) {
       }
     })
   })
+
+  // List all students registered with a school (admins only)
+  router.route('/studentusers/:schoolUpchieveId')
+    .all(passport.isAdmin)
+    .get(function (req, res) {
+      const upchieveId = req.params.schoolUpchieveId
+
+      School.findByUpchieveId(upchieveId)
+        .populate('studentUsers').exec(function (err, school) {
+          if (err) {
+            res.json({ err: err })
+          } else {
+            res.json({
+              upchieveId: school.upchieveId,
+              studentUsers: school.studentUsers
+                .map((user) => {
+                  return {
+                    email: user.email,
+                    firstname: user.firstname,
+                    lastname: user.lastname,
+                    userId: user._id
+                  }
+                })
+            })
+          }
+        })
+    })
 
   app.use('/school', router)
 }
