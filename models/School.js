@@ -26,6 +26,11 @@ const schoolSchema = new mongoose.Schema({
     default: false
   },
 
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+
   // email addresses to notify for approval
   approvalNotifyEmails: [{
     email: {
@@ -37,6 +42,10 @@ const schoolSchema = new mongoose.Schema({
         },
         message: '{VALUE} is not a valid email'
       }
+    },
+    addedAt: {
+      type: Date,
+      default: Date.now
     }
   }],
 
