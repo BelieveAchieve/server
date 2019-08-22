@@ -12,7 +12,6 @@ module.exports = {
       School.findByUpchieveId(query, cb)
     } else {
       const regex = new RegExp(escapeRegex(query), 'i')
-      console.log(regex.toString())
       // look for both manually entered and auto-downloaded schools
       const dbQuery = School.find({
         $or: [
