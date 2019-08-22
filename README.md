@@ -441,7 +441,7 @@ Lists all student users registered with a school. Restricted to admins only. If 
       "email": "student@example.com",
       "firstname": "Firstname",
       "lastname": "Lastname",
-      "userId": "MongoDB User ID"
+      "userId": "user's ObjectID in MongoDB"
     },
     // ...
   ]
