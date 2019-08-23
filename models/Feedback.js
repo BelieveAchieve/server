@@ -34,6 +34,11 @@ var feedbackSchema = new mongoose.Schema({
   volunteerId: {
     type: String,
     default: ''
+  },
+
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
 })
 
