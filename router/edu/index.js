@@ -1,6 +1,7 @@
 const express = require('express')
 const expressLayouts = require('express-ejs-layouts')
 
+const config = require('../../config')
 const passport = require('../auth/passport')
 const QuestionCtrl = require('../../controllers/QuestionCtrl')
 const { questionsPath, isActivePage } = require('./helpers')
@@ -11,6 +12,9 @@ const edu = express()
 edu.set('view engine', 'ejs')
 edu.set('layout', 'layouts/edu')
 edu.use(expressLayouts)
+edu.locals = {
+  homeLink: config.NODE_ENV === 'dev' ? 'http://localhost:8080' : '/'
+}
 
 // GET /edu
 edu.get('/', async (req, res) => {
