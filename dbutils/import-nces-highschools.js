@@ -110,10 +110,14 @@ dbconnect(mongoose, function () {
             })
           }, function (isUnique) {
             return isUnique
-          }, done)
-        })
-        .catch(function (err) {
-          done(err)
+          }, (err) => {
+            if (err) {
+              done(err)
+            } else {
+              // now try saving the school
+              school.save((err) => { done(err) })
+            }
+          })
         })
     },
     // retrieve the data
