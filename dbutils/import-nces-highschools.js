@@ -82,37 +82,35 @@ dbconnect(mongoose, function () {
           }
         })
         .then(function (existingSchool) {
-          if (!existingSchool) {
+          if (!existingSchool || existingSchool.name === school.name) {
             // early exit
             return done()
           }
 
-          if (existingSchool.name !== school.name) {
-            // if not legacy, increment existingSchool's upchieveId until unique
-            console.log(`Warning: Changing upchieveId of school "${existingSchool.name}"`)
-            let upchieveId = existingSchool.upchieveId
-            async.doUntil(function (callback) {
-              upchieveId = ((parseInt(upchieveId) + 1) % 100000000)
-                .toString()
-                .padStart(8, '0')
-              existingSchool.upchieveId = upchieveId
-              existingSchool.save(function (err) {
-                if (err) {
-                  if (err.code !== 11000) {
-                    console.log(err)
-                    callback(err)
-                  } else {
-                    callback(null, false)
-                  }
+          // if not legacy, increment existingSchool's upchieveId until unique
+          console.log(`Warning: Changing upchieveId of school "${existingSchool.name}"`)
+          let upchieveId = existingSchool.upchieveId
+          async.doUntil(function (callback) {
+            upchieveId = ((parseInt(upchieveId) + 1) % 100000000)
+              .toString()
+              .padStart(8, '0')
+            existingSchool.upchieveId = upchieveId
+            existingSchool.save(function (err) {
+              if (err) {
+                if (err.code !== 11000) {
+                  console.log(err)
+                  callback(err)
                 } else {
-                  console.log(`New upchieveId: ${existingSchool.upchieveId}`)
-                  callback(null, true)
+                  callback(null, false)
                 }
-              })
-            }, function (isUnique) {
-              return isUnique
-            }, done)
-          }
+              } else {
+                console.log(`New upchieveId: ${existingSchool.upchieveId}`)
+                callback(null, true)
+              }
+            })
+          }, function (isUnique) {
+            return isUnique
+          }, done)
         })
         .catch(function (err) {
           done(err)
