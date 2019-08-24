@@ -1,12 +1,17 @@
 const School = require('../models/School')
 
+// helper to escape regex special characters
+function escapeRegex (str) {
+  return str.replace(/[.*|\\+?{}()[^$]/g, (c) => '\\' + c)
+}
+
 module.exports = {
   // search for schools by name or ID
   search: function (query, cb) {
     if (query.match(/^[0-9]{8}$/)) {
       School.findByUpchieveId(query, cb)
     } else {
-      const regex = new RegExp(query, 'i')
+      const regex = new RegExp(escapeRegex(query), 'i')
       // look for both manually entered and auto-downloaded schools
       const dbQuery = School.find({
         $or: [

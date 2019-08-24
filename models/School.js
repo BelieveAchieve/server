@@ -159,8 +159,15 @@ schoolSchema.virtual('searchableName')
     return `${this.city} ${this.name}`
   })
 
+// Users registered with this school
+schoolSchema.virtual('studentUsers', {
+  ref: 'User',
+  localField: '_id',
+  foreignField: 'approvedHighschool'
+})
+
 schoolSchema.statics.findByUpchieveId = function (id, cb) {
-  this.findOne({ upchieveId: id }, cb)
+  return this.findOne({ upchieveId: id }, cb)
 }
 
 module.exports = mongoose.model('School', schoolSchema)
