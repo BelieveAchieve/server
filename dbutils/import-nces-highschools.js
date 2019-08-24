@@ -61,6 +61,63 @@ dbconnect(mongoose, function () {
   const CSV_MIME_REGEX = /^(text\/(comma-separated-values|csv|anytext)|application\/(csv|excel|vnd\.ms-?excel))$/
 
   async.waterfall([
+    // create the legacy school document if it does not yet exist
+    function (done) {
+      const LEGACY_UPCHIEVE_ID = '00000000'
+      const school = new School({
+        upchieveId: LEGACY_UPCHIEVE_ID
+      })
+      school.name = 'Legacy Signup High School'
+      school.save()
+        .then(function () {
+          // successful, no existing school interfering
+          return null
+        })
+        .catch(function (err) {
+          if (err.code !== 11000) {
+            throw err
+          } else {
+            // duplicate key
+            return School.findByUpchieveId(LEGACY_UPCHIEVE_ID)
+          }
+        })
+        .then(function (existingSchool) {
+          if (!existingSchool) {
+            // early exit
+            return done()
+          }
+
+          if (existingSchool.name !== school.name) {
+            // if not legacy, increment existingSchool's upchieveId until unique
+            console.log(`Warning: Changing upchieveId of school "${existingSchool.name}"`)
+            let upchieveId = existingSchool.upchieveId
+            async.doUntil(function (callback) {
+              upchieveId = ((parseInt(upchieveId) + 1) % 100000000)
+                .toString()
+                .padStart(8, '0')
+              existingSchool.upchieveId = upchieveId
+              existingSchool.save(function (err) {
+                if (err) {
+                  if (err.code !== 11000) {
+                    console.log(err)
+                    callback(err)
+                  } else {
+                    callback(null, false)
+                  }
+                } else {
+                  console.log(`New upchieveId: ${existingSchool.upchieveId}`)
+                  callback(null, true)
+                }
+              })
+            }, function (isUnique) {
+              return isUnique
+            }, done)
+          }
+        })
+        .catch(function (err) {
+          done(err)
+        })
+    },
     // retrieve the data
     function (done) {
       // get the NCES URL from the first user argument
