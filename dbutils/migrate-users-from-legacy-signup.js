@@ -16,11 +16,9 @@ dbconnect(mongoose, function () {
   async.waterfall([
     function (done) {
       User.find({
-        $and: [
-          { isVolunteer: false },
-          { highschool: { $exists: true } },
-          { approvedHighschool: { $exists: false } }
-        ]
+        isVolunteer: false,
+        highschool: { $exists: true },
+        approvedHighschool: { $exists: false }
       }, done)
     },
     function (users, done) {
