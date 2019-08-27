@@ -210,14 +210,35 @@ module.exports = {
 
   getAvailability: function (options, callback) {
     var userid = options.userid
-    User.findOne({ _id: userid }, function (err, user) {
+
+    User.findOne({ _id: userid }, (err, user) => {
       if (err) {
         return callback(err)
       }
       if (!user) {
         return callback(new Error('No account with that id found.'))
       }
-      callback(null, user.availability)
+
+      // promise to automatically init availability only if necessary
+      const initAvailabilityPromise = new Promise((resolve, reject) => {
+        if (user.hasSchedule) {
+          resolve(user.availability)
+        } else {
+          this.initAvailability({ userid }, (err, availability) => {
+            if (err) {
+              reject(err)
+            } else {
+              resolve(availability)
+            }
+          })
+        }
+      })
+
+      initAvailabilityPromise.then((availability) => {
+        callback(null, availability)
+      }).catch((err) => {
+        callback(err)
+      })
     })
   },
 
