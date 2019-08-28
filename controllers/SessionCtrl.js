@@ -344,6 +344,7 @@ module.exports = {
       .sort({ createdAt: -1 })
       .limit(1)
       .findOne()
+      .populate('student volunteer')
       .exec(cb)
   },
 
