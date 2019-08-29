@@ -52,7 +52,7 @@ var sessionSchema = new mongoose.Schema({
   volunteerJoinedAt: {
     type: Date
   },
-  
+
   notifications: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Notification'

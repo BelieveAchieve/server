@@ -188,7 +188,7 @@ function sendFailsafe (phoneNumber, name, options) {
  * @returns a Promise that resolves to the saved notification
  * object
  */
-function recordNotification(sendPromise, notification, session) {
+function recordNotification (sendPromise, notification, session) {
   return sendPromise.then(sid => {
     // record notification in database
     notification.wasSuccessful = true
@@ -211,7 +211,7 @@ module.exports = {
   notify: function (student, type, subtopic, options) {
     var isTestUserRequest = options.isTestUserRequest || false
     const session = options.session
-    
+
     // standard notifications for non-failsafe volunteers
     getAvailableVolunteersFromDb(subtopic, {
       isTestUserRequest,
@@ -240,7 +240,7 @@ module.exports = {
   // notify failsafe volunteers
   notifyFailsafe: function (student, type, subtopic, options) {
     const session = options && options.session
-    
+
     getFailsafeVolunteersFromDb().exec()
       .then(function (persons) {
         persons.forEach(function (person) {
@@ -250,13 +250,13 @@ module.exports = {
             volunteer: person,
             type: 'FAILSAFE'
           })
-          
+
           if (options.voice) {
             notification.method = 'VOICE'
           } else {
             notification.method = 'SMS'
           }
-          
+
           const sendPromise = sendFailsafe(
             person.phone,
             person.firstname,

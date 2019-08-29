@@ -5,8 +5,6 @@
  */
 const mongoose = require('mongoose')
 
-const User = require('./User')
-
 const notificationSchema = new mongoose.Schema({
   volunteer: {
     type: mongoose.Schema.Types.ObjectId,
