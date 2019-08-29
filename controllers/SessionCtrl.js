@@ -288,12 +288,12 @@ module.exports = {
       if (err) {
         return cb(err)
       }
-      
+
       // notify both available and failsafe volunteers
       twilioService.notify(user, type, subTopic, {
         isTestUserRequest: user.isTestUser,
         session: savedSession
-        })
+      })
 
       // second SMS failsafe notifications
       newSessionTimekeeper.setSessionTimeout(session, config.desperateSMSTimeout,
@@ -301,18 +301,18 @@ module.exports = {
           desperate: true,
           isTestUserRequest: user.isTestUser,
           session: savedSession
-          })
+        })
 
       // failsafe voice notification
       newSessionTimekeeper.setSessionTimeout(session, config.desperateVoiceTimeout,
         twilioService.notifyFailsafe, user, type, subTopic,
-        { 
+        {
           desperate: true,
           voice: true,
           isTestUserRequest: user.isTestUser,
           session: savedSession
-          })
-          
+        })
+
       cb(null, savedSession)
     })
   },
