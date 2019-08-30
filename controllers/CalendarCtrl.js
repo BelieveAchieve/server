@@ -238,6 +238,7 @@ module.exports = {
         return callback(new Error('No account with that id found.'))
       }
       user.availability = availability
+      user.hasSchedule = true
       user.save(function (err, user) {
         if (err) {
           callback(err, null)
