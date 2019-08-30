@@ -114,7 +114,7 @@ module.exports = function (app) {
               email: data.user.email,
               isVolunteer: data.user.isVolunteer,
               picture: data.user.picture,
-              time: savedMessage.createdAt
+              createdAt: savedMessage.createdAt
             })
           })
         }
