@@ -41,8 +41,9 @@ function addNewSchool (school, convertName, done) {
     Object.keys(school).forEach((key) => {
       if (convertName && (key === 'SCH_NAME' || key === 'LCITY') ) {
         newSchool[key] = toTitleCase(school[key])
+      } else {
+        newSchool[key] = school[key]
       }
-      newSchool[key] = school[key]
     })
 
     newSchool.save((err) => {
@@ -160,6 +161,7 @@ dbconnect(mongoose, function () {
           }
         })
       } catch (err) {
+        // errors thrown in forEach loop are caught here and passed to done
         return done(err)
       }
 
@@ -360,9 +362,8 @@ dbconnect(mongoose, function () {
               callback(err)
             })
           } else {
-            addNewSchool(school, (err) => {
+            addNewSchool(school, convertName, (err) => {
               progressBar.increment(),
-              convertName,
               callback(err)
             })
           }
