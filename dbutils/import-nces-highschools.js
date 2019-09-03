@@ -17,7 +17,14 @@ const dbconnect = require('./dbconnect')
 
 const School = require('../models/School')
 
-function addNewSchool (school, done) {
+// helper to convert names to title case
+function toTitleCase (str) {
+  return str.split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ')
+}
+
+function addNewSchool (school, convertName, done) {
   // create unique upchieveId
   const hash = crypto.createHash('sha1')
   hash.update(school.ST_SCHID)
@@ -32,6 +39,9 @@ function addNewSchool (school, done) {
 
     // populate fields
     Object.keys(school).forEach((key) => {
+      if (convertName && (key === 'SCH_NAME' || key === 'LCITY') ) {
+        newSchool[key] = toTitleCase(school[key])
+      }
       newSchool[key] = school[key]
     })
 
@@ -122,11 +132,35 @@ dbconnect(mongoose, function () {
     },
     // retrieve the data
     function (done) {
-      // get the NCES URL from the first user argument
-      const url = process.argv[2]
+      // get the NCES URL from the first user argument after any options
+      const optionArgs = process.argv.slice(2, -1)
+      const url = process.argv[process.argv.length - 1]
       if (!url) {
         console.error('This script needs a valid URL to import data.')
         return done(new Error('missing URL argument'))
+      }
+      
+      const options = {}
+      
+      try {
+        optionArgs.forEach(arg => {
+          if (arg.charAt(0) !== '-') {
+            console.error('Optional arguments must be preceded by a hyphen (\'-\').')
+            throw new Error(`invalid option: ${arg}`)
+          }
+          
+          const key = arg.slice(1)
+          if ([
+            'dontconvertname'
+          ].includes(key)) {
+            options[key] = true
+          } else {
+            console.error(`Option ${arg} is not recognized.`)
+            throw new Error(`unrecognized option: ${arg}`)
+          }
+        })
+      } catch (err) {
+        return done(err)
       }
 
       https.get(url, res => {
@@ -157,7 +191,7 @@ dbconnect(mongoose, function () {
           res.on('end', () => {
             const buf = Buffer.concat(data)
 
-            return done(null, 'zip', buf, dataLength)
+            return done(null, 'zip', buf, dataLength, options)
           })
         } else if (isCsv) {
           res.setEncoding('utf8')
@@ -167,7 +201,7 @@ dbconnect(mongoose, function () {
           res.on('data', (chunk) => { data += chunk })
 
           res.on('end', () => {
-            return done(null, 'csv', data, data.length)
+            return done(null, 'csv', data, data.length, options)
           })
         }
       }).on('error', (err) => {
@@ -175,14 +209,14 @@ dbconnect(mongoose, function () {
       })
     },
     // unzip the file
-    function (format, data, dataLength, done) {
+    function (format, data, dataLength, options, done) {
       if (!['csv', 'zip'].includes(format)) {
         return done(new Error(`unsupported file format: ${format}`))
       }
 
       if (format === 'csv') {
         // skip to CSV parser
-        return done(null, data, dataLength)
+        return done(null, data, dataLength, options)
       } else if (format === 'zip') {
         console.log('Extracting zip file')
         JSZip.loadAsync(data)
@@ -192,7 +226,7 @@ dbconnect(mongoose, function () {
               if (!foundCsv && relPath.endsWith('.csv')) {
                 foundCsv = true
                 file.async('string').then((csvString) => {
-                  return done(null, csvString, csvString.length)
+                  return done(null, csvString, csvString.length, options)
                 }).catch(done)
               }
             })
@@ -204,7 +238,7 @@ dbconnect(mongoose, function () {
       }
     },
     // parse the CSV
-    function (data, dataLength, done) {
+    function (data, dataLength, options, done) {
       console.log('Parsing CSV')
       const parser = csvParse({
         cast: function (value, context) {
@@ -238,14 +272,14 @@ dbconnect(mongoose, function () {
       parser.on('error', done)
 
       parser.on('end', () => {
-        done(null, schools)
+        done(null, schools, options)
       })
 
       parser.write(data)
       parser.end()
     },
     // clear old NCES data entries
-    function (schools, done) {
+    function (schools, options, done) {
       console.log('Clearing old schools')
       School.find({
         ST_SCHID: { $exists: true }
@@ -286,18 +320,20 @@ dbconnect(mongoose, function () {
           if (err) {
             done(err)
           } else {
-            done(null, schools)
+            done(null, schools, options)
           }
         })
       })
     },
     // add schools to database
-    function (schools, done) {
+    function (schools, options, done) {
       console.log('Updating records...')
       const progressBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic)
 
       progressBar.start(schools.length, 0)
 
+      const convertName = !options.dontconvertname
+      
       async.mapSeries(schools, function (school, callback) {
         School.find({
           ST_SCHID: school.ST_SCHID
@@ -311,7 +347,12 @@ dbconnect(mongoose, function () {
             const data = results[0]
 
             Object.keys(school).forEach((key) => {
-              data[key] = school[key]
+              if (convertName && (key === 'SCH_NAME' || key === 'LCITY')) {
+                // convert automatically imported names and cities
+                data[key] = toTitleCase(school[key])
+              } else {
+                data[key] = school[key]
+              }
             })
 
             data.save((err) => {
@@ -320,7 +361,8 @@ dbconnect(mongoose, function () {
             })
           } else {
             addNewSchool(school, (err) => {
-              progressBar.increment()
+              progressBar.increment(),
+              convertName,
               callback(err)
             })
           }
