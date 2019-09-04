@@ -114,7 +114,7 @@ module.exports = function (app) {
               email: data.user.email,
               isVolunteer: data.user.isVolunteer,
               picture: data.user.picture,
-              time: savedMessage.createdAt
+              createdAt: savedMessage.createdAt
             })
           })
         }
@@ -123,6 +123,16 @@ module.exports = function (app) {
 
     // Whiteboard interaction
     // all of this is now blocked for non-participants
+
+    socket.on('canvasLoaded', function (data) {
+      if (!data || !data.sessionId) return
+      SessionCtrl.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
+        if (err) return
+        socket.broadcast.to(data.sessionId).emit('size', {
+          height: data.height
+        })
+      })
+    })
 
     socket.on('drawClick', function (data) {
       if (!data || !data.sessionId) return
