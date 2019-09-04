@@ -80,7 +80,7 @@ module.exports = function (app) {
     })
 
     socket.on('typing', function (data) {
-      socket.broadcast.to(data.sessionId).emit('is-typing', data.user.firstname)
+      socket.broadcast.to(data.sessionId).emit('is-typing')
     })
 
     socket.on('notTyping', function (data) {
