@@ -40,15 +40,15 @@ dbconnect(mongoose, function () {
 
       async.eachLimit(users, 4, function (user, callback) {
         user.approvedHighschool = legacySchool
-        
+
         if (!user.firstname) {
-          user.firstname = "Student"
+          user.firstname = 'Student'
         }
-        
+
         if (!user.lastname) {
-          user.lastname = "UPchieve"
+          user.lastname = 'UPchieve'
         }
-        
+
         user.save((err) => {
           if (!err) {
             progressBar.increment()
