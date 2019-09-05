@@ -105,7 +105,10 @@ sessionSchema.methods.joinUser = function (user, cb) {
     } else {
       this.volunteer = user
     }
-    this.volunteerJoinedAt = new Date()
+
+    if (!this.volunteerJoinedAt) {
+      this.volunteerJoinedAt = new Date()
+    }
   } else if (this.student) {
     if (!this.student._id.equals(user._id)) {
       cb(`A student ${this.student._id} has already joined this session.`)
