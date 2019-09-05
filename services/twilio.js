@@ -81,9 +81,11 @@ var getAvailableVolunteersFromDb = function (subtopic, options) {
     userQuery.isFailsafeVolunteer = false
   }
 
-  var query = User.find(userQuery)
-    .select({ phone: 1, firstname: 1 })
-    .limit(5)
+  const query = User.aggregate([
+    { $match: userQuery },
+    { $project: { phone: 1, firstname: 1 } },
+    { $sample: { size: 5 } }
+  ])
 
   return query
 }
