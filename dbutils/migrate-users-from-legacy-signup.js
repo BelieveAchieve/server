@@ -17,7 +17,6 @@ dbconnect(mongoose, function () {
     function (done) {
       User.find({
         isVolunteer: false,
-        highschool: { $exists: true },
         approvedHighschool: { $exists: false }
       }, done)
     },
@@ -41,6 +40,15 @@ dbconnect(mongoose, function () {
 
       async.eachLimit(users, 4, function (user, callback) {
         user.approvedHighschool = legacySchool
+        
+        if (!user.firstname) {
+          user.firstname = "Student"
+        }
+        
+        if (!user.lastname) {
+          user.lastname = "UPchieve"
+        }
+        
         user.save((err) => {
           if (!err) {
             progressBar.increment()
