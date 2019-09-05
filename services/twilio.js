@@ -21,11 +21,21 @@ function getAvailability () {
   var min = date.minute() / 60
 
   if (min >= 0.5) {
-    hour++
+    hour = (hour + 1) % 24
+    if (hour === 0) {
+      // check availability at midnight on the next day
+      day = (day + 1) % 7
+    }
   }
-  if (hour > 12) {
-    hour = `${hour - 12}p`
+  if (hour >= 12) {
+    if (hour > 12) {
+      hour -= 12
+    }
+    hour = `${hour}p`
   } else {
+    if (hour === 0) {
+      hour = 12
+    }
     hour = `${hour}a`
   }
 

@@ -312,6 +312,11 @@ module.exports = {
         return cb('User is not a session participant')
       }
 
+      // Session has already ended (the other user ended it)
+      if (session.endedAt) {
+        return cb(null, session)
+      }
+
       var student = session.student
       var volunteer = session.volunteer
       // add session to the student and volunteer's pastSessions
@@ -344,6 +349,7 @@ module.exports = {
       .sort({ createdAt: -1 })
       .limit(1)
       .findOne()
+      .populate('student volunteer')
       .exec(cb)
   },
 

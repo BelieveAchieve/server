@@ -28,7 +28,6 @@ UPchieve web server
     - [POST /api/session/check](#post-apisessioncheck)
     - [POST /api/training/questions](#post-apitrainingquestions)
     - [POST /api/training/score](#post-apitrainingscore)
-    - [POST /api/calendar/init](#post-apicalendarinit)
     - [POST /api/calendar/get](#post-apicalendarget)
     - [POST /api/calendar/save](#post-apicalendarsave)
     - [POST /api/feedback](#post-apifeedback)
@@ -251,14 +250,6 @@ Possible errors:
   "userid": "String",
   "idAnswerMap": "String",
   "category": "String"
-}
-```
-
-### POST /api/calendar/init
-
-```json
-{
-  "userid": "String"
 }
 ```
 
