@@ -233,11 +233,11 @@ module.exports = {
           // early exit
           return
         }
-        
+
         console.log(persons.map(person => person._id))
         // notifications to record in the Session instance
         const notifications = []
-        
+
         async.each(persons, (person, cb) => {
           // record notification in database
           const notification = new Notification({
@@ -256,10 +256,10 @@ module.exports = {
           if (err) {
             console.log(err)
           }
-          
+
           // save notifications to Session instance
           session.addNotifications(notifications)
-          
+
           // failsafe notifications
           this.notifyFailsafe(student, type, subtopic, options)
         })
@@ -273,7 +273,7 @@ module.exports = {
       .then(function (persons) {
         // notifications to record in the Session instance
         const notifications = []
-        
+
         async.each(persons, (person, cb) => {
           var isFirstTimeRequester = !student.pastSessions || !student.pastSessions.length
 
@@ -312,7 +312,7 @@ module.exports = {
           if (err) {
             console.log(err)
           }
-          
+
           // add the notifications to the Session object
           session.addNotifications(notifications)
         })
