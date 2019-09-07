@@ -512,6 +512,12 @@ userSchema.methods.verifyPassword = function (candidatePassword, cb) {
   })
 }
 
+// Populates user document with the fields from the School document
+// necessary to retrieve the high school name
+userSchema.methods.populateForHighschoolName = function (cb) {
+  return this.populate('approvedHighschool', 'nameStored SCH_NAME', cb)
+}
+
 // regular expression that accepts multiple valid U. S. phone number formats
 // see http://regexlib.com/REDetails.aspx?regexp_id=58
 // modified to ignore trailing/leading whitespace and disallow alphanumeric characters

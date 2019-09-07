@@ -253,8 +253,12 @@ module.exports = {
   notifyFailsafe: function (student, type, subtopic, options) {
     const session = options && options.session
 
-    getFailsafeVolunteersFromDb().exec()
-      .then(function (persons) {
+    Promise.all([
+      student.populateForHighschoolName().execPopulate(),
+      getFailsafeVolunteersFromDb().exec()
+    ])
+      .then(function (results) {
+        const [populatedStudent, persons] = results
         persons.forEach(function (person) {
           var isFirstTimeRequester = !student.pastSessions || !student.pastSessions.length
 
@@ -273,9 +277,9 @@ module.exports = {
             person.phone,
             person.firstname,
             {
-              studentFirstname: student.firstname,
-              studentLastname: student.lastname,
-              studentHighSchool: student.highschool,
+              studentFirstname: populatedStudent.firstname,
+              studentLastname: populatedStudent.lastname,
+              studentHighSchool: populatedStudent.highschoolName,
               isFirstTimeRequester,
               type,
               subtopic,
