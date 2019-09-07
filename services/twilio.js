@@ -2,6 +2,7 @@ var config = require('../config.js')
 var User = require('../models/User')
 var twilio = require('twilio')
 var moment = require('moment-timezone')
+const async = require('async')
 const client = twilio(config.accountSid, config.authToken)
 
 const Notification = require('../models/Notification')
@@ -196,11 +197,10 @@ function sendFailsafe (phoneNumber, name, options) {
  * @param {sendPromise} a Promise that resolves to the message SID
  * @param {notification} the notification object to save
  * after the message is sent to Twilio
- * @param {session} the session that triggered the notification
  * @returns a Promise that resolves to the saved notification
  * object
  */
-function recordNotification (sendPromise, notification, session) {
+function recordNotification (sendPromise, notification) {
   return sendPromise.then(sid => {
     // record notification in database
     notification.wasSuccessful = true
@@ -213,8 +213,6 @@ function recordNotification (sendPromise, notification, session) {
     return notification
   }).then(notification => {
     return notification.save()
-  }).then(notification => {
-    return session.addNotification(notification)
   })
 }
 
@@ -229,25 +227,43 @@ module.exports = {
       isTestUserRequest,
       shouldGetFailsafe: false
     })
-      .exec(function (err, persons) {
+      .exec((err, persons) => {
         if (err) {
           console.log(err)
           // early exit
           return
         }
-        persons.forEach(person => {
+
+        console.log(persons.map(person => person._id))
+        // notifications to record in the Session instance
+        const notifications = []
+
+        async.each(persons, (person, cb) => {
           // record notification in database
           const notification = new Notification({
             volunteer: person,
             method: 'SMS'
           })
           const sendPromise = send(person.phone, person.firstname, subtopic, isTestUserRequest)
-          recordNotification(sendPromise, notification, session).catch(err => console.log(err))
+          // wait for recordNotification to succeed or fail before callback,
+          // and don't break loop if only one message fails
+          recordNotification(sendPromise, notification)
+            .then(notification => notifications.push(notification))
+            .catch(err => console.log(err))
+            .finally(cb)
+        },
+        (err) => {
+          if (err) {
+            console.log(err)
+          }
+
+          // save notifications to Session instance
+          session.addNotifications(notifications)
+
+          // failsafe notifications
+          this.notifyFailsafe(student, type, subtopic, options)
         })
       })
-
-    // failsafe notifications
-    this.notifyFailsafe(student, type, subtopic, options)
   },
   // notify failsafe volunteers
   notifyFailsafe: function (student, type, subtopic, options) {
@@ -259,7 +275,10 @@ module.exports = {
     ])
       .then(function (results) {
         const [populatedStudent, persons] = results
-        persons.forEach(function (person) {
+        // notifications to record in the Session instance
+        const notifications = []
+
+        async.each(persons, (person, cb) => {
           var isFirstTimeRequester = !student.pastSessions || !student.pastSessions.length
 
           const notification = new Notification({
@@ -287,7 +306,19 @@ module.exports = {
               voice: options && options.voice,
               isTestUserRequest: options && options.isTestUserRequest
             })
-          recordNotification(sendPromise, notification, session).catch(err => console.log(err))
+          // wait for recordNotification to succeed or fail before callback,
+          // and don't break loop if only one message fails
+          recordNotification(sendPromise, notification, session)
+            .then(notification => notifications.push(notification))
+            .catch(err => console.log(err))
+            .finally(cb)
+        }, (err) => {
+          if (err) {
+            console.log(err)
+          }
+
+          // add the notifications to the Session object
+          session.addNotifications(notifications)
         })
       })
   }

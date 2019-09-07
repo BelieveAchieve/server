@@ -137,9 +137,12 @@ sessionSchema.methods.endSession = function (cb) {
   this.save(() => console.log(`Ended session ${this._id} at ${this.endedAt}`))
 }
 
-sessionSchema.methods.addNotification = function (notification, cb) {
-  this.notifications.push(notification)
-  return this.save(cb)
+sessionSchema.methods.addNotifications = function (notificationsToAdd, cb) {
+  return this.model('Session')
+    .findByIdAndUpdate(this._id, {
+      $push: { notifications: { $each: notificationsToAdd } }
+    })
+    .exec(cb)
 }
 
 sessionSchema.methods.isActive = function (cb) {}
