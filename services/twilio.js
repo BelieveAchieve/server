@@ -343,5 +343,8 @@ module.exports = {
           session.addNotifications(notifications)
         })
       })
+      .catch (err => {
+        console.log(err)
+      })
   }
 }
