@@ -569,6 +569,14 @@ userSchema.virtual('highschoolName')
     }
   })
 
+// Virtual that gets all notifications that this user has been sent
+userSchema.virtual('notifications', {
+  ref: 'Notification',
+  localField: '_id',
+  foreignField: 'volunteer',
+  options: { sort: { sentAt: -1 } }
+})
+
 // Static method to determine if a registration code is valid
 userSchema.statics.checkCode = function (code, cb) {
   var volunteerCodes = config.VOLUNTEER_CODES.split(',')
