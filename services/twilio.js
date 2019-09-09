@@ -172,12 +172,12 @@ function sendFailsafe (phoneNumber, name, options) {
   var isTestUserRequest = options.isTestUserRequest
 
   const firstTimeNotice = isFirstTimeRequester ? 'for the first time ' : ''
-    
+
   const numOfRegularVolunteersNotified = options.numOfRegularVolunteersNotified
 
   const numberOfVolunteersNotifiedMessage = `${numOfRegularVolunteersNotified} ` +
     `regular volunteer${numOfRegularVolunteersNotified === 1 ? ' has' : 's have'} been notified.`
-  
+
   let messageText
   if (desperate) {
     messageText = `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
@@ -286,17 +286,16 @@ module.exports = {
     session.populate('notifications')
       .execPopulate()
       .then((populatedSession) => {
-         return Promise.all([
-           populatedSession,
-           getFailsafeVolunteersFromDb().exec(),
-           populatedSession.notifications
-             .filter(notification => notification.type === 'REGULAR' && notification.wasSuccessful)
-             .length
-         ])
+        return Promise.all([
+          getFailsafeVolunteersFromDb().exec(),
+          populatedSession.notifications
+            .filter(notification => notification.type === 'REGULAR' && notification.wasSuccessful)
+            .length
+        ])
       })
       .then(function (results) {
-        const [populatedSession, persons, numOfRegularVolunteersNotified] = results
-        
+        const [persons, numOfRegularVolunteersNotified] = results
+
         // notifications to record in the Session instance
         const notifications = []
 
