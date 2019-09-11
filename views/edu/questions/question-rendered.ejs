@@ -22,7 +22,7 @@
 <div class="m-4 js-image">
   <img
     class="mw-100 w-50 <%= (!question.imageSrc) ? 'd-none' : '' %>"
-    src="<%= question.imageSrc %>" />
+    src="<%= imagePaths[question._id] %>" />
 </div>
 
 <div class="m-4 js-possibleAnswers">
