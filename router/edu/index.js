@@ -46,7 +46,7 @@ edu.route('/questions').get(async (req, res) => {
   try {
     const questions = await QuestionCtrl.list(req.query || {})
     const isActive = isActivePage(req)
-    
+
     // question._id --> URL
     const imagePaths = questions.reduce((map, question) => {
       map[question._id] = frontEndPath(question.imageSrc, edu.locals.frontEndRoot)
