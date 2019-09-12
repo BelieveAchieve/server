@@ -52,7 +52,7 @@ module.exports = {
    * @param {*} callback
    */
   getVolunteersAvailability: function (options, callback) {
-    var certifiedSubjectQuery = options.certifiedSubject + '.passed'
+    var certifiedSubjectQuery = `certifications.${options.certifiedSubject}.passed`
     User.find({ isVolunteer: true, hasSchedule: true, [certifiedSubjectQuery]: true, availability: { $exists: true } }, function (err, users) {
       // defining and resetting variables
       var aggAvailabilities = {}

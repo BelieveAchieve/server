@@ -113,14 +113,14 @@ module.exports = {
           if (!user) {
             return callback(new Error('No account with that id found.'))
           }
-          user[category]['passed'] = hasPassed
-          var tries = user[category]['tries']
+          user.certifications[category]['passed'] = hasPassed
+          var tries = user.certifications[category]['tries']
           if (tries) {
             tries++
           } else {
             tries = 1
           }
-          user[category]['tries'] = tries
+          user.certifications[category]['tries'] = tries
           user.save(function (err, user) {
             if (err) {
               callback(err, null)

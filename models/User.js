@@ -260,120 +260,122 @@ var userSchema = new mongoose.Schema({
   pastSessions: [{ type: mongoose.Schema.Types.ObjectId,
     ref: 'Session' }],
 
-  algebra: {
-    passed: {
-      type: Boolean,
-      default: false
+  certifications: {
+    algebra: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-  applications: {
-    passed: {
-      type: Boolean,
-      default: false
+    applications: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-  biology: {
-    passed: {
-      type: Boolean,
-      default: false
+    biology: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-  chemistry: {
-    passed: {
-      type: Boolean,
-      default: false
+    chemistry: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-
-  essays: {
-    passed: {
-      type: Boolean,
-      default: false
+  
+    essays: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-
-  geometry: {
-    passed: {
-      type: Boolean,
-      default: false
+  
+    geometry: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-
-  planning: {
-    passed: {
-      type: Boolean,
-      default: false
+  
+    planning: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-  trigonometry: {
-    passed: {
-      type: Boolean,
-      default: false
+    trigonometry: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-
-  esl: {
-    passed: {
-      type: Boolean,
-      default: false
+  
+    esl: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-
-  precalculus: {
-    passed: {
-      type: Boolean,
-      default: false
+  
+    precalculus: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-
-  calculus: {
-    passed: {
-      type: Boolean,
-      default: false
-    },
-    tries: {
-      type: Number,
-      default: 0
+  
+    calculus: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     }
   },
 
@@ -471,14 +473,7 @@ userSchema.methods.parseProfile = function () {
     favoriteAcademicSubject: this.favoriteAcademicSubject,
     heardFrom: this.heardFrom,
     isFakeUser: this.isFakeUser,
-
-    algebra: this.algebra,
-    geometry: this.geometry,
-    trigonometry: this.trigonometry,
-    esl: this.esl,
-    precalculus: this.precalculus,
-    calculus: this.calculus,
-
+    certifications: this.certifications,
     phonePretty: this.phonePretty
   }
 }
