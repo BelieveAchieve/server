@@ -301,7 +301,7 @@ var userSchema = new mongoose.Schema({
         default: 0
       }
     },
-  
+
     essays: {
       passed: {
         type: Boolean,
@@ -312,7 +312,7 @@ var userSchema = new mongoose.Schema({
         default: 0
       }
     },
-  
+
     geometry: {
       passed: {
         type: Boolean,
@@ -323,7 +323,7 @@ var userSchema = new mongoose.Schema({
         default: 0
       }
     },
-  
+
     planning: {
       passed: {
         type: Boolean,
@@ -344,7 +344,7 @@ var userSchema = new mongoose.Schema({
         default: 0
       }
     },
-  
+
     esl: {
       passed: {
         type: Boolean,
@@ -355,7 +355,7 @@ var userSchema = new mongoose.Schema({
         default: 0
       }
     },
-  
+
     precalculus: {
       passed: {
         type: Boolean,
@@ -366,7 +366,7 @@ var userSchema = new mongoose.Schema({
         default: 0
       }
     },
-  
+
     calculus: {
       passed: {
         type: Boolean,
