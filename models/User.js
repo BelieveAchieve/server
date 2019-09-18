@@ -451,7 +451,6 @@ userSchema.methods.parseProfile = function () {
     preferredContactMethod: this.preferredContactMethod,
     availability: this.availability,
     hasSchedule: this.hasSchedule,
-    pastSessions: this.pastSessions,
 
     highschoolName: this.highschoolName,
     currentGrade: this.currentGrade,
@@ -479,7 +478,9 @@ userSchema.methods.parseProfile = function () {
     precalculus: this.precalculus,
     calculus: this.calculus,
 
-    phonePretty: this.phonePretty
+    phonePretty: this.phonePretty,
+    numPastSessions: this.numPastSessions,
+    numVolunteerSessionHours: this.numVolunteerSessionHours
   }
 }
 
