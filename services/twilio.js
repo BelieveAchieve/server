@@ -22,15 +22,7 @@ function getAvailability () {
   var date = moment.utc(dateString).tz('America/New_York')
   var day = date.isoWeekday() - 1
   var hour = date.hour()
-  var min = date.minute() / 60
 
-  if (min >= 0.5) {
-    hour = (hour + 1) % 24
-    if (hour === 0) {
-      // check availability at midnight on the next day
-      day = (day + 1) % 7
-    }
-  }
   if (hour >= 12) {
     if (hour > 12) {
       hour -= 12
