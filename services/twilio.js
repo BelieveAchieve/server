@@ -64,7 +64,8 @@ var getAvailableVolunteersFromDb = function (subtopic, options) {
     isVolunteer: true,
     [certificationPassed]: true,
     [availability]: true,
-    isTestUser: false
+    isTestUser: false,
+    isFakeUser: false
   }
 
   if (shouldOnlyGetAdmins) {
