@@ -12,7 +12,7 @@ passport.deserializeUser(function (id, done) {
     if (err || !user) {
       return done(err, user)
     }
-    
+
     user.populate('pastSessions').execPopulate((err, populatedUser) => {
       const parsedUser = populatedUser.parseProfile()
       done(err, parsedUser)
