@@ -451,7 +451,6 @@ userSchema.methods.parseProfile = function () {
     preferredContactMethod: this.preferredContactMethod,
     availability: this.availability,
     hasSchedule: this.hasSchedule,
-    pastSessions: this.pastSessions,
 
     highschoolName: this.highschoolName,
     currentGrade: this.currentGrade,
@@ -479,7 +478,9 @@ userSchema.methods.parseProfile = function () {
     precalculus: this.precalculus,
     calculus: this.calculus,
 
-    phonePretty: this.phonePretty
+    phonePretty: this.phonePretty,
+    numPastSessions: this.numPastSessions,
+    numVolunteerSessionHours: this.numVolunteerSessionHours
   }
 }
 
@@ -573,6 +574,55 @@ userSchema.virtual('highschoolName')
     } else {
       return null
     }
+  })
+
+userSchema.virtual('numPastSessions')
+  .get(function () {
+    if (!this.pastSessions) {
+      return 0
+    }
+
+    return this.pastSessions.length
+  })
+
+userSchema.virtual('numVolunteerSessionHours')
+  .get(function () {
+    if (!this.pastSessions || !this.pastSessions.length) {
+      return 0
+    }
+
+    // can't calculate when pastSessions hasn't been .populated()
+    if (!this.pastSessions[0].createdAt) {
+      return 0
+    }
+
+    const totalMilliseconds = this.pastSessions.reduce((totalMs, pastSession) => {
+      // early skip if session is missing necessary props
+      if (!(pastSession.volunteerJoinedAt && pastSession.endedAt)) {
+        return totalMs
+      }
+
+      const volunteerJoinDate = new Date(pastSession.volunteerJoinedAt)
+      const sessionEndDate = new Date(pastSession.endedAt)
+      let millisecondDiff = sessionEndDate - volunteerJoinDate
+
+      // if session was longer than 5 hours, it was probably an old glitch
+      if (millisecondDiff > 18000000) {
+        return totalMs
+      }
+
+      // skip if for some reason the volunteer joined after the session ended
+      if (millisecondDiff < 0) {
+        return totalMs
+      }
+
+      return millisecondDiff + totalMs
+    }, 0)
+
+    // milliseconds in hour = (60,000 * 60) = 3,600,000
+    const hoursDiff = (totalMilliseconds / 3600000).toFixed(2)
+
+    return hoursDiff
   })
 
 // Static method to determine if a registration code is valid
