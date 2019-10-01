@@ -140,16 +140,16 @@ dbconnect(mongoose, function () {
         console.error('This script needs a valid URL to import data.')
         return done(new Error('missing URL argument'))
       }
-      
+
       const options = {}
-      
+
       try {
         optionArgs.forEach(arg => {
           if (arg.charAt(0) !== '-') {
             console.error('Optional arguments must be preceded by a hyphen (\'-\').')
             throw new Error(`invalid option: ${arg}`)
           }
-          
+
           const key = arg.slice(1)
           if ([
             'dontconvertname'
@@ -335,7 +335,7 @@ dbconnect(mongoose, function () {
       progressBar.start(schools.length, 0)
 
       const convertName = !options.dontconvertname
-      
+
       async.mapSeries(schools, function (school, callback) {
         School.find({
           ST_SCHID: school.ST_SCHID
@@ -363,7 +363,7 @@ dbconnect(mongoose, function () {
             })
           } else {
             addNewSchool(school, convertName, (err) => {
-              progressBar.increment(),
+              progressBar.increment()
               callback(err)
             })
           }
