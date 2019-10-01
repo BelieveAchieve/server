@@ -101,6 +101,8 @@ The database is populated with the following users for local development:
 | `volunteer1@upchieve.org` | `Password123` |
 | `volunteer2@upchieve.org` | `Password123` |
 
+By default, none of the test users have an `approvedHighschool` set.
+
 Structure
 ---------
 

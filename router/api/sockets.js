@@ -49,8 +49,11 @@ module.exports = function (app) {
           }
 
           socket.join(data.sessionId)
-          io.emit('sessions', SessionCtrl.getSocketSessions())
           io.to(session._id).emit('session-change', session)
+
+          SessionCtrl.getUnfulfilledSessions().then((sessions) => {
+            io.emit('sessions', sessions)
+          })
         }
       )
     })
@@ -69,14 +72,19 @@ module.exports = function (app) {
             console.log('Left session', session._id)
             socket.leave(session._id)
             io.to(session._id).emit('session-change', session)
-            io.emit('sessions', SessionCtrl.getSocketSessions())
+
+            SessionCtrl.getUnfulfilledSessions().then((sessions) => {
+              io.emit('sessions', sessions)
+            })
           }
         }
       )
     })
 
     socket.on('list', function () {
-      io.emit('sessions', SessionCtrl.getSocketSessions())
+      SessionCtrl.getUnfulfilledSessions().then((sessions) => {
+        io.emit('sessions', sessions)
+      })
     })
 
     socket.on('typing', function (data) {
