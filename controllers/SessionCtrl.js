@@ -362,6 +362,18 @@ module.exports = {
     }
   },
 
+  getUnfulfilledSessions: function () {
+    const queryAttrs = {
+      volunteerJoinedAt: { $exists: false },
+      endedAt: { $exists: false }
+    }
+
+    return Session.find(queryAttrs)
+      .populate('student')
+      .sort({ createdAt: -1 })
+      .exec()
+  },
+
   findLatest: function (attrs, cb) {
     Session.find(attrs)
       .sort({ createdAt: -1 })
