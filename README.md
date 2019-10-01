@@ -28,7 +28,6 @@ UPchieve web server
     - [POST /api/session/check](#post-apisessioncheck)
     - [POST /api/training/questions](#post-apitrainingquestions)
     - [POST /api/training/score](#post-apitrainingscore)
-    - [POST /api/calendar/init](#post-apicalendarinit)
     - [POST /api/calendar/get](#post-apicalendarget)
     - [POST /api/calendar/save](#post-apicalendarsave)
     - [POST /api/feedback](#post-apifeedback)
@@ -101,6 +100,8 @@ The database is populated with the following users for local development:
 | `student1@upchieve.org`   | `Password123` |
 | `volunteer1@upchieve.org` | `Password123` |
 | `volunteer2@upchieve.org` | `Password123` |
+
+By default, none of the test users have an `approvedHighschool` set.
 
 Structure
 ---------
@@ -251,14 +252,6 @@ Possible errors:
   "userid": "String",
   "idAnswerMap": "String",
   "category": "String"
-}
-```
-
-### POST /api/calendar/init
-
-```json
-{
-  "userid": "String"
 }
 ```
 

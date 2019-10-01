@@ -13,12 +13,17 @@ module.exports = {
     } else {
       const regex = new RegExp(escapeRegex(query), 'i')
       // look for both manually entered and auto-downloaded schools
-      const dbQuery = School.find({
-        $or: [
-          { nameStored: regex },
-          { SCH_NAME: regex }
-        ]
-      }).limit(20)
+      const dbQuery = School
+        .find({
+          $or: [
+            { nameStored: regex },
+            { SCH_NAME: regex }
+          ]
+        })
+        .sort({
+          isApproved: -1
+        })
+        .limit(20)
 
       dbQuery.exec(function (err, results) {
         if (err) {
