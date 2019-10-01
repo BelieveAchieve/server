@@ -83,10 +83,9 @@ module.exports = function (app) {
       // If successfully authed, return user object (otherwise 401 is returned from middleware)
       req.user.populate('pastSessions').execPopulate((err, populatedUser) => {
         console.log(err)
-        const parsedUser = populatedUser.parseProfile()
 
         res.json({
-          user: parsedUser
+          user: populatedUser
         })
       })
     }
