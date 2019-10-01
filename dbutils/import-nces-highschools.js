@@ -18,7 +18,14 @@ const dbconnect = require('./dbconnect')
 const School = require('../models/School')
 
 // helper to convert names to title case
-function toTitleCase (str) {
+function toTitleCaseIfAllCaps (str) {
+  const isAllCaps = typeof str === 'string' &&
+    str === str.toUpperCase()
+
+  if (!isAllCaps) {
+    return str
+  }
+
   return str.split(' ')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(' ')
@@ -39,8 +46,8 @@ function addNewSchool (school, convertName, done) {
 
     // populate fields
     Object.keys(school).forEach((key) => {
-      if (convertName && (key === 'SCH_NAME' || key === 'LCITY') ) {
-        newSchool[key] = toTitleCase(school[key])
+      if (convertName && (key === 'SCH_NAME' || key === 'LCITY')) {
+        newSchool[key] = toTitleCaseIfAllCaps(school[key])
       } else {
         newSchool[key] = school[key]
       }
@@ -351,7 +358,7 @@ dbconnect(mongoose, function () {
             Object.keys(school).forEach((key) => {
               if (convertName && (key === 'SCH_NAME' || key === 'LCITY')) {
                 // convert automatically imported names and cities
-                data[key] = toTitleCase(school[key])
+                data[key] = toTitleCaseIfAllCaps(school[key])
               } else {
                 data[key] = school[key]
               }
