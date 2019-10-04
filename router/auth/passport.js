@@ -26,7 +26,7 @@ passport.use(
       passwordField: 'password'
     },
     function (email, password, done) {
-      User.findOne({ email: email }, function (err, user) {
+      User.findOne({ email: email }, '+password', function (err, user) {
         if (err) {
           return done(err)
         }
@@ -35,7 +35,7 @@ passport.use(
         }
 
         user.verifyPassword(password, function (err, user) {
-          return done(err, user)
+          User.findById(user._id, done)
         })
       })
     }
