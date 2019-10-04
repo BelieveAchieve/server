@@ -513,6 +513,12 @@ userSchema.methods.verifyPassword = function (candidatePassword, cb) {
   })
 }
 
+// Populates user document with the fields from the School document
+// necessary to retrieve the high school name
+userSchema.methods.populateForHighschoolName = function (cb) {
+  return this.populate('approvedHighschool', 'nameStored SCH_NAME', cb)
+}
+
 // regular expression that accepts multiple valid U. S. phone number formats
 // see http://regexlib.com/REDetails.aspx?regexp_id=58
 // modified to ignore trailing/leading whitespace and disallow alphanumeric characters
@@ -569,6 +575,14 @@ userSchema.virtual('highschoolName')
       return null
     }
   })
+
+// Virtual that gets all notifications that this user has been sent
+userSchema.virtual('notifications', {
+  ref: 'Notification',
+  localField: '_id',
+  foreignField: 'volunteer',
+  options: { sort: { sentAt: -1 } }
+})
 
 userSchema.virtual('numPastSessions')
   .get(function () {

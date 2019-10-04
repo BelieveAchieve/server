@@ -77,24 +77,14 @@ module.exports = function (router) {
 
   router.route('/session/current').post(function (req, res) {
     const data = req.body || {}
-    const userId = data.user_id
-    const isVolunteer = data.is_volunteer
-
-    let studentId = null
-    let volunteerId = null
-
-    if (isVolunteer) {
-      volunteerId = ObjectId(userId)
-    } else {
-      studentId = ObjectId(userId)
-    }
+    const userId = ObjectId(data.user_id)
 
     SessionCtrl.findLatest(
       {
         $and: [
-          { endedAt: null },
+          { endedAt: { $exists: false } },
           {
-            $or: [{ student: studentId }, { volunteer: volunteerId }]
+            $or: [{ student: userId }, { volunteer: userId }]
           }
         ]
       },

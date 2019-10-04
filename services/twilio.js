@@ -22,15 +22,7 @@ function getAvailability () {
   var date = moment.utc(dateString).tz('America/New_York')
   var day = date.isoWeekday() - 1
   var hour = date.hour()
-  var min = date.minute() / 60
 
-  if (min >= 0.5) {
-    hour = (hour + 1) % 24
-    if (hour === 0) {
-      // check availability at midnight on the next day
-      day = (day + 1) % 7
-    }
-  }
   if (hour >= 12) {
     if (hour > 12) {
       hour -= 12
@@ -72,7 +64,8 @@ var getAvailableVolunteersFromDb = function (subtopic, options) {
     isVolunteer: true,
     [certificationPassed]: true,
     [availability]: true,
-    isTestUser: false
+    isTestUser: false,
+    isFakeUser: false
   }
 
   if (shouldOnlyGetAdmins) {
@@ -226,7 +219,7 @@ function recordNotification (sendPromise, notification) {
 
 module.exports = {
   // notify both standard and failsafe volunteers
-  notify: function (student, type, subtopic, options) {
+  notify: function (student, type, subtopic, options, cb) {
     var isTestUserRequest = options.isTestUserRequest || false
     const session = options.session
 
@@ -252,6 +245,7 @@ module.exports = {
             volunteer: person,
             method: 'SMS'
           })
+
           const sendPromise = send(person.phone, person.firstname, subtopic, isTestUserRequest)
           // wait for recordNotification to succeed or fail before callback,
           // and don't break loop if only one message fails
@@ -274,6 +268,10 @@ module.exports = {
 
               // failsafe notifications
               this.notifyFailsafe(student, type, subtopic, options)
+
+              if (cb) {
+                cb(modifiedSession)
+              }
             })
             .catch(err => console.log(err))
         })
@@ -287,6 +285,7 @@ module.exports = {
       .execPopulate()
       .then((populatedSession) => {
         return Promise.all([
+          student.populateForHighschoolName().execPopulate(),
           getFailsafeVolunteersFromDb().exec(),
           populatedSession.notifications
             .filter(notification => notification.type === 'REGULAR' && notification.wasSuccessful)
@@ -294,7 +293,7 @@ module.exports = {
         ])
       })
       .then(function (results) {
-        const [persons, numOfRegularVolunteersNotified] = results
+        const [populatedStudent, persons, numOfRegularVolunteersNotified] = results
 
         // notifications to record in the Session instance
         const notifications = []
@@ -317,9 +316,9 @@ module.exports = {
             person.phone,
             person.firstname,
             {
-              studentFirstname: student.firstname,
-              studentLastname: student.lastname,
-              studentHighSchool: student.highschool,
+              studentFirstname: populatedStudent.firstname,
+              studentLastname: populatedStudent.lastname,
+              studentHighSchool: populatedStudent.highschoolName,
               isFirstTimeRequester,
               type,
               subtopic,
@@ -343,7 +342,7 @@ module.exports = {
           session.addNotifications(notifications)
         })
       })
-      .catch (err => {
+      .catch(err => {
         console.log(err)
       })
   }

@@ -29,6 +29,22 @@ const notificationSchema = new mongoose.Schema({
   },
   // Message ID returned by service, such as Twilio
   messageId: String
+},
+{
+  toJSON: {
+    virtuals: true
+  },
+
+  toObject: {
+    virtuals: true
+  }
+})
+
+notificationSchema.virtual('session', {
+  ref: 'Session',
+  localField: '_id',
+  foreignField: 'notifications',
+  justOne: true
 })
 
 module.exports = mongoose.model('Notification', notificationSchema)

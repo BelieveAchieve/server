@@ -14,8 +14,7 @@ passport.deserializeUser(function (id, done) {
     }
 
     user.populate('pastSessions').execPopulate((err, populatedUser) => {
-      const parsedUser = populatedUser.parseProfile()
-      done(err, parsedUser)
+      done(err, populatedUser)
     })
   })
 })
