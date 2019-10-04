@@ -35,7 +35,12 @@ passport.use(
         }
 
         user.verifyPassword(password, function (err, user) {
-          User.findById(user._id, done)
+          if (err) {
+            done(err)
+          } else {
+            // pass the user to the callback without the password hash
+            User.findById(user._id, done)
+          }
         })
       })
     }
