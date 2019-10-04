@@ -39,7 +39,8 @@ passport.use(
             done(err)
           } else {
             // pass the user to the callback without the password hash
-            User.findById(user._id, done)
+            user.password = undefined
+            done(null, user)
           }
         })
       })
