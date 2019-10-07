@@ -27,7 +27,18 @@ const isActivePage = req => {
   }
 }
 
+// Convert a given path of a front-end-served asset to the correct absolute or
+// relative path, based on the given frontEndRoot
+const frontEndPath = (relativePath, frontEndRoot) => {
+  if (frontEndRoot) {
+    return new URL(relativePath, frontEndRoot).toString()
+  } else {
+    return relativePath
+  }
+}
+
 module.exports = {
   questionsPath,
-  isActivePage
+  isActivePage,
+  frontEndPath
 }

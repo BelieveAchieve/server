@@ -293,25 +293,24 @@ module.exports = {
       twilioService.notify(user, type, subTopic, {
         isTestUserRequest: user.isTestUser,
         session: savedSession
+      }, (session) => {
+        // second SMS failsafe notifications
+        newSessionTimekeeper.setSessionTimeout(session, config.desperateSMSTimeout,
+          twilioService.notifyFailsafe, user, type, subTopic, {
+            desperate: true,
+            isTestUserRequest: user.isTestUser,
+            session
+          })
+
+        // failsafe voice notification
+        newSessionTimekeeper.setSessionTimeout(session, config.desperateVoiceTimeout,
+          twilioService.notifyFailsafe, user, type, subTopic, {
+            desperate: true,
+            voice: true,
+            isTestUserRequest: user.isTestUser,
+            session
+          })
       })
-
-      // second SMS failsafe notifications
-      newSessionTimekeeper.setSessionTimeout(session, config.desperateSMSTimeout,
-        twilioService.notifyFailsafe, user, type, subTopic, {
-          desperate: true,
-          isTestUserRequest: user.isTestUser,
-          session: savedSession
-        })
-
-      // failsafe voice notification
-      newSessionTimekeeper.setSessionTimeout(session, config.desperateVoiceTimeout,
-        twilioService.notifyFailsafe, user, type, subTopic,
-        {
-          desperate: true,
-          voice: true,
-          isTestUserRequest: user.isTestUser,
-          session: savedSession
-        })
 
       cb(null, savedSession)
     })
@@ -360,6 +359,18 @@ module.exports = {
     } else {
       Session.findOne({ _id: sessionId }, cb)
     }
+  },
+
+  getUnfulfilledSessions: function () {
+    const queryAttrs = {
+      volunteerJoinedAt: { $exists: false },
+      endedAt: { $exists: false }
+    }
+
+    return Session.find(queryAttrs)
+      .populate('student')
+      .sort({ createdAt: -1 })
+      .exec()
   },
 
   findLatest: function (attrs, cb) {
