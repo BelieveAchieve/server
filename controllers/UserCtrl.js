@@ -28,7 +28,6 @@ function iterateKeys (update, data, callback) {
     'computerAccess',
     'preferredTimes',
     'phone',
-    'highschool',
     'currentGrade',
     'expectedGraduation',
     'difficultAcademicSubject',
@@ -72,6 +71,7 @@ module.exports = {
       }
     })
   },
+
   update: function (options, callback) {
     var userId = options.userId
 
