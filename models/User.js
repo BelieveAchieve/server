@@ -16,15 +16,15 @@ var userSchema = new mongoose.Schema({
       message: '{VALUE} is not a valid email'
     }
   },
-  password: String,
+  password: { type: String, select: false },
 
   verified: {
     type: Boolean,
     default: false
   },
-  verificationToken: String,
-  registrationCode: String,
-  passwordResetToken: String,
+  verificationToken: { type: String, select: false },
+  registrationCode: { type: String, select: false },
+  passwordResetToken: { type: String, select: false },
 
   // Profile data
   firstname: { type: String, required: [true, 'First name is required.'] },
