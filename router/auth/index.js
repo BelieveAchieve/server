@@ -9,6 +9,7 @@ var ResetPasswordCtrl = require('../../controllers/ResetPasswordCtrl')
 
 var config = require('../../config.js')
 var User = require('../../models/User.js')
+var School = require('../../models/School.js')
 
 // Validation functions
 function checkPassword (password) {
@@ -80,8 +81,12 @@ module.exports = function (app) {
     passport.authenticate('local'), // Delegate auth logic to passport middleware
     function (req, res) {
       // If successfully authed, return user object (otherwise 401 is returned from middleware)
-      res.json({
-        user: req.user
+      req.user.populate('pastSessions').execPopulate((err, populatedUser) => {
+        console.log(err)
+
+        res.json({
+          user: populatedUser
+        })
       })
     }
   )
@@ -125,7 +130,7 @@ module.exports = function (app) {
 
     var code = req.body.code
 
-    var highSchool = req.body.highSchool
+    var highSchoolUpchieveId = req.body.highSchoolId
 
     var college = req.body.college
 
@@ -159,85 +164,115 @@ module.exports = function (app) {
       })
     }
 
-    var user = new User()
-    user.email = email
-    user.isVolunteer = !(code === undefined)
-    user.registrationCode = code
-    user.highschool = highSchool
-    user.college = college
-    user.phonePretty = phone
-    user.favoriteAcademicSubject = favoriteAcademicSubject
-    user.firstname = firstName
-    user.lastname = lastName
-    user.verified = code === undefined
-
-    user.hashPassword(password, function (err, hash) {
-      user.password = hash // Note the salt is embedded in the final hash
-
-      if (err) {
-        res.json({
-          err: 'Could not hash password'
+    // Look up high school
+    const promise = new Promise((resolve, reject) => {
+      if (!(code === undefined)) {
+        // don't look up high schools for volunteers
+        resolve({
+          isVolunteer: true
         })
+
+        // early exit
         return
       }
 
-      user.save(function (err) {
+      School.findByUpchieveId(highSchoolUpchieveId, (err, school) => {
         if (err) {
-          res.json({
-            err: err.message
-          })
+          reject(err)
+        } else if (!school.isApproved) {
+          reject(new Error(`School ${highSchoolUpchieveId} is not approved`))
         } else {
-          req.login(user, function (err) {
-            if (err) {
-              console.log(err)
-              res.json({
-                // msg: msg,
-                err: err
-              })
-            } else {
-              if (user.isVolunteer) {
-                VerificationCtrl.initiateVerification(
-                  {
-                    userId: user._id,
-                    email: user.email
-                  },
-                  function (err, email) {
-                    var msg
-                    if (err) {
-                      msg =
-                        'Registration successful. Error sending verification email: ' +
-                        err
-                    } else {
-                      msg =
-                        'Registration successful. Verification email sent to ' +
-                        email
-                    }
-
-                    req.login(user, function (err) {
-                      if (err) {
-                        res.json({
-                          msg: msg,
-                          err: err
-                        })
-                      } else {
-                        res.json({
-                          msg: msg,
-                          user: user
-                        })
-                      }
-                    })
-                  }
-                )
-              } else {
-                res.json({
-                  // msg: msg,
-                  user: user
-                })
-              }
-            }
+          resolve({
+            isVolunteer: false,
+            school
           })
         }
       })
+    })
+
+    promise.then(({ isVolunteer, school }) => {
+      const user = new User()
+      user.email = email
+      user.isVolunteer = isVolunteer
+      user.registrationCode = code
+      user.approvedHighschool = school
+      user.college = college
+      user.phonePretty = phone
+      user.favoriteAcademicSubject = favoriteAcademicSubject
+      user.firstname = firstName
+      user.lastname = lastName
+      user.verified = code === undefined
+
+      user.hashPassword(password, function (err, hash) {
+        user.password = hash // Note the salt is embedded in the final hash
+
+        if (err) {
+          res.json({
+            err: 'Could not hash password'
+          })
+          return
+        }
+
+        user.save(function (err) {
+          if (err) {
+            res.json({
+              err: err.message
+            })
+          } else {
+            req.login(user, function (err) {
+              if (err) {
+                console.log(err)
+                res.json({
+                  // msg: msg,
+                  err: err
+                })
+              } else {
+                if (user.isVolunteer) {
+                  VerificationCtrl.initiateVerification(
+                    {
+                      userId: user._id,
+                      email: user.email
+                    },
+                    function (err, email) {
+                      var msg
+                      if (err) {
+                        msg =
+                          'Registration successful. Error sending verification email: ' +
+                          err
+                      } else {
+                        msg =
+                          'Registration successful. Verification email sent to ' +
+                          email
+                      }
+
+                      req.login(user, function (err) {
+                        if (err) {
+                          res.json({
+                            msg: msg,
+                            err: err
+                          })
+                        } else {
+                          res.json({
+                            msg: msg,
+                            user: user
+                          })
+                        }
+                      })
+                    }
+                  )
+                } else {
+                  res.json({
+                    // msg: msg,
+                    user: user
+                  })
+                }
+              }
+            })
+          }
+        })
+      })
+    }).catch((err) => {
+      res.json({ err: err })
     })
   })
 

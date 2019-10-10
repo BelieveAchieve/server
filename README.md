@@ -28,7 +28,6 @@ UPchieve web server
     - [POST /api/session/check](#post-apisessioncheck)
     - [POST /api/training/questions](#post-apitrainingquestions)
     - [POST /api/training/score](#post-apitrainingscore)
-    - [POST /api/calendar/init](#post-apicalendarinit)
     - [POST /api/calendar/get](#post-apicalendarget)
     - [POST /api/calendar/save](#post-apicalendarsave)
     - [POST /api/feedback](#post-apifeedback)
@@ -40,6 +39,10 @@ UPchieve web server
     - [POST /api/verify/send](#post-apiverifysend)
     - [POST /api/verify/confirm](#post-apiverifyconfirm)
     - [POST /moderate/message](#post-moderatemessage)
+    - [GET /school/search](#get-schoolsearch)
+    - [POST /school/approvalnotify](#post-schoolapprovalnotify)
+    - [POST /school/check](#post-schoolcheck)
+    - [GET /school/studentusers/:schoolUpchieveId](#get-schoolstudentusersschoolupchieveid)
 
 Local Development
 -----------------
@@ -97,6 +100,8 @@ The database is populated with the following users for local development:
 | `student1@upchieve.org`   | `Password123` |
 | `volunteer1@upchieve.org` | `Password123` |
 | `volunteer2@upchieve.org` | `Password123` |
+
+By default, none of the test users have an `approvedHighschool` set.
 
 Structure
 ---------
@@ -250,14 +255,6 @@ Possible errors:
 }
 ```
 
-### POST /api/calendar/init
-
-```json
-{
-  "userid": "String"
-}
-```
-
 ### POST /api/calendar/get
 
 ```json
@@ -354,5 +351,92 @@ The response body looks like this if no error occurred:
 ```javascript
 {
   "isClean": true // or false
+}
+```
+
+### GET /school/search
+
+Expects the following query string:
+
+```
+?q=SEARCH_STRING
+```
+
+where `SEARCH_STRING` is the string to be searched.
+
+Searches the database of schools for a name or `upchieveId` matching the search string. The search string may match only part of the school's name, but if searching for an `upchieveId` the string must match exactly.
+
+If there are no errors, the response body contains the list of schools matching the search string in the format:
+
+```javascript
+{
+  "results": [
+    {
+      "upchieveId": "UPchieve ID",
+      "name": "high school name",
+      "districtName": "district name",
+      "city": "city name",
+      "state": "state postal code"
+    },
+    // ...
+  ]
+}
+```
+
+### POST /school/approvalnotify
+
+Expects the following request body:
+
+```json
+{
+  "schoolUpchieveId": "String",
+  "email": "String"
+}
+```
+
+Adds an email address to the list of email addresses to notify when the school is approved by UPchieve. 
+
+If no error occurred, the response body looks like:
+
+```json
+{
+  "schoolId": "school's UPchieve ID"
+}
+```
+
+### POST /school/check
+
+Expects the following request body:
+
+```json
+{
+  "schoolUpchieveId": "String"
+}
+```
+
+Checks if a school has been approved by UPchieve. If no error occurs, the response looks like:
+
+```javascript
+{
+  "approved": true // or false
+}
+```
+
+### GET /school/studentusers/:schoolUpchieveId
+
+Lists all student users registered with a school. Restricted to admins only. If no error occurs, the response looks like:
+
+```javascript
+{
+  "upchieveId": "8-digit identifier",
+  "studentUsers": [
+    {
+      "email": "student@example.com",
+      "firstname": "Firstname",
+      "lastname": "Lastname",
+      "userId": "user's ObjectID in MongoDB"
+    },
+    // ...
+  ]
 }
 ```

@@ -49,8 +49,11 @@ module.exports = function (app) {
           }
 
           socket.join(data.sessionId)
-          io.emit('sessions', SessionCtrl.getSocketSessions())
           io.to(session._id).emit('session-change', session)
+
+          SessionCtrl.getUnfulfilledSessions().then((sessions) => {
+            io.emit('sessions', sessions)
+          })
         }
       )
     })
@@ -69,18 +72,23 @@ module.exports = function (app) {
             console.log('Left session', session._id)
             socket.leave(session._id)
             io.to(session._id).emit('session-change', session)
-            io.emit('sessions', SessionCtrl.getSocketSessions())
+
+            SessionCtrl.getUnfulfilledSessions().then((sessions) => {
+              io.emit('sessions', sessions)
+            })
           }
         }
       )
     })
 
     socket.on('list', function () {
-      io.emit('sessions', SessionCtrl.getSocketSessions())
+      SessionCtrl.getUnfulfilledSessions().then((sessions) => {
+        io.emit('sessions', sessions)
+      })
     })
 
     socket.on('typing', function (data) {
-      socket.broadcast.to(data.sessionId).emit('is-typing', data.user.firstname)
+      socket.broadcast.to(data.sessionId).emit('is-typing')
     })
 
     socket.on('notTyping', function (data) {
@@ -114,7 +122,7 @@ module.exports = function (app) {
               email: data.user.email,
               isVolunteer: data.user.isVolunteer,
               picture: data.user.picture,
-              time: savedMessage.createdAt
+              createdAt: savedMessage.createdAt
             })
           })
         }
@@ -123,6 +131,16 @@ module.exports = function (app) {
 
     // Whiteboard interaction
     // all of this is now blocked for non-participants
+
+    socket.on('canvasLoaded', function (data) {
+      if (!data || !data.sessionId) return
+      SessionCtrl.verifySessionParticipantBySessionId(data.sessionId, data.user, function (err) {
+        if (err) return
+        socket.broadcast.to(data.sessionId).emit('size', {
+          height: data.height
+        })
+      })
+    })
 
     socket.on('drawClick', function (data) {
       if (!data || !data.sessionId) return

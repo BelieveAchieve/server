@@ -51,7 +51,12 @@ var sessionSchema = new mongoose.Schema({
 
   volunteerJoinedAt: {
     type: Date
-  }
+  },
+
+  notifications: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Notification'
+  }]
 
   // Scheduled sessions
   // startAt: {
@@ -100,7 +105,10 @@ sessionSchema.methods.joinUser = function (user, cb) {
     } else {
       this.volunteer = user
     }
-    this.volunteerJoinedAt = new Date()
+
+    if (!this.volunteerJoinedAt) {
+      this.volunteerJoinedAt = new Date()
+    }
   } else if (this.student) {
     if (!this.student._id.equals(user._id)) {
       cb(`A student ${this.student._id} has already joined this session.`)
@@ -127,6 +135,14 @@ sessionSchema.methods.leaveUser = function (user, cb) {
 sessionSchema.methods.endSession = function (cb) {
   this.endedAt = new Date()
   this.save(() => console.log(`Ended session ${this._id} at ${this.endedAt}`))
+}
+
+sessionSchema.methods.addNotifications = function (notificationsToAdd, cb) {
+  return this.model('Session')
+    .findByIdAndUpdate(this._id, {
+      $push: { notifications: { $each: notificationsToAdd } }
+    })
+    .exec(cb)
 }
 
 sessionSchema.methods.isActive = function (cb) {}
