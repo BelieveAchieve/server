@@ -32,7 +32,6 @@ module.exports = function (router) {
           preferredTimes: data.preferredTimes,
           phone: data.phone,
           phonePretty: data.phonePretty,
-          highschool: data.highschool,
           currentGrade: data.currentGrade,
           expectedGraduation: data.expectedGraduation,
           difficultAcademicSubject: data.difficultAcademicSubject,

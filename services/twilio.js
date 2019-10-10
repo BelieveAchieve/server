@@ -219,7 +219,7 @@ function recordNotification (sendPromise, notification) {
 
 module.exports = {
   // notify both standard and failsafe volunteers
-  notify: function (student, type, subtopic, options) {
+  notify: function (student, type, subtopic, options, cb) {
     var isTestUserRequest = options.isTestUserRequest || false
     const session = options.session
 
@@ -245,6 +245,7 @@ module.exports = {
             volunteer: person,
             method: 'SMS'
           })
+
           const sendPromise = send(person.phone, person.firstname, subtopic, isTestUserRequest)
           // wait for recordNotification to succeed or fail before callback,
           // and don't break loop if only one message fails
@@ -267,6 +268,10 @@ module.exports = {
 
               // failsafe notifications
               this.notifyFailsafe(student, type, subtopic, options)
+
+              if (cb) {
+                cb(modifiedSession)
+              }
             })
             .catch(err => console.log(err))
         })
@@ -280,6 +285,7 @@ module.exports = {
       .execPopulate()
       .then((populatedSession) => {
         return Promise.all([
+          student.populateForHighschoolName().execPopulate(),
           getFailsafeVolunteersFromDb().exec(),
           populatedSession.notifications
             .filter(notification => notification.type === 'REGULAR' && notification.wasSuccessful)
@@ -287,7 +293,7 @@ module.exports = {
         ])
       })
       .then(function (results) {
-        const [persons, numOfRegularVolunteersNotified] = results
+        const [populatedStudent, persons, numOfRegularVolunteersNotified] = results
 
         // notifications to record in the Session instance
         const notifications = []
@@ -310,9 +316,9 @@ module.exports = {
             person.phone,
             person.firstname,
             {
-              studentFirstname: student.firstname,
-              studentLastname: student.lastname,
-              studentHighSchool: student.highschool,
+              studentFirstname: populatedStudent.firstname,
+              studentLastname: populatedStudent.lastname,
+              studentHighSchool: populatedStudent.highschoolName,
               isFirstTimeRequester,
               type,
               subtopic,
@@ -336,7 +342,7 @@ module.exports = {
           session.addNotifications(notifications)
         })
       })
-      .catch (err => {
+      .catch(err => {
         console.log(err)
       })
   }
