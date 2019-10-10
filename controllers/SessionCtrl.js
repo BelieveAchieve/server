@@ -284,19 +284,36 @@ module.exports = {
       subTopic: subTopic
     })
 
-    // notify both available and failsafe volunteers
-    twilioService.notify(user, type, subTopic, { isTestUserRequest: user.isTestUser })
+    session.save((err, savedSession) => {
+      if (err) {
+        return cb(err)
+      }
 
-    // second SMS failsafe notifications
-    newSessionTimekeeper.setSessionTimeout(session, config.desperateSMSTimeout,
-      twilioService.notifyFailsafe, user, type, subTopic, { desperate: true, isTestUserRequest: user.isTestUser })
+      // notify both available and failsafe volunteers
+      twilioService.notify(user, type, subTopic, {
+        isTestUserRequest: user.isTestUser,
+        session: savedSession
+      }, (session) => {
+        // second SMS failsafe notifications
+        newSessionTimekeeper.setSessionTimeout(session, config.desperateSMSTimeout,
+          twilioService.notifyFailsafe, user, type, subTopic, {
+            desperate: true,
+            isTestUserRequest: user.isTestUser,
+            session
+          })
 
-    // failsafe voice notification
-    newSessionTimekeeper.setSessionTimeout(session, config.desperateVoiceTimeout,
-      twilioService.notifyFailsafe, user, type, subTopic,
-      { desperate: true, voice: true, isTestUserRequest: user.isTestUser })
+        // failsafe voice notification
+        newSessionTimekeeper.setSessionTimeout(session, config.desperateVoiceTimeout,
+          twilioService.notifyFailsafe, user, type, subTopic, {
+            desperate: true,
+            voice: true,
+            isTestUserRequest: user.isTestUser,
+            session
+          })
+      })
 
-    session.save(cb)
+      cb(null, savedSession)
+    })
   },
 
   end: function (options, cb) {
@@ -342,6 +359,18 @@ module.exports = {
     } else {
       Session.findOne({ _id: sessionId }, cb)
     }
+  },
+
+  getUnfulfilledSessions: function () {
+    const queryAttrs = {
+      volunteerJoinedAt: { $exists: false },
+      endedAt: { $exists: false }
+    }
+
+    return Session.find(queryAttrs)
+      .populate('student')
+      .sort({ createdAt: -1 })
+      .exec()
   },
 
   findLatest: function (attrs, cb) {
