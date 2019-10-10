@@ -1,12 +1,15 @@
 const config = require('../config')
 const sgMail = require('@sendgrid/mail')
 
-const sendEmail = function (apiKey, toEmail, fromEmail, templateId, dynamicData, callback) {
-  sgMail.setApiKey(apiKey)
+sgMail.setApiKey(config.sendgrid.apiKey)
 
+const sendEmail = function (toEmail, fromEmail, fromName, templateId, dynamicData, callback) {
   const msg = {
     to: toEmail,
-    from: fromEmail,
+    from: {
+      email: fromEmail,
+      name: fromName
+    },
     templateId: templateId,
     dynamic_template_data: dynamicData
   }
@@ -20,7 +23,7 @@ module.exports = {
     const token = options.token
     const url = 'http://' + config.client.host + '/action/verify/' + token
 
-    sendEmail(config.sendgrid.apiKey, email, config.mail.senders.noreply,
+    sendEmail(email, config.mail.senders.noreply, 'UPchieve',
       config.sendgrid.verifyTemplate, {
         'userEmail': email,
         'verifyLink': url
@@ -31,7 +34,7 @@ module.exports = {
     const email = options.email
     const responseData = options.responseData
 
-    sendEmail(config.sendgrid.apiKey, email, config.mail.senders.noreply,
+    sendEmail(email, config.mail.senders.noreply, 'UPchieve',
       config.sendgrid.contactTemplate, responseData, callback)
   },
 
@@ -40,7 +43,7 @@ module.exports = {
     const token = options.token
     const url = 'http://' + config.client.host + '/setpassword/' + token
 
-    sendEmail(config.sendgrid.apiKey, email, config.mail.senders.noreply,
+    sendEmail(email, config.mail.senders.noreply, 'UPchieve',
       config.sendgrid.resetTemplate, {
         'userEmail': email,
         'resetLink': url
