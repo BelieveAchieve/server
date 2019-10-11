@@ -1,12 +1,12 @@
 const express = require('express')
 
 const config = require('../../config.js')
-const MailService = require('../services/MailService')
+const MailService = require('../../services/MailService')
 
 module.exports = function (app) {
   const router = new express.Router()
 
-  router.route('/contact/send').post(function (req, res) {
+  router.route('/send').post(function (req, res) {
     var responseData = req.body.responseData
     var email = config.mail.receivers.contact
 
