@@ -48,6 +48,8 @@ module.exports = {
     Question.find({ category: options.category }, function (err, questions) {
       if (err) {
         return callback(err)
+      } else if (!subcategories) {
+        return callback(new Error('No subcategories defined for category: ' + options.category))
       } else {
         var randomQuestions = []
         var questionsBySubcategory = questions.reduce(function (acc, question) {
