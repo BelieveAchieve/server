@@ -13,9 +13,7 @@ passport.deserializeUser(function (id, done) {
       return done(err, user)
     }
 
-    user.populate('pastSessions').execPopulate((err, populatedUser) => {
-      done(err, populatedUser)
-    })
+    return done(err, user)
   })
 })
 

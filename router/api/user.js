@@ -3,8 +3,10 @@ var UserCtrl = require('../../controllers/UserCtrl')
 module.exports = function (router) {
   router.route('/user').get(function (req, res) {
     if (req.user) {
-      res.json({
-        user: req.user
+      req.user.populateForVolunteerStats().execPopulate().then(populatedUser => {
+        res.json({
+          user: populatedUser.parseProfile()
+        })
       })
     } else {
       res.json({
