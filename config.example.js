@@ -10,11 +10,16 @@ module.exports = {
   saltRounds: 10,
   sendgrid: {
     apiKey: process.env.SENDGRID_API_KEY || '',
-    templateId: '142a621c-127a-46a1-b36a-d0689fd07877'
+    contactTemplate: 'd-e79546f380874c58965c163f45df2ef4',
+    verifyTemplate: 'd-02281875a1cf4575bd3568e674faf147',
+    resetTemplate: 'd-5005d2beb2ad49a883a10364f3e14b81'
   },
   mail: {
     senders: {
       noreply: 'noreply@upchieve.org'
+    },
+    receivers: {
+      contact: 'staff@upchieve.org'
     }
   },
   client: {
