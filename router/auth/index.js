@@ -82,7 +82,7 @@ module.exports = function (app) {
     function (req, res) {
       // If successfully authed, return user object (otherwise 401 is returned from middleware)
       res.json({
-        user: req.user
+        user: req.user.parseProfile()
       })
     }
   )
