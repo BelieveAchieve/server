@@ -9,6 +9,7 @@
     "format": "prettier-standard '*.js' '{controllers,models,router,services,seeds}/**/*.js'"
   },
   "dependencies": {
+    "@sendgrid/mail": "^6.4.0",
     "async": "^1.5.0",
     "bcrypt": "3.0.4",
     "body-parser": "^1.18.3",
@@ -35,7 +36,6 @@
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "q": "^1.4.1",
-    "sendgrid": "^5.2.3",
     "socket.io": "^2.2.0",
     "twilio": "^3.28.1",
     "validator": "^6.2.0"
