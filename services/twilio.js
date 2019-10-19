@@ -182,14 +182,13 @@ function sendFailsafe (phoneNumber, name, options) {
     `regular volunteer${numOfRegularVolunteersNotified === 1 ? ' has' : 's have'} been notified.`
 
   const sessionUrl = getSessionUrl(options.sessionId)
-  
+
   let messageText
   if (desperate) {
     messageText = `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
       `from ${studentHighSchool} really needs your ${type} help ` +
       `on ${subtopic}. ${numberOfVolunteersNotifiedMessage} ` +
       `Please log in to app.upchieve.org and join the session ASAP!`
-      
   } else {
     messageText = `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
       `from ${studentHighSchool} has requested ${type} help ` +
@@ -199,7 +198,7 @@ function sendFailsafe (phoneNumber, name, options) {
   }
 
   messageText = messageText + ` ${sessionUrl}`
-  
+
   if (voice) {
     return sendVoiceMessage(phoneNumber, messageText)
   } else {
