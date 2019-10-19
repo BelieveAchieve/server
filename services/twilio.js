@@ -142,7 +142,7 @@ function sendVoiceMessage (phoneNumber, messageText) {
 }
 
 // the URL that the volunteer can use to join the session on the client
-function getSessionUrl(sessionId) {
+function getSessionUrl (sessionId) {
   const protocol = (config.NODE_ENV === 'production' ? 'https' : 'http')
   const sessionIdEncoded = base64url(Buffer.from(sessionId.toString(), 'hex'))
   return `${protocol}://${config.client.host}/s/${sessionIdEncoded}`
