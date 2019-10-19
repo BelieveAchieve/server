@@ -181,12 +181,15 @@ function sendFailsafe (phoneNumber, name, options) {
   const numberOfVolunteersNotifiedMessage = `${numOfRegularVolunteersNotified} ` +
     `regular volunteer${numOfRegularVolunteersNotified === 1 ? ' has' : 's have'} been notified.`
 
+  const sessionUrl = getSessionUrl(options.sessionId)
+  
   let messageText
   if (desperate) {
     messageText = `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
       `from ${studentHighSchool} really needs your ${type} help ` +
       `on ${subtopic}. ${numberOfVolunteersNotifiedMessage} ` +
       `Please log in to app.upchieve.org and join the session ASAP!`
+      
   } else {
     messageText = `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
       `from ${studentHighSchool} has requested ${type} help ` +
@@ -195,6 +198,8 @@ function sendFailsafe (phoneNumber, name, options) {
       `Please log in if you can to help them out.`
   }
 
+  messageText = messageText + ` ${sessionUrl}`
+  
   if (voice) {
     return sendVoiceMessage(phoneNumber, messageText)
   } else {
@@ -335,7 +340,8 @@ module.exports = {
               desperate: options && options.desperate,
               voice: options && options.voice,
               isTestUserRequest: options && options.isTestUserRequest,
-              numOfRegularVolunteersNotified: numOfRegularVolunteersNotified
+              numOfRegularVolunteersNotified: numOfRegularVolunteersNotified,
+              sessionId: session._id
             })
           // wait for recordNotification to succeed or fail before callback,
           // and don't break loop if only one message fails
