@@ -150,7 +150,7 @@ function getSessionUrl (sessionId) {
 
 function send (phoneNumber, name, subtopic, isTestUserRequest, sessionId) {
   const sessionUrl = getSessionUrl(sessionId)
-  const messageText = `Hi ${name}, a student just requested help in ${subtopic} at UPchieve. Please log in now to help them if you can! ${sessionUrl}`
+  const messageText = `Hi ${name}, a student needs help in ${subtopic} on UPchieve! Click here to start helping them now: ${sessionUrl}`
 
   return sendTextMessage(phoneNumber, messageText, isTestUserRequest)
 }
