@@ -1,15 +1,15 @@
-var express = require('express')
-var session = require('express-session')
-var flash = require('express-flash')
-var passport = require('passport')
-var MongoStore = require('connect-mongo')(session)
+const express = require('express')
+const session = require('express-session')
+const flash = require('express-flash')
+const passport = require('passport')
+const MongoStore = require('connect-mongo')(session)
 
-var VerificationCtrl = require('../../controllers/VerificationCtrl')
-var ResetPasswordCtrl = require('../../controllers/ResetPasswordCtrl')
+const VerificationCtrl = require('../../controllers/VerificationCtrl')
+const ResetPasswordCtrl = require('../../controllers/ResetPasswordCtrl')
 
-var config = require('../../config.js')
-var User = require('../../models/User.js')
-var School = require('../../models/School.js')
+const config = require('../../config.js')
+const User = require('../../models/User.js')
+const School = require('../../models/School.js')
 
 // Validation functions
 function checkPassword (password) {
@@ -274,6 +274,34 @@ module.exports = function (app) {
     }).catch((err) => {
       res.json({ err: err })
     })
+  })
+
+  router.get('/org-manifest', function (req, res) {
+    const orgId = req.query.orgId
+
+    if (!orgId) {
+      return res.json({
+        err: 'Missing orgId query string'
+      })
+    }
+
+    const allOrgManifests = config.orgManifests
+
+    if (!allOrgManifests) {
+      return res.json({
+        err: 'Missing orgManifests in config'
+      })
+    }
+
+    const orgManifest = allOrgManifests[orgId]
+
+    if (!orgManifest) {
+      return res.json({
+        err: `No org manifest found for orgId "${orgId}"`
+      })
+    }
+
+    return res.json({ orgManifest })
   })
 
   router.post('/register/check', function (req, res) {
