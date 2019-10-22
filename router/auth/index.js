@@ -124,6 +124,8 @@ module.exports = function (app) {
   })
 
   router.post('/register', function (req, res) {
+    var isVolunteer = req.body.isVolunteer
+
     var email = req.body.email
 
     var password = req.body.password
@@ -166,7 +168,7 @@ module.exports = function (app) {
 
     // Look up high school
     const promise = new Promise((resolve, reject) => {
-      if (!(code === undefined)) {
+      if (isVolunteer) {
         // don't look up high schools for volunteers
         resolve({
           isVolunteer: true
@@ -201,7 +203,7 @@ module.exports = function (app) {
       user.favoriteAcademicSubject = favoriteAcademicSubject
       user.firstname = firstName
       user.lastname = lastName
-      user.verified = code === undefined
+      user.verified = !isVolunteer // Currently only volunteers need to verify their email
 
       user.hashPassword(password, function (err, hash) {
         user.password = hash // Note the salt is embedded in the final hash
