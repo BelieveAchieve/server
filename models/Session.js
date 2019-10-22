@@ -99,7 +99,7 @@ sessionSchema.methods.joinUser = function (user, cb) {
   if (user.isVolunteer) {
     if (this.volunteer) {
       if (!this.volunteer._id.equals(user._id)) {
-        cb('A volunteer has already joined this session.')
+        cb(new Error('A volunteer has already joined this session.'))
         return
       }
     } else {
@@ -111,7 +111,7 @@ sessionSchema.methods.joinUser = function (user, cb) {
     }
   } else if (this.student) {
     if (!this.student._id.equals(user._id)) {
-      cb(`A student ${this.student._id} has already joined this session.`)
+      cb(new Error(`A student ${this.student._id} has already joined this session.`))
       return
     }
   } else {
