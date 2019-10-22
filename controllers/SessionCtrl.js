@@ -405,6 +405,7 @@ module.exports = {
           sessionManager.disconnect({
             socket: socket
           })
+          err.endedAt = session.endedAt
           cb(err)
           return
         }

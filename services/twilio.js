@@ -4,6 +4,7 @@ var twilio = require('twilio')
 var moment = require('moment-timezone')
 const async = require('async')
 const client = twilio(config.accountSid, config.authToken)
+const base64url = require('base64url')
 
 const Session = require('../models/Session')
 const Notification = require('../models/Notification')
@@ -53,6 +54,7 @@ var getAvailableVolunteersFromDb = function (subtopic, options) {
   console.log(availability)
 
   var certificationPassed = subtopic + '.passed'
+  console.log(certificationPassed)
 
   // Only notify admins about requests from test users (for manual testing)
   var shouldOnlyGetAdmins = options.isTestUserRequest || false
@@ -139,8 +141,16 @@ function sendVoiceMessage (phoneNumber, messageText) {
     })
 }
 
-function send (phoneNumber, name, subtopic, isTestUserRequest) {
-  var messageText = `Hi ${name}, a student just requested help in ${subtopic} at app.upchieve.org. Please log in now to help them if you can!`
+// the URL that the volunteer can use to join the session on the client
+function getSessionUrl (sessionId) {
+  const protocol = (config.NODE_ENV === 'production' ? 'https' : 'http')
+  const sessionIdEncoded = base64url(Buffer.from(sessionId.toString(), 'hex'))
+  return `${protocol}://${config.client.host}/s/${sessionIdEncoded}`
+}
+
+function send (phoneNumber, name, subtopic, isTestUserRequest, sessionId) {
+  const sessionUrl = getSessionUrl(sessionId)
+  const messageText = `Hi ${name}, a student just requested help in ${subtopic} at UPchieve. Please log in now to help them if you can! ${sessionUrl}`
 
   return sendTextMessage(phoneNumber, messageText, isTestUserRequest)
 }
@@ -171,6 +181,8 @@ function sendFailsafe (phoneNumber, name, options) {
   const numberOfVolunteersNotifiedMessage = `${numOfRegularVolunteersNotified} ` +
     `regular volunteer${numOfRegularVolunteersNotified === 1 ? ' has' : 's have'} been notified.`
 
+  const sessionUrl = getSessionUrl(options.sessionId)
+
   let messageText
   if (desperate) {
     messageText = `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
@@ -184,6 +196,8 @@ function sendFailsafe (phoneNumber, name, options) {
       `on ${subtopic}. ${numberOfVolunteersNotifiedMessage} ` +
       `Please log in if you can to help them out.`
   }
+
+  messageText = messageText + ` ${sessionUrl}`
 
   if (voice) {
     return sendVoiceMessage(phoneNumber, messageText)
@@ -235,7 +249,7 @@ module.exports = {
           return
         }
 
-        console.log(persons.map(person => person._id))
+        console.log(persons)
         // notifications to record in the Session instance
         const notifications = []
 
@@ -246,7 +260,7 @@ module.exports = {
             method: 'SMS'
           })
 
-          const sendPromise = send(person.phone, person.firstname, subtopic, isTestUserRequest)
+          const sendPromise = send(person.phone, person.firstname, subtopic, isTestUserRequest, session._id)
           // wait for recordNotification to succeed or fail before callback,
           // and don't break loop if only one message fails
           recordNotification(sendPromise, notification)
@@ -325,7 +339,8 @@ module.exports = {
               desperate: options && options.desperate,
               voice: options && options.voice,
               isTestUserRequest: options && options.isTestUserRequest,
-              numOfRegularVolunteersNotified: numOfRegularVolunteersNotified
+              numOfRegularVolunteersNotified: numOfRegularVolunteersNotified,
+              sessionId: session._id
             })
           // wait for recordNotification to succeed or fail before callback,
           // and don't break loop if only one message fails
