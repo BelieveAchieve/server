@@ -138,9 +138,9 @@ module.exports = function (app) {
 
     var favoriteAcademicSubject = req.body.favoriteAcademicSubject
 
-    var firstName = req.body.firstName
+    var firstName = req.body.firstName.trim()
 
-    var lastName = req.body.lastName
+    var lastName = req.body.lastName.trim()
 
     var terms = req.body.terms
 
