@@ -160,6 +160,30 @@ module.exports = function (app) {
       })
     }
 
+    // Volunteer partner org check
+    if (isVolunteer && !code) {
+      const allOrgManifests = config.orgManifests
+      const orgManifest = allOrgManifests[volunteerPartnerOrg]
+
+      if (!orgManifest) {
+        return res.json({
+          err: 'Invalid volunteer partner organization'
+        })
+      }
+
+      const partnerOrgDomains = orgManifest.requiredEmailDomains
+
+      // Confirm email has one of partner org's required domains
+      if (partnerOrgDomains && partnerOrgDomains.length) {
+        const userEmailDomain = email.split('@')[1]
+        if (partnerOrgDomains.indexOf(userEmailDomain) === -1) {
+          return res.json({
+            err: 'Invalid email domain for volunteer partner organization'
+          })
+        }
+      }
+    }
+
     // Verify password for registration
     let checkResult = checkPassword(password)
     if (checkResult !== true) {
