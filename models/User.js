@@ -57,14 +57,11 @@ var userSchema = new mongoose.Schema({
   difficultCollegeProcess: [String],
   highestLevelEducation: [String],
   hasGuidanceCounselor: String,
-  favoriteAcademicSubject: {
-    type: String,
-    required: [function () { return this.isVolunteer }, 'Favorite academic subject is required']
-  },
+  favoriteAcademicSubject: String,
   gpa: String,
   collegeApplicationsText: String,
   commonCollegeDocs: [String],
-  college: { type: String, required: [function () { return this.isVolunteer }, 'College is required.'] },
+  college: String,
   academicInterestsText: String,
   testScoresText: String,
   advancedCoursesText: String,
