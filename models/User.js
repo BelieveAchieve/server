@@ -23,8 +23,9 @@ var userSchema = new mongoose.Schema({
     default: false
   },
   verificationToken: { type: String, select: false },
-  registrationCode: { type: String, select: false },
   passwordResetToken: { type: String, select: false },
+  registrationCode: { type: String, select: false },
+  volunteerPartnerOrg: { type: String, select: false },
 
   // Profile data
   firstname: { type: String, required: [true, 'First name is required.'] },

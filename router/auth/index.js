@@ -132,6 +132,8 @@ module.exports = function (app) {
 
     var code = req.body.code
 
+    var volunteerPartnerOrg = req.body.volunteerPartnerOrg
+
     var highSchoolUpchieveId = req.body.highSchoolId
 
     var college = req.body.college
@@ -197,6 +199,7 @@ module.exports = function (app) {
       user.email = email
       user.isVolunteer = isVolunteer
       user.registrationCode = code
+      user.volunteerPartnerOrg = volunteerPartnerOrg
       user.approvedHighschool = school
       user.college = college
       user.phonePretty = phone
