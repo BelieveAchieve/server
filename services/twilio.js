@@ -100,9 +100,14 @@ function sendTextMessage (phoneNumber, messageText, isTestUserRequest) {
 
   const testUserNotice = isTestUserRequest ? '[TEST USER] ' : ''
 
+  // If stored phone number doesn't have international calling code (E.164 formatting)
+  // then default to US number
+  // @todo: normalize previously stored US phone numbers
+  const fullPhoneNumber = phoneNumber[0] === '+' ? phoneNumber : `+1${phoneNumber}`
+
   return client.messages
     .create({
-      to: `+1${phoneNumber}`,
+      to: fullPhoneNumber,
       from: config.sendingNumber,
       body: testUserNotice + messageText
     })
@@ -127,12 +132,17 @@ function sendVoiceMessage (phoneNumber, messageText) {
   // URL for Twilio to retrieve the TwiML with the message text and voice
   const url = apiRoot + '/message/' + encodeURIComponent(messageText)
 
+  // If stored phone number doesn't have international calling code (E.164 formatting)
+  // then default to US number
+  // @todo: normalize previously stored US phone numbers
+  const fullPhoneNumber = phoneNumber[0] === '+' ? phoneNumber : `+1${phoneNumber}`
+
   // initiate call, giving Twilio the aforementioned URL which Twilio
   // opens when the call is answered to get the TwiML instructions
   return client.calls
     .create({
       url: url,
-      to: `+1${phoneNumber}`,
+      to: fullPhoneNumber,
       from: config.sendingNumber
     })
     .then((call) => {

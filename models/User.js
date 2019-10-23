@@ -41,8 +41,8 @@ var userSchema = new mongoose.Schema({
   preferredTimes: [String],
   phone: {
     type: String,
-    match: [ /^[0-9]{10}$/, '{VALUE} is not a phone number in the format ##########' ],
     required: [function () { return this.isVolunteer }, 'Phone number is required.']
+    // @todo: server-side validation of international phone format
   },
 
   approvedHighschool: {
@@ -529,6 +529,11 @@ userSchema.virtual('phonePretty')
       return null
     }
 
+    // @todo: support better formatting of international numbers in phonePretty
+    if (this.phone[0] === '+') {
+      return this.phone
+    }
+
     // first test user's phone number to see if it's a valid U.S. phone number
     var matches = this.phone.match(PHONE_REGEX)
     if (!matches) {
@@ -558,6 +563,12 @@ userSchema.virtual('phonePretty')
     if (!v) {
       this.phone = v
     } else {
+      // @todo: support better setting of international numbers in phonePretty
+      if (v[0] === '+') {
+        this.phone = `+${v.replace(/\D/g, '')}`
+        return
+      }
+
       // ignore first element of match result, which is the full match,
       // and destructure the remaining portion
       var [, area, prefix, line] = v.match(PHONE_REGEX) || []
