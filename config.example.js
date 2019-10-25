@@ -27,6 +27,17 @@ module.exports = {
   },
   socketsPort: 3001,
 
+  orgManifests: {
+    example: {
+      name: 'Example Inc',
+      requiredEmailDomains: ['example.com']
+    },
+    foobar: {
+      name: 'Foo Bar & Co',
+      requiredEmailDomains: ['example.org', 'example.net']
+    }
+  },
+
   // Twilio Credentials
   accountSid: '',
   authToken: '',
