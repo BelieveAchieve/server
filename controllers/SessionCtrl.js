@@ -329,7 +329,7 @@ module.exports = {
             session
           })
           
-        // additional waves
+        // additional waves every 3 minutes after the first
         newSessionTimekeeper.setSessionInterval(session, 180000,
           twilioService.notifyWave, user, type, subTopic, session, {
             isTestUserRequest: user.isTestUser,

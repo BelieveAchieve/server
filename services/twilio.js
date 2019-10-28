@@ -252,9 +252,10 @@ module.exports = {
     })
   },
   
-  // notify the next wave of volunteers
+  // notify the next wave of volunteers, selected from those that have
+  // not already been notified of the session
   notifyWave: function (student, type, subtopic, session, options, cb) {
-    // find previously sent notifications
+    // find previously sent notifications for the session
     Session.findById(session._id)
       .populate('notifications')
       .exec((err, populatedSession) => {
@@ -264,6 +265,7 @@ module.exports = {
           return
         }
         
+        // previously notified volunteers
         const notifiedUsers = populatedSession.notifications.map((notification) => notification.volunteer)
         
         const isTestUserRequest = options.isTestUserRequest
@@ -308,8 +310,6 @@ module.exports = {
                 // retrieve the updated session document to pass to callback
                 .then(() => Session.findById(session._id))
                 .then((modifiedSession) => {
-                  options.session = modifiedSession
-  
                   if (cb) {
                     cb(modifiedSession)
                   }
