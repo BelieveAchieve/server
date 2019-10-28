@@ -181,13 +181,16 @@ var sessionManager = new SessionManager()
 
 // A NewSessionTimeout keeps track of timeouts for notifications that need
 // to be sent
-var NewSessionTimeout = function (session, ...timeouts) {
+var NewSessionTimeout = function(session, timeouts, intervals) {
   this.session = session
   this.timeouts = timeouts
+  this.intervals = intervals
 }
 
+// clear all timeouts and intervals
 NewSessionTimeout.prototype.clearTimeouts = function () {
   this.timeouts.forEach((timeout) => clearTimeout(timeout))
+  this.intervals.forEach((interval) => clearInterval(interval))
 }
 
 // remove a timeout from the session with which it is associated
@@ -198,9 +201,9 @@ NewSessionTimeout.prototype.removeTimeout = function (timeout) {
   }
 }
 
-// checks if a session has no timeouts
+// checks if a session has no timeouts or intervals
 NewSessionTimeout.prototype.hasNoTimeouts = function () {
-  return this.timeouts.length === 0
+  return this.timeouts.length === 0 && this.intervals.length === 0
 }
 
 // The NewSessionTimekeeper manages timing of notifications that are
@@ -218,7 +221,7 @@ NewSessionTimekeeper.prototype.setSessionTimeout = function (session, delay, cb,
     const newSessionTimeout = this._newSessionTimeouts[session._id]
     newSessionTimeout.removeTimeout(timeout)
 
-    // delete the NewSessionTimeout object if there are no remaining timeouts
+    // delete the NewSessionTimeout object if there are no remaining timeouts or intervals
     if (newSessionTimeout.hasNoTimeouts()) {
       delete this._newSessionTimeouts[session._id]
     }
@@ -227,7 +230,7 @@ NewSessionTimekeeper.prototype.setSessionTimeout = function (session, delay, cb,
   var newSessionTimeout = this._newSessionTimeouts[session._id]
   if (!newSessionTimeout) {
     // create the object
-    newSessionTimeout = new NewSessionTimeout(session, timeout)
+    newSessionTimeout = new NewSessionTimeout(session, [timeout], [])
     this._newSessionTimeouts[session._id] = newSessionTimeout
   } else {
     // add timeout to existing object
@@ -235,7 +238,22 @@ NewSessionTimekeeper.prototype.setSessionTimeout = function (session, delay, cb,
   }
 }
 
-// clear all timeouts for a session
+// set an interval for a notification function to be executed repeatedly until the session begins
+NewSessionTimekeeper.prototype.setSessionInterval = function (session, delay, cb, ...args) {
+  const interval = setInterval(cb, delay, ...args)
+  
+  var newSessionTimeout = this._newSessionTimeouts[session._id]
+  if (!newSessionTimeout) {
+    // create the object
+    newSessionTimeout = new NewSessionTimeout(session, [], [interval])
+    this._newSessionTimeouts[session._id] = newSessionTimeout
+  } else {
+    // add timeout to existing object
+    newSessionTimeout.intervals.push(interval)
+  }
+}
+
+// clear all timeouts and intervals for a session
 NewSessionTimekeeper.prototype.clearSessionTimeouts = function (session) {
   const newSessionTimeout = this._newSessionTimeouts[session._id]
 
@@ -289,7 +307,7 @@ module.exports = {
         return cb(err)
       }
 
-      // notify both available and failsafe volunteers
+      // notify failsafe volunteers and initial wave of available volunteers
       twilioService.notify(user, type, subTopic, {
         isTestUserRequest: user.isTestUser,
         session: savedSession
@@ -309,6 +327,12 @@ module.exports = {
             voice: true,
             isTestUserRequest: user.isTestUser,
             session
+          })
+          
+        // additional waves
+        newSessionTimekeeper.setSessionInterval(session, 2000,
+          twilioService.notifyWave, user, type, subTopic, session, {
+            isTestUserRequest: user.isTestUser,
           })
       })
 

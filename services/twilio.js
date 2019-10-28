@@ -49,7 +49,8 @@ function getAvailability () {
   return `availability.${days[day]}.${hour}`
 }
 
-var getAvailableVolunteersFromDb = function (subtopic, options) {
+// get next wave of non-failsafe volunteers to notify 
+var getNextVolunteersFromDb = function (subtopic, notifiedUserIds, options) {
   var availability = getAvailability()
   console.log(availability)
 
@@ -59,23 +60,18 @@ var getAvailableVolunteersFromDb = function (subtopic, options) {
   // Only notify admins about requests from test users (for manual testing)
   var shouldOnlyGetAdmins = options.isTestUserRequest || false
 
-  // True if the query should include failsafe users
-  var shouldGetFailsafe = options.shouldGetFailsafe
-
   var userQuery = {
     isVolunteer: true,
     [certificationPassed]: true,
     [availability]: true,
     isTestUser: false,
-    isFakeUser: false
+    isFakeUser: false,
+    isFailsafeVolunteer: false,
+    _id: { $nin: notifiedUserIds }
   }
 
   if (shouldOnlyGetAdmins) {
     userQuery.isAdmin = true
-  }
-
-  if (!shouldGetFailsafe) {
-    userQuery.isFailsafeVolunteer = false
   }
 
   const query = User.aggregate([
@@ -247,60 +243,83 @@ module.exports = {
     var isTestUserRequest = options.isTestUserRequest || false
     const session = options.session
 
-    // standard notifications for non-failsafe volunteers
-    getAvailableVolunteersFromDb(subtopic, {
-      isTestUserRequest,
-      shouldGetFailsafe: false
+    // send first wave of notifications to non-failsafe volunteers
+    this.notifyWave(student, type, subtopic, session, options, (modifiedSession) => {
+      // send failsafe notifications
+      options.session = modifiedSession
+      this.notifyFailsafe(student, type, subtopic, options)
+      cb(modifiedSession)
     })
-      .exec((err, persons) => {
+  },
+  
+  // notify the next wave of volunteers
+  notifyWave: function (student, type, subtopic, session, options, cb) {
+    // find previously sent notifications
+    Session.findById(session._id)
+      .populate('notifications')
+      .exec((err, populatedSession) => {
         if (err) {
-          console.log(err)
           // early exit
+          console.log(err)
           return
         }
-
-        console.log(persons)
-        // notifications to record in the Session instance
-        const notifications = []
-
-        async.each(persons, (person, cb) => {
-          // record notification in database
-          const notification = new Notification({
-            volunteer: person,
-            method: 'SMS'
-          })
-
-          const sendPromise = send(person.phone, person.firstname, subtopic, isTestUserRequest, session._id)
-          // wait for recordNotification to succeed or fail before callback,
-          // and don't break loop if only one message fails
-          recordNotification(sendPromise, notification)
-            .then(notification => notifications.push(notification))
-            .catch(err => console.log(err))
-            .finally(cb)
-        },
-        (err) => {
-          if (err) {
-            console.log(err)
-          }
-
-          // save notifications to Session instance
-          session.addNotifications(notifications)
-            // retrieve the updated session document
-            .then(() => Session.findById(session._id))
-            .then((modifiedSession) => {
-              options.session = modifiedSession
-
-              // failsafe notifications
-              this.notifyFailsafe(student, type, subtopic, options)
-
-              if (cb) {
-                cb(modifiedSession)
-              }
-            })
-            .catch(err => console.log(err))
+        
+        const notifiedUsers = populatedSession.notifications.map((notification) => notification.volunteer)
+        
+        const isTestUserRequest = options.isTestUserRequest
+    
+        // notify the next wave of volunteers that haven't already been notified
+        getNextVolunteersFromDb(subtopic, notifiedUsers, {
+          isTestUserRequest
         })
+          .exec((err, persons) => {
+            if (err) {
+              // early exit
+              console.log(err)
+              return
+            }
+            
+            // notifications to record in the database
+            const notifications = []
+            
+            async.each(persons, (person, cb) => {
+              // record notification in database
+              const notification = new Notification({
+                volunteer: person,
+                type: 'REGULAR',
+                method: 'SMS'
+              })
+              
+              const sendPromise = send(person.phone, person.firstname, subtopic, isTestUserRequest, session._id)
+              // wait for recordNotification to succeed or fail before callback,
+              // and don't break loop if only one message fails
+              recordNotification(sendPromise, notification)
+                .then(notification => notifications.push(notification))
+                .catch(err => console.log(err))
+                .finally(cb)
+            },
+            (err) => {
+              if (err) {
+                console.log(err)
+              }
+  
+              // save notifications to Session instance
+              session.addNotifications(notifications)
+                // retrieve the updated session document to pass to callback
+                .then(() => Session.findById(session._id))
+                .then((modifiedSession) => {
+                  options.session = modifiedSession
+  
+                  if (cb) {
+                    cb(modifiedSession)
+                  }
+                })
+                .catch(err => console.log(err))
+            })
+          })
       })
   },
+  
   // notify failsafe volunteers
   notifyFailsafe: function (student, type, subtopic, options) {
     const session = options && options.session
