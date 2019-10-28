@@ -1,15 +1,15 @@
-var express = require('express')
-var session = require('express-session')
-var flash = require('express-flash')
-var passport = require('passport')
-var MongoStore = require('connect-mongo')(session)
+const express = require('express')
+const session = require('express-session')
+const flash = require('express-flash')
+const passport = require('passport')
+const MongoStore = require('connect-mongo')(session)
 
-var VerificationCtrl = require('../../controllers/VerificationCtrl')
-var ResetPasswordCtrl = require('../../controllers/ResetPasswordCtrl')
+const VerificationCtrl = require('../../controllers/VerificationCtrl')
+const ResetPasswordCtrl = require('../../controllers/ResetPasswordCtrl')
 
-var config = require('../../config.js')
-var User = require('../../models/User.js')
-var School = require('../../models/School.js')
+const config = require('../../config.js')
+const User = require('../../models/User.js')
+const School = require('../../models/School.js')
 
 // Validation functions
 function checkPassword (password) {
@@ -124,11 +124,15 @@ module.exports = function (app) {
   })
 
   router.post('/register', function (req, res) {
+    var isVolunteer = req.body.isVolunteer
+
     var email = req.body.email
 
     var password = req.body.password
 
     var code = req.body.code
+
+    var volunteerPartnerOrg = req.body.volunteerPartnerOrg
 
     var highSchoolUpchieveId = req.body.highSchoolId
 
@@ -138,9 +142,9 @@ module.exports = function (app) {
 
     var favoriteAcademicSubject = req.body.favoriteAcademicSubject
 
-    var firstName = req.body.firstName
+    var firstName = req.body.firstName.trim()
 
-    var lastName = req.body.lastName
+    var lastName = req.body.lastName.trim()
 
     var terms = req.body.terms
 
@@ -156,6 +160,30 @@ module.exports = function (app) {
       })
     }
 
+    // Volunteer partner org check
+    if (isVolunteer && !code) {
+      const allOrgManifests = config.orgManifests
+      const orgManifest = allOrgManifests[volunteerPartnerOrg]
+
+      if (!orgManifest) {
+        return res.json({
+          err: 'Invalid volunteer partner organization'
+        })
+      }
+
+      const partnerOrgDomains = orgManifest.requiredEmailDomains
+
+      // Confirm email has one of partner org's required domains
+      if (partnerOrgDomains && partnerOrgDomains.length) {
+        const userEmailDomain = email.split('@')[1]
+        if (partnerOrgDomains.indexOf(userEmailDomain) === -1) {
+          return res.json({
+            err: 'Invalid email domain for volunteer partner organization'
+          })
+        }
+      }
+    }
+
     // Verify password for registration
     let checkResult = checkPassword(password)
     if (checkResult !== true) {
@@ -166,7 +194,7 @@ module.exports = function (app) {
 
     // Look up high school
     const promise = new Promise((resolve, reject) => {
-      if (!(code === undefined)) {
+      if (isVolunteer) {
         // don't look up high schools for volunteers
         resolve({
           isVolunteer: true
@@ -195,13 +223,14 @@ module.exports = function (app) {
       user.email = email
       user.isVolunteer = isVolunteer
       user.registrationCode = code
+      user.volunteerPartnerOrg = volunteerPartnerOrg
       user.approvedHighschool = school
       user.college = college
       user.phonePretty = phone
       user.favoriteAcademicSubject = favoriteAcademicSubject
       user.firstname = firstName
       user.lastname = lastName
-      user.verified = code === undefined
+      user.verified = !isVolunteer // Currently only volunteers need to verify their email
 
       user.hashPassword(password, function (err, hash) {
         user.password = hash // Note the salt is embedded in the final hash
@@ -274,6 +303,34 @@ module.exports = function (app) {
     }).catch((err) => {
       res.json({ err: err })
     })
+  })
+
+  router.get('/org-manifest', function (req, res) {
+    const orgId = req.query.orgId
+
+    if (!orgId) {
+      return res.json({
+        err: 'Missing orgId query string'
+      })
+    }
+
+    const allOrgManifests = config.orgManifests
+
+    if (!allOrgManifests) {
+      return res.json({
+        err: 'Missing orgManifests in config'
+      })
+    }
+
+    const orgManifest = allOrgManifests[orgId]
+
+    if (!orgManifest) {
+      return res.json({
+        err: `No org manifest found for orgId "${orgId}"`
+      })
+    }
+
+    return res.json({ orgManifest })
   })
 
   router.post('/register/check', function (req, res) {

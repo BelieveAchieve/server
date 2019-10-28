@@ -24,6 +24,7 @@ UPchieve web server
     - [POST /auth/register](#post-authregister)
     - [POST /auth/reset/send](#post-authresetsend)
     - [POST /auth/reset/confirm](#post-authresetconfirm)
+    - [GET /auth/org-manifest](#get-authorg-manifest)
     - [POST /api/session/new](#post-apisessionnew)
     - [POST /api/session/check](#post-apisessioncheck)
     - [POST /api/training/questions](#post-apitrainingquestions)
@@ -219,6 +220,16 @@ Possible errors:
   "token": "String"
 }
 ```
+
+### GET /auth/org-manifest
+
+Expects the following query string:
+
+```
+?orgId=ORG_ID
+```
+
+where `ORG_ID` is the key name of the partner organization stored in `config.js` under `orgManifests`.
 
 ### POST /api/session/new
 
