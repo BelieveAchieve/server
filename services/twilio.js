@@ -49,8 +49,8 @@ function getAvailability () {
   return `availability.${days[day]}.${hour}`
 }
 
-// get next wave of non-failsafe volunteers to notify 
-var getNextVolunteersFromDb = function (subtopic, notifiedUserIds, options) {
+// return query filter object limiting notifications to the available volunteers
+function filterAvailableVolunteers (subtopic, options) {
   var availability = getAvailability()
   console.log(availability)
 
@@ -67,13 +67,22 @@ var getNextVolunteersFromDb = function (subtopic, notifiedUserIds, options) {
     isTestUser: false,
     isFakeUser: false,
     isFailsafeVolunteer: false,
-    _id: { $nin: notifiedUserIds }
   }
 
   if (shouldOnlyGetAdmins) {
     userQuery.isAdmin = true
   }
+  
+  return userQuery
+}
 
+
+// get next wave of non-failsafe volunteers to notify 
+var getNextVolunteersFromDb = function (subtopic, notifiedUserIds, options) {
+  const userQuery = filterAvailableVolunteers(subtopic, options)
+
+  userQuery._id = { $nin: notifiedUserIds }
+  
   const query = User.aggregate([
     { $match: userQuery },
     { $project: { phone: 1, firstname: 1 } },
@@ -238,6 +247,30 @@ function recordNotification (sendPromise, notification) {
 }
 
 module.exports = {
+  // get total number of available, non-failsafe volunteers in the database
+  // return Promise that resolves to count
+  countAvailableVolunteersInDb: function (subtopic, options) {
+    return User.countDocuments(filterAvailableVolunteers(subtopic, options)).exec()
+  },  
+  
+  // count the number of regular volunteers that have been notified for a session
+  // return Promise that resolves to count
+  countVolunteersNotified: function (session) {
+    return Session.findById(session._id)
+      .populate('notifications')
+      .exec()
+      .then((populatedSession) => {
+        return populatedSession.notifications
+        .map((notification) => notification.volunteer)
+        .filter(
+           (volunteer, index, array) => 
+             array.indexOf(volunteer) === index && 
+             !volunteer.isFailsafeVolunteer
+         )
+        .length
+      })
+  },
+  
   // notify both standard and failsafe volunteers
   notify: function (student, type, subtopic, options, cb) {
     var isTestUserRequest = options.isTestUserRequest || false
@@ -254,6 +287,8 @@ module.exports = {
   
   // notify the next wave of volunteers, selected from those that have
   // not already been notified of the session
+  // optionally executes a callback passing the updated session document after notifications are sent,
+  // and the number of volunteers notified in this wave
   notifyWave: function (student, type, subtopic, session, options, cb) {
     // find previously sent notifications for the session
     Session.findById(session._id)
