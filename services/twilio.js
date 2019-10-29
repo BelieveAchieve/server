@@ -66,23 +66,22 @@ function filterAvailableVolunteers (subtopic, options) {
     [availability]: true,
     isTestUser: false,
     isFakeUser: false,
-    isFailsafeVolunteer: false,
+    isFailsafeVolunteer: false
   }
 
   if (shouldOnlyGetAdmins) {
     userQuery.isAdmin = true
   }
-  
+
   return userQuery
 }
 
-
-// get next wave of non-failsafe volunteers to notify 
+// get next wave of non-failsafe volunteers to notify
 var getNextVolunteersFromDb = function (subtopic, notifiedUserIds, options) {
   const userQuery = filterAvailableVolunteers(subtopic, options)
 
   userQuery._id = { $nin: notifiedUserIds }
-  
+
   const query = User.aggregate([
     { $match: userQuery },
     { $project: { phone: 1, firstname: 1 } },
@@ -251,8 +250,8 @@ module.exports = {
   // return Promise that resolves to count
   countAvailableVolunteersInDb: function (subtopic, options) {
     return User.countDocuments(filterAvailableVolunteers(subtopic, options)).exec()
-  },  
-  
+  },
+
   // count the number of regular volunteers that have been notified for a session
   // return Promise that resolves to count
   countVolunteersNotified: function (session) {
@@ -261,19 +260,18 @@ module.exports = {
       .exec()
       .then((populatedSession) => {
         return populatedSession.notifications
-        .map((notification) => notification.volunteer)
-        .filter(
-           (volunteer, index, array) => 
-             array.indexOf(volunteer) === index && 
+          .map((notification) => notification.volunteer)
+          .filter(
+            (volunteer, index, array) =>
+              array.indexOf(volunteer) === index &&
              !volunteer.isFailsafeVolunteer
-         )
-        .length
+          )
+          .length
       })
   },
-  
+
   // notify both standard and failsafe volunteers
   notify: function (student, type, subtopic, options, cb) {
-    var isTestUserRequest = options.isTestUserRequest || false
     const session = options.session
 
     // send first wave of notifications to non-failsafe volunteers
@@ -284,7 +282,7 @@ module.exports = {
       cb(modifiedSession)
     })
   },
-  
+
   // notify the next wave of volunteers, selected from those that have
   // not already been notified of the session
   // optionally executes a callback passing the updated session document after notifications are sent,
@@ -299,12 +297,12 @@ module.exports = {
           console.log(err)
           return
         }
-        
+
         // previously notified volunteers
         const notifiedUsers = populatedSession.notifications.map((notification) => notification.volunteer)
-        
+
         const isTestUserRequest = options.isTestUserRequest
-    
+
         // notify the next wave of volunteers that haven't already been notified
         getNextVolunteersFromDb(subtopic, notifiedUsers, {
           isTestUserRequest
@@ -315,10 +313,10 @@ module.exports = {
               console.log(err)
               return
             }
-            
+
             // notifications to record in the database
             const notifications = []
-            
+
             async.each(persons, (person, cb) => {
               // record notification in database
               const notification = new Notification({
@@ -326,7 +324,7 @@ module.exports = {
                 type: 'REGULAR',
                 method: 'SMS'
               })
-              
+
               const sendPromise = send(person.phone, person.firstname, subtopic, isTestUserRequest, session._id)
               // wait for recordNotification to succeed or fail before callback,
               // and don't break loop if only one message fails
@@ -339,7 +337,7 @@ module.exports = {
               if (err) {
                 console.log(err)
               }
-  
+
               // save notifications to Session instance
               session.addNotifications(notifications)
                 // retrieve the updated session document to pass to callback
@@ -354,7 +352,7 @@ module.exports = {
           })
       })
   },
-  
+
   // notify failsafe volunteers
   notifyFailsafe: function (student, type, subtopic, options) {
     const session = options && options.session

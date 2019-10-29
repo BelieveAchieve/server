@@ -181,7 +181,7 @@ var sessionManager = new SessionManager()
 
 // A NewSessionTimeout keeps track of timeouts for notifications that need
 // to be sent
-var NewSessionTimeout = function(session, timeouts, intervals) {
+var NewSessionTimeout = function (session, timeouts, intervals) {
   this.session = session
   this.timeouts = timeouts
   this.intervals = intervals
@@ -220,7 +220,7 @@ var NewSessionTimekeeper = function () {
   this._newSessionTimeouts = {} // sessionId => newSessionTimeout
 }
 
-// delete the NewSessionTimeout object corresponding to a session 
+// delete the NewSessionTimeout object corresponding to a session
 // if there are no remaining timeouts or intervals
 NewSessionTimekeeper.prototype.cleanSessionTimeout = function (session) {
   if (this._newSessionTimeouts[session._id].hasNoTimeouts()) {
@@ -259,29 +259,29 @@ NewSessionTimekeeper.prototype.setSessionInterval = function (session, delay, cb
     Promise.all([
       // total number of available volunteers in database
       twilioService.countAvailableVolunteersInDb(
-        session.subTopic, 
+        session.subTopic,
         {
           isTestUserRequest: session.student.isTestUser
         }),
       // number of distinct regular volunteers notified
       twilioService.countVolunteersNotified(session)
     ])
-    .then(([countAvailable, countNotified]) => {
-      // if all volunteers have been notified, clear interval and remove from memory
-      if (countNotified === countAvailable) {
-        const newSessionTimeout = this._newSessionTimeouts[session._id]
-        clearInterval(interval)
-        newSessionTimeout.removeInterval(interval)
-        
-        // clean up session timeout objects that have no timeouts or intervals
-        this.cleanSessionTimeout(session)
-      } else {
-        // otherwise, execute callback
-        cb(...a)
-      }
-    })
+      .then(([countAvailable, countNotified]) => {
+        // if all volunteers have been notified, clear interval and remove from memory
+        if (countNotified === countAvailable) {
+          const newSessionTimeout = this._newSessionTimeouts[session._id]
+          clearInterval(interval)
+          newSessionTimeout.removeInterval(interval)
+
+          // clean up session timeout objects that have no timeouts or intervals
+          this.cleanSessionTimeout(session)
+        } else {
+          // otherwise, execute callback
+          cb(...a)
+        }
+      })
   }, delay, ...args)
-  
+
   var newSessionTimeout = this._newSessionTimeouts[session._id]
   if (!newSessionTimeout) {
     // create the object
@@ -368,11 +368,11 @@ module.exports = {
             isTestUserRequest: user.isTestUser,
             session
           })
-          
+
         // additional waves every 3 minutes after the first
         newSessionTimekeeper.setSessionInterval(session, 180000,
           twilioService.notifyWave, user, type, subTopic, session, {
-            isTestUserRequest: user.isTestUser,
+            isTestUserRequest: user.isTestUser
           })
       })
 
