@@ -14,7 +14,6 @@ db.once('open', function () {
     'geometry',
     'algebra',
     'trigonometry',
-    'esl',
     'precalculus',
     'calculus',
     'planning',

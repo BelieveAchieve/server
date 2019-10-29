@@ -8,12 +8,9 @@ var numQuestions = {
   trigonometry: 2,
   precalculus: 2,
   calculus: 3,
-  esl: 3,
   planning: 4,
   essays: 3,
-  applications: 2,
-  biology: 1,
-  chemistry: 2
+  applications: 2
 }
 const PASS_THRESHOLD = 0.8
 

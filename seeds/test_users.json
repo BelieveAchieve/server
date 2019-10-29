@@ -10,19 +10,7 @@
         "passed": false,
         "tries": 0
       },
-      "biology": {
-        "passed": false,
-        "tries": 0
-      },
       "calculus": {
-        "passed": false,
-        "tries": 0
-      },
-      "chemistry": {
-        "passed": false,
-        "tries": 0
-      },
-      "esl": {
         "passed": false,
         "tries": 0
       },
@@ -82,20 +70,8 @@
         "passed": true,
         "tries": 1
       },
-      "biology": {
-        "passed": true,
-        "tries": 1
-      },
       "calculus": {
         "passed": true
-      },
-      "chemistry": {
-        "passed": true,
-        "tries": 1
-      },
-      "esl": {
-        "passed": true,
-        "tries": 1
       },
       "essays": {
         "passed": true,
@@ -161,20 +137,8 @@
         "passed": true,
         "tries": 1
       },
-      "biology": {
-        "passed": true,
-        "tries": 1
-      },
       "calculus": {
         "passed": true
-      },
-      "chemistry": {
-        "passed": true,
-        "tries": 1
-      },
-      "esl": {
-        "passed": true,
-        "tries": 1
       },
       "essays": {
         "passed": true,
