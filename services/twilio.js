@@ -80,9 +80,7 @@ var getNextVolunteersFromDb = function (subtopic, notifiedUserIds, userIdsInSess
   const userQuery = filterAvailableVolunteers(subtopic, options)
 
   userQuery._id = { $nin: notifiedUserIds.concat(userIdsInSessions) }
-  
-  console.log(userQuery)
-  
+
   const query = User.aggregate([
     { $match: userQuery },
     { $project: { phone: 1, firstname: 1 } },
@@ -295,65 +293,64 @@ module.exports = {
       // find active sessions
       Session.find({ endedAt: { $exists: false } }).exec()
     ])
-   .then(([populatedSession, activeSessions]) => {
+      .then(([populatedSession, activeSessions]) => {
       // previously notified volunteers
-      const notifiedUsers = populatedSession.notifications.map((notification) => notification.volunteer)
-      
-      // volunteers in active sessions
-      const userIdsInSessions = activeSessions
-        .filter((activeSession) => !!activeSession.volunteer)
-        .map((activeSession) => activeSession.volunteer)
-      console.log(notifiedUsers)
-      
-      const isTestUserRequest = options.isTestUserRequest
+        const notifiedUsers = populatedSession.notifications.map((notification) => notification.volunteer)
 
-      // notify the next wave of volunteers that haven't already been notified
-      getNextVolunteersFromDb(subtopic, notifiedUsers, userIdsInSessions, {
-        isTestUserRequest
-      })
-        .exec((err, persons) => {
-          if (err) {
-            // early exit
-            console.log(err)
-            return
-          }
+        // volunteers in active sessions
+        const userIdsInSessions = activeSessions
+          .filter((activeSession) => !!activeSession.volunteer)
+          .map((activeSession) => activeSession.volunteer)
 
-          // notifications to record in the database
-          const notifications = []
+        const isTestUserRequest = options.isTestUserRequest
 
-          async.each(persons, (person, cb) => {
-            // record notification in database
-            const notification = new Notification({
-              volunteer: person,
-              type: 'REGULAR',
-              method: 'SMS'
-            })
-
-            const sendPromise = send(person.phone, person.firstname, subtopic, isTestUserRequest, session._id)
-            // wait for recordNotification to succeed or fail before callback,
-            // and don't break loop if only one message fails
-            recordNotification(sendPromise, notification)
-              .then(notification => notifications.push(notification))
-              .catch(err => console.log(err))
-              .finally(cb)
-          },
-          (err) => {
+        // notify the next wave of volunteers that haven't already been notified
+        getNextVolunteersFromDb(subtopic, notifiedUsers, userIdsInSessions, {
+          isTestUserRequest
+        })
+          .exec((err, persons) => {
             if (err) {
+            // early exit
               console.log(err)
+              return
             }
 
-            // save notifications to Session instance
-            session.addNotifications(notifications)
-              // retrieve the updated session document to pass to callback
-              .then(() => Session.findById(session._id))
-              .then((modifiedSession) => {
-                if (cb) {
-                  cb(modifiedSession)
-                }
+            // notifications to record in the database
+            const notifications = []
+
+            async.each(persons, (person, cb) => {
+            // record notification in database
+              const notification = new Notification({
+                volunteer: person,
+                type: 'REGULAR',
+                method: 'SMS'
               })
-              .catch(err => console.log(err))
+
+              const sendPromise = send(person.phone, person.firstname, subtopic, isTestUserRequest, session._id)
+              // wait for recordNotification to succeed or fail before callback,
+              // and don't break loop if only one message fails
+              recordNotification(sendPromise, notification)
+                .then(notification => notifications.push(notification))
+                .catch(err => console.log(err))
+                .finally(cb)
+            },
+            (err) => {
+              if (err) {
+                console.log(err)
+              }
+
+              // save notifications to Session instance
+              session.addNotifications(notifications)
+              // retrieve the updated session document to pass to callback
+                .then(() => Session.findById(session._id))
+                .then((modifiedSession) => {
+                  if (cb) {
+                    cb(modifiedSession)
+                  }
+                })
+                .catch(err => console.log(err))
+            })
           })
-        })
       })
       .catch((err) => console.log(err))
   },
