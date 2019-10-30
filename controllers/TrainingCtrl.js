@@ -8,12 +8,9 @@ var numQuestions = {
   trigonometry: 2,
   precalculus: 2,
   calculus: 3,
-  esl: 3,
   planning: 4,
   essays: 3,
-  applications: 2,
-  biology: 1,
-  chemistry: 2
+  applications: 2
 }
 const PASS_THRESHOLD = 0.8
 
@@ -48,6 +45,8 @@ module.exports = {
     Question.find({ category: options.category }, function (err, questions) {
       if (err) {
         return callback(err)
+      } else if (!subcategories) {
+        return callback(new Error('No subcategories defined for category: ' + options.category))
       } else {
         var randomQuestions = []
         var questionsBySubcategory = questions.reduce(function (acc, question) {
@@ -113,14 +112,14 @@ module.exports = {
           if (!user) {
             return callback(new Error('No account with that id found.'))
           }
-          user[category]['passed'] = hasPassed
-          var tries = user[category]['tries']
+          user.certifications[category]['passed'] = hasPassed
+          var tries = user.certifications[category]['tries']
           if (tries) {
             tries++
           } else {
             tries = 1
           }
-          user[category]['tries'] = tries
+          user.certifications[category]['tries'] = tries
           user.save(function (err, user) {
             if (err) {
               callback(err, null)

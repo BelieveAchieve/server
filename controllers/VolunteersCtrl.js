@@ -52,7 +52,7 @@ module.exports = {
    * @param {*} callback
    */
   getVolunteersAvailability: function (options, callback) {
-    const certifiedSubjectQuery = options.certifiedSubject + '.passed'
+    const certifiedSubjectQuery = `certifications.${options.certifiedSubject}.passed`
 
     const volunteerQuery = {
       isVolunteer: true,
