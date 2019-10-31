@@ -262,7 +262,7 @@ NewSessionTimekeeper.prototype.setSessionInterval = function (session, delay, cb
         const newSessionTimeout = this._newSessionTimeouts[session._id]
         clearInterval(interval)
         newSessionTimeout.removeInterval(interval)
-  
+
         // clean up session timeout objects that have no timeouts or intervals
         this.cleanSessionTimeout(session)
       }
