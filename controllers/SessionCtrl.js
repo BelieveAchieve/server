@@ -256,30 +256,17 @@ NewSessionTimekeeper.prototype.setSessionTimeout = function (session, delay, cb,
 // or until all volunteers have been notified
 NewSessionTimekeeper.prototype.setSessionInterval = function (session, delay, cb, ...args) {
   const interval = setInterval((...a) => {
-    Promise.all([
-      // total number of available volunteers in database
-      twilioService.countAvailableVolunteersInDb(
-        session.subTopic,
-        {
-          isTestUserRequest: session.student.isTestUser
-        }),
-      // number of distinct regular volunteers notified
-      twilioService.countVolunteersNotified(session)
-    ])
-      .then(([countAvailable, countNotified]) => {
-        // if all volunteers have been notified, clear interval and remove from memory
-        if (countNotified === countAvailable) {
-          const newSessionTimeout = this._newSessionTimeouts[session._id]
-          clearInterval(interval)
-          newSessionTimeout.removeInterval(interval)
-
-          // clean up session timeout objects that have no timeouts or intervals
-          this.cleanSessionTimeout(session)
-        } else {
-          // otherwise, execute callback
-          cb(...a)
-        }
-      })
+    cb(...a, (modifiedSession, numOfVolunteersNotified) => {
+      // if no notifications were sent in this wave, clear interval and remove from memory
+      if (numOfVolunteersNotified === 0) {
+        const newSessionTimeout = this._newSessionTimeouts[session._id]
+        clearInterval(interval)
+        newSessionTimeout.removeInterval(interval)
+  
+        // clean up session timeout objects that have no timeouts or intervals
+        this.cleanSessionTimeout(session)
+      }
+    })
   }, delay, ...args)
 
   var newSessionTimeout = this._newSessionTimeouts[session._id]

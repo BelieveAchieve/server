@@ -343,7 +343,7 @@ module.exports = {
                 .then(() => Session.findById(session._id))
                 .then((modifiedSession) => {
                   if (cb) {
-                    cb(modifiedSession)
+                    cb(modifiedSession, notifications.length)
                   }
                 })
                 .catch(err => console.log(err))
