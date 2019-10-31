@@ -294,7 +294,7 @@ module.exports = {
       Session.find({ endedAt: { $exists: false } }).exec()
     ])
       .then(([populatedSession, activeSessions]) => {
-      // previously notified volunteers
+        // previously notified volunteers
         const notifiedUsers = populatedSession.notifications.map((notification) => notification.volunteer)
 
         // volunteers in active sessions
@@ -310,7 +310,7 @@ module.exports = {
         })
           .exec((err, persons) => {
             if (err) {
-            // early exit
+              // early exit
               console.log(err)
               return
             }
@@ -319,7 +319,7 @@ module.exports = {
             const notifications = []
 
             async.each(persons, (person, cb) => {
-            // record notification in database
+              // record notification in database
               const notification = new Notification({
                 volunteer: person,
                 type: 'REGULAR',
@@ -341,7 +341,7 @@ module.exports = {
 
               // save notifications to Session instance
               session.addNotifications(notifications)
-              // retrieve the updated session document to pass to callback
+                // retrieve the updated session document to pass to callback
                 .then(() => Session.findById(session._id))
                 .then((modifiedSession) => {
                   if (cb) {
