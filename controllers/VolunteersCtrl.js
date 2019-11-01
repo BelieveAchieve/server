@@ -52,8 +52,19 @@ module.exports = {
    * @param {*} callback
    */
   getVolunteersAvailability: function (options, callback) {
-    var certifiedSubjectQuery = options.certifiedSubject + '.passed'
-    User.find({ isVolunteer: true, hasSchedule: true, [certifiedSubjectQuery]: true, availability: { $exists: true } }, function (err, users) {
+    const certifiedSubjectQuery = `certifications.${options.certifiedSubject}.passed`
+
+    const volunteerQuery = {
+      isVolunteer: true,
+      hasSchedule: true,
+      [certifiedSubjectQuery]: true,
+      availability: { $exists: true },
+      isFakeUser: false,
+      isTestUser: false,
+      isFailsafeVolunteer: false
+    }
+
+    User.find(volunteerQuery, function (err, users) {
       // defining and resetting variables
       var aggAvailabilities = {}
       aggAvailabilities.table = Array(7).fill(0).map(() => Array(24).fill(0))

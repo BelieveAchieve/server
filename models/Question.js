@@ -46,13 +46,6 @@ questionSchema.statics.getSubcategories = function (category) {
       'unit circle',
       'inequalities'
     ],
-    esl: [
-      'Reading',
-      'Writing',
-      'Writing - vocabulary',
-      'Reading & Writing',
-      'Speaking - conversational'
-    ],
     precalculus: [
       'rectangular coordinates',
       'linear inequalities',
@@ -85,34 +78,6 @@ questionSchema.statics.getSubcategories = function (category) {
       'FinAid',
       'LOR',
       'basic'
-    ],
-    biology: [
-      'biochemistry',
-      'cell',
-      'celldivision',
-      'cellrespiration',
-      'photosynthesis',
-      'classicalgenetics',
-      'moleculargenetics',
-      'plants',
-      'animalphysiology',
-      'humanphysiology',
-      'reproduction',
-      'immunesystem',
-      'behavior',
-      'evolution',
-      'taxonomy',
-      'ecology'
-    ],
-    chemistry: [
-      'structure of matter',
-      'States of matter',
-      'Reaction types',
-      'Stoichiometry',
-      'Equilibrium and reaction rates',
-      'Thermochemistry',
-      'Descriptive chemistry',
-      'Laboratory'
     ]
   }
 	if(typeof category !== 'string'){

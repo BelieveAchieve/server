@@ -28,7 +28,6 @@ function iterateKeys (update, data, callback) {
     'computerAccess',
     'preferredTimes',
     'phone',
-    'highschool',
     'currentGrade',
     'expectedGraduation',
     'difficultAcademicSubject',
