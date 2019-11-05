@@ -42,7 +42,7 @@ const tallyVolunteerPoints = (volunteer) => {
   }
 
   // -10000 points if notified recently
-  if (volunteer.volunteerLastNotification && minsSince(new Date(volunteer.volunteerLastNotification.createdAt)) < 5) {
+  if (volunteer.volunteerLastNotification && minsSince(new Date(volunteer.volunteerLastNotification.sentAt)) < 5) {
     points -= 10000
   }
 
