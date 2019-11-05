@@ -81,11 +81,8 @@ var getNextVolunteersFromDb = function (subtopic, notifiedUserIds, userIdsInSess
 
   userQuery._id = { $nin: notifiedUserIds.concat(userIdsInSessions) }
 
-  const query = User.aggregate([
-    { $match: userQuery },
-    { $project: { phone: 1, firstname: 1 } },
-    { $sample: { size: 5 } }
-  ])
+  const query = User.find(userQuery)
+    .populate('volunteerLastNotification volunteerLastSession')
 
   return query
 }
@@ -315,10 +312,16 @@ module.exports = {
               return
             }
 
+            const volunteersByPriority = persons
+              .filter(v => v.volunteerPointRank >= 0)
+              .sort((v1, v2) => v2.volunteerPointRank - v1.volunteerPointRank)
+
+            const volunteersToNotify = volunteersByPriority.slice(0, 2)
+
             // notifications to record in the database
             const notifications = []
 
-            async.each(persons, (person, cb) => {
+            async.each(volunteersToNotify, (person, cb) => {
               // record notification in database
               const notification = new Notification({
                 volunteer: person,
