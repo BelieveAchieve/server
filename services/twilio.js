@@ -207,11 +207,10 @@ function sendFailsafe (phoneNumber, name, options) {
       `Please log in if you can to help them out.`
   }
 
-  messageText = messageText + ` ${sessionUrl}`
-
   if (voice) {
     return sendVoiceMessage(phoneNumber, messageText)
   } else {
+    messageText = messageText + ` ${sessionUrl}`
     return sendTextMessage(phoneNumber, messageText, isTestUserRequest)
   }
 }
