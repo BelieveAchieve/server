@@ -10,7 +10,8 @@ dbconnect(mongoose, function () {
   const volunteerQueryMatch = {
     isVolunteer: true,
     isFakeUser: false,
-    isTestUser: false
+    isTestUser: false,
+    isFailsafeVolunteer: false
   }
 
   const subject = process.argv[2]
