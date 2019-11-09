@@ -4,6 +4,51 @@ var validator = require('validator')
 
 var config = require('../config.js')
 
+const weeksSince = (date) => {
+  // 604800000 = milliseconds in a week
+  return (new Date() - date) / 604800000
+}
+
+const minsSince = (date) => {
+  // 60000 = milliseconds in a minute
+  return (new Date() - date) / 60000
+}
+
+const tallyVolunteerPoints = (volunteer) => {
+  let points = 0
+
+  // +2 points if no past sessions
+  if (!volunteer.numPastSessions) {
+    points += 2
+  }
+
+  // +1 point if volunteer is from a partner org
+  if (volunteer.volunteerPartnerOrg) {
+    points += 1
+  }
+
+  // +1 point per 1 week since last notification
+  if (volunteer.volunteerLastNotification) {
+    points += weeksSince(new Date(volunteer.volunteerLastNotification.sentAt))
+  } else {
+    points += weeksSince(new Date(volunteer.createdAt))
+  }
+
+  // +1 point per 2 weeks since last session
+  if (volunteer.volunteerLastSession) {
+    points += (0.5 * weeksSince(new Date(volunteer.volunteerLastSession.createdAt)))
+  } else {
+    points += weeksSince(new Date(volunteer.createdAt))
+  }
+
+  // -10000 points if notified recently
+  if (volunteer.volunteerLastNotification && minsSince(new Date(volunteer.volunteerLastNotification.sentAt)) < 5) {
+    points -= 10000
+  }
+
+  return parseFloat(points.toFixed(2))
+}
+
 var userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -544,11 +589,33 @@ userSchema.virtual('highschoolName')
     }
   })
 
+userSchema.virtual('volunteerPointRank')
+  .get(function () {
+    if (!this.isVolunteer) return null
+    return tallyVolunteerPoints(this)
+  })
+
 // Virtual that gets all notifications that this user has been sent
 userSchema.virtual('notifications', {
   ref: 'Notification',
   localField: '_id',
   foreignField: 'volunteer',
+  options: { sort: { sentAt: -1 } }
+})
+
+userSchema.virtual('volunteerLastSession', {
+  ref: 'Session',
+  localField: '_id',
+  foreignField: 'volunteer',
+  justOne: true,
+  options: { sort: { createdAt: -1 } }
+})
+
+userSchema.virtual('volunteerLastNotification', {
+  ref: 'Notification',
+  localField: '_id',
+  foreignField: 'volunteer',
+  justOne: true,
   options: { sort: { sentAt: -1 } }
 })
 
