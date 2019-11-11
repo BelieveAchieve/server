@@ -181,13 +181,16 @@ var sessionManager = new SessionManager()
 
 // A NewSessionTimeout keeps track of timeouts for notifications that need
 // to be sent
-var NewSessionTimeout = function (session, ...timeouts) {
+var NewSessionTimeout = function (session, timeouts, intervals) {
   this.session = session
   this.timeouts = timeouts
+  this.intervals = intervals
 }
 
+// clear all timeouts and intervals
 NewSessionTimeout.prototype.clearTimeouts = function () {
   this.timeouts.forEach((timeout) => clearTimeout(timeout))
+  this.intervals.forEach((interval) => clearInterval(interval))
 }
 
 // remove a timeout from the session with which it is associated
@@ -198,15 +201,31 @@ NewSessionTimeout.prototype.removeTimeout = function (timeout) {
   }
 }
 
-// checks if a session has no timeouts
+// remove an interval from the session with which it is associated
+NewSessionTimeout.prototype.removeInterval = function (interval) {
+  const intervalIndex = this.intervals.findIndex(t => interval === t)
+  if (intervalIndex > -1) {
+    this.intervals.splice(intervalIndex, 1)
+  }
+}
+
+// checks if a session has no timeouts or intervals
 NewSessionTimeout.prototype.hasNoTimeouts = function () {
-  return this.timeouts.length === 0
+  return this.timeouts.length === 0 && this.intervals.length === 0
 }
 
 // The NewSessionTimekeeper manages timing of notifications that are
 // triggered by sessions that are created but never joined by volunteers
 var NewSessionTimekeeper = function () {
   this._newSessionTimeouts = {} // sessionId => newSessionTimeout
+}
+
+// delete the NewSessionTimeout object corresponding to a session
+// if there are no remaining timeouts or intervals
+NewSessionTimekeeper.prototype.cleanSessionTimeout = function (session) {
+  if (this._newSessionTimeouts[session._id].hasNoTimeouts()) {
+    delete this._newSessionTimeouts[session._id]
+  }
 }
 
 // set a timeout for a session that can be cancelled if a volunteer joins
@@ -218,16 +237,14 @@ NewSessionTimekeeper.prototype.setSessionTimeout = function (session, delay, cb,
     const newSessionTimeout = this._newSessionTimeouts[session._id]
     newSessionTimeout.removeTimeout(timeout)
 
-    // delete the NewSessionTimeout object if there are no remaining timeouts
-    if (newSessionTimeout.hasNoTimeouts()) {
-      delete this._newSessionTimeouts[session._id]
-    }
+    // clean up session timeout objects that have no timeouts or intervals
+    this.cleanSessionTimeout(session)
   }, delay, ...args)
 
   var newSessionTimeout = this._newSessionTimeouts[session._id]
   if (!newSessionTimeout) {
     // create the object
-    newSessionTimeout = new NewSessionTimeout(session, timeout)
+    newSessionTimeout = new NewSessionTimeout(session, [timeout], [])
     this._newSessionTimeouts[session._id] = newSessionTimeout
   } else {
     // add timeout to existing object
@@ -235,7 +252,35 @@ NewSessionTimekeeper.prototype.setSessionTimeout = function (session, delay, cb,
   }
 }
 
-// clear all timeouts for a session
+// set an interval for a notification function to be executed repeatedly until the session begins
+// or until all volunteers have been notified
+NewSessionTimekeeper.prototype.setSessionInterval = function (session, delay, cb, ...args) {
+  const interval = setInterval((...a) => {
+    cb(...a, (modifiedSession, numOfVolunteersNotified) => {
+      // if no notifications were sent in this wave, clear interval and remove from memory
+      if (numOfVolunteersNotified === 0) {
+        const newSessionTimeout = this._newSessionTimeouts[session._id]
+        clearInterval(interval)
+        newSessionTimeout.removeInterval(interval)
+
+        // clean up session timeout objects that have no timeouts or intervals
+        this.cleanSessionTimeout(session)
+      }
+    })
+  }, delay, ...args)
+
+  var newSessionTimeout = this._newSessionTimeouts[session._id]
+  if (!newSessionTimeout) {
+    // create the object
+    newSessionTimeout = new NewSessionTimeout(session, [], [interval])
+    this._newSessionTimeouts[session._id] = newSessionTimeout
+  } else {
+    // add timeout to existing object
+    newSessionTimeout.intervals.push(interval)
+  }
+}
+
+// clear all timeouts and intervals for a session
 NewSessionTimekeeper.prototype.clearSessionTimeouts = function (session) {
   const newSessionTimeout = this._newSessionTimeouts[session._id]
 
@@ -289,7 +334,7 @@ module.exports = {
         return cb(err)
       }
 
-      // notify both available and failsafe volunteers
+      // notify failsafe volunteers and initial wave of available volunteers
       twilioService.notify(user, type, subTopic, {
         isTestUserRequest: user.isTestUser,
         session: savedSession
@@ -309,6 +354,12 @@ module.exports = {
             voice: true,
             isTestUserRequest: user.isTestUser,
             session
+          })
+
+        // additional waves every 3 minutes after the first
+        newSessionTimekeeper.setSessionInterval(session, 180000,
+          twilioService.notifyWave, user, type, subTopic, session, {
+            isTestUserRequest: user.isTestUser
           })
       })
 

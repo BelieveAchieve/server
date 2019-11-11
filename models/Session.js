@@ -57,12 +57,6 @@ var sessionSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Notification'
   }]
-
-  // Scheduled sessions
-  // startAt: {
-  //   type: Date,
-  //   default: Date.now
-  // }
 })
 
 sessionSchema.methods.saveMessage = function (messageObj, cb) {
