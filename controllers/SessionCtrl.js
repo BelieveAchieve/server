@@ -419,7 +419,7 @@ module.exports = {
     }
 
     return Session.find(queryAttrs)
-      .populate('student')
+      .populate({ path: 'student', select: 'firstname isVolunteer' })
       .sort({ createdAt: -1 })
       .exec()
   },
@@ -429,7 +429,8 @@ module.exports = {
       .sort({ createdAt: -1 })
       .limit(1)
       .findOne()
-      .populate('student volunteer')
+      .populate({ path: 'volunteer', select: 'firstname isVolunteer' })
+      .populate({ path: 'student', select: 'firstname isVolunteer' })
       .exec(cb)
   },
 
@@ -460,7 +461,13 @@ module.exports = {
           cb(err)
           return
         }
-        Session.populate(savedSession, 'student volunteer', function (
+
+        const populateOptions = [
+          { path: 'student', select: 'firstname isVolunteer' },
+          { path: 'volunteer', select: 'firstname isVolunteer' }
+        ]
+
+        Session.populate(savedSession, populateOptions, function (
           err,
           populatedSession
         ) {
