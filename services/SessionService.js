@@ -27,6 +27,6 @@ module.exports = {
       this.addPastSession(volunteer, session)
     }
 
-    await session.endSession()
+    await session.endSession(user)
   }
 }

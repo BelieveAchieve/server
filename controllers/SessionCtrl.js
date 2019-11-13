@@ -50,7 +50,7 @@ module.exports = function (socketService) {
 
       this.verifySessionParticipant(session, user, new Error('Only session participants can end a session'))
 
-      await sessionService.endSession(session)
+      await sessionService.endSession(session, user)
 
       socketService.emitSessionEnd(options.sessionId)
 
