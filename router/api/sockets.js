@@ -22,7 +22,16 @@ module.exports = function (io, sessionStore) {
     cookieParser: cookieParser,
     key: 'connect.sid',
     secret: config.sessionSecret,
-    store: sessionStore
+    store: sessionStore,
+    // only allow authenticated users to connect to the socket instance
+    fail: (data, message, error, accept) => {
+      if (error) {
+        console.log(new Error(message))
+      } else {
+        console.log(message)
+        accept(null, false)
+      }
+    }
   }))
 
   io.on('connection', async function (socket) {
