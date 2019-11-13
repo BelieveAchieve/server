@@ -38,6 +38,9 @@ module.exports = {
     }
   },
 
+  // Sentry Data Source Name
+  sentryDsn: '',
+
   // Twilio Credentials
   accountSid: '',
   authToken: '',
