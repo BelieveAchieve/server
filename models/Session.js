@@ -45,12 +45,17 @@ var sessionSchema = new mongoose.Schema({
     default: Date.now
   },
 
+  volunteerJoinedAt: {
+    type: Date
+  },
+
   endedAt: {
     type: Date
   },
 
-  volunteerJoinedAt: {
-    type: Date
+  endedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   },
 
   notifications: [{
@@ -126,8 +131,9 @@ sessionSchema.methods.leaveUser = function (user, cb) {
   }
 }
 
-sessionSchema.methods.endSession = function (cb) {
+sessionSchema.methods.endSession = function (userWhoEnded) {
   this.endedAt = new Date()
+  this.endedBy = userWhoEnded
   this.save(() => console.log(`Ended session ${this._id} at ${this.endedAt}`))
 }
 

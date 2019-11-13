@@ -460,6 +460,7 @@ userSchema.methods.parseProfile = function () {
     preferredContactMethod: this.preferredContactMethod,
     availability: this.availability,
     hasSchedule: this.hasSchedule,
+    timezone: this.timezone,
 
     highschoolName: this.highschoolName,
     currentGrade: this.currentGrade,
@@ -519,6 +520,12 @@ userSchema.methods.verifyPassword = function (candidatePassword, cb) {
 // necessary to retrieve the high school name
 userSchema.methods.populateForHighschoolName = function (cb) {
   return this.populate('approvedHighschool', 'nameStored SCH_NAME', cb)
+}
+
+// Populates user document with the fields from pastSessions documents
+// necessary to retrieve numVolunteerSessionHours
+userSchema.methods.populateForVolunteerStats = function (cb) {
+  return this.populate('pastSessions', 'createdAt volunteerJoinedAt endedAt', cb)
 }
 
 // regular expression that accepts multiple valid U. S. phone number formats
@@ -636,7 +643,7 @@ userSchema.virtual('numVolunteerSessionHours')
 
     // can't calculate when pastSessions hasn't been .populated()
     if (!this.pastSessions[0].createdAt) {
-      return 0
+      return null
     }
 
     const totalMilliseconds = this.pastSessions.reduce((totalMs, pastSession) => {

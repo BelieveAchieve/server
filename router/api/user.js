@@ -2,15 +2,25 @@ var UserCtrl = require('../../controllers/UserCtrl')
 
 module.exports = function (router) {
   router.route('/user').get(function (req, res) {
-    if (req.user) {
-      res.json({
-        user: req.user
-      })
-    } else {
-      res.json({
+    if (!req.user) {
+      return res.json({
         err: 'Client has no authenticated session'
       })
     }
+
+    // Return student user
+    if (!req.user.isVolunteer) {
+      return res.json({
+        user: req.user.parseProfile()
+      })
+    }
+
+    // Return volunteer user
+    req.user.populateForVolunteerStats().execPopulate().then(populatedUser => {
+      return res.json({
+        user: populatedUser.parseProfile()
+      })
+    })
   })
 
   router.put('/user', function (req, res) {
@@ -57,7 +67,7 @@ module.exports = function (router) {
           res.json({ err: err })
         } else {
           res.json({
-            user: user
+            user: user.parseProfile()
           })
         }
       }

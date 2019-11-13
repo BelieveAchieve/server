@@ -81,12 +81,8 @@ module.exports = function (app) {
     passport.authenticate('local'), // Delegate auth logic to passport middleware
     function (req, res) {
       // If successfully authed, return user object (otherwise 401 is returned from middleware)
-      req.user.populate('pastSessions').execPopulate((err, populatedUser) => {
-        console.log(err)
-
-        res.json({
-          user: populatedUser
-        })
+      res.json({
+        user: req.user.parseProfile()
       })
     }
   )
