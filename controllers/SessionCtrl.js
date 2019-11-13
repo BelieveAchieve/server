@@ -396,7 +396,7 @@ module.exports = {
       // clear timeouts
       newSessionTimekeeper.clearSessionTimeouts(session)
 
-      session.endSession()
+      session.endSession(user)
       cb(null, session)
     })
   },
