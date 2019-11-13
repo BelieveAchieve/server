@@ -48,7 +48,7 @@ var sessionSchema = new mongoose.Schema({
   endedAt: {
     type: Date
   },
-  
+
   endedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -139,11 +139,11 @@ sessionSchema.methods.leaveUser = function (user, cb) {
 
 sessionSchema.methods.endSession = function (user) {
   this.endedAt = new Date()
-  
+
   if (user) {
     this.endedBy = user
   }
-  
+
   return this.save().then(() => console.log(`User ${user ? user._id + ' ' : ''}ended session ${this._id} at ${this.endedAt}`))
 }
 

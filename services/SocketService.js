@@ -74,7 +74,7 @@ module.exports = function (io) {
         { path: 'student', select: 'firstname isVolunteer' },
         { path: 'volunteer', select: 'firstname isVolunteer' }
       ]
-      
+
       const session = await Session.findById(sessionId)
         .populate(populateOptions)
         .exec()
