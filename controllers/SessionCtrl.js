@@ -47,6 +47,11 @@ module.exports = function (socketService) {
       if (!session) {
         throw new Error('No session found')
       }
+      
+      if (session.endedAt) {
+        // Session has already ended (the other user ended it)
+        return session
+      }
 
       this.verifySessionParticipant(session, user, new Error('Only session participants can end a session'))
 

@@ -13,11 +13,6 @@ module.exports = {
   },
 
   endSession: async function (session, user) {
-    if (session.endedAt) {
-      // Session has already ended (the other user ended it)
-      return session
-    }
-
     var student = session.student
     var volunteer = session.volunteer
 
