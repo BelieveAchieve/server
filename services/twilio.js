@@ -233,12 +233,14 @@ const notifyRegular = async function (session) {
 
 const notifyFailsafe = async function (session, options) {
   const populatedSession = await Session.findById(session._id).populate('student notifications').exec()
-
+  
+  const populatedStudent = await User.populate(populatedSession.student, { path: 'approvedHighschool' })
+  
   var studentFirstname = populatedSession.student.firstname
 
   var studentLastname = populatedSession.student.lastname
 
-  var studentHighSchool = populatedSession.student.highschoolName
+  var studentHighSchool = populatedStudent.highschoolName
 
   var isFirstTimeRequester = !populatedSession.student.pastSessions || !populatedSession.student.pastSessions.length
 
