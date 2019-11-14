@@ -62,12 +62,12 @@ module.exports = function (router) {
           pastSessions: data.pastSessions
         }
       },
-      function (err, user) {
+      function (err, parsedUser) {
         if (err) {
           res.json({ err: err })
         } else {
           res.json({
-            user: user
+            user: parsedUser
           })
         }
       }
