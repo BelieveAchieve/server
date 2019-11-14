@@ -67,7 +67,7 @@ module.exports = function (router) {
           res.json({ err: err })
         } else {
           res.json({
-            user: user.parseProfile()
+            user: user
           })
         }
       }
