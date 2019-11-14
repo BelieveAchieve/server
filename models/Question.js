@@ -80,8 +80,23 @@ questionSchema.statics.getSubcategories = function (category) {
       'basic'
     ]
   }
-  var subcategories = categoryToSubcategoryMap[category]
-  return subcategories
+  if (typeof category !== 'string') {
+    throw new TypeError(
+      'Category has a value of ' +
+        category +
+        '. It must be a string, not ' +
+        typeof category
+    )
+  }
+
+  category = category.toLowerCase()
+
+  if (categoryToSubcategoryMap.hasOwnProperty(category)) {
+    const subcategories = categoryToSubcategoryMap[category]
+    return subcategories
+  } else {
+    throw new ReferenceError(category + ' is not a subcategory.')
+  }
 }
 
 module.exports = mongoose.model('Question', questionSchema, 'question')
