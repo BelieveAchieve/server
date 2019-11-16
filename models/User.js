@@ -70,7 +70,7 @@ var userSchema = new mongoose.Schema({
   verificationToken: { type: String, select: false },
   passwordResetToken: { type: String, select: false },
   registrationCode: { type: String, select: false },
-  volunteerPartnerOrg: { type: String, select: false },
+  volunteerPartnerOrg: String,
 
   // Profile data
   firstname: { type: String, required: [true, 'First name is required.'] },
@@ -483,7 +483,8 @@ userSchema.methods.parseProfile = function () {
     certifications: this.certifications,
     phonePretty: this.phonePretty,
     numPastSessions: this.numPastSessions,
-    numVolunteerSessionHours: this.numVolunteerSessionHours
+    numVolunteerSessionHours: this.numVolunteerSessionHours,
+    mathCoachingOnly: this.mathCoachingOnly
   }
 }
 
@@ -673,6 +674,15 @@ userSchema.virtual('numVolunteerSessionHours')
     const hoursDiff = (totalMilliseconds / 3600000).toFixed(2)
 
     return hoursDiff
+  })
+
+userSchema.virtual('mathCoachingOnly')
+  .get(function () {
+    if (!this.isVolunteer) return null
+    if (!this.volunteerPartnerOrg) return false
+
+    const orgManifest = config.orgManifests[this.volunteerPartnerOrg]
+    return !!orgManifest && !!orgManifest['mathCoachingOnly']
   })
 
 // Static method to determine if a registration code is valid
