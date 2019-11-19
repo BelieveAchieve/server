@@ -45,19 +45,23 @@ var sessionSchema = new mongoose.Schema({
     default: Date.now
   },
 
+  volunteerJoinedAt: {
+    type: Date
+  },
+
   endedAt: {
     type: Date
   },
 
-  volunteerJoinedAt: {
-    type: Date
-  }
+  endedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
 
-  // Scheduled sessions
-  // startAt: {
-  //   type: Date,
-  //   default: Date.now
-  // }
+  notifications: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Notification'
+  }]
 })
 
 sessionSchema.methods.saveMessage = function (messageObj, cb) {
@@ -68,14 +72,22 @@ sessionSchema.methods.saveMessage = function (messageObj, cb) {
   })
 
   var messageId = this.messages[this.messages.length - 1]._id
-  this.save(function (err) {
-    var savedMessageIndex = session.messages.findIndex(function (message) {
-      return message._id === messageId
+  const promise = this.save()
+    .then(() => {
+      var savedMessageIndex = session.messages.findIndex(function (message) {
+        return message._id === messageId
+      })
+
+      var savedMessage = session.messages[savedMessageIndex]
+
+      return savedMessage
     })
 
-    var savedMessage = session.messages[savedMessageIndex]
-    cb(null, savedMessage)
-  })
+  if (cb) {
+    promise.then(cb)
+  } else {
+    return promise
+  }
 }
 
 sessionSchema.methods.saveWhiteboardUrl = function (whiteboardUrl, cb) {
@@ -90,27 +102,28 @@ sessionSchema.methods.saveWhiteboardUrl = function (whiteboardUrl, cb) {
 
 // this method should callback with an error on attempts to join by non-participants
 // so that SessionCtrl knows to disconnect the socket
-sessionSchema.methods.joinUser = function (user, cb) {
+sessionSchema.methods.joinUser = async function (user) {
   if (user.isVolunteer) {
     if (this.volunteer) {
       if (!this.volunteer._id.equals(user._id)) {
-        cb('A volunteer has already joined this session.')
-        return
+        throw new Error('A volunteer has already joined this session.')
       }
     } else {
       this.volunteer = user
     }
-    this.volunteerJoinedAt = new Date()
+
+    if (!this.volunteerJoinedAt) {
+      this.volunteerJoinedAt = new Date()
+    }
   } else if (this.student) {
     if (!this.student._id.equals(user._id)) {
-      cb(`A student ${this.student._id} has already joined this session.`)
-      return
+      throw new Error(`A student ${this.student._id} has already joined this session.`)
     }
   } else {
     this.student = user
   }
 
-  this.save(cb)
+  return this.save()
 }
 
 sessionSchema.methods.leaveUser = function (user, cb) {
@@ -124,13 +137,58 @@ sessionSchema.methods.leaveUser = function (user, cb) {
   }
 }
 
-sessionSchema.methods.endSession = function (cb) {
+sessionSchema.methods.endSession = function (userWhoEnded) {
   this.endedAt = new Date()
-  this.save(() => console.log(`Ended session ${this._id} at ${this.endedAt}`))
+  this.endedBy = userWhoEnded
+  return this.save().then(() => console.log(`Ended session ${this._id} at ${this.endedAt}`))
+}
+
+sessionSchema.methods.addNotifications = function (notificationsToAdd, cb) {
+  return this.model('Session')
+    .findByIdAndUpdate(this._id, {
+      $push: { notifications: { $each: notificationsToAdd } }
+    })
+    .exec(cb)
 }
 
 sessionSchema.methods.isActive = function (cb) {}
 
 sessionSchema.methods.isWaiting = function (cb) {}
+
+sessionSchema.statics.findLatest = function (attrs, cb) {
+  return this.find(attrs)
+    .sort({ createdAt: -1 })
+    .limit(1)
+    .findOne()
+    .populate({ path: 'volunteer', select: 'firstname isVolunteer' })
+    .populate({ path: 'student', select: 'firstname isVolunteer' })
+    .exec(cb)
+}
+
+// user's current session
+sessionSchema.statics.current = function (userId, cb) {
+  return this.findLatest(
+    {
+      $and: [
+        { endedAt: { $exists: false } },
+        {
+          $or: [{ student: userId }, { volunteer: userId }]
+        }
+      ]
+    })
+}
+
+// sessions that have not yet been fulfilled by a volunteer
+sessionSchema.statics.getUnfulfilledSessions = function (cb) {
+  const queryAttrs = {
+    volunteerJoinedAt: { $exists: false },
+    endedAt: { $exists: false }
+  }
+
+  return this.find(queryAttrs)
+    .populate({ path: 'student', select: 'firstname isVolunteer' })
+    .sort({ createdAt: -1 })
+    .exec(cb)
+}
 
 module.exports = mongoose.model('Session', sessionSchema)

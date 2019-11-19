@@ -3,6 +3,11 @@ var User = require('../models/User')
 var twilio = require('twilio')
 var moment = require('moment-timezone')
 const client = twilio(config.accountSid, config.authToken)
+const base64url = require('base64url')
+const _ = require('lodash')
+
+const Session = require('../models/Session')
+const Notification = require('../models/Notification')
 
 // todo
 // limit instead of stopping at the index of 3
@@ -13,19 +18,30 @@ const client = twilio(config.accountSid, config.authToken)
 // ensureindex
 // logging
 
+const SessionTimeout = function (sessionId, timeouts, intervals) {
+  this.sessionId = sessionId
+  this.timeouts = timeouts
+  this.intervals = intervals
+}
+
+const sessionTimeouts = {} // sessionId => SessionTimeout
+
+// get the availability field to query for the current time
 function getAvailability () {
   var dateString = new Date().toUTCString()
   var date = moment.utc(dateString).tz('America/New_York')
   var day = date.isoWeekday() - 1
   var hour = date.hour()
-  var min = date.minute() / 60
 
-  if (min >= 0.5) {
-    hour++
-  }
-  if (hour > 12) {
-    hour = `${hour - 12}p`
+  if (hour >= 12) {
+    if (hour > 12) {
+      hour -= 12
+    }
+    hour = `${hour}p`
   } else {
+    if (hour === 0) {
+      hour = 12
+    }
     hour = `${hour}a`
   }
 
@@ -42,56 +58,379 @@ function getAvailability () {
   return `availability.${days[day]}.${hour}`
 }
 
-var getAvailableVolunteersFromDb = function (subtopic, options) {
+// return query filter object limiting notifications to the available volunteers
+function filterAvailableVolunteers (subtopic, options) {
   var availability = getAvailability()
   console.log(availability)
 
-  var certificationPassed = subtopic + '.passed'
+  var certificationPassed = `certifications.${subtopic}.passed`
 
-  // Only notify admins about requests from test users (for manual testing)
-  var shouldOnlyGetAdmins = options.isTestUserRequest || false
+  // Only notify volunteer test users about requests from student test users (for manual testing)
+  var shouldOnlyGetTestUsers = options.isTestUserRequest || false
 
   var userQuery = {
     isVolunteer: true,
     [certificationPassed]: true,
     [availability]: true,
-    isTestUser: false,
-    isAdmin: shouldOnlyGetAdmins
+    isTestUser: shouldOnlyGetTestUsers,
+    isFakeUser: false,
+    isFailsafeVolunteer: false
   }
 
-  var query = User.find(userQuery)
-    .select({ phone: 1, firstname: 1 })
-    .limit(5)
+  return userQuery
+}
+
+// get next wave of non-failsafe volunteers to notify
+var getNextVolunteersFromDb = function (subtopic, notifiedUserIds, userIdsInSessions, options) {
+  const userQuery = filterAvailableVolunteers(subtopic, options)
+
+  userQuery._id = { $nin: notifiedUserIds.concat(userIdsInSessions) }
+
+  const query = User.find(userQuery)
+    .populate('volunteerLastNotification volunteerLastSession')
 
   return query
 }
 
-function send (phoneNumber, name, subtopic, isTestUserRequest) {
-  var testUserNotice = isTestUserRequest ? '[TEST USER] ' : '';
-  var textBody = `${testUserNotice}Hi ${name}, a student just requested help in ${subtopic} at app.upchieve.org. Please log in now to help them if you can!`
+// query failsafe volunteers to notify
+var getFailsafeVolunteersFromDb = function () {
+  var userQuery = {
+    'isFailsafeVolunteer': true
+  }
+  return User.find(userQuery)
+    .select({ phone: 1, firstname: 1 })
+}
 
-  client.messages
+function sendTextMessage (phoneNumber, messageText, isTestUserRequest) {
+  console.log(`Sending SMS to ${phoneNumber}...`)
+
+  const testUserNotice = isTestUserRequest ? '[TEST USER] ' : ''
+
+  // If stored phone number doesn't have international calling code (E.164 formatting)
+  // then default to US number
+  // @todo: normalize previously stored US phone numbers
+  const fullPhoneNumber = phoneNumber[0] === '+' ? phoneNumber : `+1${phoneNumber}`
+
+  return client.messages
     .create({
-      to: `+1${phoneNumber}`,
+      to: fullPhoneNumber,
       from: config.sendingNumber,
-      body: textBody
+      body: testUserNotice + messageText
     })
-    .then(message =>
+    .then(message => {
       console.log(
         `Message sent to ${phoneNumber} with message id \n` + message.sid
       )
-    )
-    .catch(err => console.log(err))
+      return message.sid
+    })
+}
+
+function sendVoiceMessage (phoneNumber, messageText) {
+  console.log(`Initiating voice call to ${phoneNumber}...`)
+
+  let apiRoot
+  if (config.NODE_ENV === 'production') {
+    apiRoot = `https://${config.host}/twiml`
+  } else {
+    apiRoot = `http://${config.host}/twiml`
+  }
+
+  // URL for Twilio to retrieve the TwiML with the message text and voice
+  const url = apiRoot + '/message/' + encodeURIComponent(messageText)
+
+  // If stored phone number doesn't have international calling code (E.164 formatting)
+  // then default to US number
+  // @todo: normalize previously stored US phone numbers
+  const fullPhoneNumber = phoneNumber[0] === '+' ? phoneNumber : `+1${phoneNumber}`
+
+  // initiate call, giving Twilio the aforementioned URL which Twilio
+  // opens when the call is answered to get the TwiML instructions
+  return client.calls
+    .create({
+      url: url,
+      to: fullPhoneNumber,
+      from: config.sendingNumber
+    })
+    .then((call) => {
+      console.log(`Voice call to ${phoneNumber} with id ${call.sid}`)
+      return call.sid
+    })
+}
+
+// the URL that the volunteer can use to join the session on the client
+function getSessionUrl (sessionId) {
+  const protocol = (config.NODE_ENV === 'production' ? 'https' : 'http')
+  const sessionIdEncoded = base64url(Buffer.from(sessionId.toString(), 'hex'))
+  return `${protocol}://${config.client.host}/s/${sessionIdEncoded}`
+}
+
+const notifyRegular = async function (session) {
+  const populatedSession = await Session.findById(session._id).populate('student notifications').exec()
+
+  const subtopic = session.subTopic
+
+  // previously sent notifications for this session
+  const notificationsSent = populatedSession.notifications
+
+  // currently active sessions
+  const activeSessions = await Session.find({ endedAt: { $exists: false } }).exec()
+
+  // previously notified volunteers for this session
+  const notifiedUserIds = notificationsSent.map((notification) => notification.volunteer)
+
+  // volunteers in active sessions
+  const userIdsInSessions = activeSessions
+    .filter((activeSession) => !!activeSession.volunteer)
+    .map((activeSession) => activeSession.volunteer)
+
+  // query the database for the next wave
+  const waveVolunteers = await getNextVolunteersFromDb(subtopic, notifiedUserIds, userIdsInSessions, {
+    isTestUserRequest: populatedSession.student.isTestUser
+  })
+    .exec()
+
+  // people to whom to send notifications to
+  const volunteersByPriority = waveVolunteers
+    .filter(v => v.volunteerPointRank >= 0)
+    .sort((v1, v2) => v2.volunteerPointRank - v1.volunteerPointRank)
+
+  const volunteersToNotify = volunteersByPriority.slice(0, 5)
+
+  // notifications to record in the database
+  const notifications = []
+
+  // notify the volunteers
+  for (const volunteer of volunteersToNotify) {
+    // record notification in database
+    const notification = new Notification({
+      volunteer: volunteer,
+      type: 'REGULAR',
+      method: 'SMS'
+    })
+
+    const name = volunteer.firstname
+
+    const phoneNumber = volunteer.phone
+
+    const isTestUserRequest = session.student.isTestUser
+
+    // format message
+    const callToActionWordings = ['Start', 'Click here to start', 'Click this link to start', 'Tap here to start', 'Follow this link to start']
+    const callToAction = _.sample(callToActionWordings)
+    const sessionUrl = getSessionUrl(session._id)
+    const messageText = `Hi ${name}, a student needs help in ${subtopic} on UPchieve! ${callToAction} helping them now: ${sessionUrl}`
+
+    const sendPromise = sendTextMessage(phoneNumber, messageText, isTestUserRequest)
+
+    try {
+      notifications.push(await recordNotification(sendPromise, notification))
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  // save notifications to Session instance
+  await session.addNotifications(notifications)
+  return notifications.length
+}
+
+const notifyFailsafe = async function (session, options) {
+  const populatedSession = await Session.findById(session._id).populate('student notifications').exec()
+
+  const populatedStudent = await User.populate(populatedSession.student, { path: 'approvedHighschool' })
+
+  var studentFirstname = populatedSession.student.firstname
+
+  var studentLastname = populatedSession.student.lastname
+
+  var studentHighSchool = populatedStudent.highschoolName
+
+  var isFirstTimeRequester = !populatedSession.student.pastSessions || !populatedSession.student.pastSessions.length
+
+  var type = session.type
+
+  var subtopic = session.subTopic
+
+  var desperate = options.desperate
+
+  var voice = options.voice
+
+  var isTestUserRequest = populatedSession.student.isTestUser
+
+  const firstTimeNotice = isFirstTimeRequester ? 'for the first time ' : ''
+
+  const volunteerIdsNotified = populatedSession.notifications.map((notification) => notification.volunteer)
+
+  const numOfRegularVolunteersNotified = await User.countDocuments({
+    _id: { $in: volunteerIdsNotified },
+    isFailsafeVolunteer: false
+  })
+    .exec()
+
+  const numberOfVolunteersNotifiedMessage = `${numOfRegularVolunteersNotified} ` +
+    `regular volunteer${numOfRegularVolunteersNotified === 1 ? ' has' : 's have'} been notified.`
+
+  const sessionUrl = getSessionUrl(session._id)
+
+  // query the failsafe volunteers to notify
+  const volunteersToNotify = await getFailsafeVolunteersFromDb().exec()
+
+  // notifications to record
+  const notifications = []
+
+  for (const volunteer of volunteersToNotify) {
+    const name = volunteer.firstname
+
+    const phoneNumber = volunteer.phone
+
+    let messageText
+    if (desperate) {
+      messageText = `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
+        `from ${studentHighSchool} really needs your ${type} help ` +
+        `on ${subtopic}. ${numberOfVolunteersNotifiedMessage} ` +
+        `Please log in to app.upchieve.org and join the session ASAP!`
+    } else {
+      messageText = `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
+        `from ${studentHighSchool} has requested ${type} help ` +
+        `${firstTimeNotice}at app.upchieve.org ` +
+        `on ${subtopic}. ${numberOfVolunteersNotifiedMessage} ` +
+        `Please log in if you can to help them out.`
+    }
+
+    if (!voice) {
+      messageText = messageText + ` ${sessionUrl}`
+    }
+
+    const sendPromise = voice ? sendVoiceMessage(phoneNumber, messageText)
+      : sendTextMessage(phoneNumber, messageText, isTestUserRequest)
+
+    // record notification to database
+    const notification = new Notification({
+      volunteer: volunteer,
+      type: 'FAILSAFE',
+      method: voice ? 'VOICE' : 'SMS'
+    })
+
+    try {
+      notifications.push(await recordNotification(sendPromise, notification))
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  // save notifications to session object
+  await session.addNotifications(notifications)
+}
+
+/**
+ * Helper function to record notifications, whether successful or
+ * failed, to the database
+ * @param {sendPromise} a Promise that resolves to the message SID
+ * @param {notification} the notification object to save
+ * after the message is sent to Twilio
+ * @returns a Promise that resolves to the saved notification
+ * object
+ */
+function recordNotification (sendPromise, notification) {
+  return sendPromise.then(sid => {
+    // record notification in database
+    notification.wasSuccessful = true
+    notification.messageId = sid
+    return notification
+  }).catch(err => {
+    // record notification failure in database
+    console.log(err)
+    notification.wasSuccessful = false
+    return notification
+  }).then(notification => {
+    return notification.save()
+  })
+}
+
+/**
+ * Helper function that gets the SessionTimeout object corresponding
+ * to the given session
+ */
+function getSessionTimeoutFor (session) {
+  if (!(session._id in sessionTimeouts)) {
+    sessionTimeouts[session._id] = new SessionTimeout(session._id, [], [])
+  }
+  return sessionTimeouts[session._id]
 }
 
 module.exports = {
-  notify: function (type, subtopic, options) {
-    var isTestUserRequest = options.isTestUserRequest || false
+  // get total number of available, non-failsafe volunteers in the database
+  // return Promise that resolves to count
+  countAvailableVolunteersInDb: function (subtopic, options) {
+    return User.countDocuments(filterAvailableVolunteers(subtopic, options)).exec()
+  },
 
-    getAvailableVolunteersFromDb(subtopic, { isTestUserRequest }).exec(function (err, persons) {
-      persons.forEach(function (person) {
-        send(person.phone, person.firstname, subtopic, isTestUserRequest)
+  // count the number of regular volunteers that have been notified for a session
+  // return Promise that resolves to count
+  countVolunteersNotified: function (session) {
+    return Session.findById(session._id)
+      .populate('notifications')
+      .exec()
+      .then((populatedSession) => {
+        return populatedSession.notifications
+          .map((notification) => notification.volunteer)
+          .filter(
+            (volunteer, index, array) =>
+              array.indexOf(volunteer) === index &&
+             !volunteer.isFailsafeVolunteer
+          )
+          .length
       })
+  },
+
+  // begin notifying non-failsafe volunteers for a session
+  beginRegularNotifications: async function (session) {
+    // initial wave
+    await notifyRegular(session)
+
+    // set 3-minute notification interval
+    const interval = setInterval(async (session) => {
+      const numVolunteersNotified = await notifyRegular(session)
+      if (numVolunteersNotified === 0) {
+        clearInterval(interval)
+      }
+    }, 180000, session)
+
+    // store interval in memory
+    getSessionTimeoutFor(session).intervals.push(interval)
+  },
+
+  // begin notifying failsafe volunteers for a session
+  beginFailsafeNotifications: async function (session) {
+    // initial notifications
+    await notifyFailsafe(session, {
+      desperate: false,
+      voice: false
     })
+
+    // timeout for desperate SMS notification
+    const desperateTimeout = setTimeout(notifyFailsafe, config.desperateSMSTimeout, session, {
+      desperate: true,
+      voice: false
+    })
+    getSessionTimeoutFor(session).timeouts.push(desperateTimeout)
+
+    // timeout for desperate voice notification
+    const desperateVoiceTimeout = setTimeout(notifyFailsafe, config.desperateVoiceTimeout, session, {
+      desperate: true,
+      voice: true
+    })
+    getSessionTimeoutFor(session).timeouts.push(desperateVoiceTimeout)
+  },
+
+  stopNotifications: function (session) {
+    const sessionTimeout = getSessionTimeoutFor(session)
+
+    // clear all timeouts and intervals
+    sessionTimeout.timeouts.forEach((timeout) => clearTimeout(timeout))
+    sessionTimeout.intervals.forEach((interval) => clearInterval(interval))
+
+    // remove them from memory
+    delete sessionTimeouts[session._id]
   }
 }

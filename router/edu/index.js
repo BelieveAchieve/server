@@ -1,9 +1,10 @@
 const express = require('express')
 const expressLayouts = require('express-ejs-layouts')
 
+const config = require('../../config')
 const passport = require('../auth/passport')
 const QuestionCtrl = require('../../controllers/QuestionCtrl')
-const { questionsPath, isActivePage } = require('./helpers')
+const { questionsPath, isActivePage, frontEndPath } = require('./helpers')
 
 console.log('Edu Admin module')
 
@@ -11,6 +12,10 @@ const edu = express()
 edu.set('view engine', 'ejs')
 edu.set('layout', 'layouts/edu')
 edu.use(expressLayouts)
+edu.locals = {
+  homeLink: config.NODE_ENV === 'dev' ? 'http://localhost:8080' : '/',
+  frontEndRoot: config.NODE_ENV === 'dev' ? new URL('http://localhost:8080') : null
+}
 
 // GET /edu
 edu.get('/', async (req, res) => {
@@ -41,7 +46,14 @@ edu.route('/questions').get(async (req, res) => {
   try {
     const questions = await QuestionCtrl.list(req.query || {})
     const isActive = isActivePage(req)
-    res.render('edu/questions/index', { questions, isActive })
+
+    // question._id --> URL
+    const imagePaths = questions.reduce((map, question) => {
+      map[question._id] = frontEndPath(question.imageSrc, edu.locals.frontEndRoot)
+      return map
+    }, {})
+
+    res.render('edu/questions/index', { questions, isActive, imagePaths })
   } catch (error) {
     res.status(500).send(`<h1>Internal Server Error</h1> <pre>${error}</pre>`)
   }

@@ -8,9 +8,16 @@ var bodyParser = require('body-parser')
 var busboy = require('connect-busboy')
 var cors = require('cors')
 var mongoose = require('mongoose')
+var Sentry = require('@sentry/node')
 
 // Configuration
 var config = require('./config')
+
+// Set up Sentry error tracking
+Sentry.init({
+  dsn: config.sentryDsn,
+  environment: config.NODE_ENV
+})
 
 // Database
 mongoose.connect(config.database, { useNewUrlParser: true })
@@ -24,6 +31,7 @@ var app = express()
 app.set('port', process.env.PORT || 3000)
 
 // Setup middleware
+app.use(Sentry.Handlers.requestHandler()) // The Sentry request handler must be the first middleware on the app
 app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -50,3 +58,6 @@ console.log('Listening on port ' + port)
 
 // Load server router
 require('./router')(app)
+
+// The error handler must be before any other error middleware and after all controllers
+app.use(Sentry.Handlers.errorHandler());

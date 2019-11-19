@@ -1,144 +1,91 @@
+const Session = require('../../models/Session')
+
 var SessionCtrl = require('../../controllers/SessionCtrl')
 
-var User = require('../../models/User')
+var SocketService = require('../../services/SocketService')
 
 var ObjectId = require('mongodb').ObjectId
 
-var helpers = require('./helpers.js')
+module.exports = function (router, io) {
+  // io is now passed to this module so that API events can trigger socket events as needed
+  const socketService = SocketService(io)
+  const sessionCtrl = SessionCtrl(socketService)
 
-module.exports = function (router) {
-  router.route('/session/new').post(function (req, res) {
+  router.route('/session/new').post(async function (req, res) {
     var data = req.body || {}
     var sessionType = data.sessionType
     var sessionSubTopic = data.sessionSubTopic
     var user = req.user
 
-    SessionCtrl.create(
-      {
-        user: user,
-        type: sessionType,
-        subTopic: sessionSubTopic
-      },
-      function (err, session) {
-        if (err) {
-          res.json({
-            err: err
-          })
-        } else {
-          res.json({
-            sessionId: session._id
-          })
-        }
-      }
-    )
-  })
-  function addSession (user, session) {
-    User.update({ _id: user._id },
-      { $addToSet: { pastSessions: session._id } },
-      function (err, results) {
-        if (err) {
-          throw err
-        } else {
-          // print out what session was added to which user
-          if (results.nModified === 1) {
-            console.log(`${session._id} session was added to ` +
-            `${user._id}'s pastSessions`)
-          }
-        }
-      })
-  }
-  router.route('/session/end').post(function (req, res) {
-    var data = req.body || {}
-    var sessionId = data.sessionId
-    SessionCtrl.get(
-      {
-        sessionId: sessionId
-      },
-      function (err, session) {
-        if (err) {
-          res.json({ err: err })
-        } else if (!session) {
-          res.json({ err: 'No session found' })
-        } else if (helpers.isNotSessionParticipant(session, req.user)) {
-          console.log([req.user._id])
-          res.json({ err: 'Only a session participant can end a session' })
-        } else {
-          var student = session.student
-          var volunteer = session.volunteer
-          // add session to the student and volunteer's pastSessions
-          addSession(student, session)
-          if (volunteer) {
-            addSession(volunteer, session)
-          }
-          session.endSession()
-          res.json({ sessionId: session._id })
-        }
-      }
-    )
-  })
-
-  router.route('/session/check').post(function (req, res) {
-    var data = req.body || {}
-    var sessionId = data.sessionId
-
-    SessionCtrl.get(
-      {
-        sessionId: sessionId
-      },
-      function (err, session) {
-        if (err) {
-          res.json({
-            err: err
-          })
-        } else if (!session) {
-          res.json({
-            err: 'No session found'
-          })
-        } else {
-          res.json({
-            sessionId: session._id,
-            whiteboardUrl: session.whiteboardUrl
-          })
-        }
-      }
-    )
-  })
-
-  router.route('/session/current').post(function (req, res) {
-    const data = req.body || {}
-    const userId = data.user_id
-    const isVolunteer = data.is_volunteer
-
-    let studentId = null
-    let volunteerId = null
-
-    if (isVolunteer) {
-      volunteerId = ObjectId(userId)
-    } else {
-      studentId = ObjectId(userId)
+    try {
+      const session = await sessionCtrl.create(
+        {
+          user: user,
+          type: sessionType,
+          subTopic: sessionSubTopic
+        })
+      res.json({ sessionId: session._id })
+    } catch (err) {
+      res.json({ err: err.toString() })
     }
+  })
 
-    SessionCtrl.findLatest(
-      {
-        $and: [
-          { endedAt: null },
-          {
-            $or: [{ student: studentId }, { volunteer: volunteerId }]
-          }
-        ]
-      },
-      function (err, session) {
-        if (err) {
-          res.json({ err: err })
-        } else if (!session) {
-          res.json({ err: 'No session found' })
-        } else {
-          res.json({
-            sessionId: session._id,
-            data: session
-          })
+  router.route('/session/end').post(async function (req, res) {
+    var data = req.body || {}
+    var sessionId = data.sessionId
+    var user = req.user
+
+    try {
+      const session = await sessionCtrl.end(
+        {
+          sessionId: sessionId,
+          user: user
         }
+      )
+      res.json({ sessionId: session._id })
+    } catch (err) {
+      res.json({ err: err.toString() })
+    }
+  })
+
+  router.route('/session/check').post(async function (req, res) {
+    const data = req.body || {}
+    const sessionId = data.sessionId
+
+    try {
+      const session = await Session.findById(sessionId).exec()
+
+      if (!session) {
+        res.json({
+          err: 'No session found'
+        })
+      } else {
+        res.json({
+          sessionId: session._id,
+          whiteboardUrl: session.whiteboardUrl
+        })
       }
-    )
+    } catch (err) {
+      res.json({ err: err.toString() })
+    }
+  })
+
+  router.route('/session/current').post(async function (req, res) {
+    const data = req.body || {}
+    const userId = ObjectId(data.user_id)
+
+    try {
+      const currentSession = await Session.current(userId)
+      if (!currentSession) {
+        res.json({ err: 'No current session' })
+      } else {
+        res.json({
+          sessionId: currentSession._id,
+          data: currentSession
+        })
+      }
+    } catch (err) {
+      res.json({ err: err.toString() })
+    }
   })
 }

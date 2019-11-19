@@ -4,6 +4,51 @@ var validator = require('validator')
 
 var config = require('../config.js')
 
+const weeksSince = (date) => {
+  // 604800000 = milliseconds in a week
+  return (new Date() - date) / 604800000
+}
+
+const minsSince = (date) => {
+  // 60000 = milliseconds in a minute
+  return (new Date() - date) / 60000
+}
+
+const tallyVolunteerPoints = (volunteer) => {
+  let points = 0
+
+  // +2 points if no past sessions
+  if (!volunteer.numPastSessions) {
+    points += 2
+  }
+
+  // +1 point if volunteer is from a partner org
+  if (volunteer.volunteerPartnerOrg) {
+    points += 1
+  }
+
+  // +1 point per 1 week since last notification
+  if (volunteer.volunteerLastNotification) {
+    points += weeksSince(new Date(volunteer.volunteerLastNotification.sentAt))
+  } else {
+    points += weeksSince(new Date(volunteer.createdAt))
+  }
+
+  // +1 point per 2 weeks since last session
+  if (volunteer.volunteerLastSession) {
+    points += (0.5 * weeksSince(new Date(volunteer.volunteerLastSession.createdAt)))
+  } else {
+    points += weeksSince(new Date(volunteer.createdAt))
+  }
+
+  // -10000 points if notified recently
+  if (volunteer.volunteerLastNotification && minsSince(new Date(volunteer.volunteerLastNotification.sentAt)) < 5) {
+    points -= 10000
+  }
+
+  return parseFloat(points.toFixed(2))
+}
+
 var userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -16,15 +61,16 @@ var userSchema = new mongoose.Schema({
       message: '{VALUE} is not a valid email'
     }
   },
-  password: String,
+  password: { type: String, select: false },
 
   verified: {
     type: Boolean,
     default: false
   },
-  verificationToken: String,
-  registrationCode: String,
-  passwordResetToken: String,
+  verificationToken: { type: String, select: false },
+  passwordResetToken: { type: String, select: false },
+  registrationCode: { type: String, select: false },
+  volunteerPartnerOrg: String,
 
   // Profile data
   firstname: { type: String, required: [true, 'First name is required.'] },
@@ -40,25 +86,27 @@ var userSchema = new mongoose.Schema({
   preferredTimes: [String],
   phone: {
     type: String,
-    match: [ /^[0-9]{10}$/, '{VALUE} is not a phone number in the format ##########' ],
     required: [function () { return this.isVolunteer }, 'Phone number is required.']
+    // @todo: server-side validation of international phone format
   },
 
-  highschool: { type: String, required: [function () { return !this.isVolunteer }, 'High school is required.'] },
+  approvedHighschool: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'School'
+    /* TODO validate approvedHighschool.isApproved: true
+     * if this.isVolunteer is false */
+  },
   currentGrade: String,
   expectedGraduation: String,
   difficultAcademicSubject: String,
   difficultCollegeProcess: [String],
   highestLevelEducation: [String],
   hasGuidanceCounselor: String,
-  favoriteAcademicSubject: {
-    type: String,
-    required: [function () { return this.isVolunteer }, 'Favorite academic subject is required']
-  },
+  favoriteAcademicSubject: String,
   gpa: String,
   collegeApplicationsText: String,
   commonCollegeDocs: [String],
-  college: { type: String, required: [function () { return this.isVolunteer }, 'College is required.'] },
+  college: String,
   academicInterestsText: String,
   testScoresText: String,
   advancedCoursesText: String,
@@ -255,120 +303,86 @@ var userSchema = new mongoose.Schema({
   pastSessions: [{ type: mongoose.Schema.Types.ObjectId,
     ref: 'Session' }],
 
-  algebra: {
-    passed: {
-      type: Boolean,
-      default: false
+  certifications: {
+    algebra: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-  applications: {
-    passed: {
-      type: Boolean,
-      default: false
+    geometry: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-  biology: {
-    passed: {
-      type: Boolean,
-      default: false
+    trigonometry: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-  chemistry: {
-    passed: {
-      type: Boolean,
-      default: false
+    precalculus: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-
-  essays: {
-    passed: {
-      type: Boolean,
-      default: false
+    calculus: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-
-  geometry: {
-    passed: {
-      type: Boolean,
-      default: false
+    applications: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-
-  planning: {
-    passed: {
-      type: Boolean,
-      default: false
+    essays: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-  trigonometry: {
-    passed: {
-      type: Boolean,
-      default: false
-    },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-
-  esl: {
-    passed: {
-      type: Boolean,
-      default: false
-    },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-
-  precalculus: {
-    passed: {
-      type: Boolean,
-      default: false
-    },
-    tries: {
-      type: Number,
-      default: 0
-    }
-  },
-
-  calculus: {
-    passed: {
-      type: Boolean,
-      default: false
-    },
-    tries: {
-      type: Number,
-      default: 0
+    planning: {
+      passed: {
+        type: Boolean,
+        default: false
+      },
+      tries: {
+        type: Number,
+        default: 0
+      }
     }
   },
 
@@ -376,6 +390,16 @@ var userSchema = new mongoose.Schema({
   isVolunteer: {
     type: Boolean,
     default: false
+  },
+  isFailsafeVolunteer: {
+    type: Boolean,
+    default: false,
+    validate: {
+      validator: function (v) {
+        return this.isVolunteer || !v
+      },
+      message: 'A student cannot be a failsafe volunteer'
+    }
   },
   /* Fake Users
    * These aren't the same as Test Users; they still receive Twilio texts, etc
@@ -436,8 +460,9 @@ userSchema.methods.parseProfile = function () {
     preferredContactMethod: this.preferredContactMethod,
     availability: this.availability,
     hasSchedule: this.hasSchedule,
+    timezone: this.timezone,
 
-    highschool: this.highschool,
+    highschoolName: this.highschoolName,
     currentGrade: this.currentGrade,
     expectedGraduation: this.expectedGraduation,
     difficultAcademicSubject: this.difficultAcademicSubject,
@@ -455,14 +480,11 @@ userSchema.methods.parseProfile = function () {
     favoriteAcademicSubject: this.favoriteAcademicSubject,
     heardFrom: this.heardFrom,
     isFakeUser: this.isFakeUser,
-
-    algebra: this.algebra,
-    geometry: this.geometry,
-    trigonometry: this.trigonometry,
-    esl: this.esl,
-    precalculus: this.precalculus,
-    calculus: this.calculus,
-    phonePretty: this.phonePretty
+    certifications: this.certifications,
+    phonePretty: this.phonePretty,
+    numPastSessions: this.numPastSessions,
+    numVolunteerSessionHours: this.numVolunteerSessionHours,
+    mathCoachingOnly: this.mathCoachingOnly
   }
 }
 
@@ -495,6 +517,18 @@ userSchema.methods.verifyPassword = function (candidatePassword, cb) {
   })
 }
 
+// Populates user document with the fields from the School document
+// necessary to retrieve the high school name
+userSchema.methods.populateForHighschoolName = function (cb) {
+  return this.populate('approvedHighschool', 'nameStored SCH_NAME', cb)
+}
+
+// Populates user document with the fields from pastSessions documents
+// necessary to retrieve numVolunteerSessionHours
+userSchema.methods.populateForVolunteerStats = function (cb) {
+  return this.populate('pastSessions', 'createdAt volunteerJoinedAt endedAt', cb)
+}
+
 // regular expression that accepts multiple valid U. S. phone number formats
 // see http://regexlib.com/REDetails.aspx?regexp_id=58
 // modified to ignore trailing/leading whitespace and disallow alphanumeric characters
@@ -505,6 +539,11 @@ userSchema.virtual('phonePretty')
   .get(function () {
     if (!this.phone) {
       return null
+    }
+
+    // @todo: support better formatting of international numbers in phonePretty
+    if (this.phone[0] === '+') {
+      return this.phone
     }
 
     // first test user's phone number to see if it's a valid U.S. phone number
@@ -536,11 +575,114 @@ userSchema.virtual('phonePretty')
     if (!v) {
       this.phone = v
     } else {
+      // @todo: support better setting of international numbers in phonePretty
+      if (v[0] === '+') {
+        this.phone = `+${v.replace(/\D/g, '')}`
+        return
+      }
+
       // ignore first element of match result, which is the full match,
       // and destructure the remaining portion
       var [, area, prefix, line] = v.match(PHONE_REGEX) || []
       this.phone = `${area}${prefix}${line}`
     }
+  })
+
+userSchema.virtual('highschoolName')
+  .get(function () {
+    if (this.approvedHighschool) {
+      return this.approvedHighschool.name
+    } else {
+      return null
+    }
+  })
+
+userSchema.virtual('volunteerPointRank')
+  .get(function () {
+    if (!this.isVolunteer) return null
+    return tallyVolunteerPoints(this)
+  })
+
+// Virtual that gets all notifications that this user has been sent
+userSchema.virtual('notifications', {
+  ref: 'Notification',
+  localField: '_id',
+  foreignField: 'volunteer',
+  options: { sort: { sentAt: -1 } }
+})
+
+userSchema.virtual('volunteerLastSession', {
+  ref: 'Session',
+  localField: '_id',
+  foreignField: 'volunteer',
+  justOne: true,
+  options: { sort: { createdAt: -1 } }
+})
+
+userSchema.virtual('volunteerLastNotification', {
+  ref: 'Notification',
+  localField: '_id',
+  foreignField: 'volunteer',
+  justOne: true,
+  options: { sort: { sentAt: -1 } }
+})
+
+userSchema.virtual('numPastSessions')
+  .get(function () {
+    if (!this.pastSessions) {
+      return 0
+    }
+
+    return this.pastSessions.length
+  })
+
+userSchema.virtual('numVolunteerSessionHours')
+  .get(function () {
+    if (!this.pastSessions || !this.pastSessions.length) {
+      return 0
+    }
+
+    // can't calculate when pastSessions hasn't been .populated()
+    if (!this.pastSessions[0].createdAt) {
+      return null
+    }
+
+    const totalMilliseconds = this.pastSessions.reduce((totalMs, pastSession) => {
+      // early skip if session is missing necessary props
+      if (!(pastSession.volunteerJoinedAt && pastSession.endedAt)) {
+        return totalMs
+      }
+
+      const volunteerJoinDate = new Date(pastSession.volunteerJoinedAt)
+      const sessionEndDate = new Date(pastSession.endedAt)
+      let millisecondDiff = sessionEndDate - volunteerJoinDate
+
+      // if session was longer than 5 hours, it was probably an old glitch
+      if (millisecondDiff > 18000000) {
+        return totalMs
+      }
+
+      // skip if for some reason the volunteer joined after the session ended
+      if (millisecondDiff < 0) {
+        return totalMs
+      }
+
+      return millisecondDiff + totalMs
+    }, 0)
+
+    // milliseconds in hour = (60,000 * 60) = 3,600,000
+    const hoursDiff = (totalMilliseconds / 3600000).toFixed(2)
+
+    return hoursDiff
+  })
+
+userSchema.virtual('mathCoachingOnly')
+  .get(function () {
+    if (!this.isVolunteer) return null
+    if (!this.volunteerPartnerOrg) return false
+
+    const orgManifest = config.orgManifests[this.volunteerPartnerOrg]
+    return !!orgManifest && !!orgManifest['mathCoachingOnly']
   })
 
 // Static method to determine if a registration code is valid

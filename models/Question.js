@@ -46,13 +46,6 @@ questionSchema.statics.getSubcategories = function (category) {
       'unit circle',
       'inequalities'
     ],
-    esl: [
-      'Reading',
-      'Writing',
-      'Writing - vocabulary',
-      'Reading & Writing',
-      'Speaking - conversational'
-    ],
     precalculus: [
       'rectangular coordinates',
       'linear inequalities',
@@ -85,38 +78,25 @@ questionSchema.statics.getSubcategories = function (category) {
       'FinAid',
       'LOR',
       'basic'
-    ],
-    biology: [
-      'biochemistry',
-      'cell',
-      'celldivision',
-      'cellrespiration',
-      'photosynthesis',
-      'classicalgenetics',
-      'moleculargenetics',
-      'plants',
-      'animalphysiology',
-      'humanphysiology',
-      'reproduction',
-      'immunesystem',
-      'behavior',
-      'evolution',
-      'taxonomy',
-      'ecology'
-    ],
-    chemistry: [
-      'structure of matter',
-      'States of matter',
-      'Reaction types',
-      'Stoichiometry',
-      'Equilibrium and reaction rates',
-      'Thermochemistry',
-      'Descriptive chemistry',
-      'Laboratory'
     ]
   }
-  var subcategories = categoryToSubcategoryMap[category]
-  return subcategories
+  if (typeof category !== 'string') {
+    throw new TypeError(
+      'Category has a value of ' +
+        category +
+        '. It must be a string, not ' +
+        typeof category
+    )
+  }
+
+  category = category.toLowerCase()
+
+  if (categoryToSubcategoryMap.hasOwnProperty(category)) {
+    const subcategories = categoryToSubcategoryMap[category]
+    return subcategories
+  } else {
+    throw new ReferenceError(category + ' is not a subcategory.')
+  }
 }
 
 module.exports = mongoose.model('Question', questionSchema, 'question')
