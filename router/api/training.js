@@ -19,7 +19,7 @@ module.exports = function (router) {
         idAnswerMap: req.body.idAnswerMap,
         category: req.body.category
       })
-      
+
       res.json({
         msg: 'Score calculated and saved',
         tries: data.tries,
