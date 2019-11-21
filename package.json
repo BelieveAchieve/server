@@ -22,6 +22,7 @@
     "report-dir": "coverage"
   },
   "dependencies": {
+    "@adriantombu/array-shuffle": "^2.0.3",
     "@sendgrid/mail": "^6.4.0",
     "@sentry/node": "^5.8.0",
     "async": "^1.5.0",
@@ -37,7 +38,6 @@
     "cors": "^2.8.1",
     "crypto": "0.0.3",
     "csv-parse": "^4.4.6",
-    "d3-array": "^2.4.0",
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "express-ejs-layouts": "^2.5.0",

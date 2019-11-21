@@ -1,3 +1,5 @@
+const { arrayShuffle } = require('@adriantombu/array-shuffle')
+
 var Question = require('../models/Question')
 var User = require('../models/User')
 
@@ -22,7 +24,7 @@ module.exports = {
       throw new Error('No subcategories defined for category: ' + options.category)
     }
     
-    return (await Promise.all(
+    return arrayShuffle((await Promise.all(
       subcategories.map(
         (subcategory) => Question.aggregate([
           { $match: { category: options.category, subcategory: subcategory } },
@@ -30,7 +32,7 @@ module.exports = {
         ]).exec()
       )
     ))
-      .flat()
+      .flat())
   },
 
   getQuizScore: async function (options, callback) {
