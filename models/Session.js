@@ -49,6 +49,11 @@ var sessionSchema = new mongoose.Schema({
     type: Date
   },
 
+  failedJoins: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+
   endedAt: {
     type: Date
   },
@@ -100,13 +105,24 @@ sessionSchema.methods.saveWhiteboardUrl = function (whiteboardUrl, cb) {
   })
 }
 
+// helper function for handling joins that fail because session is fulfilled or has ended
+function failJoin (session, user, error) {
+  session.failedJoins.push(user._id)
+  session.save()
+  throw error
+}
+
 // this method should callback with an error on attempts to join by non-participants
 // so that SessionCtrl knows to disconnect the socket
 sessionSchema.methods.joinUser = async function (user) {
+  if (this.endedAt) {
+    failJoin(this, user, new Error('Session has ended'))
+  }
+
   if (user.isVolunteer) {
     if (this.volunteer) {
       if (!this.volunteer._id.equals(user._id)) {
-        throw new Error('A volunteer has already joined this session.')
+        failJoin(this, user, new Error('A volunteer has already joined this session.'))
       }
     } else {
       this.volunteer = user
@@ -117,7 +133,7 @@ sessionSchema.methods.joinUser = async function (user) {
     }
   } else if (this.student) {
     if (!this.student._id.equals(user._id)) {
-      throw new Error(`A student ${this.student._id} has already joined this session.`)
+      failJoin(this, user, new Error('A student has already joined this session.'))
     }
   } else {
     this.student = user
