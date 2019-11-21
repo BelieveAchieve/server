@@ -21,7 +21,8 @@ module.exports = function (io) {
         $or: [
           { student: userId },
           { volunteer: userId }
-        ]
+        ],
+        endedAt: { $exists: false }
       }, '_id')
         .exec()
 
