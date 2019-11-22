@@ -97,7 +97,7 @@ module.exports = function (io) {
       console.log('Could not join session')
       console.log(err)
       io.emit('error', err.toString())
-      socket.emit('bump', err.toString())
+      socket.emit('bump', err, err.toString())
     },
 
     deliverMessage: function (message, sessionId) {
