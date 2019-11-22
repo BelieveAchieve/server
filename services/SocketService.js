@@ -94,11 +94,11 @@ module.exports = function (io) {
       }
     },
 
-    bump: function (socket, err) {
+    bump: function (socket, data, err) {
       console.log('Could not join session')
       console.log(err)
       io.emit('error', err.toString())
-      socket.emit('bump', err.toString())
+      socket.emit('bump', data, err.toString())
     },
 
     deliverMessage: function (message, sessionId) {

@@ -88,7 +88,8 @@ module.exports = function (socketService) {
           twilioService.stopNotifications(session)
         }
       } catch (err) {
-        socketService.bump(socket, err)
+        // data passed so client knows whether the session has ended or was fulfilled
+        socketService.bump(socket, { endedAt: session.endedAt }, err)
       }
     },
 
