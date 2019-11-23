@@ -10,6 +10,7 @@
   },
   "nyc": {
     "check-coverage": true,
+    "lines": 50,
     "extension": [
       ".js"
     ],
@@ -26,7 +27,8 @@
     "@sentry/node": "^5.8.0",
     "async": "^1.5.0",
     "base64url": "^3.0.1",
-    "bcrypt": "3.0.4",
+    "bcrypt": "3.0.6",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "chalk": "^2.4.2",
     "cli-progress": "^3.0.0",

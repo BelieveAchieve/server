@@ -1,10 +1,7 @@
 const test = require('ava')
-const Message = require('./Message')
-//const User = require('./User')
+const Message = require('../../models//Message')
+const User = require('../../models/User')
 
-// Having the User without fully testing the user causes the code coverage to drop below threshold
-// Code below will be uncommented after User model tests are completed. 
-/*
 const user = new User({
 
 	email: "email@email.com",
@@ -238,12 +235,12 @@ const user = new User({
   timezone: "timezone",
   pastSessions: null
 })
-*/
+
 test('Test creation of Message scheme object', t => {
-  const message = new Message({ contents: 'message' })
+  let message = new Message({contents: 'message' })
+  message.user = user
+
   t.is(message.createdAt.getDate(), new Date().getDate())
 	t.is(message.contents, 'message')
-
-	// Removed until the User model test is done.
-	//t.is(message.user.email, 'email@email.com')
+	t.is(message.user.email, 'email@email.com')
 }) 

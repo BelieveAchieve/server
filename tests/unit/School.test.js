@@ -3,14 +3,16 @@
  */
 
 const test = require('ava')
-const School = require('./School')
+const School = require('../../models/School')
 
 //Place holder for school object.
 const school = new School({
 
-	SCHOOL_YEAR: 'SCHOOL_YEAR',
+  SCHOOL_YEAR: 'SCHOOL_YEAR',
+  districtName: "districtName",
   FIPST: 0,
   STATENAME: 'STATENAME',
+  nameStored: "nameStored",
   ST: 'ST',
   SCH_NAME: 'SCH_NAME',
   LEA_NAME: 'LEA_NAME',
@@ -75,8 +77,22 @@ const school = new School({
   IGOFFERED: 'IGOFFERED'
 })
 
-
-//Placeholder for future test
-test('Test creation of Message scheme object', t => {
-	t.is(true,true)
+//Placeholder
+test('Test creation of School scheme object', t => {
+	school.nameStored = "newname"
+	let temp = school.nameStored
+	t.is(temp, "newname")
 }) 
+
+test('Check districtName setters/getterss', t => {
+	school.districtName = "newname"
+	let temp = school.districtName
+	t.is(temp, "newname")
+}) 
+
+test('Check state setters/getterss', t => {
+	school.state = "newname"
+	let temp = school.state
+	t.is(temp, "newname")
+}) 
+
