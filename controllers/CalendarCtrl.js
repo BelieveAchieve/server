@@ -1,190 +1,68 @@
 var User = require('../models/User')
 
+const days = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday'
+]
+
+const hours = [
+  '12a',
+  '1a',
+  '2a',
+  '3a',
+  '4a',
+  '5a',
+  '6a',
+  '7a',
+  '8a',
+  '9a',
+  '10a',
+  '11a',
+  '12p',
+  '1p',
+  '2p',
+  '3p',
+  '4p',
+  '5p',
+  '6p',
+  '7p',
+  '8p',
+  '9p',
+  '10p',
+  '11p'
+]
+
 function initAvailability (user, callback) {
-  var availability = {
-    Sunday: {
-      '12a': false,
-      '1a': false,
-      '2a': false,
-      '3a': false,
-      '4a': false,
-      '5a': false,
-      '6a': false,
-      '7a': false,
-      '8a': false,
-      '9a': false,
-      '10a': false,
-      '11a': false,
-      '12p': false,
-      '1p': false,
-      '2p': false,
-      '3p': false,
-      '4p': false,
-      '5p': false,
-      '6p': false,
-      '7p': false,
-      '8p': false,
-      '9p': false,
-      '10p': false,
-      '11p': false
-    },
-    Monday: {
-      '12a': false,
-      '1a': false,
-      '2a': false,
-      '3a': false,
-      '4a': false,
-      '5a': false,
-      '6a': false,
-      '7a': false,
-      '8a': false,
-      '9a': false,
-      '10a': false,
-      '11a': false,
-      '12p': false,
-      '1p': false,
-      '2p': false,
-      '3p': false,
-      '4p': false,
-      '5p': false,
-      '6p': false,
-      '7p': false,
-      '8p': false,
-      '9p': false,
-      '10p': false,
-      '11p': false
-    },
-    Tuesday: {
-      '12a': false,
-      '1a': false,
-      '2a': false,
-      '3a': false,
-      '4a': false,
-      '5a': false,
-      '6a': false,
-      '7a': false,
-      '8a': false,
-      '9a': false,
-      '10a': false,
-      '11a': false,
-      '12p': false,
-      '1p': false,
-      '2p': false,
-      '3p': false,
-      '4p': false,
-      '5p': false,
-      '6p': false,
-      '7p': false,
-      '8p': false,
-      '9p': false,
-      '10p': false,
-      '11p': false
-    },
-    Wednesday: {
-      '12a': false,
-      '1a': false,
-      '2a': false,
-      '3a': false,
-      '4a': false,
-      '5a': false,
-      '6a': false,
-      '7a': false,
-      '8a': false,
-      '9a': false,
-      '10a': false,
-      '11a': false,
-      '12p': false,
-      '1p': false,
-      '2p': false,
-      '3p': false,
-      '4p': false,
-      '5p': false,
-      '6p': false,
-      '7p': false,
-      '8p': false,
-      '9p': false,
-      '10p': false,
-      '11p': false
-    },
-    Thursday: {
-      '12a': false,
-      '1a': false,
-      '2a': false,
-      '3a': false,
-      '4a': false,
-      '5a': false,
-      '6a': false,
-      '7a': false,
-      '8a': false,
-      '9a': false,
-      '10a': false,
-      '11a': false,
-      '12p': false,
-      '1p': false,
-      '2p': false,
-      '3p': false,
-      '4p': false,
-      '5p': false,
-      '6p': false,
-      '7p': false,
-      '8p': false,
-      '9p': false,
-      '10p': false,
-      '11p': false
-    },
-    Friday: {
-      '12a': false,
-      '1a': false,
-      '2a': false,
-      '3a': false,
-      '4a': false,
-      '5a': false,
-      '6a': false,
-      '7a': false,
-      '8a': false,
-      '9a': false,
-      '10a': false,
-      '11a': false,
-      '12p': false,
-      '1p': false,
-      '2p': false,
-      '3p': false,
-      '4p': false,
-      '5p': false,
-      '6p': false,
-      '7p': false,
-      '8p': false,
-      '9p': false,
-      '10p': false,
-      '11p': false
-    },
-    Saturday: {
-      '12a': false,
-      '1a': false,
-      '2a': false,
-      '3a': false,
-      '4a': false,
-      '5a': false,
-      '6a': false,
-      '7a': false,
-      '8a': false,
-      '9a': false,
-      '10a': false,
-      '11a': false,
-      '12p': false,
-      '1p': false,
-      '2p': false,
-      '3p': false,
-      '4p': false,
-      '5p': false,
-      '6p': false,
-      '7p': false,
-      '8p': false,
-      '9p': false,
-      '10p': false,
-      '11p': false
-    }
-  }
+  /*
+   * Create an availability object like:
+   * {
+   *   Sunday: {
+   *     '12a': false,
+   *     '1a': false,
+   *     ...
+   *   },
+   *   Monday, {
+   *     ...
+   *   },
+   *   ...
+   * }
+   */
+  const availability = days.map(day => [
+    day,
+    hours.reduce((obj, hour) => {
+      obj[hour] = false
+      return obj
+    }, {})
+  ])
+    .reduce((obj, [day, hoursObj]) => {
+      obj[day] = hoursObj
+      return obj
+    }, {})
 
   user.availability = availability
   user.hasSchedule = true
@@ -237,7 +115,27 @@ module.exports = {
       if (!user) {
         return callback(new Error('No account with that id found.'))
       }
-      user.availability = availability
+      
+      // validate the object received from the client and create the new
+      // availability object to be saved
+      const newAvailability = days.map(day => [
+        day,
+        hours.reduce((obj, hour) => {
+          obj[hour] = (
+              typeof(availability[day]) === "undefined" ||
+              typeof(availability[day][hour]) === "undefined"
+            ) ?
+              user.availability[day][hour] :
+              availability[day][hour]
+          return obj
+        }, {})
+      ])
+        .reduce((obj, [day, hoursObj]) => {
+          obj[day] = hoursObj
+          return obj
+        }, {})
+      
+      user.availability = newAvailability
       user.hasSchedule = true
       user.save(function (err, user) {
         if (err) {
