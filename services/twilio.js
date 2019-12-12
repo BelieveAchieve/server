@@ -2,7 +2,9 @@ var config = require('../config.js')
 var User = require('../models/User')
 var twilio = require('twilio')
 var moment = require('moment-timezone')
-const client = twilio(config.accountSid, config.authToken)
+const client = config.accountSid && config.authToken ?
+    twilio(config.accountSid, config.authToken) :
+    null
 const base64url = require('base64url')
 const _ = require('lodash')
 
@@ -385,6 +387,12 @@ module.exports = {
 
   // begin notifying non-failsafe volunteers for a session
   beginRegularNotifications: async function (session) {
+    // check that client has been authenticated
+    if (!client) {
+      // early exit
+      return
+    }
+    
     // initial wave
     await notifyRegular(session)
 
@@ -402,6 +410,12 @@ module.exports = {
 
   // begin notifying failsafe volunteers for a session
   beginFailsafeNotifications: async function (session) {
+    // check that client has been authenticated
+    if (!client) {
+      // early exit
+      return
+    }
+    
     // initial notifications
     await notifyFailsafe(session, {
       desperate: false,
@@ -426,6 +440,11 @@ module.exports = {
   stopNotifications: function (session) {
     const sessionTimeout = getSessionTimeoutFor(session)
 
+    if (!sessionTimeout) {
+      // early exit
+      return
+    }
+    
     // clear all timeouts and intervals
     sessionTimeout.timeouts.forEach((timeout) => clearTimeout(timeout))
     sessionTimeout.intervals.forEach((interval) => clearInterval(interval))
