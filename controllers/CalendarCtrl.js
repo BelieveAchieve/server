@@ -52,17 +52,13 @@ function initAvailability (user, callback) {
    *   ...
    * }
    */
-  const availability = days.map(day => [
-    day,
-    hours.reduce((obj, hour) => {
-      obj[hour] = false
-      return obj
+  const availability = days.reduce((obj, day) => {
+    obj[day] = hours.reduce((hoursObj, hour) => {
+      hoursObj[hour] = false
+      return hoursObj
     }, {})
-  ])
-    .reduce((obj, [day, hoursObj]) => {
-      obj[day] = hoursObj
-      return obj
-    }, {})
+    return obj
+  }, {})
 
   user.availability = availability
   user.hasSchedule = true
@@ -118,22 +114,18 @@ module.exports = {
       
       // validate the object received from the client and create the new
       // availability object to be saved
-      const newAvailability = days.map(day => [
-        day,
-        hours.reduce((obj, hour) => {
-          obj[hour] = (
-              typeof(availability[day]) === "undefined" ||
-              typeof(availability[day][hour]) === "undefined"
-            ) ?
-              user.availability[day][hour] :
-              availability[day][hour]
-          return obj
+      const newAvailability = days.reduce((obj, day) => {
+        obj[day] = hours.reduce((hoursObj, hour) => {
+          hoursObj[hour] = (
+            typeof(availability[day]) === "undefined" ||
+            typeof(availability[day][hour]) === "undefined"
+          ) ?
+            user.availability[day][hour] :
+            availability[day][hour]
+          return hoursObj
         }, {})
-      ])
-        .reduce((obj, [day, hoursObj]) => {
-          obj[day] = hoursObj
-          return obj
-        }, {})
+        return obj
+      }, {})
       
       user.availability = newAvailability
       user.hasSchedule = true
