@@ -111,22 +111,22 @@ module.exports = {
       if (!user) {
         return callback(new Error('No account with that id found.'))
       }
-      
+
       // validate the object received from the client and create the new
       // availability object to be saved
       const newAvailability = days.reduce((obj, day) => {
         obj[day] = hours.reduce((hoursObj, hour) => {
           hoursObj[hour] = (
-            typeof(availability[day]) === "undefined" ||
-            typeof(availability[day][hour]) === "undefined"
-          ) ?
-            user.availability[day][hour] :
-            availability[day][hour]
+            typeof (availability[day]) === 'undefined' ||
+            typeof (availability[day][hour]) === 'undefined'
+          )
+            ? user.availability[day][hour]
+            : availability[day][hour]
           return hoursObj
         }, {})
         return obj
       }, {})
-      
+
       user.availability = newAvailability
       user.hasSchedule = true
       user.save(function (err, user) {
