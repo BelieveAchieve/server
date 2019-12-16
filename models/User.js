@@ -49,6 +49,7 @@ const tallyVolunteerPoints = (volunteer) => {
   return parseFloat(points.toFixed(2))
 }
 
+// subdocument schema for each availability day
 const availabilityDaySchema = new mongoose.Schema({
   '12a': { type: Boolean, default: false },
   '1a': { type: Boolean, default: false },
@@ -446,7 +447,7 @@ userSchema.virtual('highschoolName')
     } else {
       return null
     }
-  })  
+  })
 
 userSchema.virtual('volunteerPointRank')
   .get(function () {
