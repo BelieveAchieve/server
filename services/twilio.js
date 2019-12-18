@@ -6,7 +6,6 @@ const client = config.accountSid && config.authToken
   ? twilio(config.accountSid, config.authToken)
   : null
 const base64url = require('base64url')
-const _ = require('lodash')
 
 const Session = require('../models/Session')
 const Notification = require('../models/Notification')
@@ -217,10 +216,7 @@ const notifyRegular = async function (session) {
     const isTestUserRequest = session.student.isTestUser
 
     // format message
-    const callToActionWordings = ['Start', 'Click here to start', 'Click this link to start', 'Tap here to start', 'Follow this link to start']
-    const callToAction = _.sample(callToActionWordings)
-    const sessionUrl = getSessionUrl(session._id)
-    const messageText = `Hi ${name}, a student needs help in ${subtopic} on UPchieve! ${callToAction} helping them now: ${sessionUrl}`
+    const messageText = `Hi ${name}, a student needs help in ${subtopic} on UPchieve! Respond YES if you're available.`
 
     const sendPromise = sendTextMessage(phoneNumber, messageText, isTestUserRequest)
 
@@ -361,6 +357,10 @@ function getSessionTimeoutFor (session) {
 }
 
 module.exports = {
+  getSessionUrl: function (sessionId) {
+    return getSessionUrl(sessionId)
+  },
+
   // get total number of available, non-failsafe volunteers in the database
   // return Promise that resolves to count
   countAvailableVolunteersInDb: function (subtopic, options) {

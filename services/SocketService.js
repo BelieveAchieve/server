@@ -3,6 +3,22 @@ const Session = require('../models/Session')
 
 const userSockets = {} // userId => socket
 
+/**
+ * Get session data to send to client for a given session ID
+ * @param sessionId
+ * @returns the session object
+ */
+async function getSessionData (sessionId) {
+  const populateOptions = [
+    { path: 'student', select: 'firstname isVolunteer' },
+    { path: 'volunteer', select: 'firstname isVolunteer' }
+  ]
+
+  return Session.findById(sessionId)
+    .populate(populateOptions)
+    .exec()
+}
+
 module.exports = function (io) {
   return {
     // to be called by router/api/sockets.js when user connects socket and authenticates
@@ -55,7 +71,7 @@ module.exports = function (io) {
     },
 
     emitSessionEnd: async function (sessionId) {
-      const session = await Session.findById(sessionId)
+      const session = await getSessionData(sessionId)
       io.in(sessionId).emit('session-change', session)
       io.in('volunteers').emit('session-end', sessionId)
       await this.updateSessionList()
@@ -70,15 +86,7 @@ module.exports = function (io) {
       // store user's socket in userSockets
       userSockets[userId] = socket
 
-      // get session data
-      const populateOptions = [
-        { path: 'student', select: 'firstname isVolunteer' },
-        { path: 'volunteer', select: 'firstname isVolunteer' }
-      ]
-
-      const session = await Session.findById(sessionId)
-        .populate(populateOptions)
-        .exec()
+      const session = await getSessionData(sessionId)
 
       socket.join(sessionId)
 
