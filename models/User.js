@@ -77,6 +77,16 @@ const availabilityDaySchema = new mongoose.Schema({
   '11p': { type: Boolean, default: false }
 }, { _id: false })
 
+const availabilitySchema = new mongoose.Schema({
+  Sunday: { type: availabilityDaySchema, default: availabilityDaySchema },
+  Monday: { type: availabilityDaySchema, default: availabilityDaySchema },
+  Tuesday: { type: availabilityDaySchema, default: availabilityDaySchema },
+  Wednesday: { type: availabilityDaySchema, default: availabilityDaySchema },
+  Thursday: { type: availabilityDaySchema, default: availabilityDaySchema },
+  Friday: { type: availabilityDaySchema, default: availabilityDaySchema },
+  Saturday: { type: availabilityDaySchema, default: availabilityDaySchema }
+}, { _id: false })
+
 var userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -142,15 +152,7 @@ var userSchema = new mongoose.Schema({
   heardFrom: String,
   referred: String,
   preferredContactMethod: [String],
-  availability: new mongoose.Schema({
-    Sunday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Monday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Tuesday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Wednesday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Thursday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Friday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Saturday: { type: availabilityDaySchema, default: availabilityDaySchema }
-  }, { _id: false }),
+  availability: { type: availabilitySchema, default: availabilitySchema },
   timezone: String,
   pastSessions: [{ type: mongoose.Schema.Types.ObjectId,
     ref: 'Session' }],
