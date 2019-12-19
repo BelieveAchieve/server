@@ -1,5 +1,6 @@
 const User = require('../models/User')
 const Session = require('../models/Session')
+const Message = require('../models/Message')
 
 const userSockets = {} // userId => socket
 
@@ -14,9 +15,14 @@ async function getSessionData (sessionId) {
     { path: 'volunteer', select: 'firstname isVolunteer' }
   ]
 
-  return Session.findById(sessionId)
+  const populatedSession = await Session.findById(sessionId)
     .populate(populateOptions)
     .exec()
+    
+  return Message.populate(populatedSession, {
+    path: 'messages.user',
+    select: 'firstname isVolunteer picture'
+  })
 }
 
 module.exports = function (io) {
