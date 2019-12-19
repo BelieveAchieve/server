@@ -48,5 +48,15 @@ module.exports = {
         'userEmail': email,
         'resetLink': url
       }, callback)
+  },
+
+  sendPartnerOrgSignupAlert: function (options, callback) {
+    sendEmail(config.mail.receivers.staff, config.mail.senders.noreply, 'UPchieve',
+      config.sendgrid.partnerOrgSignupAlertTemplate, {
+        'name': options.name,
+        'email': options.email,
+        'company': options.company,
+        'upchieveId': options.upchieveId
+      }, callback)
   }
 }

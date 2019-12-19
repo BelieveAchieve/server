@@ -5,6 +5,8 @@ const passport = require('passport')
 const VerificationCtrl = require('../../controllers/VerificationCtrl')
 const ResetPasswordCtrl = require('../../controllers/ResetPasswordCtrl')
 
+const MailService = require('../../services/MailService')
+
 const config = require('../../config.js')
 const User = require('../../models/User.js')
 const School = require('../../models/School.js')
@@ -236,6 +238,16 @@ module.exports = function (app) {
                 })
               } else {
                 if (user.isVolunteer) {
+                  // Send internal email alert if new volunteer is from a partner org
+                  if (user.volunteerPartnerOrg) {
+                    MailService.sendPartnerOrgSignupAlert({
+                      name: `${user.firstname} ${user.lastname}`,
+                      email: user.email,
+                      company: volunteerPartnerOrg,
+                      upchieveId: user._id
+                    })
+                  }
+
                   VerificationCtrl.initiateVerification(
                     {
                       userId: user._id,
