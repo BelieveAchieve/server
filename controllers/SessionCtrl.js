@@ -108,9 +108,9 @@ module.exports = function (socketService) {
 
       this.verifySessionParticipant(session, data.user, new Error('Only session participants are allowed to send messages'))
 
-      session.saveMessage(message)
+      const savedMessage = await session.saveMessage(message)
 
-      socketService.deliverMessage(message, sessionId)
+      socketService.deliverMessage(savedMessage, sessionId)
     },
 
     // verify that a user is a session participant
