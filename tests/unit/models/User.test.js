@@ -434,7 +434,6 @@ test('Test parsed profile Object', t => {
   t.is(parsedData.availability.Saturday["9p"], true)
   t.is(parsedData.availability.Saturday["10p"], true)
   t.is(parsedData.availability.Saturday["11p"], true)
-	t.is(parsedData.hasSchedule, false)
   t.is(parsedData.timezone, 'EST')
 	t.is(parsedData.currentGrade, 'currentGrade')
 	t.is(parsedData.expectedGraduation, 'expectedGraduation')
