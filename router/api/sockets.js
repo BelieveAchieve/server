@@ -91,19 +91,6 @@ module.exports = function (io, sessionStore) {
     // all of this is now blocked for non-participants
     const whiteboardAccessError = new Error('Only session participants can access whiteboard')
 
-    socket.on('canvasLoaded', async function (data) {
-      if (!data || !data.sessionId) return
-
-      await sessionCtrl.verifySessionParticipantBySessionId(
-        data.sessionId,
-        socket.request.user,
-        whiteboardAccessError)
-
-      socket.broadcast.to(data.sessionId).emit('size', {
-        height: data.height
-      })
-    })
-
     socket.on('drawClick', async function (data) {
       if (!data || !data.sessionId) return
 
@@ -242,30 +229,6 @@ module.exports = function (io, sessionStore) {
         y: data.y,
         color: data.color
       })
-    })
-
-    socket.on('insertText', async function (data) {
-      if (!data || !data.sessionId) return
-
-      await sessionCtrl.verifySessionParticipantBySessionId(
-        data.sessionId,
-        socket.request.user,
-        whiteboardAccessError)
-
-      io.to(data.sessionId).emit('text', {
-        text: data.text,
-        x: data.x,
-        y: data.y
-      })
-    })
-
-    socket.on('resetScreen', async function (data) {
-      await sessionCtrl.verifySessionParticipantBySessionId(
-        data.sessionId,
-        socket.request.user,
-        whiteboardAccessError)
-
-      io.to(data.sessionId).emit('reset')
     })
   })
 }
