@@ -228,7 +228,6 @@ const goodUser = new User({
       '11p': true
     }
   },
-  hasSchedule: false,
   timezone: "EST",
   pastSessions: null
 })

@@ -56,7 +56,6 @@ module.exports = {
 
     const volunteerQuery = {
       isVolunteer: true,
-      hasSchedule: true,
       [certifiedSubjectQuery]: true,
       availability: { $exists: true },
       isFakeUser: false,
