@@ -13,11 +13,9 @@ function aggregateAvailabilities (availability, aggAvailabilities) {
       // create headers based on the user's availability object
       if (!aggAvailabilities.daysOfWeek) {
         aggAvailabilities.daysOfWeek = Object.keys(availability)
-        aggAvailabilities.daysOfWeek.shift() // gets rid of $init enum param
       }
       if (!aggAvailabilities.timesOfDay) {
         aggAvailabilities.timesOfDay = Object.keys(availability[day])
-        aggAvailabilities.timesOfDay.shift() // gets rid of $init enum param
       }
       // gets corresponding day and time index inorder to store in aggAvailabilities table
       let dayIndex = aggAvailabilities.daysOfWeek.indexOf(day)
@@ -56,7 +54,6 @@ module.exports = {
 
     const volunteerQuery = {
       isVolunteer: true,
-      hasSchedule: true,
       [certifiedSubjectQuery]: true,
       availability: { $exists: true },
       isFakeUser: false,
@@ -75,7 +72,10 @@ module.exports = {
         return callback(null, err)
       } else {
         aggAvailabilities = users.reduce(function (aggAvailabilities, user) {
-          return aggregateAvailabilities(user.availability, aggAvailabilities)
+          // Convert the user's availability prop from Mongoose object to plain object
+          const userAvailability = user.availability.toObject()
+
+          return aggregateAvailabilities(userAvailability, aggAvailabilities)
         }, aggAvailabilities)
         aggAvailabilities = findMinAndMax(aggAvailabilities)
         return callback(aggAvailabilities, null)

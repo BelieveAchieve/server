@@ -313,7 +313,6 @@ userSchema.methods.parseProfile = function () {
     phone: this.phone,
     preferredContactMethod: this.preferredContactMethod,
     availability: this.availability,
-    hasSchedule: this.hasSchedule,
     timezone: this.timezone,
 
     highschoolName: this.highschoolName,
