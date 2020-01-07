@@ -29,7 +29,6 @@ UPchieve web server
     - [POST /api/session/check](#post-apisessioncheck)
     - [POST /api/training/questions](#post-apitrainingquestions)
     - [POST /api/training/score](#post-apitrainingscore)
-    - [POST /api/calendar/get](#post-apicalendarget)
     - [POST /api/calendar/save](#post-apicalendarsave)
     - [POST /api/feedback](#post-apifeedback)
     - [GET /api/user](#get-apiuser)
@@ -263,14 +262,6 @@ where `ORG_ID` is the key name of the partner organization stored in `config.js`
   "userid": "String",
   "idAnswerMap": "String",
   "category": "String"
-}
-```
-
-### POST /api/calendar/get
-
-```json
-{
-  "userid": "String"
 }
 ```
 
