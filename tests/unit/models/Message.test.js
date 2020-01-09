@@ -231,7 +231,6 @@ const user = new User({
       '11p': true
     }
   },
-  hasSchedule: false,
   timezone: "timezone",
   pastSessions: null
 })

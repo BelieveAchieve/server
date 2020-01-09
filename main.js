@@ -41,7 +41,8 @@ app.use(busboy())
 app.use(
   cors({
     origin: true,
-    credentials: true
+    credentials: true,
+    exposedHeaders: config.NODE_ENV === 'dev' ? ['Date'] : undefined
   })
 )
 // see https://stackoverflow.com/questions/51023943/nodejs-getting-username-of-logged-in-user-within-route

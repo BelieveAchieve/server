@@ -189,10 +189,13 @@ module.exports = function (io, sessionStore) {
     socket.on('dragStart', async function (data) {
       if (!data || !data.sessionId) return
 
-      await sessionCtrl.verifySessionParticipantBySessionId(
-        data.sessionId,
-        socket.request.user,
-        whiteboardAccessError)
+      /**
+       * For now, async session participant verification is disabled for this socket to
+       * prevent drawing data from being sent out-of-order (which caused jagged lines)
+       *
+       * @todo: Verify session participants synchronously with an in-memory object that
+       * maps session IDs to user IDs
+       */
 
       socket.broadcast.to(data.sessionId).emit('dstart', {
         x: data.x,
@@ -204,10 +207,13 @@ module.exports = function (io, sessionStore) {
     socket.on('dragAction', async function (data) {
       if (!data || !data.sessionId) return
 
-      await sessionCtrl.verifySessionParticipantBySessionId(
-        data.sessionId,
-        socket.request.user,
-        whiteboardAccessError)
+      /**
+       * For now, async session participant verification is disabled for this socket to
+       * prevent drawing data from being sent out-of-order (which caused jagged lines)
+       *
+       * @todo: Verify session participants synchronously with an in-memory object that
+       * maps session IDs to user IDs
+       */
 
       socket.broadcast.to(data.sessionId).emit('drag', {
         x: data.x,
@@ -219,10 +225,13 @@ module.exports = function (io, sessionStore) {
     socket.on('dragEnd', async function (data) {
       if (!data || !data.sessionId) return
 
-      await sessionCtrl.verifySessionParticipantBySessionId(
-        data.sessionId,
-        socket.request.user,
-        whiteboardAccessError)
+      /**
+       * For now, async session participant verification is disabled for this socket to
+       * prevent drawing data from being sent out-of-order (which caused jagged lines)
+       *
+       * @todo: Verify session participants synchronously with an in-memory object that
+       * maps session IDs to user IDs
+       */
 
       socket.broadcast.to(data.sessionId).emit('dend', {
         x: data.x,
