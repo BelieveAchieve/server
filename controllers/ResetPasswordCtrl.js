@@ -33,7 +33,7 @@ module.exports = {
             if (err) {
               return done(err)
             }
-            
+
             var token = buf.toString('hex')
             user.passwordResetToken = token
 
