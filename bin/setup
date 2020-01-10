@@ -12,6 +12,12 @@ if [[ "$*" =~ '--verbose' ]]; then
    export VERBOSE=true
 fi
 
+while getopts "yY:" opt; do
+    case $opt in
+    yY) yflag=true ;; # Handle -y
+    esac
+done
+
 step 'Copying config.example.js to config.js'
 if [ -f config.js ]; then
     success '' 'Skipping: config.js found.'
@@ -22,7 +28,7 @@ fi
 step 'Setting up test users'
 printf "\n${RED}Warning${RESET}: This will drop existing users. Continue? (y/N): "
 read -r response
-if [[ "$response" =~ ^[yY]$ ]]; then
+if $yflag || [[ "$response" =~ ^[yY]$ ]]; then
     execute bash bin/seed_test_users.sh
 else
     success '' 'Skipping.'
