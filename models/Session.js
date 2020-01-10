@@ -100,7 +100,11 @@ sessionSchema.methods.saveWhiteboardUrl = function (whiteboardUrl, cb) {
   this.whiteboardUrl = whiteboardUrl
   this.save(function (err) {
     if (cb) {
-      cb(null, session.whiteboardUrl)
+      if (err) {
+        cb(err)
+      } else {
+        cb(null, session.whiteboardUrl)
+      }
     }
   })
 }
