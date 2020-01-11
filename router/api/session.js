@@ -11,7 +11,7 @@ module.exports = function (router, io) {
   const socketService = SocketService(io)
   const sessionCtrl = SessionCtrl(socketService)
 
-  router.route('/session/new').post(async function (req, res) {
+  router.route('/session/new').post(async function (req, res, next) {
     var data = req.body || {}
     var sessionType = data.sessionType
     var sessionSubTopic = data.sessionSubTopic
@@ -26,11 +26,11 @@ module.exports = function (router, io) {
         })
       res.json({ sessionId: session._id })
     } catch (err) {
-      res.json({ err: err.toString() })
+      next(err)
     }
   })
 
-  router.route('/session/end').post(async function (req, res) {
+  router.route('/session/end').post(async function (req, res, next) {
     var data = req.body || {}
     var sessionId = data.sessionId
     var user = req.user
@@ -44,11 +44,11 @@ module.exports = function (router, io) {
       )
       res.json({ sessionId: session._id })
     } catch (err) {
-      res.json({ err: err.toString() })
+      next(err)
     }
   })
 
-  router.route('/session/check').post(async function (req, res) {
+  router.route('/session/check').post(async function (req, res, next) {
     const data = req.body || {}
     const sessionId = data.sessionId
 
@@ -66,7 +66,7 @@ module.exports = function (router, io) {
         })
       }
     } catch (err) {
-      res.json({ err: err.toString() })
+      next(err)
     }
   })
 
@@ -85,7 +85,7 @@ module.exports = function (router, io) {
         })
       }
     } catch (err) {
-      res.json({ err: err.toString() })
+      next(err)
     }
   })
 }

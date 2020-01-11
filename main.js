@@ -62,3 +62,8 @@ require('./router')(app)
 
 // The error handler must be before any other error middleware and after all controllers
 app.use(Sentry.Handlers.errorHandler());
+
+// Send error responses to API requests after they are passed to Sentry
+app.use(['/api', '/auth'], function (err, req, res, next) {
+  res.status(500).json({ err: err.message || err })
+})

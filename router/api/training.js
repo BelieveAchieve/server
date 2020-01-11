@@ -7,7 +7,7 @@ module.exports = function (router) {
       questions
     ) {
       if (err) {
-        res.json({ err: err })
+        next(err)
       } else {
         res.json({
           msg: 'Questions retrieved from database',
@@ -25,7 +25,7 @@ module.exports = function (router) {
       },
       function (err, data) {
         if (err) {
-          res.json({ err: err })
+          next(err)
         } else {
           res.json({
             msg: 'Score calculated and saved',

@@ -6,7 +6,7 @@ const MailService = require('../../services/MailService')
 module.exports = function (app) {
   const router = new express.Router()
 
-  router.route('/send').post(function (req, res) {
+  router.route('/send').post(function (req, res, next) {
     var responseData = req.body.responseData
     var email = config.mail.receivers.contact
 
@@ -17,9 +17,7 @@ module.exports = function (app) {
       },
       function (err) {
         if (err) {
-          res.json({
-            err: err
-          })
+          next(err)
         } else {
           res.json({
             msg: 'Contact form has been sent'
