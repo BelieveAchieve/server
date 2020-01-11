@@ -56,7 +56,7 @@ module.exports = function (router, io) {
       const session = await Session.findById(sessionId).exec()
 
       if (!session) {
-        res.json({
+        res.status(404).json({
           err: 'No session found'
         })
       } else {
@@ -77,7 +77,7 @@ module.exports = function (router, io) {
     try {
       const currentSession = await Session.current(userId)
       if (!currentSession) {
-        res.json({ err: 'No current session' })
+        res.status(404).json({ err: 'No current session' })
       } else {
         res.json({
           sessionId: currentSession._id,
