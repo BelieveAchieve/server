@@ -1,4 +1,5 @@
 var mongoose = require('mongoose')
+const Sentry = require('@sentry/node')
 
 var Message = require('./Message')
 
@@ -105,6 +106,8 @@ sessionSchema.methods.saveWhiteboardUrl = function (whiteboardUrl, cb) {
       } else {
         cb(null, session.whiteboardUrl)
       }
+    } else {
+      Sentry.captureException(err)
     }
   })
 }
