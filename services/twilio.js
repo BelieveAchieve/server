@@ -402,7 +402,7 @@ module.exports = {
       if (numVolunteersNotified === 0) {
         clearInterval(interval)
       }
-    }, 180000, session)
+    }, 120000, session)
 
     // store interval in memory
     getSessionTimeoutFor(session).intervals.push(interval)
