@@ -70,7 +70,7 @@ module.exports = function (router, io) {
     }
   })
 
-  router.route('/session/current').post(async function (req, res) {
+  router.route('/session/current').post(async function (req, res, next) {
     const data = req.body || {}
     const userId = ObjectId(data.user_id)
 
