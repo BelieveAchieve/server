@@ -1,7 +1,7 @@
 var TrainingCtrl = require('../../controllers/TrainingCtrl')
 
 module.exports = function (router) {
-  router.post('/training/questions', function (req, res) {
+  router.post('/training/questions', function (req, res, next) {
     TrainingCtrl.getQuestions({ category: req.body.category }, function (
       err,
       questions
@@ -16,7 +16,7 @@ module.exports = function (router) {
       }
     })
   })
-  router.post('/training/score', function (req, res) {
+  router.post('/training/score', function (req, res, next) {
     TrainingCtrl.getQuizScore(
       {
         userid: req.body.userid,
