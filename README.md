@@ -264,7 +264,6 @@ where `ORG_ID` is the key name of the partner organization stored in `config.js`
 
 ```json
 {
-  "userid": "String",
   "idAnswerMap": "String",
   "category": "String"
 }
