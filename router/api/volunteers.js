@@ -22,7 +22,7 @@ module.exports = function (router) {
 
   router.get('/volunteers/availability/:certifiedSubject',
     passport.isAdmin,
-    function (req, res) {
+    function (req, res, next) {
       var certifiedSubject = req.params.certifiedSubject
       VolunteersCtrl.getVolunteersAvailability(
         {
