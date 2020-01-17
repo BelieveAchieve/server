@@ -335,7 +335,7 @@ module.exports = function (app) {
     })
   })
 
-  router.post('/reset/send', function (req, res) {
+  router.post('/reset/send', function (req, res, next) {
     var email = req.body.email
     if (!email) {
       return res.json({
