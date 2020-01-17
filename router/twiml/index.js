@@ -86,7 +86,7 @@ module.exports = function (app) {
           twiml.message(sessionUrl)
         }
       } catch (err) {
-        next(err)
+        return next(err)
       }
     } else {
       // Handle: Unknown message intent
