@@ -438,10 +438,11 @@ module.exports = function (app) {
               user.save(function (err) {
                 if (err) {
                   next(err)
+                } else {
+                  return res.json({
+                    user: user
+                  })
                 }
-                return res.json({
-                  user: user
-                })
               })
             }
           })
