@@ -64,6 +64,6 @@ require('./router')(app)
 app.use(Sentry.Handlers.errorHandler());
 
 // Send error responses to API requests after they are passed to Sentry
-app.use(['/api', '/auth'], function (err, req, res, next) {
+app.use(['/api', '/auth', '/contact', '/school', '/twiml'], function (err, req, res, next) {
   res.status(500).json({ err: err.message || err })
 })
