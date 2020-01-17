@@ -29,8 +29,8 @@ module.exports = function (socketService) {
 
       socketService.emitNewSession(savedSession)
 
-      await twilioService.beginRegularNotifications(savedSession)
-      await twilioService.beginFailsafeNotifications(savedSession)
+      twilioService.beginRegularNotifications(savedSession)
+      twilioService.beginFailsafeNotifications(savedSession)
 
       return savedSession
     },

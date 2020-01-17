@@ -19,7 +19,7 @@ module.exports = function (router) {
   router.post('/training/score', function (req, res, next) {
     TrainingCtrl.getQuizScore(
       {
-        userid: req.body.userid,
+        userid: req.user._id,
         idAnswerMap: req.body.idAnswerMap,
         category: req.body.category
       },
