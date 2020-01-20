@@ -15,7 +15,7 @@ var numQuestions = {
 const PASS_THRESHOLD = 0.8
 
 // Fisher-Yates shuffle
-function shuffle (origArray) {
+function shuffle(origArray) {
   var array = origArray.slice(0) // clones the array
   var currIndex = array.length
 
@@ -39,17 +39,21 @@ function shuffle (origArray) {
 }
 
 module.exports = {
-  getQuestions: function (options, callback) {
+  getQuestions: function(options, callback) {
     var subcategories = Question.getSubcategories(options.category)
 
-    Question.find({ category: options.category }, function (err, questions) {
+    Question.find({ category: options.category }, function(err, questions) {
       if (err) {
         return callback(err)
       } else if (!subcategories) {
-        return callback(new Error('No subcategories defined for category: ' + options.category))
+        return callback(
+          new Error(
+            'No subcategories defined for category: ' + options.category
+          )
+        )
       } else {
         var randomQuestions = []
-        var questionsBySubcategory = questions.reduce(function (acc, question) {
+        var questionsBySubcategory = questions.reduce(function(acc, question) {
           var subcategory = question.subcategory
           if (acc[subcategory] == null) {
             // If null, subcategory has not been initialized, so create an array with the question in it:
@@ -63,7 +67,7 @@ module.exports = {
         }, {})
 
         // get x unique, random objects from n objects in arrays
-        subcategories.map(function (subcategory) {
+        subcategories.map(function(subcategory) {
           var questions = questionsBySubcategory[subcategory] || []
           questions = shuffle(questions)
           var minQuestions = Math.min(
@@ -81,18 +85,18 @@ module.exports = {
     })
   },
 
-  getQuizScore: function (options, callback) {
+  getQuizScore: function(options, callback) {
     var userid = options.userid
     var idAnswerMap = options.idAnswerMap
     var category = options.category
     var score = 0
     var objIDs = Object.keys(idAnswerMap)
     var idCorrectAnswerMap = {}
-    Question.find({ _id: { $in: objIDs } }, function (err, questions) {
+    Question.find({ _id: { $in: objIDs } }, function(err, questions) {
       if (err) {
         return callback(err)
       } else {
-        questions.forEach(function (question) {
+        questions.forEach(function(question) {
           var correctAnswer = question.correctAnswer
           idCorrectAnswerMap[question._id] = question.correctAnswer
           var userAnswer = idAnswerMap[question._id]
@@ -105,7 +109,7 @@ module.exports = {
         if (percent >= PASS_THRESHOLD) {
           hasPassed = true
         }
-        User.findOne({ _id: userid }, function (err, user) {
+        User.findOne({ _id: userid }, function(err, user) {
           if (err) {
             return callback(err)
           }
@@ -120,7 +124,7 @@ module.exports = {
             tries = 1
           }
           user.certifications[category]['tries'] = tries
-          user.save(function (err, user) {
+          user.save(function(err, user) {
             if (err) {
               callback(err, null)
             } else {

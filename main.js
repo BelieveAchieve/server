@@ -23,7 +23,7 @@ Sentry.init({
 mongoose.connect(config.database, { useNewUrlParser: true })
 var db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
-db.once('open', function () {
+db.once('open', function() {
   console.log('Connected to database')
 })
 
@@ -46,7 +46,7 @@ app.use(
   })
 )
 // see https://stackoverflow.com/questions/51023943/nodejs-getting-username-of-logged-in-user-within-route
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   res.locals.user = req.user || null
   next()
 })
@@ -61,4 +61,4 @@ console.log('Listening on port ' + port)
 require('./router')(app)
 
 // The error handler must be before any other error middleware and after all controllers
-app.use(Sentry.Handlers.errorHandler());
+app.use(Sentry.Handlers.errorHandler())

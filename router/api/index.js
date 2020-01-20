@@ -1,7 +1,7 @@
 var express = require('express')
 var passport = require('../auth/passport')
 
-module.exports = function (app, sessionStore) {
+module.exports = function(app, sessionStore) {
   console.log('API module')
 
   const io = require('./socket-server')(app)

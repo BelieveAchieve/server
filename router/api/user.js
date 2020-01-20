@@ -1,7 +1,7 @@
 var UserCtrl = require('../../controllers/UserCtrl')
 
-module.exports = function (router) {
-  router.route('/user').get(function (req, res) {
+module.exports = function(router) {
+  router.route('/user').get(function(req, res) {
     if (!req.user) {
       return res.json({
         err: 'Client has no authenticated session'
@@ -16,14 +16,17 @@ module.exports = function (router) {
     }
 
     // Return volunteer user
-    req.user.populateForVolunteerStats().execPopulate().then(populatedUser => {
-      return res.json({
-        user: populatedUser.parseProfile()
+    req.user
+      .populateForVolunteerStats()
+      .execPopulate()
+      .then(populatedUser => {
+        return res.json({
+          user: populatedUser.parseProfile()
+        })
       })
-    })
   })
 
-  router.put('/user', function (req, res) {
+  router.put('/user', function(req, res) {
     var data = req.body || {}
     UserCtrl.update(
       {
@@ -62,7 +65,7 @@ module.exports = function (router) {
           pastSessions: data.pastSessions
         }
       },
-      function (err, parsedUser) {
+      function(err, parsedUser) {
         if (err) {
           res.json({ err: err })
         } else {

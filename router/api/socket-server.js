@@ -25,7 +25,7 @@ const createServer = app => {
   }
 }
 
-module.exports = function (app) {
+module.exports = function(app) {
   const server = createServer(app)
 
   const port = config.socketsPort

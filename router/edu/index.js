@@ -14,7 +14,8 @@ edu.set('layout', 'layouts/edu')
 edu.use(expressLayouts)
 edu.locals = {
   homeLink: config.NODE_ENV === 'dev' ? 'http://localhost:8080' : '/',
-  frontEndRoot: config.NODE_ENV === 'dev' ? new URL('http://localhost:8080') : null
+  frontEndRoot:
+    config.NODE_ENV === 'dev' ? new URL('http://localhost:8080') : null
 }
 
 // GET /edu
@@ -49,7 +50,10 @@ edu.route('/questions').get(async (req, res) => {
 
     // question._id --> URL
     const imagePaths = questions.reduce((map, question) => {
-      map[question._id] = frontEndPath(question.imageSrc, edu.locals.frontEndRoot)
+      map[question._id] = frontEndPath(
+        question.imageSrc,
+        edu.locals.frontEndRoot
+      )
       return map
     }, {})
 

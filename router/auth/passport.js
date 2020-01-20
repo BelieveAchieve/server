@@ -3,12 +3,12 @@ var LocalStrategy = require('passport-local').Strategy
 
 var User = require('../../models/User.js')
 
-passport.serializeUser(function (user, done) {
+passport.serializeUser(function(user, done) {
   done(null, user.id)
 })
 
-passport.deserializeUser(function (id, done) {
-  User.findById(id, function (err, user) {
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user) {
     if (err || !user) {
       return done(err, user)
     }
@@ -23,8 +23,8 @@ passport.use(
       usernameField: 'email',
       passwordField: 'password'
     },
-    function (email, password, done) {
-      User.findOne({ email: email }, '+password', function (err, user) {
+    function(email, password, done) {
+      User.findOne({ email: email }, '+password', function(err, user) {
         if (err) {
           return done(err)
         }
@@ -32,7 +32,7 @@ passport.use(
           return done(null, false)
         }
 
-        user.verifyPassword(password, function (err, user) {
+        user.verifyPassword(password, function(err, user) {
           if (err) {
             done(err)
           } else {

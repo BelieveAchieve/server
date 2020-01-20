@@ -5,40 +5,42 @@
  */
 const mongoose = require('mongoose')
 
-const notificationSchema = new mongoose.Schema({
-  volunteer: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+const notificationSchema = new mongoose.Schema(
+  {
+    volunteer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    sentAt: {
+      type: Date,
+      default: Date.now
+    },
+    type: {
+      type: String,
+      enum: ['REGULAR', 'FAILSAFE'],
+      default: 'REGULAR'
+    },
+    method: {
+      type: String,
+      enum: ['SMS', 'VOICE', 'EMAIL']
+    },
+    wasSuccessful: {
+      type: Boolean,
+      default: false
+    },
+    // Message ID returned by service, such as Twilio
+    messageId: String
   },
-  sentAt: {
-    type: Date,
-    default: Date.now
-  },
-  type: {
-    type: String,
-    enum: ['REGULAR', 'FAILSAFE'],
-    default: 'REGULAR'
-  },
-  method: {
-    type: String,
-    enum: ['SMS', 'VOICE', 'EMAIL']
-  },
-  wasSuccessful: {
-    type: Boolean,
-    default: false
-  },
-  // Message ID returned by service, such as Twilio
-  messageId: String
-},
-{
-  toJSON: {
-    virtuals: true
-  },
+  {
+    toJSON: {
+      virtuals: true
+    },
 
-  toObject: {
-    virtuals: true
+    toObject: {
+      virtuals: true
+    }
   }
-})
+)
 
 notificationSchema.virtual('session', {
   ref: 'Session',

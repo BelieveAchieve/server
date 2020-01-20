@@ -12,7 +12,7 @@ const User = require('../../models/User.js')
 const School = require('../../models/School.js')
 
 // Validation functions
-function checkPassword (password) {
+function checkPassword(password) {
   if (password.length < 8) {
     return 'Password must be 8 characters or longer'
   }
@@ -42,7 +42,7 @@ function checkPassword (password) {
   return true
 }
 
-module.exports = function (app) {
+module.exports = function(app) {
   console.log('Auth module')
 
   require('./passport')
@@ -53,7 +53,7 @@ module.exports = function (app) {
 
   var router = new express.Router()
 
-  router.get('/logout', function (req, res) {
+  router.get('/logout', function(req, res) {
     req.session.destroy()
     req.logout()
     res.json({
@@ -64,7 +64,7 @@ module.exports = function (app) {
   router.post(
     '/login',
     passport.authenticate('local'), // Delegate auth logic to passport middleware
-    function (req, res) {
+    function(req, res) {
       // If successfully authed, return user object (otherwise 401 is returned from middleware)
       res.json({
         user: req.user.parseProfile()
@@ -72,7 +72,7 @@ module.exports = function (app) {
     }
   )
 
-  router.post('/register/checkcred', function (req, res) {
+  router.post('/register/checkcred', function(req, res) {
     var email = req.body.email
 
     var password = req.body.password
@@ -91,7 +91,7 @@ module.exports = function (app) {
       })
     }
 
-    User.find({ email: email }, function (req, users) {
+    User.find({ email: email }, function(req, users) {
       if (users.length === 0) {
         return res.json({
           checked: true
@@ -104,7 +104,7 @@ module.exports = function (app) {
     })
   })
 
-  router.post('/register', function (req, res) {
+  router.post('/register', function(req, res) {
     var isVolunteer = req.body.isVolunteer
 
     var email = req.body.email
@@ -199,104 +199,106 @@ module.exports = function (app) {
       })
     })
 
-    promise.then(({ isVolunteer, school }) => {
-      const user = new User()
-      user.email = email
-      user.isVolunteer = isVolunteer
-      user.registrationCode = code
-      user.volunteerPartnerOrg = volunteerPartnerOrg
-      user.approvedHighschool = school
-      user.college = college
-      user.phonePretty = phone
-      user.favoriteAcademicSubject = favoriteAcademicSubject
-      user.firstname = firstName
-      user.lastname = lastName
-      user.verified = !isVolunteer // Currently only volunteers need to verify their email
+    promise
+      .then(({ isVolunteer, school }) => {
+        const user = new User()
+        user.email = email
+        user.isVolunteer = isVolunteer
+        user.registrationCode = code
+        user.volunteerPartnerOrg = volunteerPartnerOrg
+        user.approvedHighschool = school
+        user.college = college
+        user.phonePretty = phone
+        user.favoriteAcademicSubject = favoriteAcademicSubject
+        user.firstname = firstName
+        user.lastname = lastName
+        user.verified = !isVolunteer // Currently only volunteers need to verify their email
 
-      user.hashPassword(password, function (err, hash) {
-        user.password = hash // Note the salt is embedded in the final hash
+        user.hashPassword(password, function(err, hash) {
+          user.password = hash // Note the salt is embedded in the final hash
 
-        if (err) {
-          res.json({
-            err: 'Could not hash password'
-          })
-          return
-        }
-
-        user.save(function (err) {
           if (err) {
             res.json({
-              err: err.message
+              err: 'Could not hash password'
             })
-          } else {
-            req.login(user, function (err) {
-              if (err) {
-                console.log(err)
-                res.json({
-                  // msg: msg,
-                  err: err
-                })
-              } else {
-                if (user.isVolunteer) {
-                  // Send internal email alert if new volunteer is from a partner org
-                  if (user.volunteerPartnerOrg) {
-                    MailService.sendPartnerOrgSignupAlert({
-                      name: `${user.firstname} ${user.lastname}`,
-                      email: user.email,
-                      company: volunteerPartnerOrg,
-                      upchieveId: user._id
-                    })
-                  }
+            return
+          }
 
-                  VerificationCtrl.initiateVerification(
-                    {
-                      userId: user._id,
-                      email: user.email
-                    },
-                    function (err, email) {
-                      var msg
-                      if (err) {
-                        msg =
-                          'Registration successful. Error sending verification email: ' +
-                          err
-                      } else {
-                        msg =
-                          'Registration successful. Verification email sent to ' +
-                          email
-                      }
-
-                      req.login(user, function (err) {
-                        if (err) {
-                          res.json({
-                            msg: msg,
-                            err: err
-                          })
-                        } else {
-                          res.json({
-                            msg: msg,
-                            user: user
-                          })
-                        }
-                      })
-                    }
-                  )
-                } else {
+          user.save(function(err) {
+            if (err) {
+              res.json({
+                err: err.message
+              })
+            } else {
+              req.login(user, function(err) {
+                if (err) {
+                  console.log(err)
                   res.json({
                     // msg: msg,
-                    user: user
+                    err: err
                   })
+                } else {
+                  if (user.isVolunteer) {
+                    // Send internal email alert if new volunteer is from a partner org
+                    if (user.volunteerPartnerOrg) {
+                      MailService.sendPartnerOrgSignupAlert({
+                        name: `${user.firstname} ${user.lastname}`,
+                        email: user.email,
+                        company: volunteerPartnerOrg,
+                        upchieveId: user._id
+                      })
+                    }
+
+                    VerificationCtrl.initiateVerification(
+                      {
+                        userId: user._id,
+                        email: user.email
+                      },
+                      function(err, email) {
+                        var msg
+                        if (err) {
+                          msg =
+                            'Registration successful. Error sending verification email: ' +
+                            err
+                        } else {
+                          msg =
+                            'Registration successful. Verification email sent to ' +
+                            email
+                        }
+
+                        req.login(user, function(err) {
+                          if (err) {
+                            res.json({
+                              msg: msg,
+                              err: err
+                            })
+                          } else {
+                            res.json({
+                              msg: msg,
+                              user: user
+                            })
+                          }
+                        })
+                      }
+                    )
+                  } else {
+                    res.json({
+                      // msg: msg,
+                      user: user
+                    })
+                  }
                 }
-              }
-            })
-          }
+              })
+            }
+          })
         })
       })
-    }).catch((err) => {
-      res.json({ err: err })
-    })
+      .catch(err => {
+        res.json({ err: err })
+      })
   })
 
-  router.get('/org-manifest', function (req, res) {
+  router.get('/org-manifest', function(req, res) {
     const orgId = req.query.orgId
 
     if (!orgId) {
@@ -324,7 +326,7 @@ module.exports = function (app) {
     return res.json({ orgManifest })
   })
 
-  router.post('/register/check', function (req, res) {
+  router.post('/register/check', function(req, res) {
     var code = req.body.code
     console.log(code)
     if (!code) {
@@ -333,7 +335,7 @@ module.exports = function (app) {
       })
       return
     }
-    User.checkCode(code, function (err, data) {
+    User.checkCode(code, function(err, data) {
       if (err) {
         res.json({
           err: err
@@ -346,7 +348,7 @@ module.exports = function (app) {
     })
   })
 
-  router.post('/reset/send', function (req, res) {
+  router.post('/reset/send', function(req, res) {
     var email = req.body.email
     if (!email) {
       return res.json({
@@ -357,7 +359,7 @@ module.exports = function (app) {
       {
         email: email
       },
-      function (err, data) {
+      function(err, data) {
         if (err) {
           res.json({
             err: err
@@ -371,7 +373,7 @@ module.exports = function (app) {
     )
   })
 
-  router.post('/reset/confirm', function (req, res) {
+  router.post('/reset/confirm', function(req, res) {
     var email = req.body.email
 
     var password = req.body.password
@@ -439,20 +441,20 @@ module.exports = function (app) {
         token: token,
         email: email
       },
-      function (err, user) {
+      function(err, user) {
         if (err) {
           res.json({
             err: err
           })
         } else {
-          user.hashPassword(password, function (err, hash) {
+          user.hashPassword(password, function(err, hash) {
             if (err) {
               res.json({
                 err: 'Could not hash password'
               })
             } else {
               user.password = hash // Note the salt is embedded in the final hash
-              user.save(function (err) {
+              user.save(function(err) {
                 if (err) {
                   return res.json({
                     err: 'Could not save user'

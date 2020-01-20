@@ -6,14 +6,14 @@ var MailService = require('../services/MailService')
 var User = require('../models/User')
 
 module.exports = {
-  initiateReset: function (options, callback) {
+  initiateReset: function(options, callback) {
     var email = options.email
 
     async.waterfall(
       [
         // Find the user whose password is to be reset
-        function (done) {
-          User.findOne({ email: email }, function (err, user) {
+        function(done) {
+          User.findOne({ email: email }, function(err, user) {
             if (err) {
               console.log(`ERROR: ${err}`)
               return done(err)
@@ -28,8 +28,8 @@ module.exports = {
         },
 
         // Generate the token and save token and user email to database
-        function (user, done) {
-          crypto.randomBytes(16, function (err, buf) {
+        function(user, done) {
+          crypto.randomBytes(16, function(err, buf) {
             if (err) {
               return done(err)
             }
@@ -37,20 +37,20 @@ module.exports = {
             var token = buf.toString('hex')
             user.passwordResetToken = token
 
-            user.save(function (err) {
+            user.save(function(err) {
               done(err, token, user.email)
             })
           })
         },
 
         // Send an email
-        function (token, email, done) {
+        function(token, email, done) {
           MailService.sendReset(
             {
               email: email,
               token: token
             },
-            function (err) {
+            function(err) {
               done(err, email)
             }
           )
@@ -60,15 +60,15 @@ module.exports = {
     )
   },
 
-  finishReset: function (options, callback) {
+  finishReset: function(options, callback) {
     var email = options.email
     var token = options.token
 
     async.waterfall(
       [
         // Find the user whose password is being reset and check if email matches
-        function (done) {
-          User.findOne({ passwordResetToken: token }, function (err, user) {
+        function(done) {
+          User.findOne({ passwordResetToken: token }, function(err, user) {
             if (!user) {
               return done(
                 new Error('No user found with that password reset token')
@@ -84,9 +84,9 @@ module.exports = {
           })
         },
 
-        function (user, done) {
+        function(user, done) {
           user.passwordResetToken = undefined
-          user.save(function (err) {
+          user.save(function(err) {
             done(err, user)
           })
         }

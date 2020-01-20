@@ -7,7 +7,7 @@ var config = require('./config')
 mongoose.connect(config.database, { useNewUrlParser: true })
 var db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
-db.once('open', function () {
+db.once('open', function() {
   console.log('Connected to database')
   var collection = db.collection('question')
   var jsonArr = [
@@ -27,7 +27,7 @@ db.once('open', function () {
     } catch (e) {
       console.log(e)
     }
-    collection.insertMany(json, function (err, result) {
+    collection.insertMany(json, function(err, result) {
       console.log(json)
       if (err) {
         throw new Error(err)

@@ -9,7 +9,7 @@ const userSockets = {} // userId => socket
  * @param sessionId
  * @returns the session object
  */
-async function getSessionData (sessionId) {
+async function getSessionData(sessionId) {
   const populateOptions = [
     { path: 'student', select: 'firstname isVolunteer' },
     { path: 'volunteer', select: 'firstname isVolunteer' }
@@ -18,17 +18,17 @@ async function getSessionData (sessionId) {
   const populatedSession = await Session.findById(sessionId)
     .populate(populateOptions)
     .exec()
-    
+
   return Message.populate(populatedSession, {
     path: 'messages.user',
     select: 'firstname isVolunteer picture'
   })
 }
 
-module.exports = function (io) {
+module.exports = function(io) {
   return {
     // to be called by router/api/sockets.js when user connects socket and authenticates
-    connectUser: async function (userId, socket) {
+    connectUser: async function(userId, socket) {
       userSockets[userId] = socket
 
       // query database to see if user is a volunteer
@@ -39,22 +39,23 @@ module.exports = function (io) {
       }
 
       // query all active sessions in which user is a participant
-      const activeSessions = await Session.find({
-        $or: [
-          { student: userId },
-          { volunteer: userId }
-        ],
-        endedAt: { $exists: false }
-      }, '_id')
-        .exec()
+      const activeSessions = await Session.find(
+        {
+          $or: [{ student: userId }, { volunteer: userId }],
+          endedAt: { $exists: false }
+        },
+        '_id'
+      ).exec()
 
       // join all rooms corresponding to active sessions
-      activeSessions.forEach((session) => socket.join(session._id))
+      activeSessions.forEach(session => socket.join(session._id))
     },
 
     // to be called by router/api/sockets.js when user socket disconnects
-    disconnectUser: function (socket) {
-      const userId = Object.keys(userSockets).find((id) => userSockets[id] === socket)
+    disconnectUser: function(socket) {
+      const userId = Object.keys(userSockets).find(
+        id => userSockets[id] === socket
+      )
 
       if (userId) {
         delete userSockets[userId]
@@ -62,12 +63,12 @@ module.exports = function (io) {
     },
 
     // update the list of sessions displayed on the volunteer web page
-    updateSessionList: async function () {
+    updateSessionList: async function() {
       const sessions = await Session.getUnfulfilledSessions()
       io.in('volunteers').emit('sessions', sessions)
     },
 
-    emitNewSession: async function (session) {
+    emitNewSession: async function(session) {
       io.in('volunteers').emit('new-session', {
         _id: session._id,
         type: session.type,
@@ -76,14 +77,14 @@ module.exports = function (io) {
       await this.updateSessionList()
     },
 
-    emitSessionEnd: async function (sessionId) {
+    emitSessionEnd: async function(sessionId) {
       const session = await getSessionData(sessionId)
       io.in(sessionId).emit('session-change', session)
       io.in('volunteers').emit('session-end', sessionId)
       await this.updateSessionList()
     },
 
-    joinUserToSession: async function (sessionId, userId, socket) {
+    joinUserToSession: async function(sessionId, userId, socket) {
       console.log('Joining session...', sessionId)
 
       // keep reference to old socket so we can disconnect it if we need to
@@ -108,14 +109,14 @@ module.exports = function (io) {
       }
     },
 
-    bump: function (socket, data, err) {
+    bump: function(socket, data, err) {
       console.log('Could not join session')
       console.log(err)
       io.emit('error', err.toString())
       socket.emit('bump', data, err.toString())
     },
 
-    deliverMessage: function (message, sessionId) {
+    deliverMessage: function(message, sessionId) {
       io.to(sessionId).emit('messageSend', {
         contents: message.contents,
         name: message.user.firstname,

@@ -6,8 +6,8 @@
     "start": "node main.js",
     "dev": "nodemon main",
     "test": "nyc ava --verbose",
-    "format": "prettier-standard '*.js' '{controllers,models,router,services,seeds}/**/*.js'",
-    "lint-standard": "eslint ."
+    "lint": "eslint '*.js' '{controllers,models,router,services,seeds}/**/*.js' --fix",
+    "lint:prod": "eslint '*.js' '{controllers,models,router,services,seeds}/**/*.js' --max-warnings 0"
   },
   "nyc": {
     "check-coverage": true,
@@ -73,13 +73,14 @@
   },
   "eslintConfig": {
     "extends": [
-      "standard"
+      "prettier-standard"
     ],
     "rules": {
       "handle-callback-err": [
         "error",
         "^(err|error)$"
-      ]
+      ],
+      "no-debugger": "warn"
     }
   },
   "standard": {
