@@ -26,7 +26,7 @@ module.exports = function(router) {
       })
   })
 
-  router.put('/user', function(req, res) {
+  router.put('/user', function(req, res, next) {
     var data = req.body || {}
     UserCtrl.update(
       {
@@ -67,7 +67,7 @@ module.exports = function(router) {
       },
       function(err, parsedUser) {
         if (err) {
-          res.json({ err: err })
+          next(err)
         } else {
           res.json({
             user: parsedUser

@@ -7,14 +7,12 @@ const School = require('../../models/School')
 module.exports = function(app) {
   const router = new express.Router()
 
-  router.route('/search').get(function(req, res) {
+  router.route('/search').get(function(req, res, next) {
     const q = req.query.q
 
     SchoolCtrl.search(q, function(err, results) {
       if (err) {
-        res.json({
-          err: err
-        })
+        next(err)
       } else {
         res.json({
           results: results
@@ -24,7 +22,7 @@ module.exports = function(app) {
   })
 
   // route to add an email to the list for notifying when approved
-  router.route('/approvalnotify').post(function(req, res) {
+  router.route('/approvalnotify').post(function(req, res, next) {
     const schoolUpchieveId = req.body.schoolUpchieveId
 
     const email = req.body.email
@@ -35,9 +33,7 @@ module.exports = function(app) {
       { runValidators: true },
       function(err, school) {
         if (err) {
-          res.json({
-            err: err
-          })
+          next(err)
         } else {
           res.json({
             schoolId: school.upchieveId
@@ -48,12 +44,12 @@ module.exports = function(app) {
   })
 
   // Check if a school is approved
-  router.route('/check').post(function(req, res) {
+  router.route('/check').post(function(req, res, next) {
     const schoolUpchieveId = req.body.schoolUpchieveId
 
     School.findByUpchieveId(schoolUpchieveId, function(err, school) {
       if (err) {
-        res.json({ err: err })
+        next(err)
       } else {
         res.json({ approved: school.isApproved })
       }
@@ -64,14 +60,14 @@ module.exports = function(app) {
   router
     .route('/studentusers/:schoolUpchieveId')
     .all(passport.isAdmin)
-    .get(function(req, res) {
+    .get(function(req, res, next) {
       const upchieveId = req.params.schoolUpchieveId
 
       School.findByUpchieveId(upchieveId)
         .populate('studentUsers')
         .exec(function(err, school) {
           if (err) {
-            res.json({ err: err })
+            next(err)
           } else {
             res.json({
               upchieveId: school.upchieveId,
