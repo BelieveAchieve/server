@@ -107,7 +107,9 @@ sessionSchema.methods.saveWhiteboardUrl = function (whiteboardUrl, cb) {
         cb(null, session.whiteboardUrl)
       }
     } else {
-      Sentry.captureException(err)
+      if (err) {
+        Sentry.captureException(err)
+      }
     }
   })
 }
