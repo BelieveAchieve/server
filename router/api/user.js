@@ -3,7 +3,7 @@ var UserCtrl = require('../../controllers/UserCtrl')
 module.exports = function(router) {
   router.route('/user').get(function(req, res) {
     if (!req.user) {
-      return res.json({
+      return res.status(401).json({
         err: 'Client has no authenticated session'
       })
     }

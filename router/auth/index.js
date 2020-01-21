@@ -79,7 +79,7 @@ module.exports = function(app) {
     var password = req.body.password
 
     if (!email || !password) {
-      return res.json({
+      return res.status(422).json({
         err: 'Must supply an email and password for registration'
       })
     }
@@ -87,7 +87,7 @@ module.exports = function(app) {
     // Verify password for registration
     let checkResult = checkPassword(password)
     if (checkResult !== true) {
-      return res.json({
+      return res.status(422).json({
         err: checkResult
       })
     }
@@ -98,7 +98,7 @@ module.exports = function(app) {
           checked: true
         })
       } else {
-        return res.json({
+        return res.status(409).json({
           err: 'The email address you entered is already in use'
         })
       }
@@ -131,13 +131,13 @@ module.exports = function(app) {
     var terms = req.body.terms
 
     if (!terms) {
-      return res.json({
+      return res.status(422).json({
         err: 'Must accept the user agreement'
       })
     }
 
     if (!email || !password) {
-      return res.json({
+      return res.status(422).json({
         err: 'Must supply an email and password for registration'
       })
     }
@@ -148,7 +148,7 @@ module.exports = function(app) {
       const orgManifest = allOrgManifests[volunteerPartnerOrg]
 
       if (!orgManifest) {
-        return res.json({
+        return res.status(422).json({
           err: 'Invalid volunteer partner organization'
         })
       }
@@ -159,7 +159,7 @@ module.exports = function(app) {
       if (partnerOrgDomains && partnerOrgDomains.length) {
         const userEmailDomain = email.split('@')[1]
         if (partnerOrgDomains.indexOf(userEmailDomain) === -1) {
-          return res.json({
+          return res.status(422).json({
             err: 'Invalid email domain for volunteer partner organization'
           })
         }
@@ -169,7 +169,7 @@ module.exports = function(app) {
     // Verify password for registration
     let checkResult = checkPassword(password)
     if (checkResult !== true) {
-      return res.json({
+      return res.status(422).json({
         err: checkResult
       })
     }
@@ -293,7 +293,7 @@ module.exports = function(app) {
     const orgId = req.query.orgId
 
     if (!orgId) {
-      return res.json({
+      return res.status(422).json({
         err: 'Missing orgId query string'
       })
     }
@@ -301,7 +301,7 @@ module.exports = function(app) {
     const allOrgManifests = config.orgManifests
 
     if (!allOrgManifests) {
-      return res.json({
+      return res.status(422).json({
         err: 'Missing orgManifests in config'
       })
     }
@@ -309,7 +309,7 @@ module.exports = function(app) {
     const orgManifest = allOrgManifests[orgId]
 
     if (!orgManifest) {
-      return res.json({
+      return res.status(404).json({
         err: `No org manifest found for orgId "${orgId}"`
       })
     }
@@ -321,7 +321,7 @@ module.exports = function(app) {
     var code = req.body.code
     console.log(code)
     if (!code) {
-      res.json({
+      res.status(422).json({
         err: 'No registration code given'
       })
       return
@@ -340,7 +340,7 @@ module.exports = function(app) {
   router.post('/reset/send', function(req, res, next) {
     var email = req.body.email
     if (!email) {
-      return res.json({
+      return res.status(422).json({
         err: 'Must supply an email for password reset'
       })
     }
@@ -370,26 +370,26 @@ module.exports = function(app) {
     var token = req.body.token
 
     if (!token) {
-      return res.json({
+      return res.status(422).json({
         err: 'No password reset token given'
       })
     } else if (!email || !password) {
-      return res.json({
+      return res.status(422).json({
         err: 'Must supply an email and password for password reset'
       })
     } else if (!newpassword) {
-      return res.json({
+      return res.status(422).json({
         err: 'Must reenter password for password reset'
       })
     } else if (newpassword !== password) {
-      return res.json({
+      return res.status(422).json({
         err: 'Passwords do not match'
       })
     }
 
     // Verify password for password reset
     if (password.length < 8) {
-      return res.json({
+      return res.status(422).json({
         err: 'Password must be 8 characters or longer'
       })
     }
@@ -408,17 +408,17 @@ module.exports = function(app) {
     }
 
     if (numUpper === 0) {
-      return res.json({
+      return res.status(422).json({
         err: 'Password must contain at least one uppercase letter'
       })
     }
     if (numLower === 0) {
-      return res.json({
+      return res.status(422).json({
         err: 'Password must contain at least one lowercase letter'
       })
     }
     if (numNumber === 0) {
-      return res.json({
+      return res.status(422).json({
         err: 'Password must contain at least one number'
       })
     }
