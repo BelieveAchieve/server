@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node main.js",
     "dev": "nodemon main",
+    "dev:autolint": "nodemon main --exec 'npm run lint && node'",
     "test": "nyc ava --verbose",
     "lint": "eslint '*.js' '{controllers,models,router,services,seeds}/**/*.js' --fix",
     "lint:prod": "eslint '*.js' '{controllers,models,router,services,seeds}/**/*.js' --max-warnings 0"
