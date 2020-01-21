@@ -5,7 +5,7 @@ module.exports = function (router) {
     var userId = req.user && req.user._id
 
     if (!userId) {
-      return res.json({
+      return res.status(401).json({
         err: 'Must be authenticated to send verification email'
       })
     }

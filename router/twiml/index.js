@@ -43,7 +43,7 @@ module.exports = function (app) {
     const incomingMessage = req.body.Body
     const incomingPhoneNumber = req.body.From
 
-    if (!incomingPhoneNumber) return res.json({ err: 'Error: Missing phone number' })
+    if (!incomingPhoneNumber) return res.status(422).json({ err: 'Error: Missing phone number' })
 
     /**
      * If a volunteer responds "Yes" to a text notification, send
