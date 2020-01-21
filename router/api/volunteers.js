@@ -4,13 +4,13 @@ var passport = require('../auth/passport')
 module.exports = function (router) {
   router.get('/volunteers',
     passport.isAdmin,
-    function (req, res) {
+    function (req, res, next) {
       VolunteersCtrl.getVolunteers(function (
         volunteers,
         err
       ) {
         if (err) {
-          res.json({ err: err })
+          next(err)
         } else {
           res.json({
             msg: 'Users retreived from database',
@@ -22,7 +22,7 @@ module.exports = function (router) {
 
   router.get('/volunteers/availability/:certifiedSubject',
     passport.isAdmin,
-    function (req, res) {
+    function (req, res, next) {
       var certifiedSubject = req.params.certifiedSubject
       VolunteersCtrl.getVolunteersAvailability(
         {
@@ -33,7 +33,7 @@ module.exports = function (router) {
           err
         ) {
           if (err) {
-            res.json({ err: err })
+            next(err)
           } else {
             res.json({
               msg: 'Users retreived from database',

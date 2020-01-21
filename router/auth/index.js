@@ -1,6 +1,7 @@
 const express = require('express')
 const flash = require('express-flash')
 const passport = require('passport')
+const Sentry = require('@sentry/node')
 
 const VerificationCtrl = require('../../controllers/VerificationCtrl')
 const ResetPasswordCtrl = require('../../controllers/ResetPasswordCtrl')
@@ -104,7 +105,7 @@ module.exports = function (app) {
     })
   })
 
-  router.post('/register', function (req, res) {
+  router.post('/register', function (req, res, next) {
     var isVolunteer = req.body.isVolunteer
 
     var email = req.body.email
@@ -217,25 +218,17 @@ module.exports = function (app) {
         user.password = hash // Note the salt is embedded in the final hash
 
         if (err) {
-          res.json({
-            err: 'Could not hash password'
-          })
+          next(err)
           return
         }
 
         user.save(function (err) {
           if (err) {
-            res.json({
-              err: err.message
-            })
+            next(err)
           } else {
             req.login(user, function (err) {
               if (err) {
-                console.log(err)
-                res.json({
-                  // msg: msg,
-                  err: err
-                })
+                next(err)
               } else {
                 if (user.isVolunteer) {
                   // Send internal email alert if new volunteer is from a partner org
@@ -259,6 +252,7 @@ module.exports = function (app) {
                         msg =
                           'Registration successful. Error sending verification email: ' +
                           err
+                        Sentry.captureException(err)
                       } else {
                         msg =
                           'Registration successful. Verification email sent to ' +
@@ -267,10 +261,7 @@ module.exports = function (app) {
 
                       req.login(user, function (err) {
                         if (err) {
-                          res.json({
-                            msg: msg,
-                            err: err
-                          })
+                          next(err)
                         } else {
                           res.json({
                             msg: msg,
@@ -292,7 +283,7 @@ module.exports = function (app) {
         })
       })
     }).catch((err) => {
-      res.json({ err: err })
+      next(err)
     })
   })
 
@@ -324,7 +315,7 @@ module.exports = function (app) {
     return res.json({ orgManifest })
   })
 
-  router.post('/register/check', function (req, res) {
+  router.post('/register/check', function (req, res, next) {
     var code = req.body.code
     console.log(code)
     if (!code) {
@@ -335,9 +326,7 @@ module.exports = function (app) {
     }
     User.checkCode(code, function (err, data) {
       if (err) {
-        res.json({
-          err: err
-        })
+        next(err)
       } else {
         res.json({
           valid: data.studentCode || data.volunteerCode
@@ -346,7 +335,7 @@ module.exports = function (app) {
     })
   })
 
-  router.post('/reset/send', function (req, res) {
+  router.post('/reset/send', function (req, res, next) {
     var email = req.body.email
     if (!email) {
       return res.status(422).json({
@@ -359,9 +348,7 @@ module.exports = function (app) {
       },
       function (err, data) {
         if (err) {
-          res.json({
-            err: err
-          })
+          next(err)
         } else {
           res.json({
             msg: 'Password reset email sent'
@@ -371,7 +358,7 @@ module.exports = function (app) {
     )
   })
 
-  router.post('/reset/confirm', function (req, res) {
+  router.post('/reset/confirm', function (req, res, next) {
     var email = req.body.email
 
     var password = req.body.password
@@ -441,26 +428,21 @@ module.exports = function (app) {
       },
       function (err, user) {
         if (err) {
-          res.json({
-            err: err
-          })
+          next(err)
         } else {
           user.hashPassword(password, function (err, hash) {
             if (err) {
-              res.json({
-                err: 'Could not hash password'
-              })
+              next(err)
             } else {
               user.password = hash // Note the salt is embedded in the final hash
               user.save(function (err) {
                 if (err) {
+                  next(err)
+                } else {
                   return res.json({
-                    err: 'Could not save user'
+                    user: user
                   })
                 }
-                return res.json({
-                  user: user
-                })
               })
             }
           })
