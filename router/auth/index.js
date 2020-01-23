@@ -318,22 +318,19 @@ module.exports = function(app) {
   })
 
   router.post('/register/check', function(req, res, next) {
-    var code = req.body.code
-    console.log(code)
+    const code = req.body.code
+
     if (!code) {
       res.status(422).json({
         err: 'No registration code given'
       })
       return
     }
-    User.checkCode(code, function(err, data) {
-      if (err) {
-        next(err)
-      } else {
-        res.json({
-          valid: data.studentCode || data.volunteerCode
-        })
-      }
+
+    const isVolunteerCode = User.checkCode(code)
+
+    res.json({
+      isValid: isVolunteerCode
     })
   })
 
