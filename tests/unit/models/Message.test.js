@@ -3,11 +3,10 @@ const Message = require('../../../models//Message')
 const User = require('../../../models/User')
 
 const user = new User({
+  email: 'email@email.com',
+  password: 'password',
 
-	email: "email@email.com",
-  password: "password",
-
-  verified:true,
+  verified: true,
   verificationToken: 'verificationToken',
   registrationCode: 'registrationCode',
   passwordResetToken: 'passwordResetToken',
@@ -15,37 +14,12 @@ const user = new User({
   // Profile data
   firstname: 'firstname',
   lastname: 'lastname',
-  nickname: 'nickname',
-  serviceInterests: 'serviceInterests',
-  picture: 'picture',
-  birthdate: 'birthdate',
-  gender: 'gender',
-  race: 'race',
-  groupIdentification: 'groupId1',
-  computerAccess: 'computerAccess',
-  preferredTimes: '10:00am',
   phone: 5555555555,
 
-  highschool: 'highschool',
-  currentGrade: 'currentGrade',
-  expectedGraduation: 'expectedGraduation',
-  difficultAcademicSubject: 'difficultAcademicSubject',
-
-  difficultCollegeProcess: ['yes'],
-  highestLevelEducation: ['highestLevelEducation'],
-  hasGuidanceCounselor: 'no',
   favoriteAcademicSubject: 'favoriteAcademicSubject',
-  gpa: 'gpa',
-  collegeApplicationsText: 'collegeApplicationsText',
-  commonCollegeDocs: ['commonCollegeDocs'],
   college: 'college',
-  academicInterestsText: 'academicInterestsText',
-  testScoresText: 'testScoresText',
-  advancedCoursesText: 'advancedCoursesText',
-  extracurricularActivitesText: 'extracurricularActivitesText',
   heardFrom: 'heardFrom',
   referred: 'referred',
-  preferredContactMethod: ['preferredContactMethod', 'preferredContactMethod2'],
 
   availability: {
     Sunday: {
@@ -231,15 +205,15 @@ const user = new User({
       '11p': true
     }
   },
-  timezone: "timezone",
+  timezone: 'timezone',
   pastSessions: null
 })
 
 test('Test creation of Message scheme object', t => {
-  let message = new Message({contents: 'message' })
+  let message = new Message({ contents: 'message' })
   message.user = user
 
   t.is(message.createdAt.getDate(), new Date().getDate())
-	t.is(message.contents, 'message')
-	t.is(message.user.email, 'email@email.com')
-}) 
+  t.is(message.contents, 'message')
+  t.is(message.user.email, 'email@email.com')
+})
