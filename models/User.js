@@ -99,6 +99,7 @@ const availabilitySchema = new mongoose.Schema(
 
 var userSchema = new mongoose.Schema(
   {
+    createdAt: { type: Date, default: Date.now },
     email: {
       type: String,
       unique: true,
@@ -110,29 +111,92 @@ var userSchema = new mongoose.Schema(
         message: '{VALUE} is not a valid email'
       }
     },
-    password: { type: String, select: false },
-
+    password: {
+      type: String,
+      select: false
+    },
     verified: {
       type: Boolean,
       default: false
     },
-    verificationToken: { type: String, select: false },
-    passwordResetToken: { type: String, select: false },
+    verificationToken: {
+      type: String,
+      select: false
+    },
+    passwordResetToken: {
+      type: String,
+      select: false
+    },
+    firstname: {
+      type: String,
+      required: [true, 'First name is required.']
+    },
+    lastname: {
+      type: String,
+      required: [true, 'Last name is required.']
+    },
+
+    // User type (volunteer or student)
+    isVolunteer: {
+      type: Boolean,
+      default: false
+    },
+
+    isAdmin: {
+      type: Boolean,
+      default: false
+    },
+
+    /**
+     * Test users are used to make help requests on production without bothering actual volunteers.
+     * A student test user making a help request will only notify volunteer test users.
+     */
+    isTestUser: {
+      type: Boolean,
+      default: false
+    },
+
+    /*
+     * Fake Users are real, fully functional accounts that we decide not to track because they've been
+     * identified as accounts that aren't actual students/volunteers; just people trying out the service.
+     */
+    isFakeUser: {
+      type: Boolean,
+      default: false
+    },
+
+    pastSessions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Session' }],
+
+    /**
+     * BEGIN STUDENT ATTRS
+     */
+    heardFrom: String,
+    referred: String,
+    approvedHighschool: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'School'
+      /* TODO validate approvedHighschool.isApproved: true
+       * if this.isVolunteer is false */
+    },
+    /**
+     * END STUDENT ATTRS
+     */
+
+    /**
+     * BEGIN VOLUNTEER ATTRS
+     */
     registrationCode: { type: String, select: false },
     volunteerPartnerOrg: String,
-
-    // Profile data
-    firstname: { type: String, required: [true, 'First name is required.'] },
-    lastname: { type: String, required: [true, 'Last name is required.'] },
-    nickname: String,
-    serviceInterests: [String],
-    picture: String,
-    birthdate: String,
-    gender: String,
-    race: [String],
-    groupIdentification: [String],
-    computerAccess: [String],
-    preferredTimes: [String],
+    isFailsafeVolunteer: {
+      type: Boolean,
+      default: false,
+      validate: {
+        validator: function(v) {
+          return this.isVolunteer || !v
+        },
+        message: 'A student cannot be a failsafe volunteer'
+      }
+    },
     phone: {
       type: String,
       required: [
@@ -143,35 +207,13 @@ var userSchema = new mongoose.Schema(
       ]
       // @todo: server-side validation of international phone format
     },
-
-    approvedHighschool: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'School'
-      /* TODO validate approvedHighschool.isApproved: true
-       * if this.isVolunteer is false */
-    },
-    currentGrade: String,
-    expectedGraduation: String,
-    difficultAcademicSubject: String,
-    difficultCollegeProcess: [String],
-    highestLevelEducation: [String],
-    hasGuidanceCounselor: String,
     favoriteAcademicSubject: String,
-    gpa: String,
-    collegeApplicationsText: String,
-    commonCollegeDocs: [String],
     college: String,
-    academicInterestsText: String,
-    testScoresText: String,
-    advancedCoursesText: String,
-    extracurricularActivitesText: String,
-    heardFrom: String,
-    referred: String,
-    preferredContactMethod: [String],
-    availability: { type: availabilitySchema, default: availabilitySchema },
+    availability: {
+      type: availabilitySchema,
+      default: availabilitySchema
+    },
     timezone: String,
-    pastSessions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Session' }],
-
     certifications: {
       algebra: {
         passed: {
@@ -253,45 +295,10 @@ var userSchema = new mongoose.Schema(
           default: 0
         }
       }
-    },
-
-    // User status
-    isVolunteer: {
-      type: Boolean,
-      default: false
-    },
-    isFailsafeVolunteer: {
-      type: Boolean,
-      default: false,
-      validate: {
-        validator: function(v) {
-          return this.isVolunteer || !v
-        },
-        message: 'A student cannot be a failsafe volunteer'
-      }
-    },
-    /* Fake Users
-     * These aren't the same as Test Users; they still receive Twilio texts, etc
-     * Fake Users are real, fully functional accounts that we decide not to track because they've been
-     * identified as accounts that aren't actual students/volunteers; just people trying out the service.
-     */
-    isFakeUser: {
-      type: Boolean,
-      default: false
-    },
-    isAdmin: {
-      type: Boolean,
-      default: false
-    },
-    isTestUser: {
-      type: Boolean,
-      default: false
-    },
-
-    createdAt: {
-      type: Date,
-      default: Date.now
     }
+    /**
+     * END VOLUNTEER ATTRS
+     */
   },
   {
     toJSON: {
@@ -312,40 +319,15 @@ userSchema.methods.parseProfile = function() {
     verified: this.verified,
     firstname: this.firstname,
     lastname: this.lastname,
-    nickname: this.nickname,
-    picture: this.picture,
     isVolunteer: this.isVolunteer,
     isAdmin: this.isAdmin,
     referred: this.referred,
     createdAt: this.createdAt,
-
-    birthdate: this.birthdate,
-    serviceInterests: this.serviceInterests,
-    gender: this.gender,
-    race: this.race,
-    groupIdentification: this.groupIdentification,
-    computerAccess: this.computerAccess,
-    preferredTimes: this.preferredTimes,
     phone: this.phone,
-    preferredContactMethod: this.preferredContactMethod,
     availability: this.availability,
     timezone: this.timezone,
-
     highschoolName: this.highschoolName,
-    currentGrade: this.currentGrade,
-    expectedGraduation: this.expectedGraduation,
-    difficultAcademicSubject: this.difficultAcademicSubject,
-    difficultCollegeProcess: this.difficultCollegeProcess,
-    highestLevelEducation: this.highestLevelEducation,
-    hasGuidanceCounselor: this.hasGuidanceCounselor,
-    gpa: this.gpa,
     college: this.college,
-    collegeApplicationsText: this.collegeApplicationsText,
-    commonCollegeDocs: this.commonCollegeDocs,
-    academicInterestsText: this.academicInterestsText,
-    testScoresText: this.testScoresText,
-    advancedCoursesText: this.advancedCoursesText,
-    extracurricularActivitesText: this.extracurricularActivitesText,
     favoriteAcademicSubject: this.favoriteAcademicSubject,
     heardFrom: this.heardFrom,
     isFakeUser: this.isFakeUser,
