@@ -537,20 +537,14 @@ userSchema.virtual('mathCoachingOnly').get(function() {
 })
 
 // Static method to determine if a registration code is valid
-userSchema.statics.checkCode = function(code, cb) {
-  var volunteerCodes = config.VOLUNTEER_CODES.split(',')
+userSchema.statics.checkCode = function(code) {
+  const volunteerCodes = config.VOLUNTEER_CODES.split(',')
 
-  var isVolunteerCode = volunteerCodes.some(function(volunteerCode) {
+  const isVolunteerCode = volunteerCodes.some(volunteerCode => {
     return volunteerCode.toUpperCase() === code.toUpperCase()
   })
 
-  if (isVolunteerCode) {
-    cb(null, {
-      volunteerCode: isVolunteerCode
-    })
-  } else {
-    cb(new Error('Registration code is invalid'), false)
-  }
+  return isVolunteerCode
 }
 
 module.exports = mongoose.model('User', userSchema)
