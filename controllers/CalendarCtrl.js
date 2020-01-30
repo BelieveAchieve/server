@@ -12,6 +12,7 @@ module.exports = {
         return callback(new Error('No account with that id found.'))
       }
       user.availability.set(availability)
+      user.availabilityLastModifiedAt = new Date().toISOString()
       user.save(function(err, user) {
         if (err) {
           callback(err, null)
