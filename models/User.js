@@ -223,7 +223,8 @@ var userSchema = new mongoose.Schema(
         tries: {
           type: Number,
           default: 0
-        }
+        },
+        lastAttemptedAt: { type: Date }
       },
       geometry: {
         passed: {
@@ -233,7 +234,8 @@ var userSchema = new mongoose.Schema(
         tries: {
           type: Number,
           default: 0
-        }
+        },
+        lastAttemptedAt: { type: Date }
       },
       trigonometry: {
         passed: {
@@ -243,7 +245,8 @@ var userSchema = new mongoose.Schema(
         tries: {
           type: Number,
           default: 0
-        }
+        },
+        lastAttemptedAt: { type: Date }
       },
       precalculus: {
         passed: {
@@ -253,7 +256,8 @@ var userSchema = new mongoose.Schema(
         tries: {
           type: Number,
           default: 0
-        }
+        },
+        lastAttemptedAt: { type: Date }
       },
       calculus: {
         passed: {
@@ -263,7 +267,8 @@ var userSchema = new mongoose.Schema(
         tries: {
           type: Number,
           default: 0
-        }
+        },
+        lastAttemptedAt: { type: Date }
       },
       applications: {
         passed: {
@@ -273,7 +278,8 @@ var userSchema = new mongoose.Schema(
         tries: {
           type: Number,
           default: 0
-        }
+        },
+        lastAttemptedAt: { type: Date }
       },
       essays: {
         passed: {
@@ -283,7 +289,8 @@ var userSchema = new mongoose.Schema(
         tries: {
           type: Number,
           default: 0
-        }
+        },
+        lastAttemptedAt: { type: Date }
       },
       planning: {
         passed: {
@@ -293,7 +300,8 @@ var userSchema = new mongoose.Schema(
         tries: {
           type: Number,
           default: 0
-        }
+        },
+        lastAttemptedAt: { type: Date }
       }
     }
     /**
