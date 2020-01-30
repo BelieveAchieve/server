@@ -303,7 +303,8 @@ var userSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       }
-    }
+    },
+    availabilityLastModifiedAt: { type: Date, default: Date.now }
     /**
      * END VOLUNTEER ATTRS
      */
