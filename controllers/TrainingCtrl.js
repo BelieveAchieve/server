@@ -117,6 +117,9 @@ module.exports = {
             return callback(new Error('No account with that id found.'))
           }
           user.certifications[category]['passed'] = hasPassed
+          user.certifications[category][
+            'lastAttemptedAt'
+          ] = new Date().toISOString()
           var tries = user.certifications[category]['tries']
           if (tries) {
             tries++
