@@ -8,6 +8,7 @@ dbconnect(mongoose, function() {
       const pendingUpdatedUsers = listOfUsers.map(user => {
         if (!user.availabilityLastModifiedAt) {
           user.availabilityLastModifiedAt = user.createdAt
+          console.log(`Updating availability for user: ${user._id}`)
         }
         return user.save()
       })
