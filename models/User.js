@@ -541,8 +541,12 @@ userSchema.virtual('mathCoachingOnly').get(function() {
   if (!this.isVolunteer) return null
   if (!this.volunteerPartnerOrg) return false
 
-  const orgManifest = config.orgManifests[this.volunteerPartnerOrg]
-  return !!orgManifest && !!orgManifest['mathCoachingOnly']
+  const volunteerPartnerManifest =
+    config.volunteerPartnerManifests[this.volunteerPartnerOrg]
+
+  return (
+    !!volunteerPartnerManifest && !!volunteerPartnerManifest['mathCoachingOnly']
+  )
 })
 
 // Static method to determine if a registration code is valid

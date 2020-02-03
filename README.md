@@ -225,15 +225,15 @@ Possible errors:
 }
 ```
 
-### GET /auth/org-manifest
+### GET /auth/partner/volunteer
 
 Expects the following query string:
 
 ```
-?orgId=ORG_ID
+?partnerId=PARTNER_ID
 ```
 
-where `ORG_ID` is the key name of the partner organization stored in `config.js` under `orgManifests`.
+where `PARTNER_ID` is the key name of the volunteer partner organization defined in `config.js` under `volunteerPartnerManifests`.
 
 ### POST /api/session/new
 

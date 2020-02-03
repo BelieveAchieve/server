@@ -29,7 +29,7 @@ module.exports = {
   },
   socketsPort: 3001,
 
-  orgManifests: {
+  volunteerPartnerManifests: {
     example: {
       name: 'Example Inc',
       requiredEmailDomains: ['example.com']

@@ -144,16 +144,16 @@ module.exports = function(app) {
 
     // Volunteer partner org check
     if (isVolunteer && !code) {
-      const allOrgManifests = config.orgManifests
-      const orgManifest = allOrgManifests[volunteerPartnerOrg]
+      const allVolunteerPartnerManifests = config.volunteerPartnerManifests
+      const partnerManifest = allVolunteerPartnerManifests[volunteerPartnerOrg]
 
-      if (!orgManifest) {
+      if (!partnerManifest) {
         return res.status(422).json({
           err: 'Invalid volunteer partner organization'
         })
       }
 
-      const partnerOrgDomains = orgManifest.requiredEmailDomains
+      const partnerOrgDomains = partnerManifest.requiredEmailDomains
 
       // Confirm email has one of partner org's required domains
       if (partnerOrgDomains && partnerOrgDomains.length) {
@@ -289,32 +289,32 @@ module.exports = function(app) {
       })
   })
 
-  router.get('/org-manifest', function(req, res) {
-    const orgId = req.query.orgId
+  router.get('/partner/volunteer', function(req, res) {
+    const volunteerPartnerId = req.query.partnerId
 
-    if (!orgId) {
+    if (!volunteerPartnerId) {
       return res.status(422).json({
-        err: 'Missing orgId query string'
+        err: 'Missing volunteerPartnerId query string'
       })
     }
 
-    const allOrgManifests = config.orgManifests
+    const allVolunteerPartnerManifests = config.volunteerPartnerManifests
 
-    if (!allOrgManifests) {
+    if (!allVolunteerPartnerManifests) {
       return res.status(422).json({
-        err: 'Missing orgManifests in config'
+        err: 'Missing volunteerPartnerManifests in config'
       })
     }
 
-    const orgManifest = allOrgManifests[orgId]
+    const partnerManifest = allVolunteerPartnerManifests[volunteerPartnerId]
 
-    if (!orgManifest) {
+    if (!partnerManifest) {
       return res.status(404).json({
-        err: `No org manifest found for orgId "${orgId}"`
+        err: `No manifest found for volunteerPartnerId "${volunteerPartnerId}"`
       })
     }
 
-    return res.json({ orgManifest })
+    return res.json({ volunteerPartner: partnerManifest })
   })
 
   router.post('/register/check', function(req, res, next) {
