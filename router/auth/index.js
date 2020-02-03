@@ -106,29 +106,18 @@ module.exports = function(app) {
   })
 
   router.post('/register', function(req, res, next) {
-    var isVolunteer = req.body.isVolunteer
-
-    var email = req.body.email
-
-    var password = req.body.password
-
-    var code = req.body.code
-
-    var volunteerPartnerOrg = req.body.volunteerPartnerOrg
-
-    var highSchoolUpchieveId = req.body.highSchoolId
-
-    var college = req.body.college
-
-    var phone = req.body.phone
-
-    var favoriteAcademicSubject = req.body.favoriteAcademicSubject
-
-    var firstName = req.body.firstName.trim()
-
-    var lastName = req.body.lastName.trim()
-
-    var terms = req.body.terms
+    const isVolunteer = req.body.isVolunteer
+    const email = req.body.email
+    const password = req.body.password
+    const code = req.body.code
+    const volunteerPartnerOrg = req.body.volunteerPartnerOrg
+    const highSchoolUpchieveId = req.body.highSchoolId
+    const college = req.body.college
+    const phone = req.body.phone
+    const favoriteAcademicSubject = req.body.favoriteAcademicSubject
+    const firstName = req.body.firstName.trim()
+    const lastName = req.body.lastName.trim()
+    const terms = req.body.terms
 
     if (!terms) {
       return res.status(422).json({
@@ -142,23 +131,23 @@ module.exports = function(app) {
       })
     }
 
-    // Volunteer partner org check
+    // Volunteer partner org check (if no signup code provided)
     if (isVolunteer && !code) {
       const allVolunteerPartnerManifests = config.volunteerPartnerManifests
-      const partnerManifest = allVolunteerPartnerManifests[volunteerPartnerOrg]
+      const volunteerPartnerManifest = allVolunteerPartnerManifests[volunteerPartnerOrg]
 
-      if (!partnerManifest) {
+      if (!volunteerPartnerManifest) {
         return res.status(422).json({
           err: 'Invalid volunteer partner organization'
         })
       }
 
-      const partnerOrgDomains = partnerManifest.requiredEmailDomains
+      const volunteerPartnerDomains = volunteerPartnerManifest.requiredEmailDomains
 
-      // Confirm email has one of partner org's required domains
-      if (partnerOrgDomains && partnerOrgDomains.length) {
+      // Confirm email has one of volunteer partner's required domains
+      if (volunteerPartnerDomains && volunteerPartnerDomains.length) {
         const userEmailDomain = email.split('@')[1]
-        if (partnerOrgDomains.indexOf(userEmailDomain) === -1) {
+        if (volunteerPartnerDomains.indexOf(userEmailDomain) === -1) {
           return res.status(422).json({
             err: 'Invalid email domain for volunteer partner organization'
           })
@@ -175,7 +164,7 @@ module.exports = function(app) {
     }
 
     // Look up high school
-    const promise = new Promise((resolve, reject) => {
+    const highschoolLookupPromise = new Promise((resolve, reject) => {
       if (isVolunteer) {
         // don't look up high schools for volunteers
         resolve({
@@ -200,7 +189,7 @@ module.exports = function(app) {
       })
     })
 
-    promise
+    highschoolLookupPromise
       .then(({ isVolunteer, school }) => {
         const user = new User()
         user.email = email
@@ -274,7 +263,6 @@ module.exports = function(app) {
                     )
                   } else {
                     res.json({
-                      // msg: msg,
                       user: user
                     })
                   }
