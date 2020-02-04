@@ -41,6 +41,12 @@ module.exports = {
     }
   },
 
+  studentPartnerManifests: {
+    example: {
+      name: 'The Example Foundation'
+    }
+  },
+
   // Sentry Data Source Name
   sentryDsn: '',
 

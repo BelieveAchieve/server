@@ -111,6 +111,7 @@ module.exports = function(app) {
     const password = req.body.password
     const code = req.body.code
     const volunteerPartnerOrg = req.body.volunteerPartnerOrg
+    const studentPartnerOrg = req.body.studentPartnerOrg
     const highSchoolUpchieveId = req.body.highSchoolId
     const college = req.body.college
     const phone = req.body.phone
@@ -129,6 +130,18 @@ module.exports = function(app) {
       return res.status(422).json({
         err: 'Must supply an email and password for registration'
       })
+    }
+
+    // Student partner org check (if no high school provided)
+    if (!isVolunteer && !highSchoolUpchieveId) {
+      const allStudentPartnerManifests = config.studentPartnerManifests
+      const studentPartnerManifest = allStudentPartnerManifests[studentPartnerOrg]
+
+      if (!studentPartnerManifest) {
+        return res.status(422).json({
+          err: 'Invalid student partner organization'
+        })
+      }
     }
 
     // Volunteer partner org check (if no signup code provided)
@@ -173,6 +186,14 @@ module.exports = function(app) {
 
         // early exit
         return
+      } else if (studentPartnerOrg) {
+        // don't require valid high school for students referred from partner
+        resolve({
+          isVolunteer: false
+        })
+
+        // early exit
+        return
       }
 
       School.findByUpchieveId(highSchoolUpchieveId, (err, school) => {
@@ -196,6 +217,7 @@ module.exports = function(app) {
         user.isVolunteer = isVolunteer
         user.registrationCode = code
         user.volunteerPartnerOrg = volunteerPartnerOrg
+        user.studentPartnerOrg = studentPartnerOrg
         user.approvedHighschool = school
         user.college = college
         user.phonePretty = phone
@@ -303,6 +325,34 @@ module.exports = function(app) {
     }
 
     return res.json({ volunteerPartner: partnerManifest })
+  })
+
+  router.get('/partner/student', function(req, res) {
+    const studentPartnerId = req.query.partnerId
+
+    if (!studentPartnerId) {
+      return res.status(422).json({
+        err: 'Missing studentPartnerId query string'
+      })
+    }
+
+    const allStudentPartnerManifests = config.studentPartnerManifests
+
+    if (!allStudentPartnerManifests) {
+      return res.status(422).json({
+        err: 'Missing studentPartnerManifests in config'
+      })
+    }
+
+    const partnerManifest = allStudentPartnerManifests[studentPartnerId]
+
+    if (!partnerManifest) {
+      return res.status(404).json({
+        err: `No manifest found for studentPartnerId "${studentPartnerId}"`
+      })
+    }
+
+    return res.json({ studentPartner: partnerManifest })
   })
 
   router.post('/register/check', function(req, res, next) {

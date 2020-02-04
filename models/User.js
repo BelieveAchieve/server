@@ -178,6 +178,7 @@ var userSchema = new mongoose.Schema(
       /* TODO validate approvedHighschool.isApproved: true
        * if this.isVolunteer is false */
     },
+    studentPartnerOrg: String,
     /**
      * END STUDENT ATTRS
      */
