@@ -135,7 +135,8 @@ module.exports = function(app) {
     // Student partner org check (if no high school provided)
     if (!isVolunteer && !highSchoolUpchieveId) {
       const allStudentPartnerManifests = config.studentPartnerManifests
-      const studentPartnerManifest = allStudentPartnerManifests[studentPartnerOrg]
+      const studentPartnerManifest =
+        allStudentPartnerManifests[studentPartnerOrg]
 
       if (!studentPartnerManifest) {
         return res.status(422).json({
@@ -147,7 +148,8 @@ module.exports = function(app) {
     // Volunteer partner org check (if no signup code provided)
     if (isVolunteer && !code) {
       const allVolunteerPartnerManifests = config.volunteerPartnerManifests
-      const volunteerPartnerManifest = allVolunteerPartnerManifests[volunteerPartnerOrg]
+      const volunteerPartnerManifest =
+        allVolunteerPartnerManifests[volunteerPartnerOrg]
 
       if (!volunteerPartnerManifest) {
         return res.status(422).json({
@@ -155,7 +157,8 @@ module.exports = function(app) {
         })
       }
 
-      const volunteerPartnerDomains = volunteerPartnerManifest.requiredEmailDomains
+      const volunteerPartnerDomains =
+        volunteerPartnerManifest.requiredEmailDomains
 
       // Confirm email has one of volunteer partner's required domains
       if (volunteerPartnerDomains && volunteerPartnerDomains.length) {
