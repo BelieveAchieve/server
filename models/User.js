@@ -305,7 +305,8 @@ var userSchema = new mongoose.Schema(
         lastAttemptedAt: { type: Date }
       }
     },
-    availabilityLastModifiedAt: { type: Date, default: Date.now }
+    availabilityLastModifiedAt: { type: Date, default: Date.now },
+    lastActivityAt: { type: Date, default: Date.now }
     /**
      * END VOLUNTEER ATTRS
      */
