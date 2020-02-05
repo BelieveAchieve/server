@@ -426,38 +426,10 @@ module.exports = function(app) {
     }
 
     // Verify password for password reset
-    if (password.length < 8) {
+    const checkResult = checkPassword(password)
+    if (checkResult !== true) {
       return res.status(422).json({
-        err: 'Password must be 8 characters or longer'
-      })
-    }
-
-    var numUpper = 0
-    var numLower = 0
-    var numNumber = 0
-    for (var i = 0; i < password.length; i++) {
-      if (!isNaN(password[i])) {
-        numNumber += 1
-      } else if (password[i].toUpperCase() === password[i]) {
-        numUpper += 1
-      } else if (password[i].toLowerCase() === password[i]) {
-        numLower += 1
-      }
-    }
-
-    if (numUpper === 0) {
-      return res.status(422).json({
-        err: 'Password must contain at least one uppercase letter'
-      })
-    }
-    if (numLower === 0) {
-      return res.status(422).json({
-        err: 'Password must contain at least one lowercase letter'
-      })
-    }
-    if (numNumber === 0) {
-      return res.status(422).json({
-        err: 'Password must contain at least one number'
+        err: checkResult
       })
     }
 
