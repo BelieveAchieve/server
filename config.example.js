@@ -32,7 +32,8 @@ module.exports = {
   volunteerPartnerManifests: {
     example: {
       name: 'Example Inc',
-      requiredEmailDomains: ['example.com']
+      requiredEmailDomains: ['example.com'],
+      mathCoachingOnly: false
     },
     foobar: {
       name: 'Foo Bar & Co',
@@ -43,7 +44,12 @@ module.exports = {
 
   studentPartnerManifests: {
     example: {
-      name: 'The Example Foundation'
+      name: 'The Example Foundation',
+      highSchoolSignup: true
+    },
+    acme: {
+      name: 'ACME Gives',
+      highSchoolSignup: false
     }
   },
 
