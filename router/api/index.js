@@ -1,5 +1,6 @@
-var express = require('express')
-var passport = require('../auth/passport')
+const express = require('express')
+const passport = require('../auth/passport')
+const addLastActivity = require('../../middleware/add-last-activity')
 
 module.exports = function(app, sessionStore) {
   console.log('API module')
@@ -7,6 +8,7 @@ module.exports = function(app, sessionStore) {
   const io = require('./socket-server')(app)
 
   const router = new express.Router()
+
   require('./volunteers')(router)
   require('./user')(router)
   require('./verify')(router)
@@ -17,5 +19,6 @@ module.exports = function(app, sessionStore) {
   require('./sockets')(io, sessionStore)
   require('./moderate')(router)
 
+  app.use(addLastActivity)
   app.use('/api', passport.isAuthenticated, router)
 }
