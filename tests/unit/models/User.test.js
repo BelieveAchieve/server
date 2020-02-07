@@ -451,8 +451,9 @@ test('Test international phone number', t => {
 })
 
 test('Elapsed availability over 3 days with no hours available', t => {
-  const lastModifiedDate = '2020-02-06T12:52:59.538+00:00'
-  const newModifiedDate = '2020-02-09T13:40:00.000+00:00'
+  // EST Time Zone for dates
+  const lastModifiedDate = '2020-02-06T12:52:59.538-05:00'
+  const newModifiedDate = '2020-02-09T13:40:00.000-05:00'
   const expected = 0
   goodUser.availability = noHoursSelected
   goodUser.availabilityLastModifiedAt = lastModifiedDate
@@ -461,8 +462,9 @@ test('Elapsed availability over 3 days with no hours available', t => {
 })
 
 test('Elapsed availability over 3 days with all hours available and 7 hours out of range', async t => {
-  const lastModifiedDate = '2020-02-06T00:52:59.538+00:00'
-  const newModifiedDate = '2020-02-09T19:40:00.000+00:00'
+  // EST Time Zone for dates
+  const lastModifiedDate = '2020-02-06T00:52:59.538-05:00'
+  const newModifiedDate = '2020-02-09T19:40:00.000-05:00'
   const expected = 90
   goodUser.availability = allHoursSelected
   goodUser.availabilityLastModifiedAt = lastModifiedDate
@@ -471,8 +473,9 @@ test('Elapsed availability over 3 days with all hours available and 7 hours out 
 })
 
 test('Elapsed availability over 3 days with flexible hours available', async t => {
-  const lastModifiedDate = '2020-02-06T00:52:59.538+00:00'
-  const newModifiedDate = '2020-02-09T12:40:00.000+00:00'
+  // EST Time Zone for dates
+  const lastModifiedDate = '2020-02-06T00:52:59.538-05:00'
+  const newModifiedDate = '2020-02-09T12:40:00.000-05:00'
   const expected = 16
   goodUser.availability = flexibleHoursSelected
   goodUser.availabilityLastModifiedAt = lastModifiedDate
@@ -491,8 +494,9 @@ test('Elapsed availability over 3 days with flexible hours available', async t =
   Saturday: 5 }
 **/
 test('Elapsed availability over 23 days with flexible hours available', async t => {
-  const lastModifiedDate = '2020-02-02T05:21:39.538+00:00'
-  const newModifiedDate = '2020-02-25T16:20:42.000+00:00'
+  // EST Time Zone for dates
+  const lastModifiedDate = '2020-02-02T05:21:39.538-05:00'
+  const newModifiedDate = '2020-02-25T16:20:42.000-05:00'
   const expected = 114
   goodUser.availability = flexibleHoursSelected
   goodUser.availabilityLastModifiedAt = lastModifiedDate
