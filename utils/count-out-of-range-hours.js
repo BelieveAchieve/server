@@ -1,17 +1,18 @@
+const moment = require('moment-timezone')
 const { DAYS, UTC_TO_HOUR_MAPPING } = require('../constants')
 
 const countOutOfRangeHours = (previousDate, newDate, availability) => {
-  const lastModifiedAtDate = new Date(previousDate)
-  const newModifiedAtDate = new Date(newDate)
+  const lastModifiedAtDate = moment(previousDate).tz('America/New_York')
+  const newModifiedAtDate = moment(newDate).tz('America/New_York')
   const lastModified = {
-    day: lastModifiedAtDate.getDay(),
-    hour: lastModifiedAtDate.getUTCHours(),
-    min: lastModifiedAtDate.getUTCMinutes()
+    day: lastModifiedAtDate.day(),
+    hour: lastModifiedAtDate.hour(),
+    min: lastModifiedAtDate.minute()
   }
   const newModified = {
-    day: newModifiedAtDate.getDay(),
-    hour: newModifiedAtDate.getUTCHours(),
-    min: newModifiedAtDate.getUTCMinutes()
+    day: newModifiedAtDate.day(),
+    hour: newModifiedAtDate.hour(),
+    min: newModifiedAtDate.minute()
   }
   const lastModifiedDayOfWeek = DAYS[lastModified.day]
   const newModifiedDayOfWeek = DAYS[newModified.day]

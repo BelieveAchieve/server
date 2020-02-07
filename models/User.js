@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
+const moment = require('moment-timezone')
 const countAvailabilityHours = require('../utils/count-availability-hours')
 const removeTimeFromDate = require('../utils/remove-time-from-date')
 const getFrequencyOfDays = require('../utils/get-frequency-of-days')
@@ -401,20 +402,26 @@ userSchema.methods.populateForVolunteerStats = function(cb) {
 }
 
 userSchema.methods.calculateElapsedAvailability = function(newModifiedDate) {
+  const availabilityLastModifiedAt = moment(this.availabilityLastModifiedAt)
+    .tz('America/New_York')
+    .format()
+  const estTimeNewModifiedDate = moment(newModifiedDate)
+    .tz('America/New_York')
+    .format()
   const totalAvailabilityHoursMapped = countAvailabilityHours(
     this.availability.toObject()
   )
   const frequencyOfDaysList = getFrequencyOfDays(
-    removeTimeFromDate(this.availabilityLastModifiedAt),
-    removeTimeFromDate(newModifiedDate)
+    removeTimeFromDate(availabilityLastModifiedAt),
+    removeTimeFromDate(estTimeNewModifiedDate)
   )
   let totalHours = calculateTotalHours(
     totalAvailabilityHoursMapped,
     frequencyOfDaysList
   )
   const outOfRangeHours = countOutOfRangeHours(
-    this.availabilityLastModifiedAt,
-    newModifiedDate,
+    availabilityLastModifiedAt,
+    estTimeNewModifiedDate,
     this.availability.toObject()
   )
   totalHours -= outOfRangeHours
