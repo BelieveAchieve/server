@@ -1,3 +1,4 @@
+const moment = require('moment-timezone')
 /**
  *
  * @param {(Date | String)} start
@@ -12,14 +13,14 @@
  */
 
 const getFrequencyOfDays = (start, end) => {
-  const startDate = new Date(start)
-  const endDate = new Date(end)
+  const startDate = moment(start).tz('America/New_York')
+  const endDate = moment(end).tz('America/New_York')
   const amountOfWeeks = Math.floor(
     Math.ceil((endDate - startDate) / (24 * 60 * 60 * 1000)) / 7
   )
   const dayFrequencyList = Array(7).fill(amountOfWeeks)
-  const startDayOfWeek = (startDate.getDay() + 1) % 7
-  const endDayOfWeek = (endDate.getDay() + 1) % 7
+  const startDayOfWeek = startDate.day()
+  const endDayOfWeek = endDate.day()
 
   if (startDayOfWeek <= endDayOfWeek) {
     dayFrequencyList.fill(amountOfWeeks + 1, startDayOfWeek, endDayOfWeek + 1)
