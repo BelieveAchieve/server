@@ -98,5 +98,9 @@ module.exports = {
         )
       })
     }
+  },
+
+  deleteUserByEmail: function(userEmail) {
+    return User.deleteOne({ email: userEmail }).exec()
   }
 }
