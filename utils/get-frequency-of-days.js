@@ -13,8 +13,8 @@ const moment = require('moment-timezone')
  */
 
 const getFrequencyOfDays = (start, end) => {
-  const startDate = moment(start).tz('America/New_York')
-  const endDate = moment(end).tz('America/New_York')
+  const startDate = moment(start)
+  const endDate = moment(end)
   const amountOfWeeks = Math.floor(
     Math.ceil((endDate - startDate) / (24 * 60 * 60 * 1000)) / 7
   )
