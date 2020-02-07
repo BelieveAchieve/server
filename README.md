@@ -275,8 +275,8 @@ where `ORG_ID` is the key name of the partner organization stored in `config.js`
 {
   "availability": {
     "Sunday": {
-      "12a": Boolean,
-      "1a": Boolean,
+      "12a": "Boolean",
+      "1a": "Boolean",
       ...
     },
     "Monday": {
