@@ -273,7 +273,18 @@ where `ORG_ID` is the key name of the partner organization stored in `config.js`
 
 ```json
 {
-  "availability": "String"
+  "availability": {
+    "Sunday": {
+      "12a": Boolean,
+      "1a": Boolean,
+      ...
+    },
+    "Monday": {
+      ...
+    },
+    ...
+  },
+  "tz": "String"
 }
 ```
 
