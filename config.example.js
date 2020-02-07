@@ -45,11 +45,11 @@ module.exports = {
   studentPartnerManifests: {
     example: {
       name: 'The Example Foundation',
-      highSchoolSignup: true
-    },
-    acme: {
-      name: 'ACME Gives',
       highSchoolSignup: false
+    },
+    example2: {
+      name: 'Example & Co',
+      highSchoolSignup: true
     }
   },
 
