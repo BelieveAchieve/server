@@ -7,10 +7,3 @@ test('Given ISO String should remove time from date', t => {
   const result = removeTimeFromDate(date)
   t.is(expected, result)
 })
-
-test('Given Date object should remove time from date', t => {
-  const date = new Date('2020-02-06T12:52:59.538+00:00')
-  const expected = '2020-02-06'
-  const result = removeTimeFromDate(date)
-  t.is(expected, result)
-})
