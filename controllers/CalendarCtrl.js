@@ -30,12 +30,12 @@ module.exports = {
 
     user.availability = availability
     user.availabilityLastModifiedAt = new Date().toISOString()
-    
+
     // update timezone
     if (tz) {
       user.timezone = tz
     }
-    
+
     user.save(function(err, user) {
       if (err) {
         callback(err, null)
