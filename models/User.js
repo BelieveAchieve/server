@@ -1,8 +1,13 @@
-var mongoose = require('mongoose')
-var bcrypt = require('bcrypt')
-var validator = require('validator')
+const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
+const validator = require('validator')
+const countAvailabilityHours = require('../utils/count-availability-hours')
+const removeTimeFromDate = require('../utils/remove-time-from-date')
+const getFrequencyOfDays = require('../utils/get-frequency-of-days')
+const calculateTotalHours = require('../utils/calculate-total-hours')
+const countOutOfRangeHours = require('../utils/count-out-of-range-hours')
 
-var config = require('../config.js')
+const config = require('../config.js')
 
 const weeksSince = date => {
   // 604800000 = milliseconds in a week
@@ -305,7 +310,8 @@ var userSchema = new mongoose.Schema(
       }
     },
     availabilityLastModifiedAt: { type: Date, default: Date.now },
-    lastActivityAt: { type: Date, default: Date.now }
+    lastActivityAt: { type: Date, default: Date.now },
+    elapsedAvailability: Number
     /**
      * END VOLUNTEER ATTRS
      */
@@ -392,6 +398,28 @@ userSchema.methods.populateForVolunteerStats = function(cb) {
     'createdAt volunteerJoinedAt endedAt',
     cb
   )
+}
+
+userSchema.methods.calculateElapsedAvailability = function(newModifiedDate) {
+  const totalAvailabilityHoursMapped = countAvailabilityHours(
+    this.availability.toObject()
+  )
+  const frequencyOfDaysList = getFrequencyOfDays(
+    removeTimeFromDate(this.availabilityLastModifiedAt),
+    removeTimeFromDate(newModifiedDate)
+  )
+  let totalHours = calculateTotalHours(
+    totalAvailabilityHoursMapped,
+    frequencyOfDaysList
+  )
+  const outOfRangeHours = countOutOfRangeHours(
+    this.availabilityLastModifiedAt,
+    newModifiedDate,
+    this.availability.toObject()
+  )
+  totalHours -= outOfRangeHours
+
+  return totalHours
 }
 
 // regular expression that accepts multiple valid U. S. phone number formats
