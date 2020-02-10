@@ -265,15 +265,11 @@ const notifyFailsafe = async function(session, options) {
 
   var studentFirstname = populatedSession.student.firstname
 
-  var studentLastname = populatedSession.student.lastname
-
   var studentHighSchool = populatedStudent.highschoolName
 
   var isFirstTimeRequester =
     !populatedSession.student.pastSessions ||
     !populatedSession.student.pastSessions.length
-
-  var type = session.type
 
   var subtopic = session.subTopic
 
@@ -292,12 +288,6 @@ const notifyFailsafe = async function(session, options) {
     isFailsafeVolunteer: false
   }).exec()
 
-  const numberOfVolunteersNotifiedMessage =
-    `${numOfRegularVolunteersNotified} ` +
-    `regular volunteer${
-      numOfRegularVolunteersNotified === 1 ? ' has' : 's have'
-    } been notified.`
-
   const sessionUrl = getSessionUrl(session._id)
 
   // query the failsafe volunteers to notify
@@ -307,8 +297,6 @@ const notifyFailsafe = async function(session, options) {
   const notifications = []
 
   for (const volunteer of volunteersToNotify) {
-    const name = volunteer.firstname
-
     const phoneNumber = volunteer.phone
 
     let messageText
