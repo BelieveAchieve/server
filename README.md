@@ -273,7 +273,18 @@ where `PARTNER_ID` is the key name of the volunteer partner organization defined
 
 ```json
 {
-  "availability": "String"
+  "availability": {
+    "Sunday": {
+      "12a": "Boolean",
+      "1a": "Boolean",
+      ...
+    },
+    "Monday": {
+      ...
+    },
+    ...
+  },
+  "tz": "String"
 }
 ```
 
