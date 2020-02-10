@@ -283,8 +283,6 @@ const notifyFailsafe = async function(session, options) {
 
   var isTestUserRequest = populatedSession.student.isTestUser
 
-  const firstTimeNotice = isFirstTimeRequester ? 'for the first time ' : ''
-
   const volunteerIdsNotified = populatedSession.notifications.map(
     notification => notification.volunteer
   )
@@ -316,17 +314,14 @@ const notifyFailsafe = async function(session, options) {
     let messageText
     if (desperate) {
       messageText =
-        `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
-        `from ${studentHighSchool} really needs your ${type} help ` +
-        `on ${subtopic}. ${numberOfVolunteersNotifiedMessage} ` +
-        `Please log in to app.upchieve.org and join the session ASAP!`
+        `Request by Student ${studentFirstname} still not filled. ` +
+        `Regular volunteers texted: ${numOfRegularVolunteersNotified}`
     } else {
       messageText =
-        `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
-        `from ${studentHighSchool} has requested ${type} help ` +
-        `${firstTimeNotice}at app.upchieve.org ` +
-        `on ${subtopic}. ${numberOfVolunteersNotifiedMessage} ` +
-        `Please log in if you can to help them out.`
+        `Student: ${studentFirstname}\n` +
+        `High School: ${studentHighSchool}\n` +
+        `Subject: ${subtopic}\n` +
+        `First Ever Request: ${isFirstTimeRequester ? 'Yes' : 'No'}\n`
     }
 
     if (!voice) {
