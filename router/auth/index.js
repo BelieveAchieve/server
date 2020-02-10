@@ -222,7 +222,10 @@ module.exports = function(app) {
         user.registrationCode = code
         user.volunteerPartnerOrg = volunteerPartnerOrg
         user.studentPartnerOrg = studentPartnerOrg
+<<<<<<< HEAD
         user.partnerUserId = partnerUserId
+=======
+>>>>>>> master
         user.approvedHighschool = school
         user.college = college
         user.phonePretty = phone

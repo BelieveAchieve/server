@@ -4,7 +4,7 @@ function addLastActivity(req, res, next) {
   if (req.user) {
     const { id, lastActivityAt } = req.user
     const todaysDateInMS = Date.now()
-    const oneDayElapsed = 1000 * 60 * 3
+    const oneDayElapsed = 1000 * 60 * 60 * 24
     const lastActivityInMS = new Date(lastActivityAt).getTime()
 
     if (lastActivityInMS + oneDayElapsed <= todaysDateInMS) {
