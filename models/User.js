@@ -401,6 +401,8 @@ userSchema.methods.populateForVolunteerStats = function(cb) {
   )
 }
 
+// Calculates the amount of hours between this.availabilityLastModifiedAt
+// and the current time that a user updates to a new availability
 userSchema.methods.calculateElapsedAvailability = function(newModifiedDate) {
   const availabilityLastModifiedAt = moment(this.availabilityLastModifiedAt)
     .tz('America/New_York')
@@ -408,17 +410,26 @@ userSchema.methods.calculateElapsedAvailability = function(newModifiedDate) {
   const estTimeNewModifiedDate = moment(newModifiedDate)
     .tz('America/New_York')
     .format()
+
+  // Convert availability to an object formatted with the day of the week
+  // as the property and the amount of hours they have available for that day as the value
+  // e.g { Monday: 10, Tuesday: 3 }
   const totalAvailabilityHoursMapped = countAvailabilityHours(
     this.availability.toObject()
   )
+
+  // Count the occurrence of days of the week between a start and end date
   const frequencyOfDaysList = getFrequencyOfDays(
     removeTimeFromDate(availabilityLastModifiedAt),
     removeTimeFromDate(estTimeNewModifiedDate)
   )
+
   let totalHours = calculateTotalHours(
     totalAvailabilityHoursMapped,
     frequencyOfDaysList
   )
+
+  // Deduct the amount hours that fall outside of the start and end date time
   const outOfRangeHours = countOutOfRangeHours(
     availabilityLastModifiedAt,
     estTimeNewModifiedDate,

@@ -20,10 +20,13 @@ const countOutOfRangeHours = (previousDate, newDate, availability) => {
   const newModifiedDayAvailability = availability[newModifiedDayOfWeek]
   let totalHours = 0
 
+  // if lastModifiedMin is 0 that means a full hour of availability was completed,
+  // we can ignore the current hour and start deducting from an hour before
   if (lastModified.min === 0 || lastModified.hour === newModified.hour) {
     lastModified.hour -= 1
   }
 
+  // Count hours before the lastModified.hour
   for (let i = lastModified.hour; i >= 0; i--) {
     const time = UTC_TO_HOUR_MAPPING[i]
     if (lastModifiedDayAvailability[time]) {
@@ -31,6 +34,7 @@ const countOutOfRangeHours = (previousDate, newDate, availability) => {
     }
   }
 
+  // Count hours after the newModified.hour
   for (let i = newModified.hour; i <= 23; i++) {
     const time = UTC_TO_HOUR_MAPPING[i]
     if (newModifiedDayAvailability[time]) {
