@@ -167,6 +167,11 @@ var userSchema = new mongoose.Schema(
 
     pastSessions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Session' }],
 
+    partnerUserId: {
+      type: String,
+      select: false
+    },
+
     /**
      * BEGIN STUDENT ATTRS
      */
