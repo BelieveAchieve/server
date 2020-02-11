@@ -1,11 +1,12 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 const Sentry = require('@sentry/node')
 
-var Message = require('./Message')
+const Message = require('./Message')
+const UserActionCtrl = require('../controllers/UserActionCtrl')
 
-var validTypes = ['Math', 'College']
+const validTypes = ['Math', 'College']
 
-var sessionSchema = new mongoose.Schema({
+const sessionSchema = new mongoose.Schema({
   student: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -20,7 +21,7 @@ var sessionSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: function(v) {
-        var type = v.toLowerCase()
+        const type = v.toLowerCase()
         return validTypes.some(function(validType) {
           return validType.toLowerCase() === type
         })
@@ -75,19 +76,19 @@ var sessionSchema = new mongoose.Schema({
 })
 
 sessionSchema.methods.saveMessage = function(messageObj, cb) {
-  var session = this
+  const session = this
   this.messages = this.messages.concat({
     user: messageObj.user._id,
     contents: messageObj.contents
   })
 
-  var messageId = this.messages[this.messages.length - 1]._id
+  const messageId = this.messages[this.messages.length - 1]._id
   const promise = this.save().then(() => {
-    var savedMessageIndex = session.messages.findIndex(function(message) {
+    const savedMessageIndex = session.messages.findIndex(function(message) {
       return message._id === messageId
     })
 
-    var savedMessage = session.messages[savedMessageIndex]
+    const savedMessage = session.messages[savedMessageIndex]
 
     return savedMessage
   })
@@ -100,7 +101,7 @@ sessionSchema.methods.saveMessage = function(messageObj, cb) {
 }
 
 sessionSchema.methods.saveWhiteboardUrl = function(whiteboardUrl, cb) {
-  var session = this
+  const session = this
   this.whiteboardUrl = whiteboardUrl
   this.save(function(err) {
     if (cb) {
@@ -127,6 +128,7 @@ function failJoin(session, user, error) {
 // this method should callback with an error on attempts to join by non-participants
 // so that SessionCtrl knows to disconnect the socket
 sessionSchema.methods.joinUser = async function(user) {
+  let isInitialVolunteerJoin = false
   if (this.endedAt) {
     failJoin(this, user, new Error('Session has ended'))
   }
@@ -141,7 +143,9 @@ sessionSchema.methods.joinUser = async function(user) {
         )
       }
     } else {
+      isInitialVolunteerJoin = true
       this.volunteer = user
+      await UserActionCtrl.joinedSession(user._id, this._id)
     }
 
     if (!this.volunteerJoinedAt) {
@@ -157,6 +161,16 @@ sessionSchema.methods.joinUser = async function(user) {
     }
   } else {
     this.student = user
+  }
+
+  // After 30 seconds of the this.createdAt, we can assume the user is
+  // rejoining the session instead of joining for the first time
+  const thirtySecondsElapsed = 1000 * 30
+  if (
+    !isInitialVolunteerJoin &&
+    Date.parse(this.createdAt) + thirtySecondsElapsed < Date.now()
+  ) {
+    await UserActionCtrl.rejoinedSession(user._id, this._id)
   }
 
   return this.save()
