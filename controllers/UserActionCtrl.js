@@ -1,18 +1,14 @@
 const UserAction = require('../models/UserAction')
 const { USER_ACTION } = require('../constants')
+const getSupercategory = require('../utils/getSupercategory')
 
-const createQuizAction = async (
-  userId,
-  quizCategory,
-  quizSubCategory,
-  action
-) => {
+const createQuizAction = async (userId, quizSubcategory, action) => {
   const userActionDoc = new UserAction({
     actionType: USER_ACTION.TYPE.QUIZ,
     action,
     user: userId,
-    quizCategory,
-    quizSubCategory
+    quizSubcategory,
+    quizCategory: getSupercategory(quizSubcategory)
   })
 
   return userActionDoc.save()
@@ -38,46 +34,32 @@ const createProfileAction = async (userId, action) => {
   return userActionDoc.save()
 }
 
-const startedQuiz = (userId, quizCategory, quizSubCategory) => {
-  return createQuizAction(
-    userId,
-    quizCategory,
-    quizSubCategory,
-    USER_ACTION.QUIZ.STARTED
-  )
+const startedQuiz = (userId, quizCategory) => {
+  return createQuizAction(userId, quizCategory, USER_ACTION.QUIZ.STARTED)
 }
 
-const passedQuiz = (userId, quizCategory, quizSubCategory) => {
-  return createQuizAction(
-    userId,
-    quizCategory,
-    quizSubCategory,
-    USER_ACTION.QUIZ.PASSED
-  )
+const passedQuiz = (userId, quizCategory) => {
+  return createQuizAction(userId, quizCategory, USER_ACTION.QUIZ.PASSED)
 }
 
-const failedQuiz = (userId, quizCategory, quizSubCategory) => {
-  return createQuizAction(
-    userId,
-    quizCategory,
-    quizSubCategory,
-    USER_ACTION.QUIZ.FAILED
-  )
+const failedQuiz = (userId, quizCategory) => {
+  return createQuizAction(userId, quizCategory, USER_ACTION.QUIZ.FAILED)
 }
 
-// !!! @TODO - Hook into an endpoint
 const requestedSession = (userId, sessionId) => {
   return createSessionAction(userId, sessionId, USER_ACTION.SESSION.REQUESTED)
 }
 
-// !!! @TODO - Hook into an endpoint
 const repliedYesToSession = (userId, sessionId) => {
   return createSessionAction(userId, sessionId, USER_ACTION.SESSION.REPLIED_YES)
 }
 
-// !!! @TODO - Hook into an endpoint
 const joinedSession = (userId, sessionId) => {
   return createSessionAction(userId, sessionId, USER_ACTION.SESSION.JOINED)
+}
+
+const rejoinedSession = (userId, sessionId) => {
+  return createSessionAction(userId, sessionId, USER_ACTION.SESSION.REJOINED)
 }
 
 const updatedProfile = userId => {
@@ -94,6 +76,7 @@ module.exports = {
   failedQuiz,
   requestedSession,
   joinedSession,
+  rejoinedSession,
   repliedYesToSession,
   updatedProfile,
   updatedAvailability
