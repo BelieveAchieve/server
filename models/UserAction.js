@@ -39,12 +39,13 @@ const userActionSchema = new mongoose.Schema({
       USER_ACTION.SESSION.REPLIED_YES,
       USER_ACTION.SESSION.REQUESTED,
       USER_ACTION.SESSION.JOINED,
+      USER_ACTION.SESSION.REJOINED,
       USER_ACTION.PROFILE.UPDATED_AVAILABILITY,
       USER_ACTION.PROFILE.UPDATED_PROFILE
     ]
   },
   quizCategory: String,
-  quizSubCategory: String
+  quizSubcategory: String
 })
 
 module.exports = mongoose.model('UserAction', userActionSchema)
