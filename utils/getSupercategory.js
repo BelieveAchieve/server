@@ -6,12 +6,12 @@ const getSupercategory = subcategory => {
     case 'trigonometry':
     case 'geometry':
     case 'calculus':
-      category = 'Math'
+      category = 'MATH'
       break
     case 'planning':
     case 'essays':
     case 'applications':
-      category = 'College Counseling'
+      category = 'COLLEGE'
       break
     default:
       break
