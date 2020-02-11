@@ -1,4 +1,6 @@
-var UserCtrl = require('../../controllers/UserCtrl')
+const UserCtrl = require('../../controllers/UserCtrl')
+const passport = require('../auth/passport')
+const config = require('../../config.js')
 
 module.exports = function(router) {
   router.route('/user').get(function(req, res) {
@@ -54,5 +56,23 @@ module.exports = function(router) {
         }
       }
     )
+  })
+
+  /**
+   * This is a utility route used by Cypress to clean up after e2e tests
+   * Not available for use on production
+   */
+  router.delete('/user', passport.isAdmin, async function(req, res) {
+    if (config.NODE_ENV === 'production') {
+      return res.status(405).json({
+        err: 'Deleting users is not allowed on production'
+      })
+    }
+
+    const userEmail = req.body.email
+    const deleteResult = await UserCtrl.deleteUserByEmail(userEmail)
+    const didDelete = !!deleteResult.deletedCount
+
+    return res.status(200).json({ didDelete })
   })
 }
