@@ -1,5 +1,5 @@
 const TrainingCtrl = require('../../controllers/TrainingCtrl')
-const UserAction = require('../../controllers/UserActionCtrl')
+const UserActionCtrl = require('../../controllers/UserActionCtrl')
 
 module.exports = function(router) {
   router.post('/training/questions', function(req, res, next) {
@@ -32,8 +32,8 @@ module.exports = function(router) {
           const { category } = req.body
 
           data.passed
-            ? UserAction.passedQuiz(id, 'MATH', category)
-            : UserAction.failedQuiz(id, 'MATH', category)
+            ? UserActionCtrl.passedQuiz(id, category)
+            : UserActionCtrl.failedQuiz(id, category)
 
           res.json({
             msg: 'Score calculated and saved',
