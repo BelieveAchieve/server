@@ -1,10 +1,8 @@
 const Session = require('../../models/Session')
-
-var SessionCtrl = require('../../controllers/SessionCtrl')
-
-var SocketService = require('../../services/SocketService')
-
-var ObjectId = require('mongodb').ObjectId
+const SessionCtrl = require('../../controllers/SessionCtrl')
+const UserActionCtrl = require('../../controllers/UserActionCtrl')
+const SocketService = require('../../services/SocketService')
+const ObjectId = require('mongodb').ObjectId
 
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
@@ -12,10 +10,10 @@ module.exports = function(router, io) {
   const sessionCtrl = SessionCtrl(socketService)
 
   router.route('/session/new').post(async function(req, res, next) {
-    var data = req.body || {}
-    var sessionType = data.sessionType
-    var sessionSubTopic = data.sessionSubTopic
-    var user = req.user
+    const data = req.body || {}
+    const sessionType = data.sessionType
+    const sessionSubTopic = data.sessionSubTopic
+    const user = req.user
 
     try {
       const session = await sessionCtrl.create({
@@ -23,6 +21,8 @@ module.exports = function(router, io) {
         type: sessionType,
         subTopic: sessionSubTopic
       })
+
+      await UserActionCtrl.requestedSession(user.id, session._id)
       res.json({ sessionId: session._id })
     } catch (err) {
       next(err)
@@ -30,9 +30,9 @@ module.exports = function(router, io) {
   })
 
   router.route('/session/end').post(async function(req, res, next) {
-    var data = req.body || {}
-    var sessionId = data.sessionId
-    var user = req.user
+    const data = req.body || {}
+    const sessionId = data.sessionId
+    const user = req.user
 
     try {
       const session = await sessionCtrl.end({
