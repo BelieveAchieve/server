@@ -9,7 +9,7 @@ function addUserAction(req, res, next) {
 
   if (req.url === '/api/training/questions') {
     const { category } = req.body
-    UserActionCtrl.startedQuiz(id, 'MATH', category)
+    UserActionCtrl.startedQuiz(id, category)
   }
 
   if (req.url === '/api/user' && req.method === 'PUT') {
