@@ -106,29 +106,20 @@ module.exports = function(app) {
   })
 
   router.post('/register', function(req, res, next) {
-    var isVolunteer = req.body.isVolunteer
-
-    var email = req.body.email
-
-    var password = req.body.password
-
-    var code = req.body.code
-
-    var volunteerPartnerOrg = req.body.volunteerPartnerOrg
-
-    var highSchoolUpchieveId = req.body.highSchoolId
-
-    var college = req.body.college
-
-    var phone = req.body.phone
-
-    var favoriteAcademicSubject = req.body.favoriteAcademicSubject
-
-    var firstName = req.body.firstName.trim()
-
-    var lastName = req.body.lastName.trim()
-
-    var terms = req.body.terms
+    const isVolunteer = req.body.isVolunteer
+    const email = req.body.email
+    const password = req.body.password
+    const code = req.body.code
+    const volunteerPartnerOrg = req.body.volunteerPartnerOrg
+    const studentPartnerOrg = req.body.studentPartnerOrg
+    const partnerUserId = req.body.partnerUserId
+    const highSchoolUpchieveId = req.body.highSchoolId
+    const college = req.body.college
+    const phone = req.body.phone
+    const favoriteAcademicSubject = req.body.favoriteAcademicSubject
+    const firstName = req.body.firstName.trim()
+    const lastName = req.body.lastName.trim()
+    const terms = req.body.terms
 
     if (!terms) {
       return res.status(422).json({
@@ -142,23 +133,38 @@ module.exports = function(app) {
       })
     }
 
-    // Volunteer partner org check
-    if (isVolunteer && !code) {
-      const allOrgManifests = config.orgManifests
-      const orgManifest = allOrgManifests[volunteerPartnerOrg]
+    // Student partner org check (if no high school provided)
+    if (!isVolunteer && !highSchoolUpchieveId) {
+      const allStudentPartnerManifests = config.studentPartnerManifests
+      const studentPartnerManifest =
+        allStudentPartnerManifests[studentPartnerOrg]
 
-      if (!orgManifest) {
+      if (!studentPartnerManifest) {
+        return res.status(422).json({
+          err: 'Invalid student partner organization'
+        })
+      }
+    }
+
+    // Volunteer partner org check (if no signup code provided)
+    if (isVolunteer && !code) {
+      const allVolunteerPartnerManifests = config.volunteerPartnerManifests
+      const volunteerPartnerManifest =
+        allVolunteerPartnerManifests[volunteerPartnerOrg]
+
+      if (!volunteerPartnerManifest) {
         return res.status(422).json({
           err: 'Invalid volunteer partner organization'
         })
       }
 
-      const partnerOrgDomains = orgManifest.requiredEmailDomains
+      const volunteerPartnerDomains =
+        volunteerPartnerManifest.requiredEmailDomains
 
-      // Confirm email has one of partner org's required domains
-      if (partnerOrgDomains && partnerOrgDomains.length) {
+      // Confirm email has one of volunteer partner's required domains
+      if (volunteerPartnerDomains && volunteerPartnerDomains.length) {
         const userEmailDomain = email.split('@')[1]
-        if (partnerOrgDomains.indexOf(userEmailDomain) === -1) {
+        if (volunteerPartnerDomains.indexOf(userEmailDomain) === -1) {
           return res.status(422).json({
             err: 'Invalid email domain for volunteer partner organization'
           })
@@ -175,11 +181,19 @@ module.exports = function(app) {
     }
 
     // Look up high school
-    const promise = new Promise((resolve, reject) => {
+    const highschoolLookupPromise = new Promise((resolve, reject) => {
       if (isVolunteer) {
         // don't look up high schools for volunteers
         resolve({
           isVolunteer: true
+        })
+
+        // early exit
+        return
+      } else if (studentPartnerOrg && !highSchoolUpchieveId) {
+        // don't require valid high school for students referred from partner
+        resolve({
+          isVolunteer: false
         })
 
         // early exit
@@ -189,7 +203,7 @@ module.exports = function(app) {
       School.findByUpchieveId(highSchoolUpchieveId, (err, school) => {
         if (err) {
           reject(err)
-        } else if (!school.isApproved) {
+        } else if (!studentPartnerOrg && !school.isApproved) {
           reject(new Error(`School ${highSchoolUpchieveId} is not approved`))
         } else {
           resolve({
@@ -200,13 +214,15 @@ module.exports = function(app) {
       })
     })
 
-    promise
+    highschoolLookupPromise
       .then(({ isVolunteer, school }) => {
         const user = new User()
         user.email = email
         user.isVolunteer = isVolunteer
         user.registrationCode = code
         user.volunteerPartnerOrg = volunteerPartnerOrg
+        user.studentPartnerOrg = studentPartnerOrg
+        user.partnerUserId = partnerUserId
         user.approvedHighschool = school
         user.college = college
         user.phonePretty = phone
@@ -274,7 +290,6 @@ module.exports = function(app) {
                     )
                   } else {
                     res.json({
-                      // msg: msg,
                       user: user
                     })
                   }
@@ -289,32 +304,60 @@ module.exports = function(app) {
       })
   })
 
-  router.get('/org-manifest', function(req, res) {
-    const orgId = req.query.orgId
+  router.get('/partner/volunteer', function(req, res) {
+    const volunteerPartnerId = req.query.partnerId
 
-    if (!orgId) {
+    if (!volunteerPartnerId) {
       return res.status(422).json({
-        err: 'Missing orgId query string'
+        err: 'Missing volunteerPartnerId query string'
       })
     }
 
-    const allOrgManifests = config.orgManifests
+    const allVolunteerPartnerManifests = config.volunteerPartnerManifests
 
-    if (!allOrgManifests) {
+    if (!allVolunteerPartnerManifests) {
       return res.status(422).json({
-        err: 'Missing orgManifests in config'
+        err: 'Missing volunteerPartnerManifests in config'
       })
     }
 
-    const orgManifest = allOrgManifests[orgId]
+    const partnerManifest = allVolunteerPartnerManifests[volunteerPartnerId]
 
-    if (!orgManifest) {
+    if (!partnerManifest) {
       return res.status(404).json({
-        err: `No org manifest found for orgId "${orgId}"`
+        err: `No manifest found for volunteerPartnerId "${volunteerPartnerId}"`
       })
     }
 
-    return res.json({ orgManifest })
+    return res.json({ volunteerPartner: partnerManifest })
+  })
+
+  router.get('/partner/student', function(req, res) {
+    const studentPartnerId = req.query.partnerId
+
+    if (!studentPartnerId) {
+      return res.status(422).json({
+        err: 'Missing studentPartnerId query string'
+      })
+    }
+
+    const allStudentPartnerManifests = config.studentPartnerManifests
+
+    if (!allStudentPartnerManifests) {
+      return res.status(422).json({
+        err: 'Missing studentPartnerManifests in config'
+      })
+    }
+
+    const partnerManifest = allStudentPartnerManifests[studentPartnerId]
+
+    if (!partnerManifest) {
+      return res.status(404).json({
+        err: `No manifest found for studentPartnerId "${studentPartnerId}"`
+      })
+    }
+
+    return res.json({ studentPartner: partnerManifest })
   })
 
   router.post('/register/check', function(req, res, next) {

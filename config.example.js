@@ -29,15 +29,27 @@ module.exports = {
   },
   socketsPort: 3001,
 
-  orgManifests: {
+  volunteerPartnerManifests: {
     example: {
       name: 'Example Inc',
-      requiredEmailDomains: ['example.com']
+      requiredEmailDomains: ['example.com'],
+      mathCoachingOnly: false
     },
     foobar: {
       name: 'Foo Bar & Co',
       requiredEmailDomains: ['example.org', 'example.net'],
       mathCoachingOnly: true
+    }
+  },
+
+  studentPartnerManifests: {
+    example: {
+      name: 'The Example Foundation',
+      highSchoolSignup: false
+    },
+    example2: {
+      name: 'Example & Co',
+      highSchoolSignup: true
     }
   },
 

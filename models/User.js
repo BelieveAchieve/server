@@ -167,6 +167,11 @@ var userSchema = new mongoose.Schema(
 
     pastSessions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Session' }],
 
+    partnerUserId: {
+      type: String,
+      select: false
+    },
+
     /**
      * BEGIN STUDENT ATTRS
      */
@@ -178,6 +183,7 @@ var userSchema = new mongoose.Schema(
       /* TODO validate approvedHighschool.isApproved: true
        * if this.isVolunteer is false */
     },
+    studentPartnerOrg: String,
     /**
      * END STUDENT ATTRS
      */
@@ -542,8 +548,12 @@ userSchema.virtual('mathCoachingOnly').get(function() {
   if (!this.isVolunteer) return null
   if (!this.volunteerPartnerOrg) return false
 
-  const orgManifest = config.orgManifests[this.volunteerPartnerOrg]
-  return !!orgManifest && !!orgManifest['mathCoachingOnly']
+  const volunteerPartnerManifest =
+    config.volunteerPartnerManifests[this.volunteerPartnerOrg]
+
+  return (
+    !!volunteerPartnerManifest && !!volunteerPartnerManifest['mathCoachingOnly']
+  )
 })
 
 // Static method to determine if a registration code is valid
