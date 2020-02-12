@@ -7,7 +7,7 @@ const createQuizAction = async (userId, quizSubcategory, action) => {
     actionType: USER_ACTION.TYPE.QUIZ,
     action,
     user: userId,
-    quizSubcategory,
+    quizSubcategory: quizSubcategory.toUpperCase(),
     quizCategory: getSupercategory(quizSubcategory)
   })
 
