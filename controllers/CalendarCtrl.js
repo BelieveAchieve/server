@@ -29,7 +29,7 @@ module.exports = {
     }
 
     const newModifiedDate = new Date().toISOString()
-    user.elapsedAvailability = user.calculateElapsedAvailability(
+    user.elapsedAvailability += user.calculateElapsedAvailability(
       newModifiedDate
     )
     user.availabilityLastModifiedAt = newModifiedDate
