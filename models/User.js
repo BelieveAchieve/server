@@ -313,7 +313,7 @@ var userSchema = new mongoose.Schema(
     },
     availabilityLastModifiedAt: { type: Date, default: Date.now },
     lastActivityAt: { type: Date, default: Date.now },
-    elapsedAvailability: Number
+    elapsedAvailability: { type: Number, default: 0 }
     /**
      * END VOLUNTEER ATTRS
      */
