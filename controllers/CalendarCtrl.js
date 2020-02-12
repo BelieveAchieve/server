@@ -1,7 +1,8 @@
 module.exports = {
-  updateAvailability: function(options, callback) {
+  updateSchedule: function(options, callback) {
     const user = options.user
     const availability = options.availability
+    const tz = options.tz
 
     // verify that availability object is defined and not null
     if (!availability) {
@@ -29,25 +30,17 @@ module.exports = {
 
     user.availability = availability
     user.availabilityLastModifiedAt = new Date().toISOString()
+
+    // update timezone
+    if (tz) {
+      user.timezone = tz
+    }
+
     user.save(function(err, user) {
       if (err) {
         callback(err, null)
       } else {
         callback(null, availability)
-      }
-    })
-  },
-
-  updateTimezone: function(options, callback) {
-    const user = options.user
-    const tz = options.tz
-
-    user.timezone = tz
-    user.save(function(err, user) {
-      if (err) {
-        callback(err, null)
-      } else {
-        callback(null, tz)
       }
     })
   }
