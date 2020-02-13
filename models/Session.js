@@ -159,7 +159,6 @@ sessionSchema.methods.joinUser = async function(user) {
     this.student = user
   }
 
-
   return this.save()
 }
 
