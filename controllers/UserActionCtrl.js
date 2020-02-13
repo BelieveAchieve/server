@@ -69,7 +69,7 @@ const repliedYesToSession = (userId, sessionId, userAgent) => {
     userId,
     sessionId,
     userAgent,
-    USER_ACTION.SESSION.REPLIED_YES,
+    USER_ACTION.SESSION.REPLIED_YES
   )
 }
 
