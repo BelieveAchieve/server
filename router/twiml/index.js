@@ -54,6 +54,7 @@ module.exports = function(app) {
      */
     const yesRegex = /\b(yes|yeah|yea|yess|yesss|ye|ya|yaa|yee|y|yeh|yah|sure)\b/gim
     const isYesMessage = !!incomingMessage.match(yesRegex)
+    let session
 
     if (isYesMessage) {
       try {
@@ -73,11 +74,7 @@ module.exports = function(app) {
         })
 
         // Get the session if it exists, or else an empty object
-        const session = _.get(
-          populatedUser,
-          'volunteerLastNotification.session',
-          {}
-        )
+        session = _.get(populatedUser, 'volunteerLastNotification.session', {})
 
         if (!session._id) {
           // Handle: No session found
@@ -87,16 +84,13 @@ module.exports = function(app) {
         } else if (session.volunteerJoinedAt) {
           // Handle: Different volunteer already joined
           twiml.message('A volunteer has already joined this session')
-          await UserActionCtrl.repliedYesToSession(userId, session._id)
         } else if (session.endedAt) {
           // Handle: Student already ended the session
           twiml.message('The student has cancelled their help request')
-          await UserActionCtrl.repliedYesToSession(userId, session._id)
         } else {
           // Handle: No issues, so send the session URL
           const sessionUrl = twilioService.getSessionUrl(session._id)
           twiml.message(sessionUrl)
-          await UserActionCtrl.repliedYesToSession(userId, session._id)
         }
       } catch (err) {
         return next(err)
@@ -110,6 +104,9 @@ module.exports = function(app) {
 
     res.writeHead(200, { 'Content-Type': 'text/xml' })
     res.end(twiml.toString())
+    if (isYesMessage && session._id) {
+      await UserActionCtrl.repliedYesToSession(userId, session._id)
+    }
   })
 
   app.use('/twiml', router)
