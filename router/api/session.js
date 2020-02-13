@@ -22,7 +22,8 @@ module.exports = function(router, io) {
         subTopic: sessionSubTopic
       })
 
-      await UserActionCtrl.requestedSession(user.id, session._id)
+      const userAgent = req.get('User-Agent')
+      await UserActionCtrl.requestedSession(user.id, session._id, userAgent)
       res.json({ sessionId: session._id })
     } catch (err) {
       next(err)

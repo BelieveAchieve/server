@@ -1,6 +1,8 @@
 const UserAction = require('../models/UserAction')
 const { USER_ACTION } = require('../constants')
 const getSupercategory = require('../utils/getSupercategory')
+const getDeviceFromUserAgent = require('../utils/getDeviceFromUserAgent')
+const userAgentParser = require('ua-parser-js')
 
 const createQuizAction = async (userId, quizSubcategory, action) => {
   const userActionDoc = new UserAction({
@@ -14,12 +16,19 @@ const createQuizAction = async (userId, quizSubcategory, action) => {
   return userActionDoc.save()
 }
 
-const createSessionAction = async (userId, sessionId, action) => {
+const createSessionAction = async (userId, sessionId, userAgent, action) => {
+  const uaResult = userAgentParser(userAgent)
+  const { device, browser, os } = uaResult
   const userActionDoc = new UserAction({
     user: userId,
     session: sessionId,
     actionType: USER_ACTION.TYPE.SESSION,
-    action
+    action,
+    device: device.vendor || getDeviceFromUserAgent(userAgent),
+    browser: browser.name || '',
+    browserVersion: browser.version || '',
+    operatingSystem: os.name || '',
+    operatingSystemVersion: os.version || ''
   })
 
   return userActionDoc.save()
@@ -46,20 +55,40 @@ const failedQuiz = (userId, quizCategory) => {
   return createQuizAction(userId, quizCategory, USER_ACTION.QUIZ.FAILED)
 }
 
-const requestedSession = (userId, sessionId) => {
-  return createSessionAction(userId, sessionId, USER_ACTION.SESSION.REQUESTED)
+const requestedSession = (userId, sessionId, userAgent) => {
+  return createSessionAction(
+    userId,
+    sessionId,
+    userAgent,
+    USER_ACTION.SESSION.REQUESTED
+  )
 }
 
-const repliedYesToSession = (userId, sessionId) => {
-  return createSessionAction(userId, sessionId, USER_ACTION.SESSION.REPLIED_YES)
+const repliedYesToSession = (userId, sessionId, userAgent) => {
+  return createSessionAction(
+    userId,
+    sessionId,
+    userAgent,
+    USER_ACTION.SESSION.REPLIED_YES,
+  )
 }
 
-const joinedSession = (userId, sessionId) => {
-  return createSessionAction(userId, sessionId, USER_ACTION.SESSION.JOINED)
+const joinedSession = (userId, sessionId, userAgent) => {
+  return createSessionAction(
+    userId,
+    sessionId,
+    userAgent,
+    USER_ACTION.SESSION.JOINED
+  )
 }
 
-const rejoinedSession = (userId, sessionId) => {
-  return createSessionAction(userId, sessionId, USER_ACTION.SESSION.REJOINED)
+const rejoinedSession = (userId, sessionId, userAgent) => {
+  return createSessionAction(
+    userId,
+    sessionId,
+    userAgent,
+    USER_ACTION.SESSION.REJOINED
+  )
 }
 
 const updatedProfile = userId => {
