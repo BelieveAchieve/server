@@ -85,18 +85,18 @@ module.exports = function(app) {
             'Error: No session found. You can try joining the session from the dashboard at app.upchieve.org'
           )
         } else if (session.volunteerJoinedAt) {
-          await UserActionCtrl.repliedYesToSession(userId, session._id)
           // Handle: Different volunteer already joined
           twiml.message('A volunteer has already joined this session')
-        } else if (session.endedAt) {
           await UserActionCtrl.repliedYesToSession(userId, session._id)
+        } else if (session.endedAt) {
           // Handle: Student already ended the session
           twiml.message('The student has cancelled their help request')
+          await UserActionCtrl.repliedYesToSession(userId, session._id)
         } else {
           // Handle: No issues, so send the session URL
-          await UserActionCtrl.repliedYesToSession(userId, session._id)
           const sessionUrl = twilioService.getSessionUrl(session._id)
           twiml.message(sessionUrl)
+          await UserActionCtrl.repliedYesToSession(userId, session._id)
         }
       } catch (err) {
         return next(err)
