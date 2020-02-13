@@ -46,4 +46,16 @@ module.exports = function(router) {
       }
     )
   })
+  router.get('/training/review/:category', async function(req, res, next) {
+    const { id } = req.user
+    const { category } = req.params
+
+    try {
+      await UserActionCtrl.viewedMaterials(id, category)
+    } catch (error) {
+      console.error(error)
+    }
+
+    res.sendStatus(204)
+  })
 }

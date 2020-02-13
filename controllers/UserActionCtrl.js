@@ -55,6 +55,14 @@ const failedQuiz = (userId, quizCategory) => {
   return createQuizAction(userId, quizCategory, USER_ACTION.QUIZ.FAILED)
 }
 
+const viewedMaterials = (userId, quizCategory) => {
+  return createQuizAction(
+    userId,
+    quizCategory,
+    USER_ACTION.QUIZ.VIEWED_MATERIALS
+  )
+}
+
 const requestedSession = (userId, sessionId, userAgent) => {
   return createSessionAction(
     userId,
@@ -103,6 +111,7 @@ module.exports = {
   startedQuiz,
   passedQuiz,
   failedQuiz,
+  viewedMaterials,
   requestedSession,
   joinedSession,
   rejoinedSession,
