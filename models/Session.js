@@ -2,7 +2,6 @@ const mongoose = require('mongoose')
 const Sentry = require('@sentry/node')
 
 const Message = require('./Message')
-const UserActionCtrl = require('../controllers/UserActionCtrl')
 
 const validTypes = ['Math', 'College']
 
@@ -128,7 +127,6 @@ function failJoin(session, user, error) {
 // this method should callback with an error on attempts to join by non-participants
 // so that SessionCtrl knows to disconnect the socket
 sessionSchema.methods.joinUser = async function(user) {
-  let isInitialVolunteerJoin = false
   if (this.endedAt) {
     failJoin(this, user, new Error('Session has ended'))
   }
@@ -143,9 +141,7 @@ sessionSchema.methods.joinUser = async function(user) {
         )
       }
     } else {
-      isInitialVolunteerJoin = true
       this.volunteer = user
-      await UserActionCtrl.joinedSession(user._id, this._id)
     }
 
     if (!this.volunteerJoinedAt) {
@@ -163,15 +159,6 @@ sessionSchema.methods.joinUser = async function(user) {
     this.student = user
   }
 
-  // After 30 seconds of the this.createdAt, we can assume the user is
-  // rejoining the session instead of joining for the first time
-  const thirtySecondsElapsed = 1000 * 30
-  if (
-    !isInitialVolunteerJoin &&
-    Date.parse(this.createdAt) + thirtySecondsElapsed < Date.now()
-  ) {
-    await UserActionCtrl.rejoinedSession(user._id, this._id)
-  }
 
   return this.save()
 }

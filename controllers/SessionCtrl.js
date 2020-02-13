@@ -1,5 +1,5 @@
 const Session = require('../models/Session')
-
+const UserActionCtrl = require('../controllers/UserActionCtrl')
 const sessionService = require('../services/SessionService')
 const twilioService = require('../services/twilio')
 
@@ -73,6 +73,7 @@ module.exports = function(socketService) {
     join: async function(socket, options) {
       const sessionId = options.sessionId
       const user = options.user
+      const userAgent = socket.request.headers['user-agent']
 
       if (!user) {
         throw new Error('User not authenticated')
@@ -84,7 +85,23 @@ module.exports = function(socketService) {
       }
 
       try {
+        const isInitialVolunteerJoin = !session.volunteer
+
         await session.joinUser(user)
+
+        if (isInitialVolunteerJoin && user.isVolunteer) {
+          await UserActionCtrl.joinedSession(user._id, session._id, userAgent)
+        }
+
+        // After 30 seconds of the this.createdAt, we can assume the user is
+        // rejoining the session instead of joining for the first time
+        const thirtySecondsElapsed = 1000 * 30
+        if (
+          !isInitialVolunteerJoin &&
+          Date.parse(session.createdAt) + thirtySecondsElapsed < Date.now()
+        ) {
+          await UserActionCtrl.rejoinedSession(user._id, session._id, userAgent)
+        }
 
         socketService.joinUserToSession(sessionId, user._id, socket)
 
