@@ -8,7 +8,6 @@ const MessagingResponse = require('twilio').twiml.MessagingResponse
 const config = require('../../config')
 const twilioService = require('../../services/twilio')
 const User = require('../../models/User')
-const UserActionCtrl = require('../../controllers/UserActionCtrl')
 
 module.exports = function(app) {
   console.log('TwiML module')
@@ -43,7 +42,6 @@ module.exports = function(app) {
 
     const incomingMessage = req.body.Body
     const incomingPhoneNumber = req.body.From
-    const userId = req.user.id
 
     if (!incomingPhoneNumber)
       return res.status(422).json({ err: 'Error: Missing phone number' })
@@ -54,7 +52,6 @@ module.exports = function(app) {
      */
     const yesRegex = /\b(yes|yeah|yea|yess|yesss|ye|ya|yaa|yee|y|yeh|yah|sure)\b/gim
     const isYesMessage = !!incomingMessage.match(yesRegex)
-    let session
 
     if (isYesMessage) {
       try {
@@ -74,7 +71,11 @@ module.exports = function(app) {
         })
 
         // Get the session if it exists, or else an empty object
-        session = _.get(populatedUser, 'volunteerLastNotification.session', {})
+        const session = _.get(
+          populatedUser,
+          'volunteerLastNotification.session',
+          {}
+        )
 
         if (!session._id) {
           // Handle: No session found
@@ -104,9 +105,6 @@ module.exports = function(app) {
 
     res.writeHead(200, { 'Content-Type': 'text/xml' })
     res.end(twiml.toString())
-    if (isYesMessage && session._id) {
-      await UserActionCtrl.repliedYesToSession(userId, session._id)
-    }
   })
 
   app.use('/twiml', router)
