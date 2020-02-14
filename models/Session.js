@@ -145,7 +145,9 @@ sessionSchema.methods.joinUser = async function(user) {
     } else {
       isInitialVolunteerJoin = true
       this.volunteer = user
-      await UserActionCtrl.joinedSession(user._id, this._id)
+      UserActionCtrl.joinedSession(user._id, this._id).catch(error =>
+        Sentry.captureException(error)
+      )
     }
 
     if (!this.volunteerJoinedAt) {
@@ -170,7 +172,9 @@ sessionSchema.methods.joinUser = async function(user) {
     !isInitialVolunteerJoin &&
     Date.parse(this.createdAt) + thirtySecondsElapsed < Date.now()
   ) {
-    await UserActionCtrl.rejoinedSession(user._id, this._id)
+    UserActionCtrl.rejoinedSession(user._id, this._id).catch(error =>
+      Sentry.captureException(error)
+    )
   }
 
   return this.save()
