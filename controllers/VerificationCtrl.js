@@ -68,7 +68,7 @@ module.exports = {
       // early exit
       return callback(new Error('Invalid verification token'))
     }
-    
+
     async.waterfall(
       [
         function(done) {
