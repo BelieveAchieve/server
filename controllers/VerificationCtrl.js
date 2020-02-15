@@ -63,6 +63,12 @@ module.exports = {
   finishVerification: function(options, callback) {
     var token = options.token
 
+    // make sure token is a valid 16-byte hex string
+    if (!token.match(/^[a-f0-9]{32}$/)) {
+      // early exit
+      return callback(new Error('Invalid verification token'))
+    }
+    
     async.waterfall(
       [
         function(done) {
