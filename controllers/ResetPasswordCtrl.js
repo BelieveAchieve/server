@@ -64,6 +64,12 @@ module.exports = {
     var email = options.email
     var token = options.token
 
+    // make sure token is a valid 16-byte hex string
+    if (!token.match(/^[a-f0-9]{32}$/)) {
+      // early exit
+      return callback(new Error('Invalid password reset token'))
+    }
+
     async.waterfall(
       [
         // Find the user whose password is being reset and check if email matches

@@ -28,8 +28,12 @@ module.exports = {
       return callback(new Error('Availability object missing required keys'))
     }
 
+    const newModifiedDate = new Date().toISOString()
+    user.elapsedAvailability += user.calculateElapsedAvailability(
+      newModifiedDate
+    )
+    user.availabilityLastModifiedAt = newModifiedDate
     user.availability = availability
-    user.availabilityLastModifiedAt = new Date().toISOString()
 
     // update timezone
     if (tz) {

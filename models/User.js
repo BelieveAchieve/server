@@ -1,8 +1,14 @@
-var mongoose = require('mongoose')
-var bcrypt = require('bcrypt')
-var validator = require('validator')
+const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
+const validator = require('validator')
+const moment = require('moment-timezone')
+const countAvailabilityHours = require('../utils/count-availability-hours')
+const removeTimeFromDate = require('../utils/remove-time-from-date')
+const getFrequencyOfDays = require('../utils/get-frequency-of-days')
+const calculateTotalHours = require('../utils/calculate-total-hours')
+const countOutOfRangeHours = require('../utils/count-out-of-range-hours')
 
-var config = require('../config.js')
+const config = require('../config.js')
 
 const weeksSince = date => {
   // 604800000 = milliseconds in a week
@@ -311,7 +317,8 @@ var userSchema = new mongoose.Schema(
       }
     },
     availabilityLastModifiedAt: { type: Date, default: Date.now },
-    lastActivityAt: { type: Date, default: Date.now }
+    lastActivityAt: { type: Date, default: Date.now },
+    elapsedAvailability: { type: Number, default: 0 }
     /**
      * END VOLUNTEER ATTRS
      */
@@ -398,6 +405,45 @@ userSchema.methods.populateForVolunteerStats = function(cb) {
     'createdAt volunteerJoinedAt endedAt',
     cb
   )
+}
+
+// Calculates the amount of hours between this.availabilityLastModifiedAt
+// and the current time that a user updates to a new availability
+userSchema.methods.calculateElapsedAvailability = function(newModifiedDate) {
+  const availabilityLastModifiedAt = moment(this.availabilityLastModifiedAt)
+    .tz('America/New_York')
+    .format()
+  const estTimeNewModifiedDate = moment(newModifiedDate)
+    .tz('America/New_York')
+    .format()
+
+  // Convert availability to an object formatted with the day of the week
+  // as the property and the amount of hours they have available for that day as the value
+  // e.g { Monday: 10, Tuesday: 3 }
+  const totalAvailabilityHoursMapped = countAvailabilityHours(
+    this.availability.toObject()
+  )
+
+  // Count the occurrence of days of the week between a start and end date
+  const frequencyOfDaysList = getFrequencyOfDays(
+    removeTimeFromDate(availabilityLastModifiedAt),
+    removeTimeFromDate(estTimeNewModifiedDate)
+  )
+
+  let totalHours = calculateTotalHours(
+    totalAvailabilityHoursMapped,
+    frequencyOfDaysList
+  )
+
+  // Deduct the amount hours that fall outside of the start and end date time
+  const outOfRangeHours = countOutOfRangeHours(
+    availabilityLastModifiedAt,
+    estTimeNewModifiedDate,
+    this.availability.toObject()
+  )
+  totalHours -= outOfRangeHours
+
+  return totalHours
 }
 
 // regular expression that accepts multiple valid U. S. phone number formats
