@@ -69,7 +69,7 @@ module.exports = {
       // early exit
       return callback(new Error('Invalid password reset token'))
     }
-    
+
     async.waterfall(
       [
         // Find the user whose password is being reset and check if email matches
