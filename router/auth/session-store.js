@@ -6,7 +6,6 @@ const config = require('../../config')
 module.exports = function(app) {
   const sessionStore = new MongoStore({
     url: config.database,
-    autoReconnect: true,
     collection: 'auth-sessions'
   })
 

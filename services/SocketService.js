@@ -34,7 +34,7 @@ module.exports = function(io) {
       // query database to see if user is a volunteer
       const user = await User.findById(userId, 'isVolunteer').exec()
 
-      if (user.isVolunteer) {
+      if (user && user.isVolunteer) {
         socket.join('volunteers')
       }
 

@@ -265,15 +265,11 @@ const notifyFailsafe = async function(session, options) {
 
   var studentFirstname = populatedSession.student.firstname
 
-  var studentLastname = populatedSession.student.lastname
-
   var studentHighSchool = populatedStudent.highschoolName
 
   var isFirstTimeRequester =
     !populatedSession.student.pastSessions ||
     !populatedSession.student.pastSessions.length
-
-  var type = session.type
 
   var subtopic = session.subTopic
 
@@ -282,8 +278,6 @@ const notifyFailsafe = async function(session, options) {
   var voice = options.voice
 
   var isTestUserRequest = populatedSession.student.isTestUser
-
-  const firstTimeNotice = isFirstTimeRequester ? 'for the first time ' : ''
 
   const volunteerIdsNotified = populatedSession.notifications.map(
     notification => notification.volunteer
@@ -294,12 +288,6 @@ const notifyFailsafe = async function(session, options) {
     isFailsafeVolunteer: false
   }).exec()
 
-  const numberOfVolunteersNotifiedMessage =
-    `${numOfRegularVolunteersNotified} ` +
-    `regular volunteer${
-      numOfRegularVolunteersNotified === 1 ? ' has' : 's have'
-    } been notified.`
-
   const sessionUrl = getSessionUrl(session._id)
 
   // query the failsafe volunteers to notify
@@ -309,24 +297,19 @@ const notifyFailsafe = async function(session, options) {
   const notifications = []
 
   for (const volunteer of volunteersToNotify) {
-    const name = volunteer.firstname
-
     const phoneNumber = volunteer.phone
 
     let messageText
     if (desperate) {
       messageText =
-        `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
-        `from ${studentHighSchool} really needs your ${type} help ` +
-        `on ${subtopic}. ${numberOfVolunteersNotifiedMessage} ` +
-        `Please log in to app.upchieve.org and join the session ASAP!`
+        `Request by Student ${studentFirstname} still not filled. ` +
+        `Regular volunteers texted: ${numOfRegularVolunteersNotified}`
     } else {
       messageText =
-        `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
-        `from ${studentHighSchool} has requested ${type} help ` +
-        `${firstTimeNotice}at app.upchieve.org ` +
-        `on ${subtopic}. ${numberOfVolunteersNotifiedMessage} ` +
-        `Please log in if you can to help them out.`
+        `Student: ${studentFirstname}\n` +
+        `High School: ${studentHighSchool}\n` +
+        `Subject: ${subtopic}\n` +
+        `First Ever Request: ${isFirstTimeRequester ? 'Yes' : 'No'}\n`
     }
 
     if (!voice) {
