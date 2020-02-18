@@ -178,6 +178,8 @@ var userSchema = new mongoose.Schema(
       select: false
     },
 
+    lastActivityAt: { type: Date, default: Date.now },
+
     /**
      * BEGIN STUDENT ATTRS
      */
@@ -221,11 +223,15 @@ var userSchema = new mongoose.Schema(
     },
     favoriteAcademicSubject: String,
     college: String,
+
     availability: {
       type: availabilitySchema,
       default: availabilitySchema
     },
     timezone: String,
+    availabilityLastModifiedAt: { type: Date, default: Date.now },
+    elapsedAvailability: { type: Number, default: 0 },
+
     certifications: {
       algebra: {
         passed: {
@@ -315,10 +321,7 @@ var userSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       }
-    },
-    availabilityLastModifiedAt: { type: Date, default: Date.now },
-    lastActivityAt: { type: Date, default: Date.now },
-    elapsedAvailability: { type: Number, default: 0 }
+    }
     /**
      * END VOLUNTEER ATTRS
      */
