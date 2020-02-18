@@ -3,6 +3,9 @@ const Session = require('../models/Session')
 const sessionService = require('../services/SessionService')
 const twilioService = require('../services/twilio')
 
+const UserActionCtrl = require('../controllers/UserActionCtrl')
+const Sentry = require('@sentry/node')
+
 module.exports = function(socketService) {
   return {
     create: async function(options) {
@@ -65,6 +68,10 @@ module.exports = function(socketService) {
       socketService.emitSessionEnd(options.sessionId)
 
       twilioService.stopNotifications(session)
+
+      UserActionCtrl.endedSession(user._id, session._id).catch(error => {
+        Sentry.captureException(error)
+      })
 
       return session
     },
