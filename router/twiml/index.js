@@ -8,7 +8,6 @@ const MessagingResponse = require('twilio').twiml.MessagingResponse
 const config = require('../../config')
 const twilioService = require('../../services/twilio')
 const User = require('../../models/User')
-const UserActionCtrl = require('../../controllers/UserActionCtrl')
 
 module.exports = function(app) {
   console.log('TwiML module')
@@ -43,7 +42,6 @@ module.exports = function(app) {
 
     const incomingMessage = req.body.Body
     const incomingPhoneNumber = req.body.From
-    const userId = req.user.id
 
     if (!incomingPhoneNumber)
       return res.status(422).json({ err: 'Error: Missing phone number' })
@@ -85,16 +83,13 @@ module.exports = function(app) {
             'Error: No session found. You can try joining the session from the dashboard at app.upchieve.org'
           )
         } else if (session.volunteerJoinedAt) {
-          UserActionCtrl.repliedYesToSession(userId, session._id)
           // Handle: Different volunteer already joined
           twiml.message('A volunteer has already joined this session')
         } else if (session.endedAt) {
-          UserActionCtrl.repliedYesToSession(userId, session._id)
           // Handle: Student already ended the session
           twiml.message('The student has cancelled their help request')
         } else {
           // Handle: No issues, so send the session URL
-          UserActionCtrl.repliedYesToSession(userId, session._id)
           const sessionUrl = twilioService.getSessionUrl(session._id)
           twiml.message(sessionUrl)
         }
