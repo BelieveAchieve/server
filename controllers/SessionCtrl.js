@@ -2,6 +2,7 @@ const Session = require('../models/Session')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
 const sessionService = require('../services/SessionService')
 const twilioService = require('../services/twilio')
+const Sentry = require('@sentry/node')
 
 module.exports = function(socketService) {
   return {
@@ -86,12 +87,16 @@ module.exports = function(socketService) {
       }
 
       try {
-        const isInitialVolunteerJoin = !session.volunteer
+        const isInitialVolunteerJoin = user.isVolunteer && !session.volunteer
 
         await session.joinUser(user)
 
-        if (isInitialVolunteerJoin && user.isVolunteer) {
-          await UserActionCtrl.joinedSession(user._id, session._id, userAgent)
+        if (isInitialVolunteerJoin) {
+          UserActionCtrl.joinedSession(
+            user._id,
+            session._id,
+            userAgent
+          ).catch(error => Sentry.captureException(error))
         }
 
         // After 30 seconds of the this.createdAt, we can assume the user is
@@ -101,7 +106,11 @@ module.exports = function(socketService) {
           !isInitialVolunteerJoin &&
           Date.parse(session.createdAt) + thirtySecondsElapsed < Date.now()
         ) {
-          await UserActionCtrl.rejoinedSession(user._id, session._id, userAgent)
+          UserActionCtrl.rejoinedSession(
+            user._id,
+            session._id,
+            userAgent
+          ).catch(error => Sentry.captureException(error))
         }
 
         socketService.joinUserToSession(sessionId, user._id, socket)
