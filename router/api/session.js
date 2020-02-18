@@ -3,6 +3,7 @@ const SessionCtrl = require('../../controllers/SessionCtrl')
 const UserActionCtrl = require('../../controllers/UserActionCtrl')
 const SocketService = require('../../services/SocketService')
 const ObjectId = require('mongodb').ObjectId
+const Sentry = require('@sentry/node')
 
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
@@ -23,7 +24,11 @@ module.exports = function(router, io) {
       })
 
       const userAgent = req.get('User-Agent')
-      await UserActionCtrl.requestedSession(user.id, session._id, userAgent)
+      UserActionCtrl.requestedSession(
+        user.id,
+        session._id,
+        userAgent
+      ).catch(error => Sentry.captureException(error))
       res.json({ sessionId: session._id })
     } catch (err) {
       next(err)
