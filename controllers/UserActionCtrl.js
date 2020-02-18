@@ -17,8 +17,8 @@ const createQuizAction = async (userId, quizSubcategory, action) => {
 }
 
 const createSessionAction = async (userId, sessionId, userAgent, action) => {
-  const uaResult = userAgentParser(userAgent)
-  const { device, browser, os } = uaResult
+  const userAgentParserResult = userAgentParser(userAgent)
+  const { device, browser, os } = userAgentParserResult
   const userActionDoc = new UserAction({
     user: userId,
     session: sessionId,
