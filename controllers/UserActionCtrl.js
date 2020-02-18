@@ -17,18 +17,13 @@ const createQuizAction = async (userId, quizSubcategory, action) => {
 }
 
 const createSessionAction = async (userId, sessionId, userAgent, action) => {
-  const userAgentParserResult = userAgentParser(userAgent)
-  const { device, browser, os } = userAgentParserResult
+  const userAgentResult = getUserAgentInfo(userAgent)
   const userActionDoc = new UserAction({
     user: userId,
     session: sessionId,
     actionType: USER_ACTION.TYPE.SESSION,
     action,
-    device: device.vendor || getDeviceFromUserAgent(userAgent),
-    browser: browser.name || '',
-    browserVersion: browser.version || '',
-    operatingSystem: os.name || '',
-    operatingSystemVersion: os.version || ''
+    ...userAgentResult
   })
 
   return userActionDoc.save()
@@ -41,6 +36,24 @@ const createProfileAction = async (userId, action) => {
     action
   })
   return userActionDoc.save()
+}
+
+const getUserAgentInfo = userAgent => {
+  const userAgentParserResult = userAgentParser(userAgent)
+  const { device, browser, os } = userAgentParserResult
+  let result = {}
+
+  if (userAgent) {
+    result = {
+      device: device.vendor || getDeviceFromUserAgent(userAgent),
+      browser: browser.name || '',
+      browserVersion: browser.version || '',
+      operatingSystem: os.name || '',
+      operatingSystemVersion: os.version || ''
+    }
+  }
+
+  return result
 }
 
 const startedQuiz = (userId, quizCategory) => {
@@ -64,7 +77,7 @@ const requestedSession = (userId, sessionId, userAgent) => {
   )
 }
 
-const repliedYesToSession = (userId, sessionId, userAgent) => {
+const repliedYesToSession = (userId, sessionId, userAgent = '') => {
   return createSessionAction(
     userId,
     sessionId,
