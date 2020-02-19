@@ -302,14 +302,14 @@ const notifyFailsafe = async function(session, options) {
     let messageText
     if (desperate) {
       messageText =
-        `Request by Student ${studentFirstname} still not filled. ` +
+        `Request by Student ${studentFirstname} still not filled.\n` +
         `Regular volunteers texted: ${numOfRegularVolunteersNotified}`
     } else {
       messageText =
         `Student: ${studentFirstname}\n` +
         `High School: ${studentHighSchool}\n` +
         `Subject: ${subtopic}\n` +
-        `First Ever Request: ${isFirstTimeRequester ? 'Yes' : 'No'}\n`
+        `First Ever Request: ${isFirstTimeRequester ? 'Yes' : 'No'}`
     }
 
     if (!voice) {
