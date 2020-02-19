@@ -89,7 +89,7 @@ module.exports = function(socketService) {
       try {
         const isInitialVolunteerJoin = user.isVolunteer && !session.volunteer
 
-        session.joinUser(user)
+        await session.joinUser(user)
 
         if (isInitialVolunteerJoin) {
           twilioService.stopNotifications(session)
