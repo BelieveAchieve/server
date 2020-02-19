@@ -104,6 +104,15 @@ const rejoinedSession = (userId, sessionId, userAgent) => {
   )
 }
 
+const endedSession = (userId, sessionId, userAgent) => {
+  return createSessionAction(
+    userId,
+    sessionId,
+    userAgent,
+    USER_ACTION.SESSION.ENDED
+  )
+}
+
 const updatedProfile = userId => {
   return createProfileAction(userId, USER_ACTION.PROFILE.UPDATED_PROFILE)
 }
@@ -119,6 +128,7 @@ module.exports = {
   requestedSession,
   joinedSession,
   rejoinedSession,
+  endedSession,
   repliedYesToSession,
   updatedProfile,
   updatedAvailability
