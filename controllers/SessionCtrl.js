@@ -4,9 +4,6 @@ const sessionService = require('../services/SessionService')
 const twilioService = require('../services/twilio')
 const Sentry = require('@sentry/node')
 
-const UserActionCtrl = require('../controllers/UserActionCtrl')
-const Sentry = require('@sentry/node')
-
 module.exports = function(socketService) {
   return {
     create: async function(options) {
