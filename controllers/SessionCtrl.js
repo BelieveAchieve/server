@@ -89,7 +89,7 @@ module.exports = function(socketService) {
       try {
         const isInitialVolunteerJoin = user.isVolunteer && !session.volunteer
 
-        await session.joinUser(user)
+        session.joinUser(user)
 
         if (isInitialVolunteerJoin) {
           UserActionCtrl.joinedSession(
