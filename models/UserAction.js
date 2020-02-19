@@ -46,7 +46,12 @@ const userActionSchema = new mongoose.Schema({
     ]
   },
   quizCategory: String,
-  quizSubcategory: String
+  quizSubcategory: String,
+  device: String,
+  browser: String,
+  browserVersion: String,
+  operatingSystem: String,
+  operatingSystemVersion: String
 })
 
 module.exports = mongoose.model('UserAction', userActionSchema)

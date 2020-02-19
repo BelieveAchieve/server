@@ -23,9 +23,12 @@ module.exports = function(router, io) {
         subTopic: sessionSubTopic
       })
 
-      UserActionCtrl.requestedSession(user.id, session._id).catch(error =>
-        Sentry.captureException(error)
-      )
+      const userAgent = req.get('User-Agent')
+      UserActionCtrl.requestedSession(
+        user.id,
+        session._id,
+        userAgent
+      ).catch(error => Sentry.captureException(error))
       res.json({ sessionId: session._id })
     } catch (err) {
       next(err)
