@@ -1,4 +1,4 @@
-const cron = require('cron')
+const CronJob = require('cron').CronJob
 const mongoose = require('mongoose')
 const Sentry = require('@sentry/node')
 const config = require('../config')
@@ -9,33 +9,36 @@ const User = require('../models/User')
 const cronPatternDaily4am = '0 4 * * *'
 
 // Schedule daily update of elapsed availability
-cron.schedule(cronPatternDaily4am, async function() {
-  // Connect to database
-  try {
-    await mongoose.connect(config.database, { useNewUrlParser: true })
-  } catch (error) {
-    Sentry.captureException(error)
-  }
+const elapsedAvailabilityJob = new CronJob(
+  cronPatternDaily4am,
+  async function() {
+    // Fetch volunteers
+    const volunteers = await User.find({ isVolunteer: true })
 
-  // Fetch volunteers
-  const volunteers = await User.find({ isVolunteer: true })
+    // Update elapsed availability
+    await Promise.all(
+      volunteers.map(volunteer => {
+        const currentTime = Date.now()
+        const newElapsedAvailability = volunteer.calculateElapsedAvailability(
+          currentTime
+        )
 
-  // Update elapsed availability
-  await Promise.all(
-    volunteers.map(volunteer => {
-      const currentTime = Date.now()
-      const newElapsedAvailability = volunteer.calculateElapsedAvailability(
-        currentTime
-      )
+        volunteer.elapsedAvailability += newElapsedAvailability
+        volunteer.availabilityLastModifiedAt = currentTime
 
-      volunteer.elapsedAvailability += newElapsedAvailability
-      volunteer.availabilityLastModifiedAt = currentTime
-
-      return volunteer.save()
+        return volunteer.save()
+      })
+    ).catch(error => {
+      Sentry.captureException(error)
     })
-  ).catch(error => {
-    Sentry.captureException(error)
-  })
-})
+  },
+  null,
+  false,
+  'America/New_York'
+)
 
-cron.start()
+const startCronJobs = () => {
+  elapsedAvailabilityJob.start()
+}
+
+module.exports = startCronJobs
