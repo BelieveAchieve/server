@@ -58,7 +58,7 @@ module.exports = function(router) {
     try {
       await UserActionCtrl.viewedMaterials(id, category)
     } catch (error) {
-      console.error(error)
+      Sentry.captureException(error)
     }
 
     res.sendStatus(204)
