@@ -67,7 +67,6 @@ module.exports = function(socketService) {
 
       twilioService.stopNotifications(session)
 
-
       return session
     },
 
