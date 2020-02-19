@@ -1,7 +1,5 @@
 const CronJob = require('cron').CronJob
-const mongoose = require('mongoose')
 const Sentry = require('@sentry/node')
-const config = require('../config')
 const User = require('../models/User')
 
 // Cron pattern for: "each day at 4am"
@@ -11,7 +9,7 @@ const cronPatternDaily4am = '0 4 * * *'
 // Schedule daily update of elapsed availability
 const elapsedAvailabilityJob = new CronJob(
   cronPatternDaily4am,
-  async function() {
+  async () => {
     // Fetch volunteers
     const volunteers = await User.find({ isVolunteer: true })
 
