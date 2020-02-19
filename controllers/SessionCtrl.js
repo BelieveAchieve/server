@@ -92,6 +92,8 @@ module.exports = function(socketService) {
         session.joinUser(user)
 
         if (isInitialVolunteerJoin) {
+          twilioService.stopNotifications(session)
+
           UserActionCtrl.joinedSession(
             user._id,
             session._id,
@@ -114,10 +116,6 @@ module.exports = function(socketService) {
         }
 
         socketService.joinUserToSession(sessionId, user._id, socket)
-
-        if (user.isVolunteer) {
-          twilioService.stopNotifications(session)
-        }
       } catch (err) {
         // data passed so client knows whether the session has ended or was fulfilled
         socketService.bump(socket, { endedAt: session.endedAt }, err)
