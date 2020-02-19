@@ -1,7 +1,8 @@
 const Session = require('../models/Session')
-
+const UserActionCtrl = require('../controllers/UserActionCtrl')
 const sessionService = require('../services/SessionService')
 const twilioService = require('../services/twilio')
+const Sentry = require('@sentry/node')
 
 module.exports = function(socketService) {
   return {
@@ -74,6 +75,7 @@ module.exports = function(socketService) {
     join: async function(socket, options) {
       const sessionId = options.sessionId
       const user = options.user
+      const userAgent = socket.request.headers['user-agent']
 
       if (!user) {
         throw new Error('User not authenticated')
@@ -85,13 +87,35 @@ module.exports = function(socketService) {
       }
 
       try {
-        await session.joinUser(user)
+        const isInitialVolunteerJoin = user.isVolunteer && !session.volunteer
+
+        session.joinUser(user)
+
+        if (isInitialVolunteerJoin) {
+          twilioService.stopNotifications(session)
+
+          UserActionCtrl.joinedSession(
+            user._id,
+            session._id,
+            userAgent
+          ).catch(error => Sentry.captureException(error))
+        }
+
+        // After 30 seconds of the this.createdAt, we can assume the user is
+        // rejoining the session instead of joining for the first time
+        const thirtySecondsElapsed = 1000 * 30
+        if (
+          !isInitialVolunteerJoin &&
+          Date.parse(session.createdAt) + thirtySecondsElapsed < Date.now()
+        ) {
+          UserActionCtrl.rejoinedSession(
+            user._id,
+            session._id,
+            userAgent
+          ).catch(error => Sentry.captureException(error))
+        }
 
         socketService.joinUserToSession(sessionId, user._id, socket)
-
-        if (user.isVolunteer) {
-          twilioService.stopNotifications(session)
-        }
       } catch (err) {
         // data passed so client knows whether the session has ended or was fulfilled
         socketService.bump(socket, { endedAt: session.endedAt }, err)

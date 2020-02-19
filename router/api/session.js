@@ -23,9 +23,12 @@ module.exports = function(router, io) {
         subTopic: sessionSubTopic
       })
 
-      UserActionCtrl.requestedSession(user.id, session._id).catch(error =>
-        Sentry.captureException(error)
-      )
+      const userAgent = req.get('User-Agent')
+      UserActionCtrl.requestedSession(
+        user.id,
+        session._id,
+        userAgent
+      ).catch(error => Sentry.captureException(error))
       res.json({ sessionId: session._id })
     } catch (err) {
       next(err)
@@ -36,12 +39,18 @@ module.exports = function(router, io) {
     const data = req.body || {}
     const sessionId = data.sessionId
     const user = req.user
+    const userAgent = req.get('User-Agent')
 
     try {
       const session = await sessionCtrl.end({
         sessionId: sessionId,
         user: user
       })
+      UserActionCtrl.endedSession(user._id, session._id, userAgent).catch(
+        error => {
+          Sentry.captureException(error)
+        }
+      )
       res.json({ sessionId: session._id })
     } catch (err) {
       next(err)

@@ -69,6 +69,7 @@
     "q": "^1.4.1",
     "socket.io": "^2.2.0",
     "twilio": "^3.28.1",
+    "ua-parser-js": "^0.7.21",
     "validator": "^6.2.0"
   },
   "devDependencies": {
