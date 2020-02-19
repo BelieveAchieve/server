@@ -43,7 +43,8 @@ module.exports = function(app) {
 
     const incomingMessage = req.body.Body
     const incomingPhoneNumber = req.body.From
-    const userId = req.user.id
+    let userId
+    let session
 
     if (!incomingPhoneNumber)
       return res.status(422).json({ err: 'Error: Missing phone number' })
@@ -72,12 +73,10 @@ module.exports = function(app) {
           }
         })
 
+        userId = populatedUser._id
+
         // Get the session if it exists, or else an empty object
-        const session = _.get(
-          populatedUser,
-          'volunteerLastNotification.session',
-          {}
-        )
+        session = _.get(populatedUser, 'volunteerLastNotification.session', {})
 
         if (!session._id) {
           // Handle: No session found
@@ -110,6 +109,10 @@ module.exports = function(app) {
 
     res.writeHead(200, { 'Content-Type': 'text/xml' })
     res.end(twiml.toString())
+
+    if (isYesMessage && session._id) {
+      UserActionCtrl.repliedYesToSession(userId, session._id)
+    }
   })
 
   app.use('/twiml', router)

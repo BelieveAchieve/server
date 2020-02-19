@@ -126,7 +126,7 @@ function failJoin(session, user, error) {
 
 // this method should callback with an error on attempts to join by non-participants
 // so that SessionCtrl knows to disconnect the socket
-sessionSchema.methods.joinUser = async function(user) {
+sessionSchema.methods.joinUser = function(user) {
   if (this.endedAt) {
     failJoin(this, user, new Error('Session has ended'))
   }

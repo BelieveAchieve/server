@@ -17,18 +17,13 @@ const createQuizAction = async (userId, quizSubcategory, action) => {
 }
 
 const createSessionAction = async (userId, sessionId, userAgent, action) => {
-  const uaResult = userAgentParser(userAgent)
-  const { device, browser, os } = uaResult
+  const userAgentResult = getUserAgentInfo(userAgent)
   const userActionDoc = new UserAction({
     user: userId,
     session: sessionId,
     actionType: USER_ACTION.TYPE.SESSION,
     action,
-    device: device.vendor || getDeviceFromUserAgent(userAgent),
-    browser: browser.name || '',
-    browserVersion: browser.version || '',
-    operatingSystem: os.name || '',
-    operatingSystemVersion: os.version || ''
+    ...userAgentResult
   })
 
   return userActionDoc.save()
@@ -41,6 +36,24 @@ const createProfileAction = async (userId, action) => {
     action
   })
   return userActionDoc.save()
+}
+
+const getUserAgentInfo = userAgent => {
+  const userAgentParserResult = userAgentParser(userAgent)
+  const { device, browser, os } = userAgentParserResult
+  let result = {}
+
+  if (userAgent) {
+    result = {
+      device: device.vendor || getDeviceFromUserAgent(userAgent),
+      browser: browser.name || '',
+      browserVersion: browser.version || '',
+      operatingSystem: os.name || '',
+      operatingSystemVersion: os.version || ''
+    }
+  }
+
+  return result
 }
 
 const startedQuiz = (userId, quizCategory) => {
@@ -72,7 +85,7 @@ const requestedSession = (userId, sessionId, userAgent) => {
   )
 }
 
-const repliedYesToSession = (userId, sessionId, userAgent) => {
+const repliedYesToSession = (userId, sessionId, userAgent = '') => {
   return createSessionAction(
     userId,
     sessionId,
@@ -99,6 +112,15 @@ const rejoinedSession = (userId, sessionId, userAgent) => {
   )
 }
 
+const endedSession = (userId, sessionId, userAgent) => {
+  return createSessionAction(
+    userId,
+    sessionId,
+    userAgent,
+    USER_ACTION.SESSION.ENDED
+  )
+}
+
 const updatedProfile = userId => {
   return createProfileAction(userId, USER_ACTION.PROFILE.UPDATED_PROFILE)
 }
@@ -115,6 +137,7 @@ module.exports = {
   requestedSession,
   joinedSession,
   rejoinedSession,
+  endedSession,
   repliedYesToSession,
   updatedProfile,
   updatedAvailability
