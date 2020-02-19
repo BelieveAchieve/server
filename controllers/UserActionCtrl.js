@@ -91,8 +91,13 @@ const rejoinedSession = (userId, sessionId, userAgent) => {
   )
 }
 
-const endedSession = (userId, sessionId) => {
-  return createSessionAction(userId, sessionId, USER_ACTION.SESSION.ENDED)
+const endedSession = (userId, sessionId, userAgent) => {
+  return createSessionAction(
+    userId,
+    sessionId,
+    userAgent,
+    USER_ACTION.SESSION.ENDED
+  )
 }
 
 const updatedProfile = userId => {
