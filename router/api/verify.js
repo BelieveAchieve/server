@@ -50,13 +50,17 @@ module.exports = function(router) {
   router
     .route('/verificationtoken')
     .all(passport.isAdmin)
-    .get(function(req, res, next) {
+    .get(async function(req, res, next) {
       const userId = req.query.userid
 
-      const user = User.findOne({ _id: userId })
-
-      res.json({
-        verificationToken: user.verificationToken
-      })
+      try {
+        const user = await User.findOne({ _id: userId })
+  
+        res.json({
+          verificationToken: user.verificationToken
+        })
+      } catch (err) {
+        next(err)
+      }
     })
 }
