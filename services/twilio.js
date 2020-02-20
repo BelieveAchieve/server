@@ -407,18 +407,16 @@ module.exports = {
       })
   },
 
-  // begin notifying non-failsafe volunteers for a session
+  // Begin notifying non-failsafe volunteers for a session
   beginRegularNotifications: async function(session) {
-    // check that twilio client has been authenticated
+    // Check that twilio client has been authenticated
     if (!twilioClient) {
       // early exit
       return
     }
 
-    // initial wave
-    await notifyRegular(session)
-
-    // set 3-minute notification interval
+    // Schedule future notification waves (once every 3 mins, starting in 3 mins)
+    // These will continue until the session is fulfilled or ended
     const interval = setInterval(
       async session => {
         const numVolunteersNotified = await notifyRegular(session)
@@ -429,9 +427,11 @@ module.exports = {
       120000,
       session
     )
-
     // store interval in memory
     getSessionTimeoutFor(session).intervals.push(interval)
+
+    // Send initial wave of notifications (right now)
+    await notifyRegular(session)
   },
 
   // begin notifying failsafe volunteers for a session
