@@ -2,7 +2,7 @@ var config = require('../config.js')
 var User = require('../models/User')
 var twilio = require('twilio')
 var moment = require('moment-timezone')
-const client =
+const twilioClient =
   config.accountSid && config.authToken
     ? twilio(config.accountSid, config.authToken)
     : null
@@ -119,7 +119,7 @@ function sendTextMessage(phoneNumber, messageText, isTestUserRequest) {
   const fullPhoneNumber =
     phoneNumber[0] === '+' ? phoneNumber : `+1${phoneNumber}`
 
-  return client.messages
+  return twilioClient.messages
     .create({
       to: fullPhoneNumber,
       from: config.sendingNumber,
@@ -154,7 +154,7 @@ function sendVoiceMessage(phoneNumber, messageText) {
 
   // initiate call, giving Twilio the aforementioned URL which Twilio
   // opens when the call is answered to get the TwiML instructions
-  return client.calls
+  return twilioClient.calls
     .create({
       url: url,
       to: fullPhoneNumber,
@@ -409,8 +409,8 @@ module.exports = {
 
   // begin notifying non-failsafe volunteers for a session
   beginRegularNotifications: async function(session) {
-    // check that client has been authenticated
-    if (!client) {
+    // check that twilio client has been authenticated
+    if (!twilioClient) {
       // early exit
       return
     }
@@ -437,7 +437,7 @@ module.exports = {
   // begin notifying failsafe volunteers for a session
   beginFailsafeNotifications: async function(session) {
     // check that client has been authenticated
-    if (!client) {
+    if (!twilioClient) {
       // early exit
       return
     }
