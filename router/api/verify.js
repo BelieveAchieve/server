@@ -1,3 +1,5 @@
+const passport = require('../auth/passport')
+
 var VerificationCtrl = require('../../controllers/VerificationCtrl')
 
 const User = require('../../models/User')
@@ -45,7 +47,9 @@ module.exports = function(router) {
   })
 
   // Get verification token for a user id (admins only)
-  router.get('/verificationtoken', function(req, res, next) {
+  router.route('/verificationtoken')
+    .all(passport.isAdmin)
+    .get(function(req, res, next) {
     const userId = req.query.userid
 
     const user = User.findOne({ _id: userId })
