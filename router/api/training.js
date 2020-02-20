@@ -51,15 +51,13 @@ module.exports = function(router) {
       }
     )
   })
-  router.get('/training/review/:category', async function(req, res, next) {
+  router.get('/training/review/:category', function(req, res, next) {
     const { id } = req.user
     const { category } = req.params
 
-    try {
-      await UserActionCtrl.viewedMaterials(id, category)
-    } catch (error) {
+    UserActionCtrl.viewedMaterials(id, category).catch(error =>
       Sentry.captureException(error)
-    }
+    )
 
     res.sendStatus(204)
   })
