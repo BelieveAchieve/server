@@ -377,6 +377,16 @@ module.exports = function(app) {
     })
   })
 
+  // List all valid registration codes (admins only)
+  router
+    .route('/register/volunteercodes')
+    .all(passport.isAdmin)
+    .get(function(req, res, next) {
+      res.json({
+        volunteerCodes: config.VOLUNTEER_CODES.split(',')
+      })
+    })
+
   router.post('/reset/send', function(req, res, next) {
     var email = req.body.email
     if (!email) {
