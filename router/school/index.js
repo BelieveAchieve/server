@@ -61,10 +61,16 @@ module.exports = function(app) {
     .route('/findeligible')
     .all(passport.isAdmin)
     .get(function(req, res, next) {
-      School.find({}, null, {
-        limit: parseInt(req.query.limit),
-        skip: parseInt(req.query.skip)
-      })
+      School.find(
+        {
+          isApproved: true
+        },
+        null,
+        {
+          limit: parseInt(req.query.limit),
+          skip: parseInt(req.query.skip)
+        }
+      )
         .exec()
         .then(eligibleSchools => {
           res.json({ eligibleSchools })
