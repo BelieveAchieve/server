@@ -56,7 +56,7 @@ module.exports = function(router) {
       const user = User.findOne({ _id: userId })
 
       res.json({
-        verificationToken: user.token
+        verificationToken: user.verificationToken
       })
     })
 }
