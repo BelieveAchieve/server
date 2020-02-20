@@ -415,7 +415,7 @@ module.exports = {
       return
     }
 
-    // Schedule future notification waves (once every 3 mins, starting in 3 mins)
+    // Schedule future notification waves (once every 2 mins, starting in 2 mins)
     // These will continue until the session is fulfilled or ended
     const interval = setInterval(
       async session => {
