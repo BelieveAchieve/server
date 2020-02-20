@@ -442,13 +442,8 @@ module.exports = {
       return
     }
 
-    // initial notifications
-    await notifyFailsafe(session, {
-      desperate: false,
-      voice: false
-    })
-
-    // timeout for desperate SMS notification
+    // Schedule future failsafe SMS notifications
+    // (Happens later unless session is fulfilled or ended)
     const desperateTimeout = setTimeout(
       notifyFailsafe,
       config.desperateSMSTimeout,
@@ -460,7 +455,8 @@ module.exports = {
     )
     getSessionTimeoutFor(session).timeouts.push(desperateTimeout)
 
-    // timeout for desperate voice notification
+    // Schedule future failsafe phone call notifications
+    // (Happens later unless session is fulfilled or ended)
     const desperateVoiceTimeout = setTimeout(
       notifyFailsafe,
       config.desperateVoiceTimeout,
@@ -471,6 +467,12 @@ module.exports = {
       }
     )
     getSessionTimeoutFor(session).timeouts.push(desperateVoiceTimeout)
+
+    // Send first SMS failsafe notifications (Send right now)
+    await notifyFailsafe(session, {
+      desperate: false,
+      voice: false
+    })
   },
 
   stopNotifications: function(session) {
