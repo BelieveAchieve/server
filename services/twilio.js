@@ -313,7 +313,7 @@ const notifyFailsafe = async function(session, options) {
     }
 
     if (!voice) {
-      messageText = messageText + ` ${sessionUrl}`
+      messageText = messageText + `\n${sessionUrl}`
     }
 
     const sendPromise = voice
