@@ -56,6 +56,25 @@ module.exports = function(app) {
     })
   })
 
+  // Paginate eligible high schools (admins only)
+  router
+    .route('/findeligible')
+    .all(passport.isAdmin)
+    .get(function(req, res, next) {
+      School.find(
+        { },
+        null,
+        {
+          limit: parseInt(req.query.limit),
+          skip: parseInt(req.query.skip)
+        }
+      ).exec()
+      .then(eligibleSchools => {
+        res.json({ eligibleSchools })
+      })
+      .catch(err => next(err))
+    })
+
   // List all students registered with a school (admins only)
   router
     .route('/studentusers/:schoolUpchieveId')
