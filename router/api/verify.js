@@ -47,15 +47,16 @@ module.exports = function(router) {
   })
 
   // Get verification token for a user id (admins only)
-  router.route('/verificationtoken')
+  router
+    .route('/verificationtoken')
     .all(passport.isAdmin)
     .get(function(req, res, next) {
-    const userId = req.query.userid
+      const userId = req.query.userid
 
-    const user = User.findOne({ _id: userId })
+      const user = User.findOne({ _id: userId })
 
-    res.json({
-      verificationToken: user.token
+      res.json({
+        verificationToken: user.token
+      })
     })
-  })
 }
