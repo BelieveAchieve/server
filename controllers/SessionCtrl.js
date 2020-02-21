@@ -122,7 +122,8 @@ module.exports = function(socketService) {
           socket,
           {
             endedAt: session.endedAt,
-            volunteer: session.volunteer || null
+            volunteer: session.volunteer || null,
+            student: session.student
           },
           err
         )
