@@ -119,8 +119,10 @@ sessionSchema.methods.saveWhiteboardUrl = function(whiteboardUrl, cb) {
 
 // helper function for handling joins that fail because session is fulfilled or has ended
 function failJoin(session, user, error) {
-  session.failedJoins.push(user._id)
-  session.save()
+  if (user.isVolunteer) {
+    session.failedJoins.push(user._id)
+    session.save()
+  }
   throw error
 }
 
