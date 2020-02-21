@@ -54,7 +54,7 @@ module.exports = function(router) {
       const userId = req.query.userid
 
       try {
-        const user = await User.findOne({ _id: userId })
+        const user = await User.findOne({ _id: userId }, '+verificationToken')
 
         res.json({
           verificationToken: user.verificationToken
