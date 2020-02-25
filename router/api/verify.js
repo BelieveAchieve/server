@@ -36,7 +36,7 @@ module.exports = function(router) {
       },
       function(err, user) {
         if (err) {
-          next(err)
+          res.status(404).json({ err: err.toString() })
         } else {
           res.json({
             msg: 'Verification successful'
