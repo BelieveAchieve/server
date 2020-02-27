@@ -74,5 +74,5 @@ app.use(['/api', '/auth', '/contact', '/school', '/twiml'], function(
   res,
   next
 ) {
-  res.status(500).json({ err: err.message || err })
+  res.status(err.httpStatus || 500).json({ err: err.message || err })
 })

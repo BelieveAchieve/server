@@ -73,7 +73,7 @@ module.exports = function(app) {
           }
         })
 
-        userId = populatedUser._id
+        userId = _.get(populatedUser, '_id')
 
         // Get the session if it exists, or else an empty object
         session = _.get(populatedUser, 'volunteerLastNotification.session', {})

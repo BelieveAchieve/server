@@ -1,4 +1,8 @@
+const passport = require('../auth/passport')
+
 var VerificationCtrl = require('../../controllers/VerificationCtrl')
+
+const User = require('../../models/User')
 
 module.exports = function(router) {
   router.post('/verify/send', function(req, res, next) {
@@ -32,7 +36,7 @@ module.exports = function(router) {
       },
       function(err, user) {
         if (err) {
-          next(err)
+          res.status(404).json({ err: err.toString() })
         } else {
           res.json({
             msg: 'Verification successful'
@@ -41,4 +45,22 @@ module.exports = function(router) {
       }
     )
   })
+
+  // Get verification token for a user id (admins only)
+  router
+    .route('/verificationtoken')
+    .all(passport.isAdmin)
+    .get(async function(req, res, next) {
+      const userId = req.query.userid
+
+      try {
+        const user = await User.findOne({ _id: userId }, '+verificationToken')
+
+        res.json({
+          verificationToken: user.verificationToken
+        })
+      } catch (err) {
+        next(err)
+      }
+    })
 }
