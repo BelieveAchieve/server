@@ -164,17 +164,6 @@ sessionSchema.methods.joinUser = function(user) {
   return this.save()
 }
 
-sessionSchema.methods.leaveUser = function(user, cb) {
-  // below should not save volunteer/user to null, we need to be able to see who the volunteer and student user were
-  // should set this.endedAt to Date.now and end the session, both users see the session ended regardless of who ended it
-  // student can receive a message telling them they can request help again
-  if (user.isVolunteer) {
-    this.volunteer = user
-  } else {
-    this.student = user
-  }
-}
-
 sessionSchema.methods.endSession = function(userWhoEnded) {
   this.endedAt = new Date()
   this.endedBy = userWhoEnded
@@ -190,10 +179,6 @@ sessionSchema.methods.addNotifications = function(notificationsToAdd, cb) {
     })
     .exec(cb)
 }
-
-sessionSchema.methods.isActive = function(cb) {}
-
-sessionSchema.methods.isWaiting = function(cb) {}
 
 sessionSchema.statics.findLatest = function(attrs, cb) {
   return this.find(attrs)
