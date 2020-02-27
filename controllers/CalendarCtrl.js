@@ -1,3 +1,5 @@
+const _ = require('lodash')
+
 module.exports = {
   updateSchedule: function(options, callback) {
     const user = options.user
@@ -47,5 +49,26 @@ module.exports = {
         callback(null, newAvailability)
       }
     })
+  },
+
+  clearSchedule: function(user, callback) {
+    const availabilityCopy = user.availability.toObject()
+    const clearedAvailability = _.reduce(
+      availabilityCopy,
+      (clearedWeek, dayVal, dayKey) => {
+        clearedWeek[dayKey] = _.reduce(
+          dayVal,
+          (clearedDay, hourVal, hourKey) => {
+            clearedDay[hourKey] = false
+            return clearedDay
+          },
+          {}
+        )
+        return clearedWeek
+      },
+      {}
+    )
+
+    this.updateSchedule({ user, availability: clearedAvailability }, callback)
   }
 }
