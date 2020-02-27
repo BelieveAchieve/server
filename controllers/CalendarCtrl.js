@@ -1,11 +1,11 @@
 module.exports = {
   updateSchedule: function(options, callback) {
     const user = options.user
-    const availability = options.availability
+    const newAvailability = options.availability
     const tz = options.tz
 
-    // verify that availability object is defined and not null
-    if (!availability) {
+    // verify that newAvailability is defined and not null
+    if (!newAvailability) {
       // early exit
       return callback(new Error('No availability object specified'))
     }
@@ -14,14 +14,14 @@ module.exports = {
     // new availability object
     if (
       Object.keys(user.availability.toObject()).some(key => {
-        if (typeof availability[key] === 'undefined') {
+        if (typeof newAvailability[key] === 'undefined') {
           // day-of-week property needs to be defined
           return true
         }
 
         // time-of-day properties also need to be defined
         return Object.keys(user.availability[key].toObject()).some(
-          key2 => typeof availability[key][key2] === 'undefined'
+          key2 => typeof newAvailability[key][key2] === 'undefined'
         )
       })
     ) {
@@ -33,7 +33,7 @@ module.exports = {
       newModifiedDate
     )
     user.availabilityLastModifiedAt = newModifiedDate
-    user.availability = availability
+    user.availability = newAvailability
 
     // update timezone
     if (tz) {
@@ -44,7 +44,7 @@ module.exports = {
       if (err) {
         callback(err, null)
       } else {
-        callback(null, availability)
+        callback(null, newAvailability)
       }
     })
   }
