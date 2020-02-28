@@ -21,7 +21,7 @@ module.exports = function(router) {
   })
 
   router.post('/calendar/clear', function(req, res, next) {
-    CalendarCtrl.clearSchedule(req.user, function(err) {
+    CalendarCtrl.clearSchedule(req.user, req.body.tz, function(err) {
       if (err) {
         next(err)
       } else {

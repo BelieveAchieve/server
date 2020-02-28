@@ -51,7 +51,7 @@ module.exports = {
     })
   },
 
-  clearSchedule: function(user, callback) {
+  clearSchedule: function(user, tz, callback) {
     const availabilityCopy = user.availability.toObject()
     const clearedAvailability = _.reduce(
       availabilityCopy,
@@ -69,6 +69,9 @@ module.exports = {
       {}
     )
 
-    this.updateSchedule({ user, availability: clearedAvailability }, callback)
+    this.updateSchedule(
+      { user, tz, availability: clearedAvailability },
+      callback
+    )
   }
 }
