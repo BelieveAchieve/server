@@ -74,6 +74,22 @@ edu.route('/questions/new').get((req, res) => {
 
 const eduApi = express()
 
+// POST[JSON] /edu/subcategoryquestions
+eduApi.post('/subcategoryquestions', async (req, res) => {
+  const subcategory = req.body.subcategory.toString()
+
+  const skip = req.body.skip
+
+  const limit = req.body.limit
+
+  try {
+    const questions = Question.find({ subcategory }, null, { skip, limit })
+    res.status(200).json({ questions: questions })
+  } catch (error) {
+    res.status(422).json({ error })
+  }
+})
+
 // POST[JSON] /edu/questions
 eduApi.post('/questions', async (req, res) => {
   try {
