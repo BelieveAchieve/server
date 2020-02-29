@@ -88,10 +88,8 @@ eduApi.post('/categoryquestions', async (req, res) => {
       skip,
       limit
     }).exec()
-    console.log({ questions: questions })
     res.status(200).json({ questions: questions })
   } catch (error) {
-    console.log(error)
     res.status(422).json({ error: error.toString() })
   }
 })
