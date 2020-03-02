@@ -28,10 +28,10 @@ db.once('open', function() {
     } catch (e) {
       console.log(e)
     }
-    
-    promises.push(collection.insertMany(json));
+
+    promises.push(collection.insertMany(json))
   }
-  
+
   Promise.all(promises)
     .then(() => {
       console.log('Successfully imported data')
