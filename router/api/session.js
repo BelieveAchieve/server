@@ -57,6 +57,18 @@ module.exports = function(router, io) {
     }
   })
 
+  // Basic route exposed for Cypress to end all of a student's sessions
+  router.route('/session/end-all').post(async function(req, res, next) {
+    const user = req.user
+
+    try {
+      await sessionCtrl.endAll(user)
+      res.json({ success: true })
+    } catch (err) {
+      next(err)
+    }
+  })
+
   router.route('/session/check').post(async function(req, res, next) {
     const data = req.body || {}
     const sessionId = data.sessionId

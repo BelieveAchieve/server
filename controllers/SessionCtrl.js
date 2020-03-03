@@ -69,6 +69,16 @@ module.exports = function(socketService) {
       return session
     },
 
+    // Currently exposed for Cypress e2e tests
+    endAll: async function(user) {
+      await Session.update(
+        {
+          $and: [{ student: user._id }, { endedAt: { $exists: false } }]
+        },
+        { endedAt: new Date(), endedBy: user._id }
+      ).exec()
+    },
+
     // Given a sessionId and userId, join the user to the session and send necessary
     // socket events and notifications
     join: async function(socket, options) {
