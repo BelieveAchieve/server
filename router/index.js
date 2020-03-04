@@ -5,6 +5,7 @@ module.exports = function(app) {
 
   const sessionStore = require('./auth/session-store')(app)
 
+  require('./whiteboard')(app)
   require('./auth')(app)
   require('./api')(app, sessionStore)
   require('./edu')(app)
@@ -15,11 +16,12 @@ module.exports = function(app) {
   // Determine if incoming request is a static asset
   var isStaticReq = function(req) {
     return [
+      '/whiteboard',
       '/auth',
       '/api',
       '/school',
       '/twiml',
-      'contact',
+      '/contact',
       '/js',
       '/css'
     ].some(function(whitelist) {

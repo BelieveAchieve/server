@@ -67,59 +67,6 @@ console.log('Listening on port ' + port)
 // initialize Express WebSockets
 expressWs(app, server)
 
-const zwibRooms = {}
-
-app.ws('/socket/:socketId', function(wsClient, req, next) {
-  wsClient.room = this.setRoom(req)
-  console.log(`New client connected to ${wsClient.room}`)
-
-  if (!zwibRooms[wsClient.room]) {
-    zwibRooms[wsClient.room] = {
-      zwibDoc: ''
-    }
-  } else {
-    const newClientResponse = {
-      type: 'Data',
-      data: zwibRooms[wsClient.room].zwibDoc
-    }
-
-    wsClient.send(JSON.stringify(newClientResponse))
-  }
-
-  wsClient.on('message', rawMessage => {
-    const message = JSON.parse(rawMessage)
-
-    if (message.type === 'Data') {
-      zwibRooms[wsClient.room].zwibDoc += message.data
-
-      const clientResponse = { type: 'Ack' }
-      wsClient.send(JSON.stringify(clientResponse))
-
-      const roomResponse = {
-        type: 'Data',
-        data: zwibRooms[wsClient.room].zwibDoc
-      }
-
-      const numberOfRecipients = this.broadcast(
-        wsClient,
-        JSON.stringify(roomResponse)
-      )
-
-      console.log(
-        `${wsClient.room} message broadcast to ${numberOfRecipients} recipient${
-          numberOfRecipients === 1 ? '' : 's'
-        }.`
-      )
-
-      console.log('zwibRooms: ', zwibRooms)
-    } else {
-      console.log('Non-data message: ', message)
-    }
-  })
-
-  next()
-})
-
 // Load server router
 require('./router')(app)
 
@@ -127,11 +74,9 @@ require('./router')(app)
 app.use(Sentry.Handlers.errorHandler())
 
 // Send error responses to API requests after they are passed to Sentry
-app.use(['/api', '/auth', '/contact', '/school', '/twiml'], function(
-  err,
-  req,
-  res,
-  next
-) {
-  res.status(err.httpStatus || 500).json({ err: err.message || err })
-})
+app.use(
+  ['/api', '/auth', '/contact', '/school', '/twiml', '/whiteboard'],
+  function(err, req, res, next) {
+    res.status(err.httpStatus || 500).json({ err: err.message || err })
+  }
+)
