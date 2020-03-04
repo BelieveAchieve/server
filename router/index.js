@@ -3,9 +3,10 @@ var path = require('path')
 module.exports = function(app) {
   console.log('Initializing server routing')
 
+  require('./whiteboard')(app)
+
   const sessionStore = require('./auth/session-store')(app)
 
-  require('./whiteboard')(app)
   require('./auth')(app)
   require('./api')(app, sessionStore)
   require('./edu')(app)
