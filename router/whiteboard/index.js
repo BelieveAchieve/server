@@ -1,55 +1,46 @@
 const express = require('express')
-
-const zwibRooms = {}
+const WhiteboardCtrl = require('../../controllers/WhiteboardCtrl')
 
 module.exports = function(app) {
   const router = new express.Router()
 
-  router.ws('/room/:roomId', function(wsClient, req, next) {
+  /**
+   * A web socket Express route
+   *
+   * Relies on a fork of express-ws for rooms support
+   * @small-tech/express-ws: https://github.com/aral/express-ws
+   */
+  router.ws('/room/:sessionId', function(wsClient, req, next) {
+    /**
+     * On initial client connection, join room.
+     * Room is determined by parsing request URL.
+     */
     wsClient.room = this.setRoom(req)
-    console.log(`New client connected to ${wsClient.room}`)
 
-    if (!zwibRooms[wsClient.room]) {
-      zwibRooms[wsClient.room] = {
-        zwibDoc: ''
-      }
-    } else {
-      const newClientResponse = {
-        type: 'Data',
-        data: zwibRooms[wsClient.room].zwibDoc
-      }
-
-      wsClient.send(JSON.stringify(newClientResponse))
+    const whiteboardDoc = WhiteboardCtrl.getDoc(wsClient.room)
+    const newClientResponse = {
+      type: 'Data',
+      data: whiteboardDoc
     }
+
+    wsClient.send(JSON.stringify(newClientResponse))
 
     wsClient.on('message', rawMessage => {
       const message = JSON.parse(rawMessage)
 
       if (message.type === 'Data') {
-        zwibRooms[wsClient.room].zwibDoc += message.data
+        const newWhiteboardData = message.data
+        WhiteboardCtrl.addToDoc(wsClient.room, newWhiteboardData)
 
-        const clientResponse = { type: 'Ack' }
-        wsClient.send(JSON.stringify(clientResponse))
+        const clientAcknowledgement = { type: 'Ack' }
+        wsClient.send(JSON.stringify(clientAcknowledgement))
 
-        const roomResponse = {
+        const whiteboardDoc = WhiteboardCtrl.getDoc(wsClient.room)
+        const whiteboardUpdate = {
           type: 'Data',
-          data: zwibRooms[wsClient.room].zwibDoc
+          data: whiteboardDoc
         }
-
-        const numberOfRecipients = this.broadcast(
-          wsClient,
-          JSON.stringify(roomResponse)
-        )
-
-        console.log(
-          `${
-            wsClient.room
-          } message broadcast to ${numberOfRecipients} recipient${
-            numberOfRecipients === 1 ? '' : 's'
-          }.`
-        )
-      } else {
-        console.log('Non-data message: ', message)
+        this.broadcast(wsClient, JSON.stringify(whiteboardUpdate))
       }
     })
 
