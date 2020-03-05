@@ -17,7 +17,9 @@ module.exports = function(app) {
      */
     wsClient.room = this.setRoom(req)
 
-    const whiteboardDoc = WhiteboardCtrl.getDoc(wsClient.room)
+    const sessionId = req.params.sessionId
+
+    const whiteboardDoc = WhiteboardCtrl.getDoc(sessionId)
     const newClientResponse = {
       type: 'Data',
       data: whiteboardDoc
@@ -30,12 +32,12 @@ module.exports = function(app) {
 
       if (message.type === 'Data') {
         const newWhiteboardData = message.data
-        WhiteboardCtrl.addToDoc(wsClient.room, newWhiteboardData)
+        WhiteboardCtrl.appendToDoc(sessionId, newWhiteboardData)
 
         const clientAcknowledgement = { type: 'Ack' }
         wsClient.send(JSON.stringify(clientAcknowledgement))
 
-        const whiteboardDoc = WhiteboardCtrl.getDoc(wsClient.room)
+        const whiteboardDoc = WhiteboardCtrl.getDoc(sessionId)
         const whiteboardUpdate = {
           type: 'Data',
           data: whiteboardDoc

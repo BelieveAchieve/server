@@ -1,16 +1,27 @@
+const Session = require('../models/Session')
+
 const whiteboardDocCache = {}
 
 module.exports = {
-  getDoc: function(docId) {
-    if (!whiteboardDocCache[docId]) {
-      whiteboardDocCache[docId] = ''
+  getDoc: function(sessionId) {
+    if (!whiteboardDocCache[sessionId]) {
+      whiteboardDocCache[sessionId] = ''
     }
 
-    return whiteboardDocCache[docId]
+    return whiteboardDocCache[sessionId]
   },
 
-  addToDoc: function(docId, docAddition) {
-    const newDoc = this.getDoc(docId) + docAddition
-    whiteboardDocCache[docId] = newDoc
+  appendToDoc: function(sessionId, docAddition) {
+    const newDoc = this.getDoc(sessionId) + docAddition
+    whiteboardDocCache[sessionId] = newDoc
+  },
+
+  clearDocFromCache(sessionId) {
+    delete whiteboardDocCache[sessionId]
+  },
+
+  saveDocToSession(sessionId) {
+    const doc = this.getDoc(sessionId)
+    return Session.updateOne({ _id: sessionId }, { whiteboardDoc: doc })
   }
 }

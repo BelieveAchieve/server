@@ -1,5 +1,6 @@
 const Session = require('../models/Session')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
+const WhiteboardCtrl = require('../controllers/WhiteboardCtrl')
 const sessionService = require('../services/SessionService')
 const twilioService = require('../services/twilio')
 const Sentry = require('@sentry/node')
@@ -65,6 +66,9 @@ module.exports = function(socketService) {
       socketService.emitSessionEnd(options.sessionId)
 
       twilioService.stopNotifications(session)
+
+      WhiteboardCtrl.saveDocToSession(options.sessionId)
+      WhiteboardCtrl.clearDocFromCache(options.sessionId)
 
       return session
     },
