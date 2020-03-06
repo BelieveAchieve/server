@@ -67,8 +67,9 @@ module.exports = function(socketService) {
 
       twilioService.stopNotifications(session)
 
-      WhiteboardCtrl.saveDocToSession(options.sessionId)
-      WhiteboardCtrl.clearDocFromCache(options.sessionId)
+      WhiteboardCtrl.saveDocToSession(options.sessionId).then(() => {
+        WhiteboardCtrl.clearDocFromCache(options.sessionId)
+      })
 
       return session
     },
