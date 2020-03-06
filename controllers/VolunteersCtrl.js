@@ -61,7 +61,7 @@ module.exports = {
       isFailsafeVolunteer: false
     }
 
-    User.find(volunteerQuery, function(err, users) {
+    User.find(volunteerQuery).lean().exec(function(err, users) {
       // defining and resetting variables
       var aggAvailabilities = {}
       aggAvailabilities.table = Array(7)
@@ -75,7 +75,7 @@ module.exports = {
       } else {
         aggAvailabilities = users.reduce(function(aggAvailabilities, user) {
           // Convert the user's availability prop from Mongoose object to plain object
-          const userAvailability = user.availability.toObject()
+          const userAvailability = user.availability
 
           return aggregateAvailabilities(userAvailability, aggAvailabilities)
         }, aggAvailabilities)
