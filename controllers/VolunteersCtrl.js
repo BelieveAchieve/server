@@ -61,28 +61,30 @@ module.exports = {
       isFailsafeVolunteer: false
     }
 
-    User.find(volunteerQuery).lean().exec(function(err, users) {
-      // defining and resetting variables
-      var aggAvailabilities = {}
-      aggAvailabilities.table = Array(7)
-        .fill(0)
-        .map(() => Array(24).fill(0))
-      aggAvailabilities.min = null
-      aggAvailabilities.max = 0
+    User.find(volunteerQuery)
+      .lean()
+      .exec(function(err, users) {
+        // defining and resetting variables
+        var aggAvailabilities = {}
+        aggAvailabilities.table = Array(7)
+          .fill(0)
+          .map(() => Array(24).fill(0))
+        aggAvailabilities.min = null
+        aggAvailabilities.max = 0
 
-      if (err) {
-        return callback(null, err)
-      } else {
-        aggAvailabilities = users.reduce(function(aggAvailabilities, user) {
-          // Convert the user's availability prop from Mongoose object to plain object
-          const userAvailability = user.availability
+        if (err) {
+          return callback(null, err)
+        } else {
+          aggAvailabilities = users.reduce(function(aggAvailabilities, user) {
+            // Convert the user's availability prop from Mongoose object to plain object
+            const userAvailability = user.availability
 
-          return aggregateAvailabilities(userAvailability, aggAvailabilities)
-        }, aggAvailabilities)
-        aggAvailabilities = findMinAndMax(aggAvailabilities)
-        return callback(aggAvailabilities, null)
-      }
-    })
+            return aggregateAvailabilities(userAvailability, aggAvailabilities)
+          }, aggAvailabilities)
+          aggAvailabilities = findMinAndMax(aggAvailabilities)
+          return callback(aggAvailabilities, null)
+        }
+      })
   },
 
   /**
