@@ -1,17 +1,18 @@
 // Dependencies
-var http = require('http')
-var express = require('express')
-var path = require('path')
-var logger = require('morgan')
-var cookieParser = require('cookie-parser')
-var bodyParser = require('body-parser')
-var busboy = require('connect-busboy')
-var cors = require('cors')
-var mongoose = require('mongoose')
-var Sentry = require('@sentry/node')
+const http = require('http')
+const express = require('express')
+const path = require('path')
+const logger = require('morgan')
+const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
+const busboy = require('connect-busboy')
+const cors = require('cors')
+const mongoose = require('mongoose')
+const Sentry = require('@sentry/node')
+const startCronJobs = require('./cron-jobs')
 
 // Configuration
-var config = require('./config')
+const config = require('./config')
 
 // Set up Sentry error tracking
 Sentry.init({
@@ -21,13 +22,16 @@ Sentry.init({
 
 // Database
 mongoose.connect(config.database, { useNewUrlParser: true })
-var db = mongoose.connection
+const db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
-db.once('open', function () {
+db.once('open', function() {
   console.log('Connected to database')
 })
 
-var app = express()
+// Initiate cron jobs
+startCronJobs()
+
+const app = express()
 app.set('port', process.env.PORT || 3000)
 
 // Setup middleware
@@ -41,18 +45,19 @@ app.use(busboy())
 app.use(
   cors({
     origin: true,
-    credentials: true
+    credentials: true,
+    exposedHeaders: config.NODE_ENV === 'dev' ? ['Date'] : undefined
   })
 )
 // see https://stackoverflow.com/questions/51023943/nodejs-getting-username-of-logged-in-user-within-route
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   res.locals.user = req.user || null
   next()
 })
 
-var server = http.createServer(app)
+const server = http.createServer(app)
 
-var port = app.get('port')
+const port = app.get('port')
 server.listen(port)
 console.log('Listening on port ' + port)
 
@@ -60,4 +65,14 @@ console.log('Listening on port ' + port)
 require('./router')(app)
 
 // The error handler must be before any other error middleware and after all controllers
-app.use(Sentry.Handlers.errorHandler());
+app.use(Sentry.Handlers.errorHandler())
+
+// Send error responses to API requests after they are passed to Sentry
+app.use(['/api', '/auth', '/contact', '/school', '/twiml'], function(
+  err,
+  req,
+  res,
+  next
+) {
+  res.status(err.httpStatus || 500).json({ err: err.message || err })
+})

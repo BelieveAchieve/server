@@ -1,7 +1,7 @@
 var Feedback = require('../../models/Feedback')
 
-module.exports = function (router) {
-  router.post('/feedback', function (req, res) {
+module.exports = function(router) {
+  router.post('/feedback', function(req, res, next) {
     var body = req.body
     var feedback = new Feedback({
       sessionId: body['sessionId'],
@@ -13,12 +13,9 @@ module.exports = function (router) {
       volunteerId: body['volunteerId']
     })
     console.log(feedback)
-    feedback.save(function (err, session) {
+    feedback.save(function(err, session) {
       if (err) {
-        console.log(err)
-        res.json({
-          err: err
-        })
+        next(err)
       } else {
         res.json({
           sessionId: session._id

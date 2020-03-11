@@ -12,14 +12,16 @@ module.exports = {
     apiKey: process.env.SENDGRID_API_KEY || '',
     contactTemplate: 'd-e79546f380874c58965c163f45df2ef4',
     verifyTemplate: 'd-02281875a1cf4575bd3568e674faf147',
-    resetTemplate: 'd-5005d2beb2ad49a883a10364f3e14b81'
+    resetTemplate: 'd-5005d2beb2ad49a883a10364f3e14b81',
+    partnerOrgSignupAlertTemplate: 'd-238200a8df0d4493b12defbf472901b9'
   },
   mail: {
     senders: {
       noreply: 'noreply@upchieve.org'
     },
     receivers: {
-      contact: 'staff@upchieve.org'
+      contact: 'staff@upchieve.org',
+      staff: 'staff@upchieve.org'
     }
   },
   client: {
@@ -27,15 +29,27 @@ module.exports = {
   },
   socketsPort: 3001,
 
-  orgManifests: {
+  volunteerPartnerManifests: {
     example: {
       name: 'Example Inc',
-      requiredEmailDomains: ['example.com']
+      requiredEmailDomains: ['example.com'],
+      mathCoachingOnly: false
     },
     foobar: {
       name: 'Foo Bar & Co',
       requiredEmailDomains: ['example.org', 'example.net'],
       mathCoachingOnly: true
+    }
+  },
+
+  studentPartnerManifests: {
+    example: {
+      name: 'The Example Foundation',
+      highSchoolSignup: false
+    },
+    example2: {
+      name: 'Example & Co',
+      highSchoolSignup: true
     }
   },
 

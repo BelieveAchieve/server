@@ -1,7 +1,9 @@
-var TrainingCtrl = require('../../controllers/TrainingCtrl')
+const TrainingCtrl = require('../../controllers/TrainingCtrl')
+const UserActionCtrl = require('../../controllers/UserActionCtrl')
+const Sentry = require('@sentry/node')
 
-module.exports = function (router) {
-  router.post('/training/questions', async function (req, res) {
+module.exports = function(router) {
+  router.post('/training/questions', async function(req, res, next) {
     try {
       const questions = await TrainingCtrl.getQuestions({ category: req.body.category })
       res.json({
@@ -9,16 +11,27 @@ module.exports = function (router) {
         questions: questions
       })
     } catch (err) {
-      res.json({ err: err })
+      next(err)
     }
   })
-  router.post('/training/score', async function (req, res) {
+  router.post('/training/score', async function(req, res, next) {
     try {
       const data = await TrainingCtrl.getQuizScore({
-        userid: req.body.userid,
+        userid: req.user._id,
         idAnswerMap: req.body.idAnswerMap,
         category: req.body.category
       })
+
+			const { id } = req.user
+      const { category } = req.body
+
+      data.passed
+        ? UserActionCtrl.passedQuiz(id, category).catch(error =>
+            Sentry.captureException(error)
+          )
+        : UserActionCtrl.failedQuiz(id, category).catch(error =>
+            Sentry.captureException(error)
+          )
 
       res.json({
         msg: 'Score calculated and saved',
@@ -28,7 +41,17 @@ module.exports = function (router) {
         idCorrectAnswerMap: data.idCorrectAnswerMap
       })
     } catch (err) {
-      res.json({ err: err })
+      next(err)
     }
+  })
+  router.get('/training/review/:category', function(req, res, next) {
+    const { id } = req.user
+    const { category } = req.params
+
+    UserActionCtrl.viewedMaterials(id, category).catch(error =>
+      Sentry.captureException(error)
+    )
+
+    res.sendStatus(204)
   })
 }

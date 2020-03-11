@@ -1,5 +1,5 @@
 const test = require('ava')
-const Question = require('../../models/Question')
+const Question = require('../../../models/Question')
 
 test('Called getSubcategories using good data', t => {
   const subcategories = Question.getSubcategories('algebra')

@@ -17,7 +17,7 @@ var numQuestions = {
 const PASS_THRESHOLD = 0.8
 
 module.exports = {
-  getQuestions: async function (options) {
+  getQuestions: async function(options) {
     const subcategories = Question.getSubcategories(options.category)
 
     if (!subcategories) {
@@ -35,7 +35,7 @@ module.exports = {
       .flat())
   },
 
-  getQuizScore: async function (options, callback) {
+  getQuizScore: async function(options, callback) {
     const userid = options.userid
     const idAnswerMap = options.idAnswerMap
     const category = options.category

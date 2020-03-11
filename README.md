@@ -29,7 +29,6 @@ UPchieve web server
     - [POST /api/session/check](#post-apisessioncheck)
     - [POST /api/training/questions](#post-apitrainingquestions)
     - [POST /api/training/score](#post-apitrainingscore)
-    - [POST /api/calendar/get](#post-apicalendarget)
     - [POST /api/calendar/save](#post-apicalendarsave)
     - [POST /api/feedback](#post-apifeedback)
     - [GET /api/user](#get-apiuser)
@@ -47,6 +46,13 @@ UPchieve web server
 
 Local Development
 -----------------
+### Docker Use
+Docker provides an alternative for local development. A Dockerfile and specific run script exist. Here's how to leverage them. With Docker installed, checkout this repository and navigate into its root directory.
+
+1. Run `docker build -t local_upchieve_server/local_upchieve_server:0.1 . --rm` to create the image.
+2. Run `docker run -p 127.0.0.1:3000:3000/tcp -p 127.0.0.1:3001:3001/tcp local_upchieve_server/local_upchieve_server:0.1 bash /bin/docker_run.sh` to launch the server
+3. After any change: In the Dockerfile, change the line `ARG FOO=BAR` to something like `ARG FOO=BAR1`, changing "BAR" to anything different from the last run. Then, repeat steps 1 and 2, which should run much quicker.
+
 
 ### Dependencies
 
@@ -83,9 +89,7 @@ asdf install mongodb [VERSION]
 2. Run `bin/setup` to set up the database with test users and install dependencies.
    Run with `--verbose` to debug if needed.
 3. Run `node init` to add "questions" collection to database
-4. Populate `config.js` with auth tokens (ask a teammate if you need
-   any of these--improvements forthcoming).
-  1. If you want to test Twilio voice calling functionality, set the `host` property to `[your public IP address]:3000` (minus the brackets), and configure your router/firewall to allow connections to port 3000 from the Internet. Twilio will need to connect to your system to obtain TwiML instructions.
+4. If you want to test Twilio voice calling functionality, set the `host` property to `[your public IP address]:3000` (minus the brackets), and configure your router/firewall to allow connections to port 3000 from the Internet. Twilio will need to connect to your system to obtain TwiML instructions.
 5. Run `npm run dev` to start the dev server on `http://localhost:3000`. If you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
 6. See [the web client repo](https://github.com/UPchieve/web) for client
    installation
@@ -221,15 +225,15 @@ Possible errors:
 }
 ```
 
-### GET /auth/org-manifest
+### GET /auth/partner/volunteer
 
 Expects the following query string:
 
 ```
-?orgId=ORG_ID
+?partnerId=PARTNER_ID
 ```
 
-where `ORG_ID` is the key name of the partner organization stored in `config.js` under `orgManifests`.
+where `PARTNER_ID` is the key name of the volunteer partner organization defined in `config.js` under `volunteerPartnerManifests`.
 
 ### POST /api/session/new
 
@@ -260,17 +264,8 @@ where `ORG_ID` is the key name of the partner organization stored in `config.js`
 
 ```json
 {
-  "userid": "String",
   "idAnswerMap": "String",
   "category": "String"
-}
-```
-
-### POST /api/calendar/get
-
-```json
-{
-  "userid": "String"
 }
 ```
 
@@ -278,8 +273,18 @@ where `ORG_ID` is the key name of the partner organization stored in `config.js`
 
 ```json
 {
-  "userid": "String",
-  "availability": "String"
+  "availability": {
+    "Sunday": {
+      "12a": "Boolean",
+      "1a": "Boolean",
+      ...
+    },
+    "Monday": {
+      ...
+    },
+    ...
+  },
+  "tz": "String"
 }
 ```
 

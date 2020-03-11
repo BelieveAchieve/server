@@ -10,7 +10,7 @@ var questionSchema = new mongoose.Schema({
 })
 
 // Given a question record, strip out sensitive data for public consumption
-questionSchema.methods.parseQuestion = function () {
+questionSchema.methods.parseQuestion = function() {
   return {
     _id: this._id,
     questionText: this.questionText,
@@ -19,7 +19,7 @@ questionSchema.methods.parseQuestion = function () {
   }
 }
 
-questionSchema.statics.getSubcategories = function (category) {
+questionSchema.statics.getSubcategories = function(category) {
   var categoryToSubcategoryMap = {
     algebra: [
       'linear equations',

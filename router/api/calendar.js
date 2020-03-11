@@ -1,59 +1,34 @@
-var CalendarCtrl = require('../../controllers/CalendarCtrl')
+const CalendarCtrl = require('../../controllers/CalendarCtrl')
 
-module.exports = function (router) {
-  router.post('/calendar/get', function (req, res) {
-    CalendarCtrl.getAvailability({ userid: req.body.userid }, function (
-      err,
-      availability
-    ) {
-      if (err) {
-        res.json({ err: err })
-      } else {
-        res.json({
-          msg: 'Availability retrieved',
-          availability: availability
-        })
-      }
-    })
-  })
-  router.post('/calendar/save', function (req, res) {
-    CalendarCtrl.updateAvailability(
-      { userid: req.body.userid, availability: req.body.availability },
-      function (err, avail) {
+module.exports = function(router) {
+  router.post('/calendar/save', function(req, res, next) {
+    CalendarCtrl.updateSchedule(
+      {
+        user: req.user,
+        availability: req.body.availability,
+        tz: req.body.tz
+      },
+      function(err) {
         if (err) {
-          res.json({ err: err })
+          next(err)
         } else {
           res.json({
-            msg: 'Availability saved'
+            msg: 'Schedule saved'
           })
         }
       }
     )
   })
-  router.post('/calendar/tz/get', function (req, res) {
-    CalendarCtrl.getTimezone({ userid: req.body.userid }, function (err, tz) {
+
+  router.post('/calendar/clear', function(req, res, next) {
+    CalendarCtrl.clearSchedule(req.user, req.body.tz, function(err) {
       if (err) {
-        res.json({ err: err })
+        next(err)
       } else {
         res.json({
-          msg: 'Timezone retrieved',
-          tz: tz
+          msg: 'Schedule cleared'
         })
       }
     })
-  })
-  router.post('/calendar/tz/save', function (req, res) {
-    CalendarCtrl.updateTimezone(
-      { userid: req.body.userid, tz: req.body.tz },
-      function (err, tz) {
-        if (err) {
-          res.json({ err: err })
-        } else {
-          res.json({
-            msg: 'Timezone saved'
-          })
-        }
-      }
-    )
   })
 }

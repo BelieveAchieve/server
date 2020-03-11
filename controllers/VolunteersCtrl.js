@@ -6,18 +6,16 @@ var User = require('../models/User')
  * aggAvailabilities object
  * @param {*} availability
  */
-function aggregateAvailabilities (availability, aggAvailabilities) {
+function aggregateAvailabilities(availability, aggAvailabilities) {
   // for (const day in availability) {
   Object.keys(availability).map(day => {
     Object.keys(availability[day]).map(time => {
       // create headers based on the user's availability object
       if (!aggAvailabilities.daysOfWeek) {
         aggAvailabilities.daysOfWeek = Object.keys(availability)
-        aggAvailabilities.daysOfWeek.shift() // gets rid of $init enum param
       }
       if (!aggAvailabilities.timesOfDay) {
         aggAvailabilities.timesOfDay = Object.keys(availability[day])
-        aggAvailabilities.timesOfDay.shift() // gets rid of $init enum param
       }
       // gets corresponding day and time index inorder to store in aggAvailabilities table
       let dayIndex = aggAvailabilities.daysOfWeek.indexOf(day)
@@ -36,7 +34,7 @@ function aggregateAvailabilities (availability, aggAvailabilities) {
  * volunteers who signed up that week
  * @param {*} aggAvailabilities
  */
-function findMinAndMax (aggAvailabilities) {
+function findMinAndMax(aggAvailabilities) {
   let flatTable = aggAvailabilities.table.flat()
   aggAvailabilities.min = Math.min.apply(Math, flatTable)
   aggAvailabilities.max = Math.max.apply(Math, flatTable)
@@ -51,12 +49,11 @@ module.exports = {
    * @param {*} options
    * @param {*} callback
    */
-  getVolunteersAvailability: function (options, callback) {
+  getVolunteersAvailability: function(options, callback) {
     const certifiedSubjectQuery = `certifications.${options.certifiedSubject}.passed`
 
     const volunteerQuery = {
       isVolunteer: true,
-      hasSchedule: true,
       [certifiedSubjectQuery]: true,
       availability: { $exists: true },
       isFakeUser: false,
@@ -64,18 +61,23 @@ module.exports = {
       isFailsafeVolunteer: false
     }
 
-    User.find(volunteerQuery, function (err, users) {
+    User.find(volunteerQuery, function(err, users) {
       // defining and resetting variables
       var aggAvailabilities = {}
-      aggAvailabilities.table = Array(7).fill(0).map(() => Array(24).fill(0))
+      aggAvailabilities.table = Array(7)
+        .fill(0)
+        .map(() => Array(24).fill(0))
       aggAvailabilities.min = null
       aggAvailabilities.max = 0
 
       if (err) {
         return callback(null, err)
       } else {
-        aggAvailabilities = users.reduce(function (aggAvailabilities, user) {
-          return aggregateAvailabilities(user.availability, aggAvailabilities)
+        aggAvailabilities = users.reduce(function(aggAvailabilities, user) {
+          // Convert the user's availability prop from Mongoose object to plain object
+          const userAvailability = user.availability.toObject()
+
+          return aggregateAvailabilities(userAvailability, aggAvailabilities)
         }, aggAvailabilities)
         aggAvailabilities = findMinAndMax(aggAvailabilities)
         return callback(aggAvailabilities, null)
@@ -87,8 +89,8 @@ module.exports = {
    * Gets all users who are volunteers
    * @param {*} callback
    */
-  getVolunteers: function (callback) {
-    User.find({ isVolunteer: true }, function (err, users) {
+  getVolunteers: function(callback) {
+    User.find({ isVolunteer: true }, function(err, users) {
       if (err) {
         return callback(null, err)
       } else {
