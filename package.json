@@ -57,6 +57,7 @@
     "express-session": "^1.14.2",
     "jszip": "^3.2.2",
     "kerberos": "0.0.24",
+    "lodash": "^4.17.15",
     "moment-timezone": "^0.5.23",
     "mongoose": "^5.7.5",
     "morgan": "^1.9.1",
