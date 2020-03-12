@@ -31,12 +31,16 @@ module.exports = {
 
   volunteerPartnerManifests: {
     example: {
-      name: 'Example Inc',
+      name: 'Example - Regular',
+      mathCoachingOnly: false
+    },
+    example2: {
+      name: 'Example - Email Requirement',
       requiredEmailDomains: ['example.com'],
       mathCoachingOnly: false
     },
-    foobar: {
-      name: 'Foo Bar & Co',
+    example3: {
+      name: 'Example - Email Requirement & Math Only',
       requiredEmailDomains: ['example.org', 'example.net'],
       mathCoachingOnly: true
     }
