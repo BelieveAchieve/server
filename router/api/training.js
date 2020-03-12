@@ -5,7 +5,9 @@ const Sentry = require('@sentry/node')
 module.exports = function(router) {
   router.post('/training/questions', async function(req, res, next) {
     try {
-      const questions = await TrainingCtrl.getQuestions({ category: req.body.category })
+      const questions = await TrainingCtrl.getQuestions({
+        category: req.body.category
+      })
       res.json({
         msg: 'Questions retrieved from database',
         questions: questions
@@ -22,7 +24,7 @@ module.exports = function(router) {
         category: req.body.category
       })
 
-			const { id } = req.user
+      const { id } = req.user
       const { category } = req.body
 
       data.passed
