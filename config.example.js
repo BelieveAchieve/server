@@ -44,12 +44,19 @@ module.exports = {
 
   studentPartnerManifests: {
     example: {
-      name: 'The Example Foundation',
-      highSchoolSignup: false
+      name: 'Example - No School',
+      highSchoolSignup: false,
+      highSchoolSignupRequired: false
     },
     example2: {
-      name: 'Example & Co',
-      highSchoolSignup: true
+      name: 'Example - School Optional',
+      highSchoolSignup: true,
+      highSchoolSignupRequired: false
+    },
+    example3: {
+      name: 'Example - School Required',
+      highSchoolSignup: true,
+      highSchoolSignupRequired: true
     }
   },
 
