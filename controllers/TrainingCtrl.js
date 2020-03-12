@@ -1,4 +1,4 @@
-const { arrayShuffle } = require('@adriantombu/array-shuffle')
+const _ = require('lodash')
 
 var Question = require('../models/Question')
 var User = require('../models/User')
@@ -21,18 +21,25 @@ module.exports = {
     const subcategories = Question.getSubcategories(options.category)
 
     if (!subcategories) {
-      throw new Error('No subcategories defined for category: ' + options.category)
+      throw new Error(
+        'No subcategories defined for category: ' + options.category
+      )
     }
 
-    return arrayShuffle((await Promise.all(
-      subcategories.map(
-        (subcategory) => Question.aggregate([
-          { $match: { category: options.category, subcategory: subcategory } },
-          { $sample: { size: numQuestions[options.category] } }
-        ]).exec()
+    const questions = await Question.find({
+      category: options.category
+    })
+
+    const questionsBySubcategory = _.groupBy(
+      questions,
+      question => question.subcategory
+    )
+
+    return _.shuffle(
+      Object.entries(questionsBySubcategory).flatMap(([, subQuestions]) =>
+        _.sampleSize(subQuestions, numQuestions[options.category])
       )
-    ))
-      .flat())
+    )
   },
 
   getQuizScore: async function(options, callback) {
@@ -43,15 +50,14 @@ module.exports = {
 
     const questions = await Question.find({ _id: { $in: objIDs } }).exec()
 
-    const score = questions
-      .filter((question) => question.correctAnswer === idAnswerMap[question._id])
-      .length
+    const score = questions.filter(
+      question => question.correctAnswer === idAnswerMap[question._id]
+    ).length
 
-    const idCorrectAnswerMap = questions.reduce(
-      (acc, question) => {
-        acc[question._id] = question.correctAnswer
-        return acc
-      }, {})
+    const idCorrectAnswerMap = questions.reduce((acc, question) => {
+      acc[question._id] = question.correctAnswer
+      return acc
+    }, {})
 
     const percent = score / questions.length
 
