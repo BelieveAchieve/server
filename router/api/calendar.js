@@ -1,4 +1,4 @@
-var CalendarCtrl = require('../../controllers/CalendarCtrl')
+const CalendarCtrl = require('../../controllers/CalendarCtrl')
 
 module.exports = function(router) {
   router.post('/calendar/save', function(req, res, next) {
@@ -18,5 +18,17 @@ module.exports = function(router) {
         }
       }
     )
+  })
+
+  router.post('/calendar/clear', function(req, res, next) {
+    CalendarCtrl.clearSchedule(req.user, req.body.tz, function(err) {
+      if (err) {
+        next(err)
+      } else {
+        res.json({
+          msg: 'Schedule cleared'
+        })
+      }
+    })
   })
 }

@@ -1,4 +1,4 @@
-var User = require('../models/User')
+const User = require('../models/User')
 
 /**
  * Helper function that, given a single users's
@@ -7,7 +7,6 @@ var User = require('../models/User')
  * @param {*} availability
  */
 function aggregateAvailabilities(availability, aggAvailabilities) {
-  // for (const day in availability) {
   Object.keys(availability).map(day => {
     Object.keys(availability[day]).map(time => {
       // create headers based on the user's availability object
@@ -61,28 +60,28 @@ module.exports = {
       isFailsafeVolunteer: false
     }
 
-    User.find(volunteerQuery, function(err, users) {
-      // defining and resetting variables
-      var aggAvailabilities = {}
-      aggAvailabilities.table = Array(7)
-        .fill(0)
-        .map(() => Array(24).fill(0))
-      aggAvailabilities.min = null
-      aggAvailabilities.max = 0
+    User.find(volunteerQuery)
+      .lean()
+      .exec(function(err, users) {
+        // defining and resetting variables
+        let aggAvailabilities = {}
+        aggAvailabilities.table = Array(7)
+          .fill(0)
+          .map(() => Array(24).fill(0))
+        aggAvailabilities.min = null
+        aggAvailabilities.max = 0
 
-      if (err) {
-        return callback(null, err)
-      } else {
-        aggAvailabilities = users.reduce(function(aggAvailabilities, user) {
-          // Convert the user's availability prop from Mongoose object to plain object
-          const userAvailability = user.availability.toObject()
-
-          return aggregateAvailabilities(userAvailability, aggAvailabilities)
-        }, aggAvailabilities)
-        aggAvailabilities = findMinAndMax(aggAvailabilities)
-        return callback(aggAvailabilities, null)
-      }
-    })
+        if (err) {
+          return callback(null, err)
+        } else {
+          aggAvailabilities = users.reduce(function(aggAvailabilities, user) {
+            const userAvailability = user.availability
+            return aggregateAvailabilities(userAvailability, aggAvailabilities)
+          }, aggAvailabilities)
+          aggAvailabilities = findMinAndMax(aggAvailabilities)
+          return callback(aggAvailabilities, null)
+        }
+      })
   },
 
   /**
