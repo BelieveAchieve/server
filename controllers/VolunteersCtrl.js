@@ -1,4 +1,4 @@
-var User = require('../models/User')
+const User = require('../models/User')
 
 /**
  * Helper function that, given a single users's
@@ -64,7 +64,7 @@ module.exports = {
       .lean()
       .exec(function(err, users) {
         // defining and resetting variables
-        var aggAvailabilities = {}
+        let aggAvailabilities = {}
         aggAvailabilities.table = Array(7)
           .fill(0)
           .map(() => Array(24).fill(0))
