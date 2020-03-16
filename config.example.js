@@ -7,6 +7,7 @@ module.exports = {
   host: process.env.SERVER_HOST || 'localhost:3000',
   database: 'mongodb://localhost:27017/upchieve',
   sessionSecret: process.env.SESSION_SECRET || 'secret',
+  sessionCookieMaxAge: process.env.SESSION_COOKIE_MAX_AGE || 5184000000,
   saltRounds: 10,
   sendgrid: {
     apiKey: process.env.SENDGRID_API_KEY || '',
