@@ -3,6 +3,7 @@ const expressLayouts = require('express-ejs-layouts')
 
 const config = require('../../config')
 const passport = require('../auth/passport')
+const Question = require('../../models/Question')
 const QuestionCtrl = require('../../controllers/QuestionCtrl')
 const { questionsPath, isActivePage, frontEndPath } = require('./helpers')
 
@@ -73,6 +74,25 @@ edu.route('/questions/new').get((req, res) => {
 })
 
 const eduApi = express()
+
+// POST[JSON] /edu/categoryquestions
+eduApi.post('/categoryquestions', async (req, res) => {
+  const category = req.body.category.toString()
+
+  const skip = req.body.skip
+
+  const limit = req.body.limit
+
+  try {
+    const questions = await Question.find({ category }, null, {
+      skip,
+      limit
+    }).exec()
+    res.status(200).json({ questions: questions })
+  } catch (error) {
+    res.status(422).json({ error: error.toString() })
+  }
+})
 
 // POST[JSON] /edu/questions
 eduApi.post('/questions', async (req, res) => {

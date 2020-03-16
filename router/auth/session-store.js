@@ -16,7 +16,8 @@ module.exports = function(app) {
       secret: config.sessionSecret,
       store: sessionStore,
       cookie: {
-        httpOnly: false
+        httpOnly: false,
+        maxAge: config.sessionCookieMaxAge
       }
     })
   )

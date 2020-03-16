@@ -105,8 +105,9 @@ The database is populated with the following users for local development:
 | `student1@upchieve.org`   | `Password123` |
 | `volunteer1@upchieve.org` | `Password123` |
 | `volunteer2@upchieve.org` | `Password123` |
+| `volunteer3@upchieve.org` | `Password123` |
 
-By default, none of the test users have an `approvedHighschool` set.
+By default, none of the test users have an `approvedHighschool` set. The volunteers are all admins by default, and `volunteer1@upchieve.org` and `volunteer2@upchieve.org` have also passed all of their certifications. `volunteer3@upchieve.org` has not passed any quizzes.
 
 Structure
 ---------
