@@ -610,16 +610,16 @@ userSchema.virtual('mathCoachingOnly').get(function() {
 userSchema.virtual('isOnboarded').get(function() {
   if (!this.isVolunteer) return null
 
-  let hasPassedAQuiz = false
+  let isCertified = false
 
   for (let index in this.certifications) {
     if (this.certifications[index].passed) {
-      hasPassedAQuiz = true
+      isCertified = true
       break
     }
   }
 
-  return this.availabilityLastModifiedAt && hasPassedAQuiz
+  return this.availabilityLastModifiedAt && isCertified
 })
 
 // Static method to determine if a registration code is valid
