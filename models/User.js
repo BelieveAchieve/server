@@ -229,7 +229,7 @@ var userSchema = new mongoose.Schema(
       default: availabilitySchema
     },
     timezone: String,
-    availabilityLastModifiedAt: { type: Date, default: Date.now },
+    availabilityLastModifiedAt: { type: Date },
     elapsedAvailability: { type: Number, default: 0 },
 
     certifications: {
@@ -347,10 +347,12 @@ userSchema.methods.parseProfile = function() {
     lastname: this.lastname,
     isVolunteer: this.isVolunteer,
     isAdmin: this.isAdmin,
+    isOnboarded: this.isOnboarded,
     referred: this.referred,
     createdAt: this.createdAt,
     phone: this.phone,
     availability: this.availability,
+    availabilityLastModifiedAt: this.availabilityLastModifiedAt,
     timezone: this.timezone,
     highschoolName: this.highschoolName,
     college: this.college,
@@ -603,6 +605,21 @@ userSchema.virtual('mathCoachingOnly').get(function() {
   return (
     !!volunteerPartnerManifest && !!volunteerPartnerManifest['mathCoachingOnly']
   )
+})
+
+userSchema.virtual('isOnboarded').get(function() {
+  if (!this.isVolunteer) return null
+
+  let hasPassedAQuiz = false
+
+  for (let index in this.certifications) {
+    if (this.certifications[index].passed) {
+      hasPassedAQuiz = true
+      break
+    }
+  }
+
+  return this.availabilityLastModifiedAt && hasPassedAQuiz
 })
 
 // Static method to determine if a registration code is valid
