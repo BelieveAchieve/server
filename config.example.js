@@ -31,12 +31,16 @@ module.exports = {
 
   volunteerPartnerManifests: {
     example: {
-      name: 'Example Inc',
+      name: 'Example - Regular',
+      mathCoachingOnly: false
+    },
+    example2: {
+      name: 'Example - Email Requirement',
       requiredEmailDomains: ['example.com'],
       mathCoachingOnly: false
     },
-    foobar: {
-      name: 'Foo Bar & Co',
+    example3: {
+      name: 'Example - Email Requirement & Math Only',
       requiredEmailDomains: ['example.org', 'example.net'],
       mathCoachingOnly: true
     }
@@ -44,12 +48,19 @@ module.exports = {
 
   studentPartnerManifests: {
     example: {
-      name: 'The Example Foundation',
-      highSchoolSignup: false
+      name: 'Example - No School',
+      highSchoolSignup: false,
+      highSchoolSignupRequired: false
     },
     example2: {
-      name: 'Example & Co',
-      highSchoolSignup: true
+      name: 'Example - School Optional',
+      highSchoolSignup: true,
+      highSchoolSignupRequired: false
+    },
+    example3: {
+      name: 'Example - School Required',
+      highSchoolSignup: true,
+      highSchoolSignupRequired: true
     }
   },
 

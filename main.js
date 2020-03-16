@@ -9,6 +9,9 @@ const busboy = require('connect-busboy')
 const cors = require('cors')
 const mongoose = require('mongoose')
 const Sentry = require('@sentry/node')
+const expressWs = require('@small-tech/express-ws')
+
+// Cron jobs
 const startCronJobs = require('./cron-jobs')
 
 // Configuration
@@ -61,6 +64,9 @@ const port = app.get('port')
 server.listen(port)
 console.log('Listening on port ' + port)
 
+// initialize Express WebSockets
+expressWs(app, server)
+
 // Load server router
 require('./router')(app)
 
@@ -68,11 +74,9 @@ require('./router')(app)
 app.use(Sentry.Handlers.errorHandler())
 
 // Send error responses to API requests after they are passed to Sentry
-app.use(['/api', '/auth', '/contact', '/school', '/twiml'], function(
-  err,
-  req,
-  res,
-  next
-) {
-  res.status(err.httpStatus || 500).json({ err: err.message || err })
-})
+app.use(
+  ['/api', '/auth', '/contact', '/school', '/twiml', '/whiteboard'],
+  function(err, req, res, next) {
+    res.status(err.httpStatus || 500).json({ err: err.message || err })
+  }
+)

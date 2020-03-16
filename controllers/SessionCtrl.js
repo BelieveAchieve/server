@@ -1,5 +1,6 @@
 const Session = require('../models/Session')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
+const WhiteboardCtrl = require('../controllers/WhiteboardCtrl')
 const sessionService = require('../services/SessionService')
 const twilioService = require('../services/twilio')
 const Sentry = require('@sentry/node')
@@ -66,7 +67,21 @@ module.exports = function(socketService) {
 
       twilioService.stopNotifications(session)
 
+      WhiteboardCtrl.saveDocToSession(options.sessionId).then(() => {
+        WhiteboardCtrl.clearDocFromCache(options.sessionId)
+      })
+
       return session
+    },
+
+    // Currently exposed for Cypress e2e tests
+    endAll: async function(user) {
+      await Session.update(
+        {
+          $and: [{ student: user._id }, { endedAt: { $exists: false } }]
+        },
+        { endedAt: new Date(), endedBy: user._id }
+      ).exec()
     },
 
     // Given a sessionId and userId, join the user to the session and send necessary
