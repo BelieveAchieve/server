@@ -6,7 +6,7 @@ const User = require('../models/User')
 require('../models/Session')
 require('../models/Notification')
 
-dbconnect(mongoose, function () {
+dbconnect(mongoose, function() {
   const volunteerQueryMatch = {
     isVolunteer: true,
     isFakeUser: false,
@@ -29,23 +29,28 @@ dbconnect(mongoose, function () {
   User.find(volunteerQueryMatch)
     .populate('volunteerLastNotification volunteerLastSession')
     .then(volunteers => {
-      const vData = volunteers
-        .sort((v1, v2) => v2.volunteerPointRank - v1.volunteerPointRank)
+      const vData = volunteers.sort(
+        (v1, v2) => v2.volunteerPointRank - v1.volunteerPointRank
+      )
 
-      console.log(vData.map(v => ({
-        email: v.email,
-        points: v.volunteerPointRank,
-        joined: v.createdAt,
-        lastNotification: v.volunteerLastNotification
-          ? v.volunteerLastNotification.sentAt
-          : 'none',
-        lastSession: v.volunteerLastSession
-          ? v.volunteerLastSession.createdAt
-          : 'none'
-      })))
+      console.log(
+        vData.map(v => ({
+          email: v.email,
+          points: v.volunteerPointRank,
+          joined: v.createdAt,
+          partner: v.volunteerPartnerOrg || null,
+          lastNotification: v.volunteerLastNotification
+            ? v.volunteerLastNotification.sentAt
+            : 'none',
+          lastSession: v.volunteerLastSession
+            ? v.volunteerLastSession.createdAt
+            : 'none'
+        }))
+      )
 
       mongoose.disconnect()
-    }).catch((err) => {
+    })
+    .catch(err => {
       console.log(err)
 
       mongoose.disconnect()
