@@ -33,20 +33,27 @@ dbconnect(mongoose, function() {
         (v1, v2) => v2.volunteerPointRank - v1.volunteerPointRank
       )
 
-      console.log(
-        vData.map(v => ({
-          email: v.email,
-          points: v.volunteerPointRank,
-          joined: v.createdAt,
-          partner: v.volunteerPartnerOrg || null,
-          lastNotification: v.volunteerLastNotification
-            ? v.volunteerLastNotification.sentAt
-            : 'none',
-          lastSession: v.volunteerLastSession
-            ? v.volunteerLastSession.createdAt
-            : 'none'
-        }))
-      )
+      const volunteerSummary = vData.map(v => ({
+        email: v.email,
+        points: v.volunteerPointRank,
+        joined: v.createdAt,
+        partner: v.volunteerPartnerOrg || null,
+        lastNotification: v.volunteerLastNotification
+          ? v.volunteerLastNotification.sentAt
+          : 'none',
+        lastSession: v.volunteerLastSession
+          ? v.volunteerLastSession.createdAt
+          : 'none'
+      }))
+
+      const volunteerCsvHeader = Object.keys(volunteerSummary[0]).join(',')
+      const volunteerCsvValues = volunteerSummary
+        .map(o => Object.values(o).join(','))
+        .join('\n')
+      const volunteerCsv = volunteerCsvHeader + '\n' + volunteerCsvValues
+
+      console.log('Notification Point Rank CSV:', '\n')
+      console.log(volunteerCsv)
 
       mongoose.disconnect()
     })
