@@ -35,28 +35,17 @@
         "tries": 0
       }
     },
-    "commonCollegeDocs": [],
-    "computerAccess": [],
     "createdAt": {
       "$date": "2019-02-01T19:43:57.068Z"
     },
-    "difficultCollegeProcess": [],
     "email": "student1@upchieve.org",
     "firstname": "Student",
-    "groupIdentification": [],
     "heardFrom": "Internet search",
-    "highestLevelEducation": [],
     "isAdmin": false,
     "isTestUser": true,
     "isVolunteer": false,
     "lastname": "Upchieve",
-    "nickname": "Student1",
     "password": "$2a$10$z.JMHnbX9IubnNZtqI.FOecTPVY1VTU1DJ6AJGIOT/x/OyAtdw3.y",
-    "preferredContactMethod": [],
-    "preferredTimes": [],
-    "race": [],
-    "referred": "None of the above",
-    "serviceInterests": [],
     "verified": true
   },
   {
@@ -94,35 +83,20 @@
         "tries": 1
       }
     },
-    "birthdate": "01/01/1990",
     "college": "Volunteer College",
-    "commonCollegeDocs": [],
-    "computerAccess": [],
     "createdAt": {
       "$date": "2019-02-01T19:43:57.068Z"
     },
-    "difficultCollegeProcess": [],
     "email": "volunteer1@upchieve.org",
     "favoriteAcademicSubject": "Math",
     "firstname": "Volunteer",
-    "gender": "Male",
-    "groupIdentification": [],
-    "highestLevelEducation": [],
     "isAdmin": true,
     "isTestUser": true,
     "isVolunteer": true,
     "lastname": "UPchieve",
-    "nickname": "Volunteer1",
     "password": "$2a$10$z.JMHnbX9IubnNZtqI.FOecTPVY1VTU1DJ6AJGIOT/x/OyAtdw3.y",
     "phone": "2125551212",
-    "preferredContactMethod": [],
-    "preferredTimes": [],
-    "race": [
-      "Other"
-    ],
-    "referred": "No",
     "registrationCode": "VOLUNTEERTESTING18",
-    "serviceInterests": [],
     "verificationToken": "f8fa9fdc44c7b3c4378eeabefa8bf8ea",
     "verified": true
   },
@@ -161,35 +135,73 @@
         "tries": 1
       }
     },
-    "birthdate": "01/01/1990",
     "college": "Volunteer College",
-    "commonCollegeDocs": [],
-    "computerAccess": [],
     "createdAt": {
       "$date": "2019-02-01T19:43:57.068Z"
     },
-    "difficultCollegeProcess": [],
     "email": "volunteer2@upchieve.org",
     "favoriteAcademicSubject": "Math",
     "firstname": "Volunteer2",
-    "gender": "Female",
-    "groupIdentification": [],
-    "highestLevelEducation": [],
     "isAdmin": true,
     "isTestUser": true,
     "isVolunteer": true,
     "lastname": "UPchieve",
-    "nickname": "Volunteer2",
     "password": "$2a$10$z.JMHnbX9IubnNZtqI.FOecTPVY1VTU1DJ6AJGIOT/x/OyAtdw3.y",
     "phone": "2125551212",
-    "preferredContactMethod": [],
-    "preferredTimes": [],
-    "race": [
-      "Other"
-    ],
-    "referred": "No",
     "registrationCode": "VOLUNTEERTESTING18",
-    "serviceInterests": [],
+    "verificationToken": "f8fa9fdc44c7b3c4378eeabefa8bf8ea",
+    "verified": true
+  },
+  {
+    "__v": 0,
+    "certifications": {
+      "algebra": {
+        "passed": false,
+        "tries": 0
+      },
+      "applications": {
+        "passed": false,
+        "tries": 0
+      },
+      "calculus": {
+        "passed": false,
+        "tries": 0
+      },
+      "essays": {
+        "passed": false,
+        "tries": 0
+      },
+      "geometry": {
+        "passed": false,
+        "tries": 0
+      },
+      "planning": {
+        "passed": false,
+        "tries": 0
+      },
+      "precalculus": {
+        "passed": false,
+        "tries": 0
+      },
+      "trigonometry": {
+        "passed": false,
+        "tries": 0
+      }
+    },
+    "college": "Volunteer College",
+    "createdAt": {
+      "$date": "2019-02-01T19:43:57.068Z"
+    },
+    "email": "volunteer3@upchieve.org",
+    "favoriteAcademicSubject": "Math",
+    "firstname": "Volunteer3",
+    "isAdmin": true,
+    "isTestUser": true,
+    "isVolunteer": true,
+    "lastname": "UPchieve",
+    "password": "$2a$10$z.JMHnbX9IubnNZtqI.FOecTPVY1VTU1DJ6AJGIOT/x/OyAtdw3.y",
+    "phone": "2125551212",
+    "registrationCode": "VOLUNTEERTESTING18",
     "verificationToken": "f8fa9fdc44c7b3c4378eeabefa8bf8ea",
     "verified": true
   }

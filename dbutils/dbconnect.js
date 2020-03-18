@@ -1,7 +1,7 @@
 // Configuration
 var config = require('../config')
 
-module.exports = function (mongoose, callback) {
+module.exports = function(mongoose, callback) {
   // Database
   mongoose.connect(config.database, { useNewUrlParser: true })
   var db = mongoose.connection

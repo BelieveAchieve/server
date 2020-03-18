@@ -2,7 +2,7 @@ var config = require('../config.js')
 var User = require('../models/User')
 var twilio = require('twilio')
 var moment = require('moment-timezone')
-const client =
+const twilioClient =
   config.accountSid && config.authToken
     ? twilio(config.accountSid, config.authToken)
     : null
@@ -119,7 +119,7 @@ function sendTextMessage(phoneNumber, messageText, isTestUserRequest) {
   const fullPhoneNumber =
     phoneNumber[0] === '+' ? phoneNumber : `+1${phoneNumber}`
 
-  return client.messages
+  return twilioClient.messages
     .create({
       to: fullPhoneNumber,
       from: config.sendingNumber,
@@ -154,7 +154,7 @@ function sendVoiceMessage(phoneNumber, messageText) {
 
   // initiate call, giving Twilio the aforementioned URL which Twilio
   // opens when the call is answered to get the TwiML instructions
-  return client.calls
+  return twilioClient.calls
     .create({
       url: url,
       to: fullPhoneNumber,
@@ -265,15 +265,11 @@ const notifyFailsafe = async function(session, options) {
 
   var studentFirstname = populatedSession.student.firstname
 
-  var studentLastname = populatedSession.student.lastname
-
   var studentHighSchool = populatedStudent.highschoolName
 
   var isFirstTimeRequester =
     !populatedSession.student.pastSessions ||
     !populatedSession.student.pastSessions.length
-
-  var type = session.type
 
   var subtopic = session.subTopic
 
@@ -282,8 +278,6 @@ const notifyFailsafe = async function(session, options) {
   var voice = options.voice
 
   var isTestUserRequest = populatedSession.student.isTestUser
-
-  const firstTimeNotice = isFirstTimeRequester ? 'for the first time ' : ''
 
   const volunteerIdsNotified = populatedSession.notifications.map(
     notification => notification.volunteer
@@ -294,12 +288,6 @@ const notifyFailsafe = async function(session, options) {
     isFailsafeVolunteer: false
   }).exec()
 
-  const numberOfVolunteersNotifiedMessage =
-    `${numOfRegularVolunteersNotified} ` +
-    `regular volunteer${
-      numOfRegularVolunteersNotified === 1 ? ' has' : 's have'
-    } been notified.`
-
   const sessionUrl = getSessionUrl(session._id)
 
   // query the failsafe volunteers to notify
@@ -309,28 +297,23 @@ const notifyFailsafe = async function(session, options) {
   const notifications = []
 
   for (const volunteer of volunteersToNotify) {
-    const name = volunteer.firstname
-
     const phoneNumber = volunteer.phone
 
     let messageText
     if (desperate) {
       messageText =
-        `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
-        `from ${studentHighSchool} really needs your ${type} help ` +
-        `on ${subtopic}. ${numberOfVolunteersNotifiedMessage} ` +
-        `Please log in to app.upchieve.org and join the session ASAP!`
+        `Request by Student ${studentFirstname} still not filled.\n` +
+        `Regular volunteers texted: ${numOfRegularVolunteersNotified}`
     } else {
       messageText =
-        `Hi ${name}, student ${studentFirstname} ${studentLastname} ` +
-        `from ${studentHighSchool} has requested ${type} help ` +
-        `${firstTimeNotice}at app.upchieve.org ` +
-        `on ${subtopic}. ${numberOfVolunteersNotifiedMessage} ` +
-        `Please log in if you can to help them out.`
+        `Student: ${studentFirstname}\n` +
+        `High School: ${studentHighSchool}\n` +
+        `Subject: ${subtopic}\n` +
+        `First Ever Request: ${isFirstTimeRequester ? 'Yes' : 'No'}`
     }
 
     if (!voice) {
-      messageText = messageText + ` ${sessionUrl}`
+      messageText = messageText + `\n${sessionUrl}`
     }
 
     const sendPromise = voice
@@ -424,18 +407,16 @@ module.exports = {
       })
   },
 
-  // begin notifying non-failsafe volunteers for a session
+  // Begin notifying non-failsafe volunteers for a session
   beginRegularNotifications: async function(session) {
-    // check that client has been authenticated
-    if (!client) {
+    // Check that twilio client has been authenticated
+    if (!twilioClient) {
       // early exit
       return
     }
 
-    // initial wave
-    await notifyRegular(session)
-
-    // set 3-minute notification interval
+    // Schedule future notification waves (once every 2 mins, starting in 2 mins)
+    // These will continue until the session is fulfilled or ended
     const interval = setInterval(
       async session => {
         const numVolunteersNotified = await notifyRegular(session)
@@ -446,26 +427,23 @@ module.exports = {
       120000,
       session
     )
-
     // store interval in memory
     getSessionTimeoutFor(session).intervals.push(interval)
+
+    // Send initial wave of notifications (right now)
+    await notifyRegular(session)
   },
 
   // begin notifying failsafe volunteers for a session
   beginFailsafeNotifications: async function(session) {
     // check that client has been authenticated
-    if (!client) {
+    if (!twilioClient) {
       // early exit
       return
     }
 
-    // initial notifications
-    await notifyFailsafe(session, {
-      desperate: false,
-      voice: false
-    })
-
-    // timeout for desperate SMS notification
+    // Schedule future failsafe SMS notifications
+    // (Happens later unless session is fulfilled or ended)
     const desperateTimeout = setTimeout(
       notifyFailsafe,
       config.desperateSMSTimeout,
@@ -477,7 +455,8 @@ module.exports = {
     )
     getSessionTimeoutFor(session).timeouts.push(desperateTimeout)
 
-    // timeout for desperate voice notification
+    // Schedule future failsafe phone call notifications
+    // (Happens later unless session is fulfilled or ended)
     const desperateVoiceTimeout = setTimeout(
       notifyFailsafe,
       config.desperateVoiceTimeout,
@@ -488,6 +467,12 @@ module.exports = {
       }
     )
     getSessionTimeoutFor(session).timeouts.push(desperateVoiceTimeout)
+
+    // Send first SMS failsafe notifications (Send right now)
+    await notifyFailsafe(session, {
+      desperate: false,
+      voice: false
+    })
   },
 
   stopNotifications: function(session) {

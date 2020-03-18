@@ -3,6 +3,8 @@ const flash = require('express-flash')
 const passport = require('passport')
 const Sentry = require('@sentry/node')
 
+const authPassport = require('./passport')
+
 const VerificationCtrl = require('../../controllers/VerificationCtrl')
 const ResetPasswordCtrl = require('../../controllers/ResetPasswordCtrl')
 
@@ -376,6 +378,16 @@ module.exports = function(app) {
       isValid: isVolunteerCode
     })
   })
+
+  // List all valid registration codes (admins only)
+  router
+    .route('/register/volunteercodes')
+    .all(authPassport.isAdmin)
+    .get(function(req, res, next) {
+      res.json({
+        volunteerCodes: config.VOLUNTEER_CODES.split(',')
+      })
+    })
 
   router.post('/reset/send', function(req, res, next) {
     var email = req.body.email

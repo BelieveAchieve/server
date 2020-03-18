@@ -1,11 +1,11 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 const Sentry = require('@sentry/node')
 
-var Message = require('./Message')
+const Message = require('./Message')
 
-var validTypes = ['Math', 'College']
+const validTypes = ['Math', 'College']
 
-var sessionSchema = new mongoose.Schema({
+const sessionSchema = new mongoose.Schema({
   student: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -20,7 +20,7 @@ var sessionSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: function(v) {
-        var type = v.toLowerCase()
+        const type = v.toLowerCase()
         return validTypes.some(function(validType) {
           return validType.toLowerCase() === type
         })
@@ -37,6 +37,11 @@ var sessionSchema = new mongoose.Schema({
   messages: [Message.schema],
 
   whiteboardUrl: {
+    type: String,
+    default: ''
+  },
+
+  whiteboardDoc: {
     type: String,
     default: ''
   },
@@ -75,19 +80,19 @@ var sessionSchema = new mongoose.Schema({
 })
 
 sessionSchema.methods.saveMessage = function(messageObj, cb) {
-  var session = this
+  const session = this
   this.messages = this.messages.concat({
     user: messageObj.user._id,
     contents: messageObj.contents
   })
 
-  var messageId = this.messages[this.messages.length - 1]._id
+  const messageId = this.messages[this.messages.length - 1]._id
   const promise = this.save().then(() => {
-    var savedMessageIndex = session.messages.findIndex(function(message) {
+    const savedMessageIndex = session.messages.findIndex(function(message) {
       return message._id === messageId
     })
 
-    var savedMessage = session.messages[savedMessageIndex]
+    const savedMessage = session.messages[savedMessageIndex]
 
     return savedMessage
   })
@@ -100,7 +105,7 @@ sessionSchema.methods.saveMessage = function(messageObj, cb) {
 }
 
 sessionSchema.methods.saveWhiteboardUrl = function(whiteboardUrl, cb) {
-  var session = this
+  const session = this
   this.whiteboardUrl = whiteboardUrl
   this.save(function(err) {
     if (cb) {
@@ -119,14 +124,16 @@ sessionSchema.methods.saveWhiteboardUrl = function(whiteboardUrl, cb) {
 
 // helper function for handling joins that fail because session is fulfilled or has ended
 function failJoin(session, user, error) {
-  session.failedJoins.push(user._id)
-  session.save()
+  if (user.isVolunteer) {
+    session.failedJoins.push(user._id)
+    session.save()
+  }
   throw error
 }
 
 // this method should callback with an error on attempts to join by non-participants
 // so that SessionCtrl knows to disconnect the socket
-sessionSchema.methods.joinUser = async function(user) {
+sessionSchema.methods.joinUser = function(user) {
   if (this.endedAt) {
     failJoin(this, user, new Error('Session has ended'))
   }
@@ -162,17 +169,6 @@ sessionSchema.methods.joinUser = async function(user) {
   return this.save()
 }
 
-sessionSchema.methods.leaveUser = function(user, cb) {
-  // below should not save volunteer/user to null, we need to be able to see who the volunteer and student user were
-  // should set this.endedAt to Date.now and end the session, both users see the session ended regardless of who ended it
-  // student can receive a message telling them they can request help again
-  if (user.isVolunteer) {
-    this.volunteer = user
-  } else {
-    this.student = user
-  }
-}
-
 sessionSchema.methods.endSession = function(userWhoEnded) {
   this.endedAt = new Date()
   this.endedBy = userWhoEnded
@@ -188,10 +184,6 @@ sessionSchema.methods.addNotifications = function(notificationsToAdd, cb) {
     })
     .exec(cb)
 }
-
-sessionSchema.methods.isActive = function(cb) {}
-
-sessionSchema.methods.isWaiting = function(cb) {}
 
 sessionSchema.statics.findLatest = function(attrs, cb) {
   return this.find(attrs)

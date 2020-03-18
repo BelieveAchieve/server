@@ -20,6 +20,7 @@ db.once('open', function() {
     'essays',
     'applications'
   ]
+  let promises = []
   for (var i = 0; i < jsonArr.length; i++) {
     try {
       var json = require('./seeds/questions/' + jsonArr[i] + '.json')
@@ -27,14 +28,16 @@ db.once('open', function() {
     } catch (e) {
       console.log(e)
     }
-    collection.insertMany(json, function(err, result) {
-      console.log(json)
-      if (err) {
-        throw new Error(err)
-      } else {
-        console.log('Successfully imported data')
-        process.exit()
-      }
-    })
+
+    promises.push(collection.insertMany(json))
   }
+
+  Promise.all(promises)
+    .then(() => {
+      console.log('Successfully imported data')
+      process.exit()
+    })
+    .catch(err => {
+      throw new Error(err)
+    })
 })

@@ -8,6 +8,7 @@ const MessagingResponse = require('twilio').twiml.MessagingResponse
 const config = require('../../config')
 const twilioService = require('../../services/twilio')
 const User = require('../../models/User')
+const UserActionCtrl = require('../../controllers/UserActionCtrl')
 
 module.exports = function(app) {
   console.log('TwiML module')
@@ -42,6 +43,8 @@ module.exports = function(app) {
 
     const incomingMessage = req.body.Body
     const incomingPhoneNumber = req.body.From
+    let userId
+    let session
 
     if (!incomingPhoneNumber)
       return res.status(422).json({ err: 'Error: Missing phone number' })
@@ -70,12 +73,10 @@ module.exports = function(app) {
           }
         })
 
+        userId = _.get(populatedUser, '_id')
+
         // Get the session if it exists, or else an empty object
-        const session = _.get(
-          populatedUser,
-          'volunteerLastNotification.session',
-          {}
-        )
+        session = _.get(populatedUser, 'volunteerLastNotification.session', {})
 
         if (!session._id) {
           // Handle: No session found
@@ -105,6 +106,10 @@ module.exports = function(app) {
 
     res.writeHead(200, { 'Content-Type': 'text/xml' })
     res.end(twiml.toString())
+
+    if (isYesMessage && session._id) {
+      UserActionCtrl.repliedYesToSession(userId, session._id)
+    }
   })
 
   app.use('/twiml', router)
