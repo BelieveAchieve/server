@@ -229,7 +229,7 @@ var userSchema = new mongoose.Schema(
       default: availabilitySchema
     },
     timezone: String,
-    availabilityLastModifiedAt: { type: Date, default: Date.now },
+    availabilityLastModifiedAt: { type: Date },
     elapsedAvailability: { type: Number, default: 0 },
 
     certifications: {
@@ -347,10 +347,12 @@ userSchema.methods.parseProfile = function() {
     lastname: this.lastname,
     isVolunteer: this.isVolunteer,
     isAdmin: this.isAdmin,
+    isOnboarded: this.isOnboarded,
     referred: this.referred,
     createdAt: this.createdAt,
     phone: this.phone,
     availability: this.availability,
+    availabilityLastModifiedAt: this.availabilityLastModifiedAt,
     timezone: this.timezone,
     highschoolName: this.highschoolName,
     college: this.college,
@@ -413,7 +415,9 @@ userSchema.methods.populateForVolunteerStats = function(cb) {
 // Calculates the amount of hours between this.availabilityLastModifiedAt
 // and the current time that a user updates to a new availability
 userSchema.methods.calculateElapsedAvailability = function(newModifiedDate) {
-  const availabilityLastModifiedAt = moment(this.availabilityLastModifiedAt)
+  const availabilityLastModifiedAt = moment(
+    this.availabilityLastModifiedAt || this.createdAt
+  )
     .tz('America/New_York')
     .format()
   const estTimeNewModifiedDate = moment(newModifiedDate)
@@ -603,6 +607,21 @@ userSchema.virtual('mathCoachingOnly').get(function() {
   return (
     !!volunteerPartnerManifest && !!volunteerPartnerManifest['mathCoachingOnly']
   )
+})
+
+userSchema.virtual('isOnboarded').get(function() {
+  if (!this.isVolunteer) return null
+
+  let isCertified = false
+
+  for (let index in this.certifications) {
+    if (this.certifications[index].passed) {
+      isCertified = true
+      break
+    }
+  }
+
+  return this.availabilityLastModifiedAt && isCertified
 })
 
 // Static method to determine if a registration code is valid
