@@ -21,7 +21,7 @@ module.exports = function(app) {
       .then(([school, zipCode]) => {
         const isSchoolApproved = school.isApproved
         const isZipCodeEligible = zipCode && zipCode.isEligible
-        const isStudentEligible = isSchoolApproved && isZipCodeEligible
+        const isStudentEligible = isSchoolApproved || isZipCodeEligible
 
         if (!isStudentEligible) {
           const newIneligibleStudent = new IneligibleStudent({
