@@ -4,6 +4,7 @@ const passport = require('../auth/passport')
 const SchoolCtrl = require('../../controllers/SchoolCtrl')
 const School = require('../../models/School')
 const ZipCode = require('../../models/ZipCode')
+const IneligibleStudent = require('../../models/IneligibleStudent')
 
 module.exports = function(app) {
   const router = new express.Router()
@@ -18,13 +19,25 @@ module.exports = function(app) {
 
     Promise.all([schoolFetch, zipCodeFetch])
       .then(([school, zipCode]) => {
+        const medianIncomeThreshold = 50000
         const isSchoolApproved = school.isApproved
         const isZipCodeEligible = zipCode.medianIncome
-          ? zipCode.medianIncome <= 50000
-          : true // Default to eligible for zip codes without income data
+          ? zipCode.medianIncome <= medianIncomeThreshold
+          : true // For zip codes without income data, default to eligible
 
         const isStudentEligible = isSchoolApproved && isZipCodeEligible
-        res.json({ isEligible: isStudentEligible })
+
+        if (!isStudentEligible) {
+          const newIneligibleStudent = new IneligibleStudent({
+            zipCode: zipCode.zipCode,
+            school: school._id,
+            ipAddress: req.ip
+          })
+
+          newIneligibleStudent.save()
+        }
+
+        return res.json({ isEligible: isStudentEligible })
       })
       .catch(err => {
         next(err)

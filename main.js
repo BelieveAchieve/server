@@ -37,6 +37,12 @@ startCronJobs()
 const app = express()
 app.set('port', process.env.PORT || 3000)
 
+/**
+ * Account for nginx proxy when getting client's IP address
+ * http://expressjs.com/en/guide/behind-proxies.html
+ */
+app.set('trust proxy', true)
+
 // Setup middleware
 app.use(Sentry.Handlers.requestHandler()) // The Sentry request handler must be the first middleware on the app
 app.use(logger('dev'))
