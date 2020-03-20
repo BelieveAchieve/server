@@ -19,12 +19,8 @@ module.exports = function(app) {
 
     Promise.all([schoolFetch, zipCodeFetch])
       .then(([school, zipCode]) => {
-        const medianIncomeThreshold = 50000
         const isSchoolApproved = school.isApproved
-        const isZipCodeEligible = zipCode.medianIncome
-          ? zipCode.medianIncome <= medianIncomeThreshold
-          : true // For zip codes without income data, default to eligible
-
+        const isZipCodeEligible = zipCode && zipCode.isEligible
         const isStudentEligible = isSchoolApproved && isZipCodeEligible
 
         if (!isStudentEligible) {
