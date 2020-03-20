@@ -21,7 +21,8 @@ module.exports = function(app) {
         const isSchoolApproved = school.isApproved
         const isZipCodeEligible = zipCode.medianIncome
           ? zipCode.medianIncome <= 50000
-          : true
+          : true // Default to eligible for zip codes without income data
+
         const isStudentEligible = isSchoolApproved && isZipCodeEligible
         res.json({ isEligible: isStudentEligible })
       })

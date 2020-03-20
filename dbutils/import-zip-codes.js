@@ -74,7 +74,7 @@ dbconnect(mongoose, async function() {
         progressBar.start(zips.length, 0)
 
         const zipCodeRegex = /ZCTA5 (\d{5})/
-        const defaultMedianIncome = 57652
+        const defaultMedianIncome = undefined
 
         async.mapSeries(
           zips,
