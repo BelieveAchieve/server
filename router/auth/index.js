@@ -136,8 +136,11 @@ module.exports = function(app) {
       })
     }
 
+    const isStudentPartnerSignup =
+      !isVolunteer && !highSchoolUpchieveId && !zipCode
+
     // Student partner org check (if no high school or zip code provided)
-    if (!isVolunteer && !zipCode && !highSchoolUpchieveId) {
+    if (isStudentPartnerSignup) {
       const allStudentPartnerManifests = config.studentPartnerManifests
       const studentPartnerManifest =
         allStudentPartnerManifests[studentPartnerOrg]
@@ -183,6 +186,8 @@ module.exports = function(app) {
       })
     }
 
+    const highSchoolApprovalNotRequired = !!studentPartnerOrg || !!zipCode
+
     // Look up high school
     const highschoolLookupPromise = new Promise((resolve, reject) => {
       if (isVolunteer) {
@@ -193,8 +198,8 @@ module.exports = function(app) {
 
         // early exit
         return
-      } else if ((zipCode || studentPartnerOrg) && !highSchoolUpchieveId) {
-        // don't require valid high school for students referred from partner or with eligible zip code
+      } else if (highSchoolApprovalNotRequired) {
+        // Don't require valid high school for students referred from partner or with eligible zip code
         resolve({
           isVolunteer: false
         })
