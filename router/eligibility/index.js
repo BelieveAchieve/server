@@ -12,10 +12,10 @@ module.exports = function(app) {
   // Check if a student is eligible
   router.route('/check').post(function(req, res, next) {
     const schoolUpchieveId = req.body.schoolUpchieveId
-    const zipCode = req.body.zipCode
+    const zipCodeInput = req.body.zipCode
 
     const schoolFetch = School.findByUpchieveId(schoolUpchieveId).exec()
-    const zipCodeFetch = ZipCode.findByZipCode(zipCode).exec()
+    const zipCodeFetch = ZipCode.findByZipCode(zipCodeInput).exec()
 
     Promise.all([schoolFetch, zipCodeFetch])
       .then(([school, zipCode]) => {
@@ -25,7 +25,7 @@ module.exports = function(app) {
 
         if (!isStudentEligible) {
           const newIneligibleStudent = new IneligibleStudent({
-            zipCode: zipCode.zipCode,
+            zipCode: zipCodeInput,
             school: school._id,
             ipAddress: req.ip
           })
