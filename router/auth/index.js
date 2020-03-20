@@ -136,8 +136,8 @@ module.exports = function(app) {
       })
     }
 
-    // Student partner org check (if no high school provided)
-    if (!isVolunteer && !highSchoolUpchieveId) {
+    // Student partner org check (if no high school or zip code provided)
+    if (!isVolunteer && !zipCode && !highSchoolUpchieveId) {
       const allStudentPartnerManifests = config.studentPartnerManifests
       const studentPartnerManifest =
         allStudentPartnerManifests[studentPartnerOrg]
@@ -193,8 +193,8 @@ module.exports = function(app) {
 
         // early exit
         return
-      } else if (studentPartnerOrg && !highSchoolUpchieveId) {
-        // don't require valid high school for students referred from partner
+      } else if ((zipCode || studentPartnerOrg) && !highSchoolUpchieveId) {
+        // don't require valid high school for students referred from partner or with eligible zip code
         resolve({
           isVolunteer: false
         })
