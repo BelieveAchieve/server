@@ -186,35 +186,38 @@ module.exports = function(app) {
       })
     }
 
-    const highSchoolApprovalNotRequired = !!studentPartnerOrg || !!zipCode
+    const highSchoolProvided = !!highSchoolUpchieveId
+    const highSchoolApprovalRequired = !studentPartnerOrg && !zipCode
 
     // Look up high school
     const highschoolLookupPromise = new Promise((resolve, reject) => {
       if (isVolunteer) {
         // don't look up high schools for volunteers
-        resolve({
+        return resolve({
           isVolunteer: true
         })
-
-        // early exit
-        return
-      } else if (highSchoolApprovalNotRequired) {
-        // Don't require valid high school for students referred from partner or with eligible zip code
-        resolve({
+      } else if (!highSchoolProvided) {
+        // Don't look up high school for students who didn't provide one (it's not required for certain partner orgs)
+        return resolve({
           isVolunteer: false
         })
-
-        // early exit
-        return
       }
 
       School.findByUpchieveId(highSchoolUpchieveId, (err, school) => {
         if (err) {
-          reject(err)
-        } else if (!studentPartnerOrg && !school.isApproved) {
-          reject(new Error(`School ${highSchoolUpchieveId} is not approved`))
+          return reject(err)
+        } else if (!highSchoolApprovalRequired) {
+          // Don't require valid high school for students referred from partner or with eligible zip code
+          return resolve({
+            isVolunteer: false,
+            school
+          })
+        } else if (highSchoolApprovalRequired && !school.isApproved) {
+          return reject(
+            new Error(`School ${highSchoolUpchieveId} is not approved`)
+          )
         } else {
-          resolve({
+          return resolve({
             isVolunteer: false,
             school
           })
