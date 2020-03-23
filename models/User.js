@@ -349,6 +349,7 @@ userSchema.methods.parseProfile = function() {
     isVolunteer: this.isVolunteer,
     isAdmin: this.isAdmin,
     isOnboarded: this.isOnboarded,
+    isTestUser: this.isTestUser,
     referred: this.referred,
     createdAt: this.createdAt,
     phone: this.phone,
