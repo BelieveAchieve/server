@@ -24,6 +24,7 @@ UPchieve web server
     - [POST /auth/register](#post-authregister)
     - [POST /auth/reset/send](#post-authresetsend)
     - [POST /auth/reset/confirm](#post-authresetconfirm)
+    - [POST /auth/reset/verify](#post-authresetverify)
     - [GET /auth/org-manifest](#get-authorg-manifest)
     - [POST /api/session/new](#post-apisessionnew)
     - [POST /api/session/check](#post-apisessioncheck)
@@ -222,6 +223,14 @@ Possible errors:
   "email": "String",
   "password": "String",
   "newpassword": "String",
+  "token": "String"
+}
+```
+
+### POST /auth/reset/verify
+
+```json
+{
   "token": "String"
 }
 ```

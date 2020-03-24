@@ -487,5 +487,31 @@ module.exports = function(app) {
     )
   })
 
+  router.post('/reset/verify', async (req, res, next) => {
+    const { token } = req.body
+
+    if (!token.match(/^[a-f0-9]{32}$/)) {
+      return res.status(422).json({
+        err:
+          'Please verify that this URL matches the link that was sent to your inbox.'
+      })
+    }
+
+    try {
+      const user = await User.findOne({ passwordResetToken: token })
+
+      if (!user) {
+        res.status(404).json({
+          err:
+            'This URL is no longer valid. Please check your inbox for the most recent password reset request email.'
+        })
+      } else {
+        res.sendStatus(204)
+      }
+    } catch (err) {
+      next(err)
+    }
+  })
+
   app.use('/auth', router)
 }
