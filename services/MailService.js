@@ -94,6 +94,8 @@ module.exports = {
   sendWelcomeEmail: function(options, callback) {
     const email = options.email
     const firstName = options.firstName
+    const firstNameCapitalized =
+      firstName.charAt(0).toUpperCase() + firstName.slice(1)
     const coachGuideLink = 'http://' + config.client.host + '/coach-guide'
     const scheduleLink = 'http://' + config.client.host + '/calendar'
     const trainingLink = 'http://' + config.client.host + '/training'
@@ -104,7 +106,7 @@ module.exports = {
       'UPchieve',
       config.sendgrid.welcomeTemplate,
       {
-        firstName,
+        firstName: firstNameCapitalized,
         coachGuideLink,
         scheduleLink,
         trainingLink
