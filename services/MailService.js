@@ -17,6 +17,9 @@ const sendEmail = function(
       email: fromEmail,
       name: fromName
     },
+    reply_to: {
+      email: config.mail.receivers.support
+    },
     templateId: templateId,
     dynamic_template_data: dynamicData
   }
