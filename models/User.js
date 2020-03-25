@@ -234,6 +234,17 @@ var userSchema = new mongoose.Schema(
     elapsedAvailability: { type: Number, default: 0 },
 
     certifications: {
+      prealgebra: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
+      },
       algebra: {
         passed: {
           type: Boolean,
