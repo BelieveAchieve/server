@@ -2,6 +2,10 @@
   {
     "__v": 0,
     "certifications": {
+      "prealgebra": {
+        "passed": false,
+        "tries": 0
+      },
       "algebra": {
         "passed": false,
         "tries": 0
@@ -51,6 +55,10 @@
   {
     "__v": 0,
     "certifications": {
+      "prealgebra": {
+        "passed": true,
+        "tries": 1
+      },
       "algebra": {
         "passed": true,
         "tries": 1
@@ -103,6 +111,10 @@
   {
     "__v": 0,
     "certifications": {
+      "prealgebra": {
+        "passed": true,
+        "tries": 1
+      },
       "algebra": {
         "passed": true,
         "tries": 1
@@ -155,6 +167,10 @@
   {
     "__v": 0,
     "certifications": {
+      "prealgebra": {
+        "passed": false,
+        "tries": 0
+      },
       "algebra": {
         "passed": false,
         "tries": 0
