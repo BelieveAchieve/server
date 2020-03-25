@@ -85,7 +85,7 @@ questionSchema.statics.getSubcategories = function(category) {
       'exponents and radicals',
       'polynomials',
       'wordproblems'
-    ],
+    ]
   }
   if (typeof category !== 'string') {
     throw new TypeError(
