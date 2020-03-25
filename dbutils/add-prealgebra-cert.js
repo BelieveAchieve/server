@@ -6,7 +6,8 @@ dbconnect(mongoose, function() {
   User.find()
     .then(users => {
       const userUpdates = users.map(user => {
-        user.certifications.prealgebra.passed = user.certifications.algebra.passed
+        user.certifications.prealgebra.passed =
+          user.certifications.algebra.passed
         return user.save()
       })
       return Promise.all(userUpdates)
