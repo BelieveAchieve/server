@@ -80,13 +80,15 @@ questionSchema.statics.getSubcategories = function(category) {
       'basic'
     ],
     prealgebra: [
+      'numbers',
       'arithmetic properties',
       'exponents',
       'exponents and radicals',
       'polynomials',
-      'wordproblems'
+      'fractions'
     ]
   }
+
   if (typeof category !== 'string') {
     throw new TypeError(
       'Category has a value of ' +
