@@ -415,8 +415,17 @@ module.exports = {
       return
     }
 
+    const populatedSession = await Session.findById(session._id)
+      .populate('student')
+      .exec()
+
+    const isNewStudent = populatedSession.student.pastSessions.length === 0
+    const oneMinute = 1000 * 60
+    const delayTime = isNewStudent ? oneMinute : 0
+
     // Schedule future notification waves (once every 2 mins, starting in 2 mins)
     // These will continue until the session is fulfilled or ended
+    // Delay notifications by one minute if the user is a new student
     const interval = setInterval(
       async session => {
         const numVolunteersNotified = await notifyRegular(session)
@@ -424,7 +433,7 @@ module.exports = {
           clearInterval(interval)
         }
       },
-      120000,
+      120000 + delayTime,
       session
     )
     // store interval in memory
