@@ -109,4 +109,23 @@ module.exports = function(router, io) {
       next(err)
     }
   })
+
+  router.route('/session/latest').post(async function(req, res, next) {
+    const data = req.body || {}
+    const userId = ObjectId(data.user_id)
+
+    try {
+      const latestSession = await Session.findLatest({ student: userId })
+      if (!latestSession) {
+        res.status(404).json({ err: 'No latest session' })
+      } else {
+        res.json({
+          sessionId: latestSession._id,
+          data: latestSession
+        })
+      }
+    } catch (err) {
+      next(err)
+    }
+  })
 }
