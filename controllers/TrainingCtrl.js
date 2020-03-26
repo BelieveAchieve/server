@@ -5,6 +5,7 @@ var User = require('../models/User')
 
 // change depending on how many of each subcategory are wanted
 var numQuestions = {
+  prealgebra: 2,
   algebra: 2,
   geometry: 2,
   trigonometry: 2,

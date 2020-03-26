@@ -78,8 +78,17 @@ questionSchema.statics.getSubcategories = function(category) {
       'FinAid',
       'LOR',
       'basic'
+    ],
+    prealgebra: [
+      'numbers',
+      'arithmetic properties',
+      'exponents',
+      'exponents and radicals',
+      'polynomials',
+      'fractions'
     ]
   }
+
   if (typeof category !== 'string') {
     throw new TypeError(
       'Category has a value of ' +

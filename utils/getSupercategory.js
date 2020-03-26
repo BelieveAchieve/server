@@ -1,6 +1,7 @@
 const getSupercategory = subcategory => {
   let category = ''
   switch (subcategory.toLowerCase()) {
+    case 'prealgebra':
     case 'algebra':
     case 'precalculus':
     case 'trigonometry':
