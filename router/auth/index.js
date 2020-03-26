@@ -116,6 +116,7 @@ module.exports = function(app) {
     const studentPartnerOrg = req.body.studentPartnerOrg
     const partnerUserId = req.body.partnerUserId
     const highSchoolUpchieveId = req.body.highSchoolId
+    const zipCode = req.body.zipCode
     const college = req.body.college
     const phone = req.body.phone
     const favoriteAcademicSubject = req.body.favoriteAcademicSubject
@@ -135,8 +136,11 @@ module.exports = function(app) {
       })
     }
 
-    // Student partner org check (if no high school provided)
-    if (!isVolunteer && !highSchoolUpchieveId) {
+    const isStudentPartnerSignup =
+      !isVolunteer && !highSchoolUpchieveId && !zipCode
+
+    // Student partner org check (if no high school or zip code provided)
+    if (isStudentPartnerSignup) {
       const allStudentPartnerManifests = config.studentPartnerManifests
       const studentPartnerManifest =
         allStudentPartnerManifests[studentPartnerOrg]
@@ -182,33 +186,38 @@ module.exports = function(app) {
       })
     }
 
+    const highSchoolProvided = !!highSchoolUpchieveId
+    const highSchoolApprovalRequired = !studentPartnerOrg && !zipCode
+
     // Look up high school
     const highschoolLookupPromise = new Promise((resolve, reject) => {
       if (isVolunteer) {
         // don't look up high schools for volunteers
-        resolve({
+        return resolve({
           isVolunteer: true
         })
-
-        // early exit
-        return
-      } else if (studentPartnerOrg && !highSchoolUpchieveId) {
-        // don't require valid high school for students referred from partner
-        resolve({
+      } else if (!highSchoolProvided) {
+        // Don't look up high school for students who didn't provide one (it's not required for certain partner orgs)
+        return resolve({
           isVolunteer: false
         })
-
-        // early exit
-        return
       }
 
       School.findByUpchieveId(highSchoolUpchieveId, (err, school) => {
         if (err) {
-          reject(err)
-        } else if (!studentPartnerOrg && !school.isApproved) {
-          reject(new Error(`School ${highSchoolUpchieveId} is not approved`))
+          return reject(err)
+        } else if (!highSchoolApprovalRequired) {
+          // Don't require valid high school for students referred from partner or with eligible zip code
+          return resolve({
+            isVolunteer: false,
+            school
+          })
+        } else if (highSchoolApprovalRequired && !school.isApproved) {
+          return reject(
+            new Error(`School ${highSchoolUpchieveId} is not approved`)
+          )
         } else {
-          resolve({
+          return resolve({
             isVolunteer: false,
             school
           })
@@ -226,6 +235,7 @@ module.exports = function(app) {
         user.studentPartnerOrg = studentPartnerOrg
         user.partnerUserId = partnerUserId
         user.approvedHighschool = school
+        user.zipCode = zipCode
         user.college = college
         user.phonePretty = phone
         user.favoriteAcademicSubject = favoriteAcademicSubject
@@ -475,6 +485,32 @@ module.exports = function(app) {
         }
       }
     )
+  })
+
+  router.post('/reset/verify', async (req, res, next) => {
+    const { token } = req.body
+
+    if (!token.match(/^[a-f0-9]{32}$/)) {
+      return res.status(422).json({
+        err:
+          'Please verify that this URL matches the link that was sent to your inbox.'
+      })
+    }
+
+    try {
+      const user = await User.findOne({ passwordResetToken: token })
+
+      if (!user) {
+        res.status(404).json({
+          err:
+            'This URL is no longer valid. Please check your inbox for the most recent password reset request email.'
+        })
+      } else {
+        res.sendStatus(204)
+      }
+    } catch (err) {
+      next(err)
+    }
   })
 
   app.use('/auth', router)

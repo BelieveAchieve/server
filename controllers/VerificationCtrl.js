@@ -89,6 +89,17 @@ module.exports = {
           user.save(function(err) {
             done(err, user)
           })
+        },
+        function(user, done) {
+          MailService.sendWelcomeEmail(
+            {
+              email: user.email,
+              firstName: user.firstname
+            },
+            function(err) {
+              done(err, user.email)
+            }
+          )
         }
       ],
       callback

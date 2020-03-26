@@ -3,23 +3,26 @@ var path = require('path')
 module.exports = function(app) {
   console.log('Initializing server routing')
 
+  require('./whiteboard')(app)
+
   const sessionStore = require('./auth/session-store')(app)
 
   require('./auth')(app)
   require('./api')(app, sessionStore)
   require('./edu')(app)
-  require('./school')(app)
+  require('./eligibility')(app)
   require('./twiml')(app)
   require('./contact')(app)
 
   // Determine if incoming request is a static asset
   var isStaticReq = function(req) {
     return [
+      '/whiteboard',
       '/auth',
       '/api',
-      '/school',
+      '/eligibility',
       '/twiml',
-      'contact',
+      '/contact',
       '/js',
       '/css'
     ].some(function(whitelist) {

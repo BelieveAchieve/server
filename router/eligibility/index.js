@@ -3,11 +3,44 @@ const passport = require('../auth/passport')
 
 const SchoolCtrl = require('../../controllers/SchoolCtrl')
 const School = require('../../models/School')
+const ZipCode = require('../../models/ZipCode')
+const IneligibleStudent = require('../../models/IneligibleStudent')
 
 module.exports = function(app) {
   const router = new express.Router()
 
-  router.route('/search').get(function(req, res, next) {
+  // Check if a student is eligible
+  router.route('/check').post(function(req, res, next) {
+    const schoolUpchieveId = req.body.schoolUpchieveId
+    const zipCodeInput = req.body.zipCode
+
+    const schoolFetch = School.findByUpchieveId(schoolUpchieveId).exec()
+    const zipCodeFetch = ZipCode.findByZipCode(zipCodeInput).exec()
+
+    Promise.all([schoolFetch, zipCodeFetch])
+      .then(([school, zipCode]) => {
+        const isSchoolApproved = school.isApproved
+        const isZipCodeEligible = zipCode && zipCode.isEligible
+        const isStudentEligible = isSchoolApproved || isZipCodeEligible
+
+        if (!isStudentEligible) {
+          const newIneligibleStudent = new IneligibleStudent({
+            zipCode: zipCodeInput,
+            school: school._id,
+            ipAddress: req.ip
+          })
+
+          newIneligibleStudent.save()
+        }
+
+        return res.json({ isEligible: isStudentEligible })
+      })
+      .catch(err => {
+        next(err)
+      })
+  })
+
+  router.route('/school/search').get(function(req, res, next) {
     const q = req.query.q
 
     SchoolCtrl.search(q, function(err, results) {
@@ -22,7 +55,7 @@ module.exports = function(app) {
   })
 
   // route to add an email to the list for notifying when approved
-  router.route('/approvalnotify').post(function(req, res, next) {
+  router.route('/school/approvalnotify').post(function(req, res, next) {
     const schoolUpchieveId = req.body.schoolUpchieveId
 
     const email = req.body.email
@@ -43,22 +76,9 @@ module.exports = function(app) {
     )
   })
 
-  // Check if a school is approved
-  router.route('/check').post(function(req, res, next) {
-    const schoolUpchieveId = req.body.schoolUpchieveId
-
-    School.findByUpchieveId(schoolUpchieveId, function(err, school) {
-      if (err) {
-        next(err)
-      } else {
-        res.json({ approved: school.isApproved })
-      }
-    })
-  })
-
   // Paginate eligible high schools (admins only)
   router
-    .route('/findeligible')
+    .route('/school/findeligible')
     .all(passport.isAdmin)
     .get(function(req, res, next) {
       School.find(
@@ -80,7 +100,7 @@ module.exports = function(app) {
 
   // List all students registered with a school (admins only)
   router
-    .route('/studentusers/:schoolUpchieveId')
+    .route('/school/studentusers/:schoolUpchieveId')
     .all(passport.isAdmin)
     .get(function(req, res, next) {
       const upchieveId = req.params.schoolUpchieveId
@@ -106,5 +126,5 @@ module.exports = function(app) {
         })
     })
 
-  app.use('/school', router)
+  app.use('/eligibility', router)
 }

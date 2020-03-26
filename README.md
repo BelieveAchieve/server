@@ -24,6 +24,7 @@ UPchieve web server
     - [POST /auth/register](#post-authregister)
     - [POST /auth/reset/send](#post-authresetsend)
     - [POST /auth/reset/confirm](#post-authresetconfirm)
+    - [POST /auth/reset/verify](#post-authresetverify)
     - [GET /auth/org-manifest](#get-authorg-manifest)
     - [POST /api/session/new](#post-apisessionnew)
     - [POST /api/session/check](#post-apisessioncheck)
@@ -39,10 +40,10 @@ UPchieve web server
     - [POST /api/verify/send](#post-apiverifysend)
     - [POST /api/verify/confirm](#post-apiverifyconfirm)
     - [POST /moderate/message](#post-moderatemessage)
-    - [GET /school/search](#get-schoolsearch)
-    - [POST /school/approvalnotify](#post-schoolapprovalnotify)
-    - [POST /school/check](#post-schoolcheck)
-    - [GET /school/studentusers/:schoolUpchieveId](#get-schoolstudentusersschoolupchieveid)
+    - [POST /eligibility/check](#post-eligibilitycheck)
+    - [GET /eligibility/school/search](#get-eligibilityschoolsearch)
+    - [POST /eligibility/school/approvalnotify](#post-eligibilityschoolapprovalnotify)
+    - [GET /eligibility/school/studentusers/:schoolUpchieveId](#get-eligibilityschoolstudentusersschoolupchieveid)
 
 Local Development
 -----------------
@@ -105,8 +106,9 @@ The database is populated with the following users for local development:
 | `student1@upchieve.org`   | `Password123` |
 | `volunteer1@upchieve.org` | `Password123` |
 | `volunteer2@upchieve.org` | `Password123` |
+| `volunteer3@upchieve.org` | `Password123` |
 
-By default, none of the test users have an `approvedHighschool` set.
+By default, none of the test users have an `approvedHighschool` set. The volunteers are all admins by default, and `volunteer1@upchieve.org` and `volunteer2@upchieve.org` have also passed all of their certifications. `volunteer3@upchieve.org` has not passed any quizzes.
 
 Structure
 ---------
@@ -221,6 +223,14 @@ Possible errors:
   "email": "String",
   "password": "String",
   "newpassword": "String",
+  "token": "String"
+}
+```
+
+### POST /auth/reset/verify
+
+```json
+{
   "token": "String"
 }
 ```
@@ -370,7 +380,18 @@ The response body looks like this if no error occurred:
 }
 ```
 
-### GET /school/search
+### POST /eligibility/check
+
+Expects the following request body:
+
+```json
+{
+  "schoolUpchieveId": "String",
+  "zipCode": "String"
+}
+```
+
+### GET /eligibility/school/search
 
 Expects the following query string:
 
@@ -399,7 +420,7 @@ If there are no errors, the response body contains the list of schools matching 
 }
 ```
 
-### POST /school/approvalnotify
+### POST /eligibility/school/approvalnotify
 
 Expects the following request body:
 
@@ -416,29 +437,19 @@ If no error occurred, the response body looks like:
 
 ```json
 {
-  "schoolId": "school's UPchieve ID"
+  "schoolId": "School's UPchieve ID"
 }
 ```
 
-### POST /school/check
-
-Expects the following request body:
-
-```json
-{
-  "schoolUpchieveId": "String"
-}
-```
-
-Checks if a school has been approved by UPchieve. If no error occurs, the response looks like:
+Checks if a student is eligible for UPchieve based on their school and zip code. If no error occurs, the response looks like:
 
 ```javascript
 {
-  "approved": true // or false
+  "isEligible": true // or false
 }
 ```
 
-### GET /school/studentusers/:schoolUpchieveId
+### GET /eligibility/school/studentusers/:schoolUpchieveId
 
 Lists all student users registered with a school. Restricted to admins only. If no error occurs, the response looks like:
 

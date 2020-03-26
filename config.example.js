@@ -7,13 +7,15 @@ module.exports = {
   host: process.env.SERVER_HOST || 'localhost:3000',
   database: 'mongodb://localhost:27017/upchieve',
   sessionSecret: process.env.SESSION_SECRET || 'secret',
+  sessionCookieMaxAge: process.env.SESSION_COOKIE_MAX_AGE || 5184000000,
   saltRounds: 10,
   sendgrid: {
     apiKey: process.env.SENDGRID_API_KEY || '',
     contactTemplate: 'd-e79546f380874c58965c163f45df2ef4',
     verifyTemplate: 'd-02281875a1cf4575bd3568e674faf147',
     resetTemplate: 'd-5005d2beb2ad49a883a10364f3e14b81',
-    partnerOrgSignupAlertTemplate: 'd-238200a8df0d4493b12defbf472901b9'
+    partnerOrgSignupAlertTemplate: 'd-238200a8df0d4493b12defbf472901b9',
+    welcomeTemplate: 'd-58fdc5f84f9e4ecbbda3d3c0cd4aa7fa'
   },
   mail: {
     senders: {
@@ -21,7 +23,8 @@ module.exports = {
     },
     receivers: {
       contact: 'staff@upchieve.org',
-      staff: 'staff@upchieve.org'
+      staff: 'staff@upchieve.org',
+      support: 'support@upchieve.org'
     }
   },
   client: {

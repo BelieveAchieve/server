@@ -17,6 +17,9 @@ const sendEmail = function(
       email: fromEmail,
       name: fromName
     },
+    reply_to: {
+      email: config.mail.receivers.support
+    },
     templateId: templateId,
     dynamic_template_data: dynamicData
   }
@@ -86,6 +89,30 @@ module.exports = {
         email: options.email,
         company: options.company,
         upchieveId: options.upchieveId
+      },
+      callback
+    )
+  },
+
+  sendWelcomeEmail: function(options, callback) {
+    const email = options.email
+    const firstName = options.firstName
+    const firstNameCapitalized =
+      firstName.charAt(0).toUpperCase() + firstName.slice(1)
+    const coachGuideLink = 'http://' + config.client.host + '/coach-guide'
+    const scheduleLink = 'http://' + config.client.host + '/calendar'
+    const trainingLink = 'http://' + config.client.host + '/training'
+
+    sendEmail(
+      email,
+      config.mail.senders.noreply,
+      'UPchieve',
+      config.sendgrid.welcomeTemplate,
+      {
+        firstName: firstNameCapitalized,
+        coachGuideLink,
+        scheduleLink,
+        trainingLink
       },
       callback
     )

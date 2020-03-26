@@ -9,6 +9,9 @@ const busboy = require('connect-busboy')
 const cors = require('cors')
 const mongoose = require('mongoose')
 const Sentry = require('@sentry/node')
+const expressWs = require('@small-tech/express-ws')
+
+// Cron jobs
 const startCronJobs = require('./cron-jobs')
 
 // Configuration
@@ -33,6 +36,12 @@ startCronJobs()
 
 const app = express()
 app.set('port', process.env.PORT || 3000)
+
+/**
+ * Account for nginx proxy when getting client's IP address
+ * http://expressjs.com/en/guide/behind-proxies.html
+ */
+app.set('trust proxy', true)
 
 // Setup middleware
 app.use(Sentry.Handlers.requestHandler()) // The Sentry request handler must be the first middleware on the app
@@ -61,6 +70,9 @@ const port = app.get('port')
 server.listen(port)
 console.log('Listening on port ' + port)
 
+// initialize Express WebSockets
+expressWs(app, server)
+
 // Load server router
 require('./router')(app)
 
@@ -68,11 +80,9 @@ require('./router')(app)
 app.use(Sentry.Handlers.errorHandler())
 
 // Send error responses to API requests after they are passed to Sentry
-app.use(['/api', '/auth', '/contact', '/school', '/twiml'], function(
-  err,
-  req,
-  res,
-  next
-) {
-  res.status(err.httpStatus || 500).json({ err: err.message || err })
-})
+app.use(
+  ['/api', '/auth', '/contact', '/school', '/twiml', '/whiteboard'],
+  function(err, req, res, next) {
+    res.status(err.httpStatus || 500).json({ err: err.message || err })
+  }
+)
