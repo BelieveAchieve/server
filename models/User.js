@@ -428,6 +428,11 @@ userSchema.methods.populateForVolunteerStats = function(cb) {
 // Calculates the amount of hours between this.availabilityLastModifiedAt
 // and the current time that a user updates to a new availability
 userSchema.methods.calculateElapsedAvailability = function(newModifiedDate) {
+  // A volunteer must be onboarded before calculating their elapsed availability
+  if (!this.isOnboarded) {
+    return 0
+  }
+
   const availabilityLastModifiedAt = moment(
     this.availabilityLastModifiedAt || this.createdAt
   )
