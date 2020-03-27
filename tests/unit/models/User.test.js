@@ -452,6 +452,17 @@ test('Test international phone number', t => {
   t.is(tempPhone, '+123456790')
 })
 
+test('Elapsed availability for partially onboarded users', async t => {
+  // EST Time Zone for dates
+  const lastModifiedDate = '2020-02-06T00:52:59.538-05:00'
+  const newModifiedDate = '2020-02-09T12:40:00.000-05:00'
+  const expected = 0
+  goodUser.availability = flexibleHoursSelected
+  goodUser.availabilityLastModifiedAt = lastModifiedDate
+  const result = goodUser.calculateElapsedAvailability(newModifiedDate)
+  t.is(expected, result)
+})
+
 test('Elapsed availability over 3 days with no hours available', t => {
   // EST Time Zone for dates
   const lastModifiedDate = '2020-02-06T12:52:59.538-05:00'
@@ -470,8 +481,18 @@ test('Elapsed availability over 3 days with all hours available and 7 hours out 
   const expected = 90
   goodUser.availability = allHoursSelected
   goodUser.availabilityLastModifiedAt = lastModifiedDate
+  // @todo Make Volunteer.test.js with an onboarded and partially onboarded Volunteer
+  // Onboard the user
+  goodUser.isVolunteer = true
+  goodUser.certifications['algebra'].passed = true
+  console.log(goodUser)
+  console.log(goodUser.isOnboarded)
   const result = goodUser.calculateElapsedAvailability(newModifiedDate)
   t.is(expected, result)
+
+  // set user back to default
+  goodUser.isVolunteer = false
+  goodUser.certifications['algebra'].passed = false
 })
 
 test('Elapsed availability over 3 days with flexible hours available', async t => {
@@ -481,8 +502,16 @@ test('Elapsed availability over 3 days with flexible hours available', async t =
   const expected = 16
   goodUser.availability = flexibleHoursSelected
   goodUser.availabilityLastModifiedAt = lastModifiedDate
+  // @todo Make Volunteer.test.js with an onboarded and partially onboarded Volunteer
+  // Onboard the user
+  goodUser.isVolunteer = true
+  goodUser.certifications['algebra'].passed = true
   const result = goodUser.calculateElapsedAvailability(newModifiedDate)
   t.is(expected, result)
+
+  // set user back to default
+  goodUser.isVolunteer = false
+  goodUser.certifications['algebra'].passed = false
 })
 
 /** 
@@ -502,6 +531,15 @@ test('Elapsed availability over 23 days with flexible hours available', async t 
   const expected = 114
   goodUser.availability = flexibleHoursSelected
   goodUser.availabilityLastModifiedAt = lastModifiedDate
+
+  // @todo Make Volunteer.test.js with an onboarded and partially onboarded Volunteer
+  // Onboard the user
+  goodUser.isVolunteer = true
+  goodUser.certifications['algebra'].passed = true
   const result = goodUser.calculateElapsedAvailability(newModifiedDate)
   t.is(expected, result)
+
+  // set user back to default
+  goodUser.isVolunteer = false
+  goodUser.certifications['algebra'].passed = false
 })
