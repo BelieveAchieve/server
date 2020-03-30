@@ -418,11 +418,7 @@ module.exports = {
     const populatedSession = await Session.findById(session._id)
       .populate('student')
       .exec()
-
     const isNewStudent = populatedSession.student.pastSessions.length === 0
-    const oneMinute = 1000 * 60
-    // Set delay time for future notifications by 1 min if the user is a new student
-    const delayTime = isNewStudent ? oneMinute : 0
 
     // Schedule future notification waves (once every 2 mins, starting in 2 mins)
     // These will continue until the session is fulfilled or ended
@@ -433,7 +429,7 @@ module.exports = {
           clearInterval(interval)
         }
       },
-      120000 + delayTime,
+      120000,
       session
     )
     // store interval in memory
@@ -442,6 +438,7 @@ module.exports = {
     // Delay initial wave of notifications by 1 min if new student or
     // send initial wave of notifications (right now)
     if (isNewStudent) {
+      const oneMinute = 1000 * 60
       const timeoutId = setTimeout(() => {
         notifyRegular(session)
       }, oneMinute)
