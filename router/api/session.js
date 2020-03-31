@@ -115,7 +115,11 @@ module.exports = function(router, io) {
     const userId = ObjectId(data.user_id)
 
     try {
-      const latestSession = await Session.findLatest({ student: userId })
+      const latestSession = await Session.findOne({ student: userId })
+        .sort({ createdAt: -1 })
+        .limit(1)
+        .lean()
+
       if (!latestSession) {
         res.status(404).json({ err: 'No latest session' })
       } else {
