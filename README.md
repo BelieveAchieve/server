@@ -28,6 +28,7 @@ UPchieve web server
     - [GET /auth/org-manifest](#get-authorg-manifest)
     - [POST /api/session/new](#post-apisessionnew)
     - [POST /api/session/check](#post-apisessioncheck)
+    - [POST /api/session/latest](#post-apisessioncheck)
     - [POST /api/training/questions](#post-apitrainingquestions)
     - [POST /api/training/score](#post-apitrainingscore)
     - [POST /api/calendar/save](#post-apicalendarsave)
@@ -259,6 +260,14 @@ where `PARTNER_ID` is the key name of the volunteer partner organization defined
 ```json
 {
   "sessionId": "String"
+}
+```
+
+### POST /api/session/check
+
+```json
+{
+  "user_id": "String"
 }
 ```
 
