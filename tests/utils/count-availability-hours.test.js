@@ -8,13 +8,13 @@ const {
 
 test('Volunteer with flexible hours covering the span of a week', t => {
   const expected = {
-    Sunday: 3,
-    Monday: 6,
-    Tuesday: 6,
-    Wednesday: 5,
-    Thursday: 3,
-    Friday: 6,
-    Saturday: 5
+    sunday: 3,
+    monday: 6,
+    tuesday: 6,
+    wednesday: 5,
+    thursday: 3,
+    friday: 6,
+    saturday: 5
   }
   const result = countAvailabilityHours(flexibleHoursSelected)
   t.deepEqual(expected, result)
@@ -22,13 +22,13 @@ test('Volunteer with flexible hours covering the span of a week', t => {
 
 test('Volunteer with 0 hours selected for availability', t => {
   const expected = {
-    Sunday: 0,
-    Monday: 0,
-    Tuesday: 0,
-    Wednesday: 0,
-    Thursday: 0,
-    Friday: 0,
-    Saturday: 0
+    sunday: 0,
+    monday: 0,
+    tuesday: 0,
+    wednesday: 0,
+    thursday: 0,
+    friday: 0,
+    saturday: 0
   }
   const result = countAvailabilityHours(noHoursSelected)
   t.deepEqual(expected, result)
@@ -36,13 +36,13 @@ test('Volunteer with 0 hours selected for availability', t => {
 
 test('Volunteer with every hour selected for availability', t => {
   const expected = {
-    Sunday: 24,
-    Monday: 24,
-    Tuesday: 24,
-    Wednesday: 24,
-    Thursday: 24,
-    Friday: 24,
-    Saturday: 24
+    sunday: 24,
+    monday: 24,
+    tuesday: 24,
+    wednesday: 24,
+    thursday: 24,
+    friday: 24,
+    saturday: 24
   }
   const result = countAvailabilityHours(allHoursSelected)
   t.deepEqual(expected, result)
