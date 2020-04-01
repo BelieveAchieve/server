@@ -1,5 +1,5 @@
 const moment = require('moment-timezone')
-const { DAYS, UTC_TO_HOUR_MAPPING } = require('../constants')
+const { DAYS } = require('../constants')
 
 const countOutOfRangeHours = (previousDate, newDate, availability) => {
   const lastModifiedAtDate = moment(previousDate).tz('America/New_York')
@@ -27,16 +27,14 @@ const countOutOfRangeHours = (previousDate, newDate, availability) => {
   }
 
   // Count hours before the lastModified.hour
-  for (let i = lastModified.hour; i >= 0; i--) {
-    const time = UTC_TO_HOUR_MAPPING[i]
+  for (let time = lastModified.hour; time >= 0; time--) {
     if (lastModifiedDayAvailability[time]) {
       totalHours++
     }
   }
 
   // Count hours after the newModified.hour
-  for (let i = newModified.hour; i <= 23; i++) {
-    const time = UTC_TO_HOUR_MAPPING[i]
+  for (let time = newModified.hour; time <= 23; time++) {
     if (newModifiedDayAvailability[time]) {
       totalHours++
     }
