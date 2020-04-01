@@ -6,7 +6,7 @@ const { DAYS } = require('../constants')
  * @return an object with the days of the week as properties and the
  * amount of hours in their availability for that day as the value
  *
- * e.g { Sunday: 2, Monday: 10, ..., Saturday: 3 }
+ * e.g { sunday: 2, monday: 10, ..., saturday: 3 }
  *
  */
 const countAvailabilityHours = availability => {

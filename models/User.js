@@ -92,13 +92,13 @@ const availabilityDaySchema = new mongoose.Schema(
 
 const availabilitySchema = new mongoose.Schema(
   {
-    Sunday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Monday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Tuesday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Wednesday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Thursday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Friday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Saturday: { type: availabilityDaySchema, default: availabilityDaySchema }
+    sunday: { type: availabilityDaySchema, default: availabilityDaySchema },
+    monday: { type: availabilityDaySchema, default: availabilityDaySchema },
+    tuesday: { type: availabilityDaySchema, default: availabilityDaySchema },
+    wednesday: { type: availabilityDaySchema, default: availabilityDaySchema },
+    thursday: { type: availabilityDaySchema, default: availabilityDaySchema },
+    friday: { type: availabilityDaySchema, default: availabilityDaySchema },
+    saturday: { type: availabilityDaySchema, default: availabilityDaySchema }
   },
   { _id: false }
 )
@@ -439,7 +439,7 @@ userSchema.methods.calculateElapsedAvailability = function(newModifiedDate) {
 
   // Convert availability to an object formatted with the day of the week
   // as the property and the amount of hours they have available for that day as the value
-  // e.g { Monday: 10, Tuesday: 3 }
+  // e.g { monday: 10, tuesday: 3 }
   const totalAvailabilityHoursMapped = countAvailabilityHours(
     this.availability.toObject()
   )
