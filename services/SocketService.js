@@ -97,9 +97,6 @@ module.exports = function(io) {
 
       socket.join(sessionId)
 
-      io.in('volunteers').emit('session-fulfilled', {
-        sessionId: sessionId
-      })
       io.in(sessionId).emit('session-change', session)
       await this.updateSessionList()
 
