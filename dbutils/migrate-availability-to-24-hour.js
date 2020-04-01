@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const dbconnect = require('./dbconnect')
 const User = require('../models/User')
+const { AVAILABILITY_STATUS } = require('../constants')
 
 const makeLowerCase = day => day.toLowerCase()
 
@@ -81,16 +82,20 @@ function upgradeMigration() {
           for (let day in availability) {
             const dayLowerCased = makeLowerCase(day)
             if (availability.hasOwnProperty(day)) {
+              // example: availability { sunday: {} }
               newAvailability[dayLowerCased] = {}
             }
 
             for (let hour in availability[day]) {
               if (availability[day].hasOwnProperty(hour)) {
-                const isAvailable = availability[day][hour]
+                const status = availability[day][hour]
+                  ? AVAILABILITY_STATUS.BACKUP
+                  : AVAILABILITY_STATUS.UNAVAILABLE
                 const twentyFourHourFormat = TWENTY_FOUR_HOUR_FORMAT[hour]
-                newAvailability[dayLowerCased][
-                  twentyFourHourFormat
-                ] = isAvailable
+                // example: availability: { sunday: { { 0: status: 'BACKUP' }, { 1: status: 'UNAVAILABLE' } }
+                newAvailability[dayLowerCased][twentyFourHourFormat] = {
+                  status
+                }
               }
             }
           }
@@ -110,6 +115,7 @@ function upgradeMigration() {
   })
 }
 
+// To downgrade migration - remember to set the pre-migrated Availability Schema on the User model.
 function downgradeMigration() {
   dbconnect(mongoose, function() {
     console.log('Migrating db...')
@@ -128,7 +134,11 @@ function downgradeMigration() {
 
             for (let hour in availability[day]) {
               if (availability[day].hasOwnProperty(hour)) {
-                const isAvailable = availability[day][hour]
+                // User isAvailble if availability status is 'ONCALL' or 'BACKUP'
+                const isAvailable =
+                  availability[day][hour].status ===
+                    AVAILABILITY_STATUS.BACKUP ||
+                  availability[day][hour].status === AVAILABILITY_STATUS.ONCALL
                 const twelveHourFormat = TWELVE_HOUR_FORMAT[hour]
                 newAvailability[dayCapitalized][twelveHourFormat] = isAvailable
               }

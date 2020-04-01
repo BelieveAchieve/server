@@ -7,6 +7,7 @@ const removeTimeFromDate = require('../utils/remove-time-from-date')
 const getFrequencyOfDays = require('../utils/get-frequency-of-days')
 const calculateTotalHours = require('../utils/calculate-total-hours')
 const countOutOfRangeHours = require('../utils/count-out-of-range-hours')
+const { AVAILABILITY_STATUS } = require('../constants')
 
 const config = require('../config.js')
 
@@ -59,33 +60,49 @@ const tallyVolunteerPoints = volunteer => {
   return parseFloat(points.toFixed(2))
 }
 
+// subdocument schema for each availability hour
+const availabilityHourSchema = new mongoose.Schema(
+  {
+    status: {
+      enum: [
+        AVAILABILITY_STATUS.UNAVAILABLE,
+        AVAILABILITY_STATUS.ONCALL,
+        AVAILABILITY_STATUS.BACKUP
+      ],
+      type: String,
+      default: AVAILABILITY_STATUS.UNAVAILABLE
+    }
+  },
+  { _id: false }
+)
+
 // subdocument schema for each availability day
 const availabilityDaySchema = new mongoose.Schema(
   {
-    0: { type: Boolean, default: false },
-    1: { type: Boolean, default: false },
-    2: { type: Boolean, default: false },
-    3: { type: Boolean, default: false },
-    4: { type: Boolean, default: false },
-    5: { type: Boolean, default: false },
-    6: { type: Boolean, default: false },
-    7: { type: Boolean, default: false },
-    8: { type: Boolean, default: false },
-    9: { type: Boolean, default: false },
-    10: { type: Boolean, default: false },
-    11: { type: Boolean, default: false },
-    12: { type: Boolean, default: false },
-    13: { type: Boolean, default: false },
-    14: { type: Boolean, default: false },
-    15: { type: Boolean, default: false },
-    16: { type: Boolean, default: false },
-    17: { type: Boolean, default: false },
-    18: { type: Boolean, default: false },
-    19: { type: Boolean, default: false },
-    20: { type: Boolean, default: false },
-    21: { type: Boolean, default: false },
-    22: { type: Boolean, default: false },
-    23: { type: Boolean, default: false }
+    0: { type: availabilityHourSchema, default: availabilityHourSchema },
+    1: { type: availabilityHourSchema, default: availabilityHourSchema },
+    2: { type: availabilityHourSchema, default: availabilityHourSchema },
+    3: { type: availabilityHourSchema, default: availabilityHourSchema },
+    4: { type: availabilityHourSchema, default: availabilityHourSchema },
+    5: { type: availabilityHourSchema, default: availabilityHourSchema },
+    6: { type: availabilityHourSchema, default: availabilityHourSchema },
+    7: { type: availabilityHourSchema, default: availabilityHourSchema },
+    8: { type: availabilityHourSchema, default: availabilityHourSchema },
+    9: { type: availabilityHourSchema, default: availabilityHourSchema },
+    10: { type: availabilityHourSchema, default: availabilityHourSchema },
+    11: { type: availabilityHourSchema, default: availabilityHourSchema },
+    12: { type: availabilityHourSchema, default: availabilityHourSchema },
+    13: { type: availabilityHourSchema, default: availabilityHourSchema },
+    14: { type: availabilityHourSchema, default: availabilityHourSchema },
+    15: { type: availabilityHourSchema, default: availabilityHourSchema },
+    16: { type: availabilityHourSchema, default: availabilityHourSchema },
+    17: { type: availabilityHourSchema, default: availabilityHourSchema },
+    18: { type: availabilityHourSchema, default: availabilityHourSchema },
+    19: { type: availabilityHourSchema, default: availabilityHourSchema },
+    20: { type: availabilityHourSchema, default: availabilityHourSchema },
+    21: { type: availabilityHourSchema, default: availabilityHourSchema },
+    22: { type: availabilityHourSchema, default: availabilityHourSchema },
+    23: { type: availabilityHourSchema, default: availabilityHourSchema }
   },
   { _id: false }
 )
@@ -102,6 +119,52 @@ const availabilitySchema = new mongoose.Schema(
   },
   { _id: false }
 )
+
+// @note - Left here for ease of with commenting and uncommenting the new old and availability schema
+//         to use for the migrate-availability-to-24-hour db script
+// old subdocument schema for each availability day
+// const availabilityDaySchema = new mongoose.Schema(
+//   {
+//     '12a': { type: Boolean, default: false },
+//     '1a': { type: Boolean, default: false },
+//     '2a': { type: Boolean, default: false },
+//     '3a': { type: Boolean, default: false },
+//     '4a': { type: Boolean, default: false },
+//     '5a': { type: Boolean, default: false },
+//     '6a': { type: Boolean, default: false },
+//     '7a': { type: Boolean, default: false },
+//     '8a': { type: Boolean, default: false },
+//     '9a': { type: Boolean, default: false },
+//     '10a': { type: Boolean, default: false },
+//     '11a': { type: Boolean, default: false },
+//     '12p': { type: Boolean, default: false },
+//     '1p': { type: Boolean, default: false },
+//     '2p': { type: Boolean, default: false },
+//     '3p': { type: Boolean, default: false },
+//     '4p': { type: Boolean, default: false },
+//     '5p': { type: Boolean, default: false },
+//     '6p': { type: Boolean, default: false },
+//     '7p': { type: Boolean, default: false },
+//     '8p': { type: Boolean, default: false },
+//     '9p': { type: Boolean, default: false },
+//     '10p': { type: Boolean, default: false },
+//     '11p': { type: Boolean, default: false }
+//   },
+//   { _id: false }
+// )
+
+// const availabilitySchema = new mongoose.Schema(
+//   {
+//     Sunday: { type: availabilityDaySchema, default: availabilityDaySchema },
+//     Monday: { type: availabilityDaySchema, default: availabilityDaySchema },
+//     Tuesday: { type: availabilityDaySchema, default: availabilityDaySchema },
+//     Wednesday: { type: availabilityDaySchema, default: availabilityDaySchema },
+//     Thursday: { type: availabilityDaySchema, default: availabilityDaySchema },
+//     Friday: { type: availabilityDaySchema, default: availabilityDaySchema },
+//     Saturday: { type: availabilityDaySchema, default: availabilityDaySchema }
+//   },
+//   { _id: false }
+// )
 
 var userSchema = new mongoose.Schema(
   {
