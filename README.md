@@ -284,12 +284,12 @@ where `PARTNER_ID` is the key name of the volunteer partner organization defined
 ```json
 {
   "availability": {
-    "Sunday": {
-      "12a": "Boolean",
-      "1a": "Boolean",
+    "sunday": {
+      "0": "Boolean",
+      "1": "Boolean",
       ...
     },
-    "Monday": {
+    "monday": {
       ...
     },
     ...
