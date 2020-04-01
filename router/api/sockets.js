@@ -66,7 +66,7 @@ module.exports = function(io, sessionStore) {
 
     socket.on('list', async function() {
       const sessions = await Session.getUnfulfilledSessions()
-      io.emit('sessions', sessions)
+      io.in('volunteers').emit('sessions', sessions)
     })
 
     socket.on('typing', function(data) {
