@@ -20,6 +20,12 @@ db.once('open', function() {
       files: ['test_high_schools']
     },
     {
+      folder: 'zipcodes/',
+      collection: 'zipcodes',
+      idField: 'zipCode',
+      files: ['test_zipcodes']
+    },
+    {
       folder: 'questions/',
       collection: 'question',
       idField: 'questionText',

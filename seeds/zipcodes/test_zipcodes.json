@@ -1,0 +1,10 @@
+[
+    {
+        "zipCode":"10001",
+        "medianIncome":"1000000"
+    },
+    {
+        "zipCode":"11201",
+        "medianIncome":"9632"
+    }
+]
