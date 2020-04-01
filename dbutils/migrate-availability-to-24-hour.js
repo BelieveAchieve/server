@@ -2,6 +2,10 @@ const mongoose = require('mongoose')
 const dbconnect = require('./dbconnect')
 const User = require('../models/User')
 
+const makeLowerCase = day => day.toLowerCase()
+
+const capitalize = day => day.charAt(0).toUpperCase() + day.slice(1)
+
 const TWELVE_HOUR_FORMAT = {
   0: '12a',
   1: '1a',
@@ -75,15 +79,18 @@ function upgradeMigration() {
           const newAvailability = {}
 
           for (let day in availability) {
+            const dayLowerCased = makeLowerCase(day)
             if (availability.hasOwnProperty(day)) {
-              newAvailability[day] = {}
+              newAvailability[dayLowerCased] = {}
             }
 
             for (let hour in availability[day]) {
               if (availability[day].hasOwnProperty(hour)) {
                 const isAvailable = availability[day][hour]
                 const twentyFourHourFormat = TWENTY_FOUR_HOUR_FORMAT[hour]
-                newAvailability[day][twentyFourHourFormat] = isAvailable
+                newAvailability[dayLowerCased][
+                  twentyFourHourFormat
+                ] = isAvailable
               }
             }
           }
@@ -114,15 +121,16 @@ function downgradeMigration() {
           const newAvailability = {}
 
           for (let day in availability) {
+            const dayCapitalized = capitalize(day)
             if (availability.hasOwnProperty(day)) {
-              newAvailability[day] = {}
+              newAvailability[dayCapitalized] = {}
             }
 
             for (let hour in availability[day]) {
               if (availability[day].hasOwnProperty(hour)) {
                 const isAvailable = availability[day][hour]
                 const twelveHourFormat = TWELVE_HOUR_FORMAT[hour]
-                newAvailability[day][twelveHourFormat] = isAvailable
+                newAvailability[dayCapitalized][twelveHourFormat] = isAvailable
               }
             }
           }
