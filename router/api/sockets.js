@@ -80,13 +80,7 @@ module.exports = function(io, sessionStore) {
     socket.on('message', async function(data) {
       if (!data.sessionId) return
 
-      try {
-        await sessionCtrl.message(data)
-      } catch (err) {
-        console.log(err)
-        console.log('Could not deliver message')
-        io.emit('error', err.toString())
-      }
+      await sessionCtrl.message(data)
     })
 
     // Whiteboard interaction
