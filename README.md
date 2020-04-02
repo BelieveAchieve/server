@@ -76,14 +76,14 @@ asdf install nodejs [VERSION]
 - [`asdf-mongodb`][asdf-mongodb]
 
 ```shell-script
-asdf plugin-add mongodb https://github.com/UPchieve/asdf-mongodb
+asdf plugin-add mongodb
 asdf install mongodb [VERSION]
 ```
 
 [wsl]: https://docs.microsoft.com/en-us/windows/wsl/install-win10
 [asdf]: https://github.com/asdf-vm/asdf
 [asdf-nodejs]: https://github.com/asdf-vm/asdf-nodejs
-[asdf-mongodb]: https://github.com/UPchieve/asdf-mongodb
+[asdf-mongodb]: https://github.com/sylph01/asdf-mongodb
 
 ### Setup
 

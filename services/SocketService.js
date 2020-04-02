@@ -69,18 +69,12 @@ module.exports = function(io) {
     },
 
     emitNewSession: async function(session) {
-      io.in('volunteers').emit('new-session', {
-        _id: session._id,
-        type: session.type,
-        studentName: session.student.firstname
-      })
       await this.updateSessionList()
     },
 
     emitSessionEnd: async function(sessionId) {
       const session = await getSessionData(sessionId)
       io.in(sessionId).emit('session-change', session)
-      io.in('volunteers').emit('session-end', sessionId)
       await this.updateSessionList()
     },
 
@@ -97,9 +91,6 @@ module.exports = function(io) {
 
       socket.join(sessionId)
 
-      io.in('volunteers').emit('session-fulfilled', {
-        sessionId: sessionId
-      })
       io.in(sessionId).emit('session-change', session)
       await this.updateSessionList()
 
@@ -112,7 +103,6 @@ module.exports = function(io) {
     bump: function(socket, data, err) {
       console.log('Could not join session')
       console.log(err)
-      io.emit('error', err.toString())
       socket.emit('bump', data, err.toString())
     },
 
