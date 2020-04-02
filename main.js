@@ -1,4 +1,7 @@
 // Dependencies
+if (process.env.SERVER_HOST == 'production') {
+  require('newrelic');
+}
 const http = require('http')
 const express = require('express')
 const path = require('path')
