@@ -1,12 +1,13 @@
-const admin = require('firebase-admin');
+const admin = require('firebase-admin')
+const express = require('express')
 
-module.exports = function(router) {
+module.exports = function(app) {
   admin.initializeApp({
     projectId: 877923781231, // TODO: move to config
     credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_PRIVATE_KEY_JSON))
   });
 
-  router.get('/pushtest', function(req, res, next) {
+  app.use('/pushtest', function(req, res, next) {
     const title = req.query.title || "Test title";
     const text = req.query.text || "Test text";
     const dataStr = req.query.data || JSON.stringify({path: "/session/math/algebra"});
