@@ -188,6 +188,8 @@ const notifyRegular = async function(session) {
   // notifications to record in the database
   const notifications = []
 
+  const sessionUrl = getSessionUrl(session._id)
+
   // notify the volunteers
   for (const volunteer of volunteersToNotify) {
     // record notification in database
@@ -204,7 +206,7 @@ const notifyRegular = async function(session) {
     const isTestUserRequest = session.student.isTestUser
 
     // format message
-    const messageText = `Hi ${name}, a student needs help in ${subtopic} on UPchieve! Respond YES if you're available.`
+    const messageText = `Hi ${name}, a student needs help in ${subtopic} on UPchieve! ${sessionUrl}`
 
     const sendPromise = sendTextMessage(
       phoneNumber,
