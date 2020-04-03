@@ -7,15 +7,15 @@ passport.serializeUser(function(user, done) {
   done(null, user.id)
 })
 
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
-    if (err || !user) {
-      return done(err, user)
-    }
-
-    return done(err, user)
-  })
-})
+passport.deserializeUser(async function(id, done) {
+  try {
+    const user = await User.findById(id).lean();
+    if (!user) return done(new Error("no user found"));
+    return done(null, user);
+  } catch (error) {
+    return done(error);
+  }
+});
 
 passport.use(
   new LocalStrategy(
