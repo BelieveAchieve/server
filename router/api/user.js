@@ -9,7 +9,7 @@ module.exports = function(router) {
         err: 'Client has no authenticated session'
       })
     }
-    return res.json({ user: req.user });
+    return res.json({ user: req.user })
   })
 
   router.put('/user', function(req, res, next) {
