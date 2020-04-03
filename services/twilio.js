@@ -181,7 +181,7 @@ const notifyRegular = async function(session) {
   const subtopic = session.subTopic
 
   // query the database for the next wave
-  const volunteersToNotify = await getNextVolunteersFromDb(subtopic, [], [], {
+  const volunteersToNotify = getNextVolunteersFromDb(subtopic, [], [], {
     isTestUserRequest: populatedSession.student.isTestUser
   }).exec()
 
