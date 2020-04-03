@@ -91,11 +91,11 @@ var getNextVolunteersFromDb = function(
 ) {
   const userQuery = filterAvailableVolunteers(subtopic, options)
 
-  userQuery._id = { $nin: notifiedUserIds.concat(userIdsInSessions) }
-
-  const query = User.find(userQuery).populate(
-    'volunteerLastNotification volunteerLastSession'
-  )
+  const query = User.aggregate([
+    { $match: userQuery },
+    { $project: { phone: 1, firstname: 1 } },
+    { $sample: { size: 5 } }
+  ])
 
   return query
 }
@@ -175,45 +175,15 @@ function getSessionUrl(sessionId) {
 
 const notifyRegular = async function(session) {
   const populatedSession = await Session.findById(session._id)
-    .populate('student notifications')
+    .populate('student')
     .exec()
 
   const subtopic = session.subTopic
 
-  // previously sent notifications for this session
-  const notificationsSent = populatedSession.notifications
-
-  // currently active sessions
-  const activeSessions = await Session.find({
-    endedAt: { $exists: false }
-  }).exec()
-
-  // previously notified volunteers for this session
-  const notifiedUserIds = notificationsSent.map(
-    notification => notification.volunteer
-  )
-
-  // volunteers in active sessions
-  const userIdsInSessions = activeSessions
-    .filter(activeSession => !!activeSession.volunteer)
-    .map(activeSession => activeSession.volunteer)
-
   // query the database for the next wave
-  const waveVolunteers = await getNextVolunteersFromDb(
-    subtopic,
-    notifiedUserIds,
-    userIdsInSessions,
-    {
-      isTestUserRequest: populatedSession.student.isTestUser
-    }
-  ).exec()
-
-  // people to whom to send notifications to
-  const volunteersByPriority = waveVolunteers
-    .filter(v => v.volunteerPointRank >= 0)
-    .sort((v1, v2) => v2.volunteerPointRank - v1.volunteerPointRank)
-
-  const volunteersToNotify = volunteersByPriority.slice(0, 5)
+  const volunteersToNotify = await getNextVolunteersFromDb(subtopic, [], [], {
+    isTestUserRequest: populatedSession.student.isTestUser
+  }).exec()
 
   // notifications to record in the database
   const notifications = []
