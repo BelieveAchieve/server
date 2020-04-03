@@ -227,39 +227,8 @@ const notifyRegular = async function(session) {
 }
 
 const notifyFailsafe = async function(session, options) {
-  const populatedSession = await Session.findById(session._id)
-    .populate('student notifications')
-    .exec()
-
-  const populatedStudent = await User.populate(populatedSession.student, {
-    path: 'approvedHighschool'
-  })
-
-  var studentFirstname = populatedSession.student.firstname
-
-  var studentHighSchool = populatedStudent.highschoolName
-
-  var isFirstTimeRequester =
-    !populatedSession.student.pastSessions ||
-    !populatedSession.student.pastSessions.length
-
-  var subtopic = session.subTopic
-
-  var desperate = options.desperate
-
-  var voice = options.voice
-
-  var isTestUserRequest = populatedSession.student.isTestUser
-
-  const volunteerIdsNotified = populatedSession.notifications.map(
-    notification => notification.volunteer
-  )
-
-  const numOfRegularVolunteersNotified = await User.countDocuments({
-    _id: { $in: volunteerIdsNotified },
-    isFailsafeVolunteer: false
-  }).exec()
-
+  const subtopic = session.subTopic
+  const voice = options.voice
   const sessionUrl = getSessionUrl(session._id)
 
   // query the failsafe volunteers to notify
@@ -271,18 +240,7 @@ const notifyFailsafe = async function(session, options) {
   for (const volunteer of volunteersToNotify) {
     const phoneNumber = volunteer.phone
 
-    let messageText
-    if (desperate) {
-      messageText =
-        `Request by Student ${studentFirstname} still not filled.\n` +
-        `Regular volunteers texted: ${numOfRegularVolunteersNotified}`
-    } else {
-      messageText =
-        `Student: ${studentFirstname}\n` +
-        `High School: ${studentHighSchool}\n` +
-        `Subject: ${subtopic}\n` +
-        `First Ever Request: ${isFirstTimeRequester ? 'Yes' : 'No'}`
-    }
+    let messageText = `UPchieve failsafe alert: new ${subtopic} request`
 
     if (!voice) {
       messageText = messageText + `\n${sessionUrl}`
@@ -290,7 +248,7 @@ const notifyFailsafe = async function(session, options) {
 
     const sendPromise = voice
       ? sendVoiceMessage(phoneNumber, messageText)
-      : sendTextMessage(phoneNumber, messageText, isTestUserRequest)
+      : sendTextMessage(phoneNumber, messageText, false)
 
     // record notification to database
     const notification = new Notification({
