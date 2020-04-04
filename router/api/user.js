@@ -12,6 +12,21 @@ module.exports = function(router) {
     return res.json({ user: req.user })
   })
 
+  router.route('/user/volunteer-stats').get(async function(req, res, next) {
+    if (!req.user) {
+      return res.status(401).json({
+        err: 'Client has no authenticated session'
+      })
+    }
+
+    try {
+      const volunteerStats = await UserCtrl.getVolunteerStats(req.user)
+      res.json({ volunteerStats })
+    } catch (error) {
+      return next(error)
+    }
+  })
+
   router.put('/user', function(req, res, next) {
     var data = req.body || {}
     UserCtrl.update(
