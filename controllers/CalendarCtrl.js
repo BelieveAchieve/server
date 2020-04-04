@@ -31,20 +31,26 @@ module.exports = {
       return callback(new Error('Availability object missing required keys'))
     }
 
-    User.updateOne(
-      { _id: user._id },
-      {
-        availability: newAvailability,
-        timezone: newTimezone
-      },
-      function(err) {
-        if (err) {
-          callback(err, null)
-        } else {
-          callback(null, newAvailability)
-        }
+    const userUpdates = {
+      availability: newAvailability,
+      timezone: newTimezone
+    }
+
+    /**
+     * Set availabilityLastModifiedAt if this is the user's first time modifying their availability
+     * Otherwise, leave it to the nightly cron job
+     */
+    if (!user.availabilityLastModifiedAt) {
+      userUpdates.availabilityLastModifiedAt = new Date().toISOString()
+    }
+
+    User.updateOne({ _id: user._id }, userUpdates, function(err) {
+      if (err) {
+        callback(err, null)
+      } else {
+        callback(null, newAvailability)
       }
-    )
+    })
   },
 
   clearSchedule: function(user, tz, callback) {
