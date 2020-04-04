@@ -614,19 +614,6 @@ userSchema.virtual('numVolunteerSessionHours').get(function() {
 
   return hoursDiff
 })
-
-userSchema.virtual('mathCoachingOnly').get(function() {
-  if (!this.isVolunteer) return null
-  if (!this.volunteerPartnerOrg) return false
-
-  const volunteerPartnerManifest =
-    config.volunteerPartnerManifests[this.volunteerPartnerOrg]
-
-  return (
-    !!volunteerPartnerManifest && !!volunteerPartnerManifest['mathCoachingOnly']
-  )
-})
-
 userSchema.virtual('isOnboarded').get(function() {
   if (!this.isVolunteer) return null
 
