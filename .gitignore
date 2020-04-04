@@ -6,6 +6,7 @@ sendgrid.env
 *.swp
 public/uploads
 newrelic.js
+mongo-volume
 
 # Created by https://www.gitignore.io/api/node,emacs,vim,visualstudiocode,sublimetext,vuejs
 # Edit at https://www.gitignore.io/?templates=node,emacs,vim,visualstudiocode,sublimetext,vuejs
