@@ -91,11 +91,11 @@ var getNextVolunteersFromDb = function(
 ) {
   const userQuery = filterAvailableVolunteers(subtopic, options)
 
-  userQuery._id = { $nin: notifiedUserIds.concat(userIdsInSessions) }
-
-  const query = User.find(userQuery).populate(
-    'volunteerLastNotification volunteerLastSession'
-  )
+  const query = User.aggregate([
+    { $match: userQuery },
+    { $project: { phone: 1, firstname: 1 } },
+    { $sample: { size: 5 } }
+  ])
 
   return query
 }
@@ -175,48 +175,20 @@ function getSessionUrl(sessionId) {
 
 const notifyRegular = async function(session) {
   const populatedSession = await Session.findById(session._id)
-    .populate('student notifications')
+    .populate('student')
     .exec()
 
   const subtopic = session.subTopic
 
-  // previously sent notifications for this session
-  const notificationsSent = populatedSession.notifications
-
-  // currently active sessions
-  const activeSessions = await Session.find({
-    endedAt: { $exists: false }
-  }).exec()
-
-  // previously notified volunteers for this session
-  const notifiedUserIds = notificationsSent.map(
-    notification => notification.volunteer
-  )
-
-  // volunteers in active sessions
-  const userIdsInSessions = activeSessions
-    .filter(activeSession => !!activeSession.volunteer)
-    .map(activeSession => activeSession.volunteer)
-
   // query the database for the next wave
-  const waveVolunteers = await getNextVolunteersFromDb(
-    subtopic,
-    notifiedUserIds,
-    userIdsInSessions,
-    {
-      isTestUserRequest: populatedSession.student.isTestUser
-    }
-  ).exec()
-
-  // people to whom to send notifications to
-  const volunteersByPriority = waveVolunteers
-    .filter(v => v.volunteerPointRank >= 0)
-    .sort((v1, v2) => v2.volunteerPointRank - v1.volunteerPointRank)
-
-  const volunteersToNotify = volunteersByPriority.slice(0, 5)
+  const volunteersToNotify = await getNextVolunteersFromDb(subtopic, [], [], {
+    isTestUserRequest: populatedSession.student.isTestUser
+  }).exec()
 
   // notifications to record in the database
   const notifications = []
+
+  const sessionUrl = getSessionUrl(session._id)
 
   // notify the volunteers
   for (const volunteer of volunteersToNotify) {
@@ -234,7 +206,7 @@ const notifyRegular = async function(session) {
     const isTestUserRequest = session.student.isTestUser
 
     // format message
-    const messageText = `Hi ${name}, a student needs help in ${subtopic} on UPchieve! Respond YES if you're available.`
+    const messageText = `Hi ${name}, a student needs help in ${subtopic} on UPchieve! ${sessionUrl}`
 
     const sendPromise = sendTextMessage(
       phoneNumber,
@@ -255,39 +227,8 @@ const notifyRegular = async function(session) {
 }
 
 const notifyFailsafe = async function(session, options) {
-  const populatedSession = await Session.findById(session._id)
-    .populate('student notifications')
-    .exec()
-
-  const populatedStudent = await User.populate(populatedSession.student, {
-    path: 'approvedHighschool'
-  })
-
-  var studentFirstname = populatedSession.student.firstname
-
-  var studentHighSchool = populatedStudent.highschoolName
-
-  var isFirstTimeRequester =
-    !populatedSession.student.pastSessions ||
-    !populatedSession.student.pastSessions.length
-
-  var subtopic = session.subTopic
-
-  var desperate = options.desperate
-
-  var voice = options.voice
-
-  var isTestUserRequest = populatedSession.student.isTestUser
-
-  const volunteerIdsNotified = populatedSession.notifications.map(
-    notification => notification.volunteer
-  )
-
-  const numOfRegularVolunteersNotified = await User.countDocuments({
-    _id: { $in: volunteerIdsNotified },
-    isFailsafeVolunteer: false
-  }).exec()
-
+  const subtopic = session.subTopic
+  const voice = options.voice
   const sessionUrl = getSessionUrl(session._id)
 
   // query the failsafe volunteers to notify
@@ -299,18 +240,7 @@ const notifyFailsafe = async function(session, options) {
   for (const volunteer of volunteersToNotify) {
     const phoneNumber = volunteer.phone
 
-    let messageText
-    if (desperate) {
-      messageText =
-        `Request by Student ${studentFirstname} still not filled.\n` +
-        `Regular volunteers texted: ${numOfRegularVolunteersNotified}`
-    } else {
-      messageText =
-        `Student: ${studentFirstname}\n` +
-        `High School: ${studentHighSchool}\n` +
-        `Subject: ${subtopic}\n` +
-        `First Ever Request: ${isFirstTimeRequester ? 'Yes' : 'No'}`
-    }
+    let messageText = `UPchieve failsafe alert: new ${subtopic} request`
 
     if (!voice) {
       messageText = messageText + `\n${sessionUrl}`
@@ -318,7 +248,7 @@ const notifyFailsafe = async function(session, options) {
 
     const sendPromise = voice
       ? sendVoiceMessage(phoneNumber, messageText)
-      : sendTextMessage(phoneNumber, messageText, isTestUserRequest)
+      : sendTextMessage(phoneNumber, messageText, false)
 
     // record notification to database
     const notification = new Notification({
@@ -415,37 +345,7 @@ module.exports = {
       return
     }
 
-    const populatedSession = await Session.findById(session._id)
-      .populate('student')
-      .exec()
-    const isNewStudent = populatedSession.student.pastSessions.length === 0
-
-    // Schedule future notification waves (once every 2 mins, starting in 2 mins)
-    // These will continue until the session is fulfilled or ended
-    const interval = setInterval(
-      async session => {
-        const numVolunteersNotified = await notifyRegular(session)
-        if (numVolunteersNotified === 0) {
-          clearInterval(interval)
-        }
-      },
-      120000,
-      session
-    )
-    // store interval in memory
-    getSessionTimeoutFor(session).intervals.push(interval)
-
-    // Delay initial wave of notifications by 1 min if new student or
-    // send initial wave of notifications (right now)
-    if (isNewStudent) {
-      const oneMinute = 1000 * 60
-      const timeoutId = setTimeout(() => {
-        notifyRegular(session)
-      }, oneMinute)
-      getSessionTimeoutFor(session).timeouts.push(timeoutId)
-    } else {
-      notifyRegular(session)
-    }
+    notifyRegular(session)
   },
 
   // begin notifying failsafe volunteers for a session
@@ -456,34 +356,8 @@ module.exports = {
       return
     }
 
-    // Schedule future failsafe SMS notifications
-    // (Happens later unless session is fulfilled or ended)
-    const desperateTimeout = setTimeout(
-      notifyFailsafe,
-      config.desperateSMSTimeout,
-      session,
-      {
-        desperate: true,
-        voice: false
-      }
-    )
-    getSessionTimeoutFor(session).timeouts.push(desperateTimeout)
-
-    // Schedule future failsafe phone call notifications
-    // (Happens later unless session is fulfilled or ended)
-    const desperateVoiceTimeout = setTimeout(
-      notifyFailsafe,
-      config.desperateVoiceTimeout,
-      session,
-      {
-        desperate: true,
-        voice: true
-      }
-    )
-    getSessionTimeoutFor(session).timeouts.push(desperateVoiceTimeout)
-
     // Send first SMS failsafe notifications (Send right now)
-    await notifyFailsafe(session, {
+    notifyFailsafe(session, {
       desperate: false,
       voice: false
     })
