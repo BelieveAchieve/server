@@ -81,7 +81,8 @@
     "eslint": "^5.15.0",
     "nodemon": "^1.18.10",
     "nyc": "^13.3.0",
-    "prettier-standard": "^9.1.1"
+    "prettier-standard": "^9.1.1",
+    "mongodb-extended-json": "^1.11.0"
   },
   "eslintConfig": {
     "extends": [
