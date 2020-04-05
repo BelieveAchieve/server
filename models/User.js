@@ -24,7 +24,7 @@ const tallyVolunteerPoints = volunteer => {
   let points = 0
 
   // +2 points if no past sessions
-  if (!volunteer.pastSessions.length) {
+  if (!volunteer.pastSessions || !volunteer.pastSessions.length) {
     points += 2
   }
 
@@ -359,7 +359,6 @@ userSchema.methods.parseProfile = function() {
     lastname: this.lastname,
     isVolunteer: this.isVolunteer,
     isAdmin: this.isAdmin,
-    isOnboarded: this.isOnboarded,
     isTestUser: this.isTestUser,
     referred: this.referred,
     createdAt: this.createdAt,
