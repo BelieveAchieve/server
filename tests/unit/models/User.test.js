@@ -407,8 +407,6 @@ test('Test parsed profile Object', t => {
   t.is(parsedData.isFakeUser, false)
   t.is(parsedData.password, undefined)
   t.is(parsedData.phonePretty, '555-555-5555')
-  t.is(parsedData.numPastSessions, 0)
-  t.is(parsedData.numVolunteerSessionHours, 0)
   t.is(parsedData.certifications['prealgebra'].passed, false)
   t.is(parsedData.certifications['algebra'].passed, false)
   t.is(parsedData.certifications['geometry'].passed, false)
