@@ -176,6 +176,7 @@ const notifyRegular = async function(session) {
 
   const subtopic = session.subTopic
 
+  // Get sessions that haven't ended and have a volunteer
   const activeSessions = await Session.find({
     endedAt: { $exists: false },
     volunteer: { $exists: true }
@@ -188,10 +189,12 @@ const notifyRegular = async function(session) {
     session => session.volunteer
   )
 
+  // Date & time of one hour ago
   const oneHourAgo = new Date(
     new Date().getTime() - 60 * 60 * 1000
   ).toISOString()
 
+  // Get notifications sent within the past hour
   const notificationsInLastHour = await Notification.find({
     sentAt: { $gt: oneHourAgo }
   })
@@ -203,6 +206,7 @@ const notifyRegular = async function(session) {
     notif => notif.volunteer
   )
 
+  // Volunteers who are in active sessions or were notified in the past hour
   const volunteersToExclude = volunteersInActiveSessions.concat(
     volunteersNotifiedInLastHour
   )
