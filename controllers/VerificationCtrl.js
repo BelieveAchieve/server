@@ -1,4 +1,3 @@
-const async = require('async')
 const crypto = require('crypto')
 
 const MailService = require('../services/MailService')
