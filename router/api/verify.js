@@ -1,7 +1,6 @@
 const passport = require('../auth/passport')
 
-var VerificationCtrl = require('../../controllers/VerificationCtrl')
-
+const VerificationCtrl = require('../../controllers/VerificationCtrl')
 const User = require('../../models/User')
 
 module.exports = function(router) {
@@ -23,19 +22,17 @@ module.exports = function(router) {
     }
   })
 
-  router.post('/verify/confirm', async function(req, res, next) {
+  router.post('/verify/confirm', async function(req, res) {
     const token = req.body.token
 
     try {
-      await VerificationCtrl.finishVerification({
-        token: token
-      })
+      await VerificationCtrl.finishVerification({ token })
 
-      res.json({
+      return res.json({
         msg: 'Verification successful'
       })
     } catch (error) {
-      res.status(404).json({ err: error.toString() })
+      return res.status(404).json({ err: error.toString() })
     }
   })
 
@@ -49,11 +46,11 @@ module.exports = function(router) {
       try {
         const user = await User.findOne({ _id: userId }, '+verificationToken')
 
-        res.json({
+        return res.json({
           verificationToken: user.verificationToken
         })
       } catch (err) {
-        next(err)
+        return next(err)
       }
     })
 }

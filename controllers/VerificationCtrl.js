@@ -47,9 +47,7 @@ module.exports = {
     }
   },
 
-  finishVerification: async function(options, callback) {
-    const token = options.token
-
+  finishVerification: async function({ token }) {
     // make sure token is a valid 16-byte hex string
     if (!token.match(/^[a-f0-9]{32}$/)) {
       // early exit
