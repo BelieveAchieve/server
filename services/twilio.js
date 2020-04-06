@@ -82,18 +82,15 @@ function filterAvailableVolunteers(subtopic, options) {
 }
 
 // get next wave of non-failsafe volunteers to notify
-var getNextVolunteersFromDb = function(
-  subtopic,
-  notifiedUserIds,
-  userIdsInSessions,
-  options
-) {
+const getNextVolunteersFromDb = (subtopic, volunteersToExclude, options) => {
   const userQuery = filterAvailableVolunteers(subtopic, options)
+
+  userQuery._id = { $nin: volunteersToExclude }
 
   const query = User.aggregate([
     { $match: userQuery },
     { $project: { phone: 1, firstname: 1 } },
-    { $sample: { size: 5 } }
+    { $sample: { size: 2 } }
   ])
 
   return query
@@ -179,10 +176,44 @@ const notifyRegular = async function(session) {
 
   const subtopic = session.subTopic
 
+  const activeSessions = await Session.find({
+    endedAt: { $exists: false }
+  })
+    .select('volunteer')
+    .lean()
+    .exec()
+
+  const volunteersInActiveSessions = activeSessions.map(
+    session => session.volunteer
+  )
+
+  const oneHourAgo = new Date(
+    new Date().getTime() - 60 * 60 * 1000
+  ).toISOString()
+
+  const notificationsInLastHour = await Notification.find({
+    sentAt: { $gt: oneHourAgo }
+  })
+    .select('volunteer')
+    .lean()
+    .exec()
+
+  const volunteersNotifiedInLastHour = notificationsInLastHour.map(
+    notif => notif.volunteer
+  )
+
+  const volunteersToExclude = volunteersInActiveSessions.concat(
+    volunteersNotifiedInLastHour
+  )
+
   // query the database for the next wave
-  const volunteersToNotify = await getNextVolunteersFromDb(subtopic, [], [], {
-    isTestUserRequest: populatedSession.student.isTestUser
-  }).exec()
+  const volunteersToNotify = await getNextVolunteersFromDb(
+    subtopic,
+    volunteersToExclude,
+    {
+      isTestUserRequest: populatedSession.student.isTestUser
+    }
+  ).exec()
 
   // notifications to record in the database
   const notifications = []
