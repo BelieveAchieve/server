@@ -90,7 +90,7 @@ const getNextVolunteersFromDb = (subtopic, volunteersToExclude, options) => {
   const query = User.aggregate([
     { $match: userQuery },
     { $project: { phone: 1, firstname: 1 } },
-    { $sample: { size: 2 } }
+    { $sample: { size: 5 } }
   ])
 
   return query
