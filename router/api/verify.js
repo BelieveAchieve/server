@@ -5,8 +5,8 @@ var VerificationCtrl = require('../../controllers/VerificationCtrl')
 const User = require('../../models/User')
 
 module.exports = function(router) {
-  router.post('/verify/send', function(req, res, next) {
-    var userId = req.user && req.user._id
+  router.post('/verify/send', async function(req, res) {
+    const userId = req.user && req.user._id
 
     if (!userId) {
       return res.status(401).json({
@@ -14,18 +14,13 @@ module.exports = function(router) {
       })
     }
 
-    VerificationCtrl.initiateVerification(
-      {
-        userId: userId
-      },
-      function(err, email) {
-        if (err) {
-          next(err)
-        } else {
-          res.json({ msg: 'Verification email sent to ' + email })
-        }
-      }
-    )
+    try {
+      await VerificationCtrl.initiateVerification({ userId })
+
+      return res.json({ msg: 'Verification email sent' })
+    } catch (error) {
+      return res.status(404).json({ err: error.toString() })
+    }
   })
 
   router.post('/verify/confirm', async function(req, res, next) {

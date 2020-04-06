@@ -6,58 +6,45 @@ const MailService = require('../services/MailService')
 const User = require('../models/User')
 
 module.exports = {
-  initiateVerification: function(options, callback) {
-    var userId = options.userId
+  initiateVerification: async function({ userId }, callback) {
+    // Find the user to be verified
+    const user = await User.findOne({ _id: userId })
+      .select('verified email')
+      .lean()
+      .exec()
 
-    async.waterfall(
-      [
-        // Find the user to be verified
-        function(done) {
-          User.findById(userId, function(err, user) {
-            if (err) {
-              return done(err)
-            }
-            if (!user) {
-              return done(new Error('No account with that id found.'))
-            } else if (user.verified) {
-              return done(new Error('User is already verified'))
-            }
-            done(null, user)
-          })
-        },
+    if (!user) {
+      throw new Error('No account with that id found')
+    }
 
-        // Generate the token and save token and user email to database
-        function(user, done) {
-          crypto.randomBytes(16, function(err, buf) {
-            if (err) {
-              return done(err)
-            }
+    if (user.verified) {
+      throw new Error('User is already verified')
+    }
 
-            var token = buf.toString('hex')
-
-            user.verificationToken = token
-
-            user.save(function(err) {
-              done(err, token, user.email)
-            })
-          })
-        },
-
-        // Send an email
-        function(token, email, done) {
-          MailService.sendVerification(
-            {
-              email: email,
-              token: token
-            },
-            function(err) {
-              done(err, email)
-            }
-          )
+    // Generate the verification token
+    const token = await new Promise((resolve, reject) => {
+      crypto.randomBytes(16, (err, buf) => {
+        if (err) {
+          return reject(new Error('Error generating verification token'))
         }
-      ],
-      callback
-    )
+
+        const hexToken = buf.toString('hex')
+        return resolve(hexToken)
+      })
+    })
+
+    // Save token to user in database
+    await User.updateOne({ _id: userId }, { verificationToken: token })
+
+    // Send verification email
+    MailService.sendVerification({ email: user.email, token })
+
+    // Temporary support for callback usage
+    if (callback) {
+      return callback(null, user.email)
+    } else {
+      return user.email
+    }
   },
 
   finishVerification: async function(options, callback) {
