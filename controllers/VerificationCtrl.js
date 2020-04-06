@@ -1,9 +1,9 @@
-var async = require('async')
-var crypto = require('crypto')
+const async = require('async')
+const crypto = require('crypto')
 
-var MailService = require('../services/MailService')
+const MailService = require('../services/MailService')
 
-var User = require('../models/User')
+const User = require('../models/User')
 
 module.exports = {
   initiateVerification: function(options, callback) {
