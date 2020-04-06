@@ -60,49 +60,36 @@ module.exports = {
     )
   },
 
-  finishVerification: function(options, callback) {
-    var token = options.token
+  finishVerification: async function(options, callback) {
+    const token = options.token
 
     // make sure token is a valid 16-byte hex string
     if (!token.match(/^[a-f0-9]{32}$/)) {
       // early exit
-      return callback(new Error('Invalid verification token'))
+      throw new Error('Invalid verification token')
     }
 
-    async.waterfall(
-      [
-        function(done) {
-          User.findOne({ verificationToken: token }, function(err, user) {
-            if (!user) {
-              return done(
-                new Error('No user found with that verification token')
-              )
-            } else if (err) {
-              return done(err)
-            }
-            done(null, user)
-          })
-        },
-        function(user, done) {
-          user.verificationToken = undefined
-          user.verified = true
-          user.save(function(err) {
-            done(err, user)
-          })
-        },
-        function(user, done) {
-          MailService.sendWelcomeEmail(
-            {
-              email: user.email,
-              firstName: user.firstname
-            },
-            function(err) {
-              done(err, user.email)
-            }
-          )
-        }
-      ],
-      callback
-    )
+    const user = await User.findOne({ verificationToken: token })
+      .select('firstname email')
+      .lean()
+      .exec()
+
+    if (!user) {
+      throw new Error('No user found with that verification token')
+    }
+
+    const userUpdates = {
+      verified: true,
+      $unset: { verificationToken: 1 }
+    }
+
+    await User.updateOne({ _id: user._id }, userUpdates)
+
+    MailService.sendWelcomeEmail({
+      email: user.email,
+      firstName: user.firstname
+    })
+
+    return user
   }
 }

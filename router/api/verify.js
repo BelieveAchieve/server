@@ -28,22 +28,20 @@ module.exports = function(router) {
     )
   })
 
-  router.post('/verify/confirm', function(req, res, next) {
-    var token = req.body.token
-    VerificationCtrl.finishVerification(
-      {
+  router.post('/verify/confirm', async function(req, res, next) {
+    const token = req.body.token
+
+    try {
+      await VerificationCtrl.finishVerification({
         token: token
-      },
-      function(err, user) {
-        if (err) {
-          res.status(404).json({ err: err.toString() })
-        } else {
-          res.json({
-            msg: 'Verification successful'
-          })
-        }
-      }
-    )
+      })
+
+      res.json({
+        msg: 'Verification successful'
+      })
+    } catch (error) {
+      res.status(404).json({ err: error.toString() })
+    }
   })
 
   // Get verification token for a user id (admins only)
