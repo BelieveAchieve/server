@@ -177,7 +177,8 @@ const notifyRegular = async function(session) {
   const subtopic = session.subTopic
 
   const activeSessions = await Session.find({
-    endedAt: { $exists: false }
+    endedAt: { $exists: false },
+    volunteer: { $exists: true }
   })
     .select('volunteer')
     .lean()
