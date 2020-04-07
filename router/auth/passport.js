@@ -18,7 +18,8 @@ passport.deserializeUser(async function(id, done) {
 })
 
 passport.use(
-  new LocalStrategy({
+  new LocalStrategy(
+    {
       usernameField: 'email',
       passwordField: 'password'
     },
