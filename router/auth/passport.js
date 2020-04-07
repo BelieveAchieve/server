@@ -4,7 +4,7 @@ var LocalStrategy = require('passport-local').Strategy
 var User = require('../../models/User.js')
 
 passport.serializeUser(function(user, done) {
-  done(null, user.id)
+  done(null, user._id)
 })
 
 passport.deserializeUser(async function(id, done) {
@@ -18,30 +18,35 @@ passport.deserializeUser(async function(id, done) {
 })
 
 passport.use(
-  new LocalStrategy(
-    {
+  new LocalStrategy({
       usernameField: 'email',
       passwordField: 'password'
     },
-    function(email, password, done) {
-      User.findOne({ email: email }, '+password', function(err, user) {
-        if (err) {
-          return done(err)
-        }
+    async function(email, passwordGiven, done) {
+      try {
+        const user = await User.findOne({ email: email }, '+password')
+          .lean()
+          .exec()
+
         if (!user) {
           return done(null, false)
         }
 
-        user.verifyPassword(password, function(err, user) {
-          if (err) {
-            done(err)
-          } else {
-            // pass the user to the callback without the password hash
-            user.password = undefined
-            done(null, user)
-          }
-        })
-      })
+        const isValidPassword = await User.verifyPassword(
+          passwordGiven,
+          user.password
+        )
+
+        user.password = undefined
+
+        if (isValidPassword) {
+          return done(null, user)
+        } else {
+          return done(null, false)
+        }
+      } catch (error) {
+        return done(error)
+      }
     }
   )
 )
