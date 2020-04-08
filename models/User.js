@@ -24,7 +24,7 @@ const tallyVolunteerPoints = volunteer => {
   let points = 0
 
   // +2 points if no past sessions
-  if (!volunteer.numPastSessions) {
+  if (!volunteer.pastSessions || !volunteer.pastSessions.length) {
     points += 2
   }
 
@@ -359,7 +359,6 @@ userSchema.methods.parseProfile = function() {
     lastname: this.lastname,
     isVolunteer: this.isVolunteer,
     isAdmin: this.isAdmin,
-    isOnboarded: this.isOnboarded,
     isTestUser: this.isTestUser,
     referred: this.referred,
     createdAt: this.createdAt,
@@ -367,16 +366,11 @@ userSchema.methods.parseProfile = function() {
     availability: this.availability,
     availabilityLastModifiedAt: this.availabilityLastModifiedAt,
     timezone: this.timezone,
-    highschoolName: this.highschoolName,
     college: this.college,
     favoriteAcademicSubject: this.favoriteAcademicSubject,
     heardFrom: this.heardFrom,
     isFakeUser: this.isFakeUser,
-    certifications: this.certifications,
-    phonePretty: this.phonePretty,
-    numPastSessions: this.numPastSessions,
-    numVolunteerSessionHours: this.numVolunteerSessionHours,
-    mathCoachingOnly: this.mathCoachingOnly
+    certifications: this.certifications
   }
 }
 
@@ -393,36 +387,6 @@ userSchema.methods.hashPassword = function(password, cb) {
       bcrypt.hash(password, salt, cb)
     }
   })
-}
-
-userSchema.methods.verifyPassword = function(candidatePassword, cb) {
-  var user = this
-
-  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-    if (err) {
-      return cb(err)
-    } else if (isMatch) {
-      return cb(null, user)
-    } else {
-      cb(null, false)
-    }
-  })
-}
-
-// Populates user document with the fields from the School document
-// necessary to retrieve the high school name
-userSchema.methods.populateForHighschoolName = function(cb) {
-  return this.populate('approvedHighschool', 'nameStored SCH_NAME', cb)
-}
-
-// Populates user document with the fields from pastSessions documents
-// necessary to retrieve numVolunteerSessionHours
-userSchema.methods.populateForVolunteerStats = function(cb) {
-  return this.populate(
-    'pastSessions',
-    'createdAt volunteerJoinedAt endedAt',
-    cb
-  )
 }
 
 // Calculates the amount of hours between this.availabilityLastModifiedAt
@@ -531,14 +495,6 @@ userSchema
     }
   })
 
-userSchema.virtual('highschoolName').get(function() {
-  if (this.approvedHighschool) {
-    return this.approvedHighschool.name
-  } else {
-    return null
-  }
-})
-
 userSchema.virtual('volunteerPointRank').get(function() {
   if (!this.isVolunteer) return null
   return tallyVolunteerPoints(this)
@@ -568,65 +524,6 @@ userSchema.virtual('volunteerLastNotification', {
   options: { sort: { sentAt: -1 } }
 })
 
-userSchema.virtual('numPastSessions').get(function() {
-  if (!this.pastSessions) {
-    return 0
-  }
-
-  return this.pastSessions.length
-})
-
-userSchema.virtual('numVolunteerSessionHours').get(function() {
-  if (!this.pastSessions || !this.pastSessions.length) {
-    return 0
-  }
-
-  // can't calculate when pastSessions hasn't been .populated()
-  if (!this.pastSessions[0].createdAt) {
-    return null
-  }
-
-  const totalMilliseconds = this.pastSessions.reduce((totalMs, pastSession) => {
-    // early skip if session is missing necessary props
-    if (!(pastSession.volunteerJoinedAt && pastSession.endedAt)) {
-      return totalMs
-    }
-
-    const volunteerJoinDate = new Date(pastSession.volunteerJoinedAt)
-    const sessionEndDate = new Date(pastSession.endedAt)
-    let millisecondDiff = sessionEndDate - volunteerJoinDate
-
-    // if session was longer than 5 hours, it was probably an old glitch
-    if (millisecondDiff > 18000000) {
-      return totalMs
-    }
-
-    // skip if for some reason the volunteer joined after the session ended
-    if (millisecondDiff < 0) {
-      return totalMs
-    }
-
-    return millisecondDiff + totalMs
-  }, 0)
-
-  // milliseconds in hour = (60,000 * 60) = 3,600,000
-  const hoursDiff = (totalMilliseconds / 3600000).toFixed(2)
-
-  return hoursDiff
-})
-
-userSchema.virtual('mathCoachingOnly').get(function() {
-  if (!this.isVolunteer) return null
-  if (!this.volunteerPartnerOrg) return false
-
-  const volunteerPartnerManifest =
-    config.volunteerPartnerManifests[this.volunteerPartnerOrg]
-
-  return (
-    !!volunteerPartnerManifest && !!volunteerPartnerManifest['mathCoachingOnly']
-  )
-})
-
 userSchema.virtual('isOnboarded').get(function() {
   if (!this.isVolunteer) return null
 
@@ -641,6 +538,18 @@ userSchema.virtual('isOnboarded').get(function() {
 
   return this.availabilityLastModifiedAt && isCertified
 })
+
+userSchema.statics.verifyPassword = (candidatePassword, userPassword) => {
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(candidatePassword, userPassword, (error, isMatch) => {
+      if (error) {
+        return reject(error)
+      }
+
+      return resolve(isMatch)
+    })
+  })
+}
 
 // Static method to determine if a registration code is valid
 userSchema.statics.checkCode = function(code) {
