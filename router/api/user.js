@@ -9,23 +9,22 @@ module.exports = function(router) {
         err: 'Client has no authenticated session'
       })
     }
+    return res.json({ user: req.user })
+  })
 
-    // Return student user
-    if (!req.user.isVolunteer) {
-      return res.json({
-        user: req.user.parseProfile()
+  router.route('/user/volunteer-stats').get(async function(req, res, next) {
+    if (!req.user) {
+      return res.status(401).json({
+        err: 'Client has no authenticated session'
       })
     }
 
-    // Return volunteer user
-    req.user
-      .populateForVolunteerStats()
-      .execPopulate()
-      .then(populatedUser => {
-        return res.json({
-          user: populatedUser.parseProfile()
-        })
-      })
+    try {
+      const volunteerStats = await UserCtrl.getVolunteerStats(req.user)
+      res.json({ volunteerStats })
+    } catch (error) {
+      return next(error)
+    }
   })
 
   router.put('/user', function(req, res, next) {
