@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const Sentry = require('@sentry/node')
 
 const Message = require('./Message')
 
