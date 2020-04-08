@@ -1,16 +1,20 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 const ejson = require('mongodb-extended-json')
 
 // Configuration
-var config = require('./config')
+const config = require('./config')
 
 // Database
 mongoose.connect(config.database, { useNewUrlParser: true })
-var db = mongoose.connection
+const db = mongoose.connection
+
 db.on('error', console.error.bind(console, 'connection error:'))
+
 db.once('open', function() {
   console.log('Connected to database')
-  let promises = []
+
+  const promises = []
+
   // Data about the seed data we intend to import / update from this file
   const seedDataMetadata = [
     {
@@ -41,27 +45,33 @@ db.once('open', function() {
       ]
     }
   ]
+
   // For each of the above metadata items, replace each record in each file with the value from seed data
   seedDataMetadata.forEach(seedDataMetadataItem => {
     const aCollection = db.collection(seedDataMetadataItem.collection)
+
     seedDataMetadataItem.files.forEach(file => {
       const seedData = require('./seeds/' +
         seedDataMetadataItem.folder +
         file +
         '.json')
+
       // use Extended JSON to handle formats like "$date" in json files
       const deserializedSeedData = ejson.deserialize(seedData)
+
       deserializedSeedData.forEach(record => {
         // Build a Unique ID Key for each record to be updated. Start with empty object
         const idKey = {}
+
         // Add a single key/value: key is seedDataMetadataItem.idField
         idKey[seedDataMetadataItem.idField] =
           record[seedDataMetadataItem.idField]
+
         const replacePromise = aCollection.replaceOne(idKey, record, {
           upsert: true
         })
+
         promises.push(replacePromise)
-        console.log(record)
       })
     })
   })
