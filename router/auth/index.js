@@ -1,5 +1,4 @@
 const express = require('express')
-const flash = require('express-flash')
 const passport = require('passport')
 const Sentry = require('@sentry/node')
 
@@ -52,7 +51,6 @@ module.exports = function(app) {
 
   app.use(passport.initialize())
   app.use(passport.session())
-  app.use(flash())
 
   var router = new express.Router()
 
@@ -69,9 +67,7 @@ module.exports = function(app) {
     passport.authenticate('local'), // Delegate auth logic to passport middleware
     function(req, res) {
       // If successfully authed, return user object (otherwise 401 is returned from middleware)
-      res.json({
-        user: req.user.parseProfile()
-      })
+      res.json({ user: req.user })
     }
   )
 
@@ -247,8 +243,7 @@ module.exports = function(app) {
           user.password = hash // Note the salt is embedded in the final hash
 
           if (err) {
-            next(err)
-            return
+            return next(err)
           }
 
           user.save(function(err) {
@@ -257,55 +252,36 @@ module.exports = function(app) {
             } else {
               req.login(user, function(err) {
                 if (err) {
-                  next(err)
-                } else {
-                  if (user.isVolunteer) {
-                    // Send internal email alert if new volunteer is from a partner org
-                    if (user.volunteerPartnerOrg) {
-                      MailService.sendPartnerOrgSignupAlert({
-                        name: `${user.firstname} ${user.lastname}`,
-                        email: user.email,
-                        company: volunteerPartnerOrg,
-                        upchieveId: user._id
-                      })
-                    }
+                  return next(err)
+                }
 
-                    VerificationCtrl.initiateVerification(
-                      {
-                        userId: user._id,
-                        email: user.email
-                      },
-                      function(err, email) {
-                        var msg
-                        if (err) {
-                          msg =
-                            'Registration successful. Error sending verification email: ' +
-                            err
-                          Sentry.captureException(err)
-                        } else {
-                          msg =
-                            'Registration successful. Verification email sent to ' +
-                            email
-                        }
-
-                        req.login(user, function(err) {
-                          if (err) {
-                            next(err)
-                          } else {
-                            res.json({
-                              msg: msg,
-                              user: user
-                            })
-                          }
-                        })
-                      }
-                    )
-                  } else {
-                    res.json({
-                      user: user
+                if (user.isVolunteer) {
+                  // Send internal email alert if new volunteer is from a partner org
+                  if (user.volunteerPartnerOrg) {
+                    MailService.sendPartnerOrgSignupAlert({
+                      name: `${user.firstname} ${user.lastname}`,
+                      email: user.email,
+                      company: volunteerPartnerOrg,
+                      upchieveId: user._id
                     })
                   }
+
+                  VerificationCtrl.initiateVerification(
+                    {
+                      userId: user._id,
+                      email: user.email
+                    },
+                    function(err, email) {
+                      if (err) {
+                        Sentry.captureException(err)
+                      }
+                    }
+                  )
                 }
+
+                return res.json({
+                  user: user
+                })
               })
             }
           })
