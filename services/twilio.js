@@ -1,7 +1,7 @@
-var config = require('../config.js')
-var User = require('../models/User')
-var twilio = require('twilio')
-var moment = require('moment-timezone')
+const config = require('../config.js')
+const User = require('../models/User')
+const twilio = require('twilio')
+const moment = require('moment-timezone')
 const twilioClient =
   config.accountSid && config.authToken
     ? twilio(config.accountSid, config.authToken)
@@ -30,10 +30,10 @@ const sessionTimeouts = {} // sessionId => SessionTimeout
 
 // get the availability field to query for the current time
 function getAvailability() {
-  var dateString = new Date().toUTCString()
-  var date = moment.utc(dateString).tz('America/New_York')
-  var day = date.isoWeekday() - 1
-  var hour = date.hour()
+  const dateString = new Date().toUTCString()
+  const date = moment.utc(dateString).tz('America/New_York')
+  const day = date.isoWeekday() - 1
+  let hour = date.hour()
 
   if (hour >= 12) {
     if (hour > 12) {
@@ -47,7 +47,7 @@ function getAvailability() {
     hour = `${hour}a`
   }
 
-  var days = [
+  const days = [
     'Monday',
     'Tuesday',
     'Wednesday',
@@ -62,15 +62,14 @@ function getAvailability() {
 
 // return query filter object limiting notifications to the available volunteers
 function filterAvailableVolunteers(subtopic, options) {
-  var availability = getAvailability()
-  console.log(availability)
+  const availability = getAvailability()
 
-  var certificationPassed = `certifications.${subtopic}.passed`
+  const certificationPassed = `certifications.${subtopic}.passed`
 
   // Only notify volunteer test users about requests from student test users (for manual testing)
-  var shouldOnlyGetTestUsers = options.isTestUserRequest || false
+  const shouldOnlyGetTestUsers = options.isTestUserRequest || false
 
-  var userQuery = {
+  const userQuery = {
     isVolunteer: true,
     [certificationPassed]: true,
     [availability]: true,
@@ -83,13 +82,10 @@ function filterAvailableVolunteers(subtopic, options) {
 }
 
 // get next wave of non-failsafe volunteers to notify
-var getNextVolunteersFromDb = function(
-  subtopic,
-  notifiedUserIds,
-  userIdsInSessions,
-  options
-) {
+const getNextVolunteersFromDb = (subtopic, volunteersToExclude, options) => {
   const userQuery = filterAvailableVolunteers(subtopic, options)
+
+  userQuery._id = { $nin: volunteersToExclude }
 
   const query = User.aggregate([
     { $match: userQuery },
@@ -101,8 +97,8 @@ var getNextVolunteersFromDb = function(
 }
 
 // query failsafe volunteers to notify
-var getFailsafeVolunteersFromDb = function() {
-  var userQuery = {
+const getFailsafeVolunteersFromDb = function() {
+  const userQuery = {
     isFailsafeVolunteer: true
   }
   return User.find(userQuery).select({ phone: 1, firstname: 1 })
@@ -180,10 +176,49 @@ const notifyRegular = async function(session) {
 
   const subtopic = session.subTopic
 
+  // Get sessions that haven't ended and have a volunteer
+  const activeSessions = await Session.find({
+    endedAt: { $exists: false },
+    volunteer: { $exists: true }
+  })
+    .select('volunteer')
+    .lean()
+    .exec()
+
+  const volunteersInActiveSessions = activeSessions.map(
+    session => session.volunteer
+  )
+
+  // Date & time of one hour ago
+  const oneHourAgo = new Date(
+    new Date().getTime() - 60 * 60 * 1000
+  ).toISOString()
+
+  // Get notifications sent within the past hour
+  const notificationsInLastHour = await Notification.find({
+    sentAt: { $gt: oneHourAgo }
+  })
+    .select('volunteer')
+    .lean()
+    .exec()
+
+  const volunteersNotifiedInLastHour = notificationsInLastHour.map(
+    notif => notif.volunteer
+  )
+
+  // Volunteers who are in active sessions or were notified in the past hour
+  const volunteersToExclude = volunteersInActiveSessions.concat(
+    volunteersNotifiedInLastHour
+  )
+
   // query the database for the next wave
-  const volunteersToNotify = await getNextVolunteersFromDb(subtopic, [], [], {
-    isTestUserRequest: populatedSession.student.isTestUser
-  }).exec()
+  const volunteersToNotify = await getNextVolunteersFromDb(
+    subtopic,
+    volunteersToExclude,
+    {
+      isTestUserRequest: populatedSession.student.isTestUser
+    }
+  ).exec()
 
   // notifications to record in the database
   const notifications = []
