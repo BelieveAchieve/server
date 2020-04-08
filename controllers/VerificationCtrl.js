@@ -62,18 +62,16 @@ module.exports = {
       throw new Error('No user found with that verification token')
     }
 
-    const userUpdates = {
-      verified: true,
-      $unset: { verificationToken: 1 }
-    }
-
-    await User.updateOne({ _id: user._id }, userUpdates)
-
     MailService.sendWelcomeEmail({
       email: user.email,
       firstName: user.firstname
     })
 
-    return user
+    const userUpdates = {
+      verified: true,
+      $unset: { verificationToken: 1 }
+    }
+
+    return User.updateOne({ _id: user._id }, userUpdates)
   }
 }
