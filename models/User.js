@@ -539,8 +539,8 @@ userSchema.virtual('isOnboarded').get(function() {
   return this.availabilityLastModifiedAt && isCertified
 })
 
-userSchema.statics.verifyPassword = async (candidatePassword, userPassword) => {
-  const isCorrectPassword = await new Promise((resolve, reject) => {
+userSchema.statics.verifyPassword = (candidatePassword, userPassword) => {
+  return new Promise((resolve, reject) => {
     bcrypt.compare(candidatePassword, userPassword, (error, isMatch) => {
       if (error) {
         return reject(error)
@@ -549,8 +549,6 @@ userSchema.statics.verifyPassword = async (candidatePassword, userPassword) => {
       return resolve(isMatch)
     })
   })
-
-  return isCorrectPassword
 }
 
 // Static method to determine if a registration code is valid
