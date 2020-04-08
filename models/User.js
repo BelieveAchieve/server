@@ -389,20 +389,6 @@ userSchema.methods.hashPassword = function(password, cb) {
   })
 }
 
-userSchema.methods.verifyPassword = function(candidatePassword, cb) {
-  var user = this
-
-  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-    if (err) {
-      return cb(err)
-    } else if (isMatch) {
-      return cb(null, user)
-    } else {
-      cb(null, false)
-    }
-  })
-}
-
 // Calculates the amount of hours between this.availabilityLastModifiedAt
 // and the current time that a user updates to a new availability
 userSchema.methods.calculateElapsedAvailability = function(newModifiedDate) {
@@ -552,6 +538,18 @@ userSchema.virtual('isOnboarded').get(function() {
 
   return this.availabilityLastModifiedAt && isCertified
 })
+
+userSchema.statics.verifyPassword = (candidatePassword, userPassword) => {
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(candidatePassword, userPassword, (error, isMatch) => {
+      if (error) {
+        return reject(error)
+      }
+
+      return resolve(isMatch)
+    })
+  })
+}
 
 // Static method to determine if a registration code is valid
 userSchema.statics.checkCode = function(code) {
