@@ -1,16 +1,18 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 const ejson = require('mongodb-extended-json')
 
 // Configuration
-var config = require('../config')
+const config = require('../config')
 
 // Load users into the database
 mongoose.connect(config.database, { useNewUrlParser: true })
-var db = mongoose.connection
+const db = mongoose.connection
+
 db.on('error', console.error.bind(console, 'connection error:'))
+
 db.once('open', function() {
   console.log('Connected to database')
-  let promises = []
+  const promises = []
   const usersCollection = db.collection('users')
   const seedData = require('../seeds/test_users.json')
   // use Extended JSON to handle formats like "$date" in json files
@@ -22,7 +24,6 @@ db.once('open', function() {
       upsert: true
     })
     promises.push(replacePromise)
-    console.log(record)
   })
 
   Promise.all(promises)
