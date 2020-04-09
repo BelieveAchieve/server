@@ -43,49 +43,36 @@ module.exports = {
     )
   },
 
-  getQuizScore: async function(options, callback) {
-    const userid = options.userid
-    const idAnswerMap = options.idAnswerMap
-    const category = options.category
+  getQuizScore: async function({ user, idAnswerMap, category }) {
     const objIDs = Object.keys(idAnswerMap)
-
     const questions = await Question.find({ _id: { $in: objIDs } }).exec()
 
     const score = questions.filter(
       question => question.correctAnswer === idAnswerMap[question._id]
     ).length
 
-    const idCorrectAnswerMap = questions.reduce((acc, question) => {
-      acc[question._id] = question.correctAnswer
-      return acc
+    const percent = score / questions.length
+    const passed = percent >= PASS_THRESHOLD
+
+    const tries = user.certifications[category]['tries'] + 1
+
+    const userUpdates = {
+      [`certifications.${category}.passed`]: passed,
+      [`certifications.${category}.tries`]: tries
+    }
+
+    await User.updateOne({ _id: user._id }, userUpdates)
+
+    const idCorrectAnswerMap = questions.reduce((correctAnswers, question) => {
+      correctAnswers[question._id] = question.correctAnswer
+      return correctAnswers
     }, {})
 
-    const percent = score / questions.length
-
-    const hasPassed = percent >= PASS_THRESHOLD
-
-    const user = await User.findOne({ _id: userid })
-
-    if (!user) {
-      throw new Error('No account with that id found.')
-    }
-
-    user.certifications[category]['passed'] = hasPassed
-
-    let tries = user.certifications[category]['tries']
-    if (!tries) {
-      tries = 0
-    }
-    tries++
-    user.certifications[category]['tries'] = tries
-
-    await user.save()
-
     return {
-      tries: tries,
-      passed: hasPassed,
-      score: score,
-      idCorrectAnswerMap: idCorrectAnswerMap
+      tries,
+      passed,
+      score,
+      idCorrectAnswerMap
     }
   }
 }
