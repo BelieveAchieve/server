@@ -25,14 +25,14 @@ else
     execute cp config.example.js config.js
 fi
 
+step 'Installing dependencies'
+npm install
+
 step 'Setting up test users'
-printf "\n${RED}Warning${RESET}: This will drop existing users. Continue? (y/N): "
+printf "\n${RED}Warning${RESET}: This will replace test users. Continue? (y/N): "
 read -r response
 if $yflag || [[ "$response" =~ ^[yY]$ ]]; then
-    execute bash bin/seed_test_users.sh
+    node ./dbutils/seed-test-users
 else
     success '' 'Skipping.'
 fi
-
-step 'Installing dependencies'
-execute npm install

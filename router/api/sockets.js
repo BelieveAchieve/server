@@ -59,14 +59,14 @@ module.exports = function(io, sessionStore) {
     })
 
     socket.on('disconnect', function() {
-      console.log('Client disconnected')
+      console.log('Client disconnected. User ID:', socket.request.user._id)
 
       socketService.disconnectUser(socket)
     })
 
     socket.on('list', async function() {
       const sessions = await Session.getUnfulfilledSessions()
-      io.emit('sessions', sessions)
+      socket.emit('sessions', sessions)
     })
 
     socket.on('typing', function(data) {
@@ -80,13 +80,7 @@ module.exports = function(io, sessionStore) {
     socket.on('message', async function(data) {
       if (!data.sessionId) return
 
-      try {
-        await sessionCtrl.message(data)
-      } catch (err) {
-        console.log(err)
-        console.log('Could not deliver message')
-        io.emit('error', err.toString())
-      }
+      await sessionCtrl.message(data)
     })
 
     // Whiteboard interaction

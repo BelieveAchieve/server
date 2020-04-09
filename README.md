@@ -28,6 +28,7 @@ UPchieve web server
     - [GET /auth/org-manifest](#get-authorg-manifest)
     - [POST /api/session/new](#post-apisessionnew)
     - [POST /api/session/check](#post-apisessioncheck)
+    - [POST /api/session/latest](#post-apisessioncheck)
     - [POST /api/training/questions](#post-apitrainingquestions)
     - [POST /api/training/score](#post-apitrainingscore)
     - [POST /api/calendar/save](#post-apicalendarsave)
@@ -47,13 +48,14 @@ UPchieve web server
 
 Local Development
 -----------------
-### Docker Use
-Docker provides an alternative for local development. A Dockerfile and specific run script exist. Here's how to leverage them. With Docker installed, checkout this repository and navigate into its root directory.
+### docker-compose
+Docker provides an alternative for local development. A docker-compose file exists, tied to Mongo. Here's how to work in docker-compose.
 
-1. Run `docker build -t local_upchieve_server/local_upchieve_server:0.1 . --rm` to create the image.
-2. Run `docker run -p 127.0.0.1:3000:3000/tcp -p 127.0.0.1:3001:3001/tcp local_upchieve_server/local_upchieve_server:0.1 bash /bin/docker_run.sh` to launch the server
-3. After any change: In the Dockerfile, change the line `ARG FOO=BAR` to something like `ARG FOO=BAR1`, changing "BAR" to anything different from the last run. Then, repeat steps 1 and 2, which should run much quicker.
+1. Navigate to this directory and run `mkdir mongo-volume` to create a directory for the MongoDB volume.
+2. Run `docker-compose up` to launch the server.
+3. After any change: Run `docker-compose down --rmi all` to destry images and containers. Then run `docker-compose up`
 
+Note: the default command ran when starting the server will populate/refresh all seed data, so any changes will be lost unless this behavior is changed.
 
 ### Dependencies
 
@@ -75,14 +77,14 @@ asdf install nodejs [VERSION]
 - [`asdf-mongodb`][asdf-mongodb]
 
 ```shell-script
-asdf plugin-add mongodb https://github.com/UPchieve/asdf-mongodb
+asdf plugin-add mongodb
 asdf install mongodb [VERSION]
 ```
 
 [wsl]: https://docs.microsoft.com/en-us/windows/wsl/install-win10
 [asdf]: https://github.com/asdf-vm/asdf
 [asdf-nodejs]: https://github.com/asdf-vm/asdf-nodejs
-[asdf-mongodb]: https://github.com/UPchieve/asdf-mongodb
+[asdf-mongodb]: https://github.com/sylph01/asdf-mongodb
 
 ### Setup
 
@@ -259,6 +261,14 @@ where `PARTNER_ID` is the key name of the volunteer partner organization defined
 ```json
 {
   "sessionId": "String"
+}
+```
+
+### POST /api/session/check
+
+```json
+{
+  "user_id": "String"
 }
 ```
 

@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
+bash setup -y
 
-mongod &
+node init
 
-sleep 5
-
-export NODE_OPTIONS=--max-old-space-size=8192
-
+export NODE_OPTIONS=--max-old-space-size=5000
+npm install bcrypt
 npm run dev
