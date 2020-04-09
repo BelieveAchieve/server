@@ -1,4 +1,5 @@
 const PushToken = require('../../models/PushToken')
+const User = require('../../models/User')
 
 module.exports = function(router) {
   router.post('/push-token/save', async function(req, res) {
@@ -16,13 +17,14 @@ module.exports = function(router) {
     }
   })
 
-  router.get('/push-token/check', async function(req, res) {
-    const pushToken = await PushToken.findOne({ user: req.user._id })
-      .lean()
-      .exec()
-    if (!pushToken) {
+  router.post('/push-token/register-attempt', async function(req, res) {
+    const user = await User.update(
+      { _id: req.user._id },
+      { hasSentPushTokenRegister: true }
+    )
+    if (!user) {
       res.status(404).json({
-        err: 'No push token found'
+        err: 'No user found'
       })
     } else {
       res.sendStatus(200)
