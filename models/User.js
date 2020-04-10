@@ -194,7 +194,6 @@ var userSchema = new mongoose.Schema(
     zipCode: String,
     studentPartnerOrg: String,
 
-    hasSentPushTokenRegister: { type: Boolean, default: false },
     /**
      * END STUDENT ATTRS
      */
