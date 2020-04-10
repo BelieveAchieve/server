@@ -8,7 +8,6 @@ export default async () => {
   // Update elapsed availability
   await Promise.all(
     volunteers.map(volunteer => {
-      console.log(volunteer);
       const currentTime = new Date();
       const newElapsedAvailability = volunteer.calculateElapsedAvailability(
         currentTime,

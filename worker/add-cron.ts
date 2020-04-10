@@ -22,7 +22,6 @@ const jobTemplates: JobTemplate[] = [
 const main = async () => {
   const queue = new Queue(workerQueueName, redisConnectionString);
 
-  console.log(workerQueueName);
   const repeatableJobs = await queue.getRepeatableJobs();
 
   await Promise.all(
