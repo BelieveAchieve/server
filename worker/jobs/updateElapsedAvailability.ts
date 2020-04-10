@@ -1,23 +1,23 @@
 import Sentry from '@sentry/node';
-import User from '../../models/User';
-import { IUser } from '../../models/types';
+import * as UserModel from '../../models/User';
+import { User } from '../../models/types';
 
-export default async () => {
+export default async (): Promise<void> => {
   // Fetch volunteers
-  const volunteers = (await User.find({ isVolunteer: true })) as IUser[];
+  const volunteers = (await UserModel.find({ isVolunteer: true })) as User[];
   // Update elapsed availability
   await Promise.all(
     volunteers.map(volunteer => {
       const currentTime = new Date();
       const newElapsedAvailability = volunteer.calculateElapsedAvailability(
-        currentTime,
+        currentTime
       );
 
       volunteer.elapsedAvailability += newElapsedAvailability;
       volunteer.availabilityLastModifiedAt = currentTime;
 
       return volunteer.save();
-    }),
+    })
   ).catch(error => {
     Sentry.captureException(error);
   });

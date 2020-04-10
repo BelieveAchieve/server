@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-export interface IUser extends Document {
+export interface User extends Document {
   calculateElapsedAvailability: (Date) => number;
   availabilityLastModifiedAt: Date;
   elapsedAvailability: number;
