@@ -1,21 +1,18 @@
-import * as Queue from 'bull';
-import { log } from './logger';
-
-const queueName = 'main';
-const redisConnectionString = 'redis://127.0.0.1:6379';
+import * as Queue from 'bull'
+import { log } from './logger'
+import { workerQueueName, redisConnectionString } from '../config'
+import { addJobProcessors } from './jobs'
 
 const main = async () => {
   try {
-    log('Starting queue');
-    const queue = new Queue(queueName, redisConnectionString);
-    await queue.process(async job => {
-      log(JSON.stringify(job));
-    });
+    log('Starting queue')
+    const queue = new Queue(workerQueueName, redisConnectionString)
+    addJobProcessors(queue)
   } catch (error) {
     if (error.code === 'ECONNREFUSED') {
-      log(`Could not connect to redis server: ${redisConnectionString}`);
+      log(`Could not connect to redis server: ${redisConnectionString}`)
     }
   }
-};
+}
 
-main();
+main()

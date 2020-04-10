@@ -11,7 +11,8 @@
     "lint:prod": "eslint '*.js' '{controllers,models,router,services,seeds,worker}/**/*.{js,ts}' --max-warnings 0",
     "prettier": "prettier --write **/*.ts",
     "worker": "ts-node worker",
-    "worker:dev": "ts-node-dev worker"
+    "worker:dev": "ts-node-dev worker",
+    "add-cron": "ts-node worker/add-cron"
   },
   "nyc": {
     "check-coverage": true,
