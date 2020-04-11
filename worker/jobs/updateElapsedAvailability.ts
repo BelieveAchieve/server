@@ -1,5 +1,5 @@
-import Sentry from '@sentry/node';
-import * as UserModel from '../../models/User';
+import * as Sentry from '@sentry/node';
+import UserModel from '../../models/User';
 import { User } from '../../models/types';
 
 export default async (): Promise<void> => {
