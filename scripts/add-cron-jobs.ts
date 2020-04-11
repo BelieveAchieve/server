@@ -13,7 +13,6 @@ interface JobTemplate {
 const jobTemplates: JobTemplate[] = [
   {
     name: Jobs.UpdateElapsedAvailability,
-    // options: { repeat: { cron: '0 4 * * *', tz: 'America/New_York' } },
     options: { repeat: { cron: '0 4 * * *', tz: 'America/New_York' } }
   }
 ];
