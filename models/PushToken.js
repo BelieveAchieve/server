@@ -13,7 +13,7 @@ const pushTokenSchema = new mongoose.Schema(
     },
     createdAt: { type: Date, default: Date.now },
     // Token ID returned from push token register
-    token: String
+    token: { type: String, unique: true }
   },
   {
     toJSON: {
