@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const Sentry = require('@sentry/node')
 
 const Message = require('./Message')
 
@@ -35,11 +34,6 @@ const sessionSchema = new mongoose.Schema({
   },
 
   messages: [Message.schema],
-
-  whiteboardUrl: {
-    type: String,
-    default: ''
-  },
 
   whiteboardDoc: {
     type: String,
@@ -102,24 +96,6 @@ sessionSchema.methods.saveMessage = function(messageObj, cb) {
   } else {
     return promise
   }
-}
-
-sessionSchema.methods.saveWhiteboardUrl = function(whiteboardUrl, cb) {
-  const session = this
-  this.whiteboardUrl = whiteboardUrl
-  this.save(function(err) {
-    if (cb) {
-      if (err) {
-        cb(err)
-      } else {
-        cb(null, session.whiteboardUrl)
-      }
-    } else {
-      if (err) {
-        Sentry.captureException(err)
-      }
-    }
-  })
 }
 
 // helper function for handling joins that fail because session is fulfilled or has ended

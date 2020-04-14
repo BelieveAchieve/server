@@ -38,18 +38,15 @@ module.exports = {
 
   volunteerPartnerManifests: {
     example: {
-      name: 'Example - Regular',
-      mathCoachingOnly: false
+      name: 'Example - Regular'
     },
     example2: {
       name: 'Example - Email Requirement',
-      requiredEmailDomains: ['example.com'],
-      mathCoachingOnly: false
+      requiredEmailDomains: ['example.com']
     },
     example3: {
       name: 'Example - Email Requirement & Math Only',
-      requiredEmailDomains: ['example.org', 'example.net'],
-      mathCoachingOnly: true
+      requiredEmailDomains: ['example.org', 'example.net']
     }
   },
 

@@ -1,10 +1,11 @@
 const _ = require('lodash')
+const User = require('../models/User')
 
 module.exports = {
   updateSchedule: function(options, callback) {
     const user = options.user
     const newAvailability = options.availability
-    const tz = options.tz
+    const newTimezone = options.tz
 
     // verify that newAvailability is defined and not null
     if (!newAvailability) {
@@ -15,14 +16,14 @@ module.exports = {
     // verify that all of the day-of-week and time-of-day properties are defined on the
     // new availability object
     if (
-      Object.keys(user.availability.toObject()).some(key => {
+      Object.keys(user.availability).some(key => {
         if (typeof newAvailability[key] === 'undefined') {
           // day-of-week property needs to be defined
           return true
         }
 
         // time-of-day properties also need to be defined
-        return Object.keys(user.availability[key].toObject()).some(
+        return Object.keys(user.availability[key]).some(
           key2 => typeof newAvailability[key][key2] === 'undefined'
         )
       })
@@ -30,19 +31,20 @@ module.exports = {
       return callback(new Error('Availability object missing required keys'))
     }
 
-    const newModifiedDate = new Date().toISOString()
-    user.elapsedAvailability += user.calculateElapsedAvailability(
-      newModifiedDate
-    )
-    user.availabilityLastModifiedAt = newModifiedDate
-    user.availability = newAvailability
-
-    // update timezone
-    if (tz) {
-      user.timezone = tz
+    const userUpdates = {
+      availability: newAvailability,
+      timezone: newTimezone
     }
 
-    user.save(function(err, user) {
+    /**
+     * Set availabilityLastModifiedAt if this is the user's first time modifying their availability
+     * Otherwise, leave it to the nightly cron job
+     */
+    if (!user.availabilityLastModifiedAt) {
+      userUpdates.availabilityLastModifiedAt = new Date().toISOString()
+    }
+
+    User.updateOne({ _id: user._id }, userUpdates, function(err) {
       if (err) {
         callback(err, null)
       } else {
