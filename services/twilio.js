@@ -380,7 +380,23 @@ module.exports = {
       return
     }
 
-    notifyRegular(session)
+    const student = await User.findOne({ _id: session.student })
+      .lean()
+      .exec()
+
+    const isNewStudent = !student.pastSessions || !student.pastSessions.length
+
+    // Delay initial wave of notifications by 1 min if new student or
+    // send initial wave of notifications (right now)
+    if (isNewStudent) {
+      const oneMinute = 1000 * 60
+      const timeoutId = setTimeout(() => {
+        notifyRegular(session)
+      }, oneMinute)
+      getSessionTimeoutFor(session).timeouts.push(timeoutId)
+    } else {
+      notifyRegular(session)
+    }
   },
 
   // begin notifying failsafe volunteers for a session
