@@ -82,8 +82,7 @@ module.exports = function(router, io) {
         })
       } else {
         res.json({
-          sessionId: session._id,
-          whiteboardUrl: session.whiteboardUrl
+          sessionId: session._id
         })
       }
     } catch (err) {
