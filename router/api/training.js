@@ -18,34 +18,40 @@ module.exports = function(router) {
   })
   router.post('/training/score', async function(req, res, next) {
     try {
-      const data = await TrainingCtrl.getQuizScore({
-        userid: req.user._id,
-        idAnswerMap: req.body.idAnswerMap,
-        category: req.body.category
+      const { user } = req
+      const { category, idAnswerMap } = req.body
+
+      const {
+        tries,
+        passed,
+        score,
+        idCorrectAnswerMap
+      } = await TrainingCtrl.getQuizScore({
+        user,
+        idAnswerMap,
+        category
       })
 
-      const { id } = req.user
-      const { category } = req.body
-
-      data.passed
-        ? UserActionCtrl.passedQuiz(id, category).catch(error =>
+      passed
+        ? UserActionCtrl.passedQuiz(user.id, category).catch(error =>
             Sentry.captureException(error)
           )
-        : UserActionCtrl.failedQuiz(id, category).catch(error =>
+        : UserActionCtrl.failedQuiz(user.id, category).catch(error =>
             Sentry.captureException(error)
           )
 
       res.json({
         msg: 'Score calculated and saved',
-        tries: data.tries,
-        passed: data.passed,
-        score: data.score,
-        idCorrectAnswerMap: data.idCorrectAnswerMap
+        tries,
+        passed,
+        score,
+        idCorrectAnswerMap
       })
     } catch (err) {
       next(err)
     }
   })
+
   router.get('/training/review/:category', function(req, res, next) {
     const { id } = req.user
     const { category } = req.params
