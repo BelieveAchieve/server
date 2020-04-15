@@ -119,12 +119,15 @@ module.exports = function(socketService) {
           const pushTokens = await PushToken.find({ user: session.student })
             .lean()
             .exec()
-          const tokens = pushTokens.map(token => token.token)
-          PushTokenService.sendVolunteerJoined(
-            session.type,
-            session.subTopic,
-            tokens
-          )
+
+          if (pushTokens && pushTokens.length > 0) {
+            const tokens = pushTokens.map(token => token.token)
+            PushTokenService.sendVolunteerJoined(
+              session.type,
+              session.subTopic,
+              tokens
+            )
+          }
         }
 
         // After 30 seconds of the this.createdAt, we can assume the user is
