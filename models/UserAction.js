@@ -51,7 +51,8 @@ const userActionSchema = new mongoose.Schema({
   browser: String,
   browserVersion: String,
   operatingSystem: String,
-  operatingSystemVersion: String
+  operatingSystemVersion: String,
+  ipAddress: String
 })
 
 module.exports = mongoose.model('UserAction', userActionSchema)

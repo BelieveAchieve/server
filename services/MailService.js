@@ -9,8 +9,14 @@ const sendEmail = function(
   fromName,
   templateId,
   dynamicData,
+  unsubscribeGroupId,
   callback
 ) {
+  // Unsubscribe email preferences
+  const asm = {
+    group_id: unsubscribeGroupId,
+    groups_to_display: [config.sendgrid.unsubscribeGroup.newsletter]
+  }
   const msg = {
     to: toEmail,
     from: {
@@ -21,7 +27,8 @@ const sendEmail = function(
       email: config.mail.receivers.support
     },
     templateId: templateId,
-    dynamic_template_data: dynamicData
+    dynamic_template_data: dynamicData,
+    asm
   }
 
   sgMail.send(msg, callback)
@@ -42,6 +49,7 @@ module.exports = {
         userEmail: email,
         verifyLink: url
       },
+      config.sendgrid.unsubscribeGroup.account,
       callback
     )
   },
@@ -56,6 +64,7 @@ module.exports = {
       'UPchieve',
       config.sendgrid.contactTemplate,
       responseData,
+      config.sendgrid.unsubscribeGroup.account,
       callback
     )
   },
@@ -74,6 +83,7 @@ module.exports = {
         userEmail: email,
         resetLink: url
       },
+      config.sendgrid.unsubscribeGroup.account,
       callback
     )
   },
@@ -90,6 +100,7 @@ module.exports = {
         company: options.company,
         upchieveId: options.upchieveId
       },
+      config.sendgrid.unsubscribeGroup.account,
       callback
     )
   },
@@ -114,6 +125,7 @@ module.exports = {
         scheduleLink,
         trainingLink
       },
+      config.sendgrid.unsubscribeGroup.account,
       callback
     )
   }
