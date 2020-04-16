@@ -180,6 +180,13 @@ var userSchema = new mongoose.Schema(
 
     lastActivityAt: { type: Date, default: Date.now },
 
+    referralCode: { type: String, unique: true },
+
+    referredBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+
     /**
      * BEGIN STUDENT ATTRS
      */

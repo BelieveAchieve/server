@@ -1,6 +1,7 @@
 const express = require('express')
 const passport = require('passport')
 const Sentry = require('@sentry/node')
+const base64url = require('base64url')
 
 const authPassport = require('./passport')
 
@@ -238,6 +239,7 @@ module.exports = function(app) {
         user.firstname = firstName
         user.lastname = lastName
         user.verified = !isVolunteer // Currently only volunteers need to verify their email
+        user.referralCode = base64url(Buffer.from(user.id, 'hex'))
 
         user.hashPassword(password, function(err, hash) {
           user.password = hash // Note the salt is embedded in the final hash
