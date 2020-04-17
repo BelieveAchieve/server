@@ -88,5 +88,8 @@ module.exports = {
   ipBlacklist: ['192.0.2.123', '254.254.254.254'],
 
   VOLUNTEER_CODES: process.env.UPCHIEVE_VOLUNTEER_CODES || '',
-  STUDENT_CODES: process.env.UPCHIEVE_STUDENT_CODES || ''
+  STUDENT_CODES: process.env.UPCHIEVE_STUDENT_CODES || '',
+  firebase: {
+    projectId: 123456789012
+  }
 }

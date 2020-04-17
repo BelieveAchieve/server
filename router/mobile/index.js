@@ -1,12 +1,16 @@
 const admin = require('firebase-admin')
+const config = require('../../config')
 
 module.exports = function(app) {
-  admin.initializeApp({
-    projectId: 877923781231, // TODO: move to config
-    credential: admin.credential.cert(
-      JSON.parse(process.env.FIREBASE_PRIVATE_KEY_JSON)
-    )
-  })
+  // @todo: need to set FIREBASE_PRIVATE_KEY_JSON in local development to run
+  if (process.env.FIREBASE_PRIVATE_KEY_JSON) {
+    admin.initializeApp({
+      projectId: config.firebase.projectId,
+      credential: admin.credential.cert(
+        JSON.parse(process.env.FIREBASE_PRIVATE_KEY_JSON)
+      )
+    })
+  }
 
   // used in native app to workaround iOS 3rd party cookie limitation
   app.use('/setcookie', function(req, res, next) {
