@@ -38,12 +38,13 @@ const sendToUser = ({ title, text, data, tokens }) => {
 }
 
 module.exports = {
-  sendVolunteerJoined: async function(type, subTopic, tokens) {
+  sendVolunteerJoined: async function(session, tokens) {
+    const { type, subTopic, _id } = session
     const data = {
       title: 'We found a volunteer!',
       text: 'Start chatting with your coach now.',
       data: {
-        path: `/session/${type}/${subTopic}`
+        path: `/session/${type}/${subTopic}/${_id}`
       },
       tokens
     }

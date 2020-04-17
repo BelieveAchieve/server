@@ -122,11 +122,7 @@ module.exports = function(socketService) {
 
           if (pushTokens && pushTokens.length > 0) {
             const tokens = pushTokens.map(token => token.token)
-            PushTokenService.sendVolunteerJoined(
-              session.type,
-              session.subTopic,
-              tokens
-            )
+            PushTokenService.sendVolunteerJoined(session, tokens)
           }
         }
 
