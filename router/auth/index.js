@@ -223,7 +223,7 @@ module.exports = function(app) {
       })
     })
 
-    let referredById = undefined
+    let referredById
 
     if (referredByCode) {
       try {
