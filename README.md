@@ -45,8 +45,6 @@ UPchieve web server
     - [GET /eligibility/school/search](#get-eligibilityschoolsearch)
     - [POST /eligibility/school/approvalnotify](#post-eligibilityschoolapprovalnotify)
     - [GET /eligibility/school/studentusers/:schoolUpchieveId](#get-eligibilityschoolstudentusersschoolupchieveid)
-- [Worker](#worker)
-    - [Jobs](#worker-jobs)
 
 Local Development
 -----------------
@@ -67,7 +65,6 @@ Install the following asdf plugins:
 
 1. Node.js (see version listed in `.tool-versions`)
 2. MongoDB (see version listed in `.tool-versions`)
-3. Redis (see version listed in `.tool-versions`)
 
 - [`asdf-nodejs`][asdf-nodejs]
 
@@ -84,18 +81,10 @@ asdf plugin-add mongodb
 asdf install mongodb [VERSION]
 ```
 
-- [`asdf-redis`][asdf-redis]
-
-```shell-script
-asdf plugin-add redis
-asdf install redis [VERSION]
-```
-
 [wsl]: https://docs.microsoft.com/en-us/windows/wsl/install-win10
 [asdf]: https://github.com/asdf-vm/asdf
 [asdf-nodejs]: https://github.com/asdf-vm/asdf-nodejs
 [asdf-mongodb]: https://github.com/sylph01/asdf-mongodb
-[asdf-redis]: https://github.com/smashedtoatoms/asdf-redis
 
 ### Setup
 
@@ -107,7 +96,6 @@ asdf install redis [VERSION]
 5. Run `npm run dev` to start the dev server on `http://localhost:3000`. If you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
 6. See [the web client repo](https://github.com/UPchieve/web) for client
    installation
-7. (optional) Run `redis-server` and `npm run worker:dev` to start the redis database and dev worker. The dev worker will automatically attempt to connect to your local Redis instance and read jobs from there. Additionally, you can run `ts-node ./scripts/add-cron-jobs.ts` to add all repeatable jobs to the job queue.
 
 [bcrypt]: https://www.npmjs.com/package/bcrypt
 
@@ -489,9 +477,3 @@ Lists all student users registered with a school. Restricted to admins only. If 
   ]
 }
 ```
-
-## Worker
-A [Bull](https://github.com/OptimalBits/bull) worker reading from a local [Redis](https://redis.io/) database. Job definitions live in `worker/jobs` and are registered in `worker/jobs/index.ts`. A script `scripts/add-cron-jobs.ts` will insert all repeatable jobs into the local Redis database.
-
-### Worker Jobs
-- [Update Elapsed Availability](worker/jobs/updateElapsedAvailability.ts): updates all volunteers' elapsed availabilities every day at 4 am.
