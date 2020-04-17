@@ -104,7 +104,7 @@ module.exports = function(app) {
     })
   })
 
-  router.post('/register', function(req, res, next) {
+  router.post('/register', async function(req, res, next) {
     const isVolunteer = req.body.isVolunteer
     const email = req.body.email
     const password = req.body.password
@@ -120,6 +120,7 @@ module.exports = function(app) {
     const firstName = req.body.firstName.trim()
     const lastName = req.body.lastName.trim()
     const terms = req.body.terms
+    const referredByCode = req.body.referredByCode
 
     if (!terms) {
       return res.status(422).json({
@@ -222,6 +223,21 @@ module.exports = function(app) {
       })
     })
 
+    let referredById = undefined
+
+    if (referredByCode) {
+      try {
+        const referredBy = await User.findOne({ referralCode: referredByCode })
+          .select('_id')
+          .lean()
+          .exec()
+
+        referredById = referredById._id
+      } catch (error) {
+        Sentry.captureException(error)
+      }
+    }
+
     highschoolLookupPromise
       .then(({ isVolunteer, school }) => {
         const user = new User()
@@ -240,6 +256,7 @@ module.exports = function(app) {
         user.lastname = lastName
         user.verified = !isVolunteer // Currently only volunteers need to verify their email
         user.referralCode = base64url(Buffer.from(user.id, 'hex'))
+        user.referredBy = referredById
 
         user.hashPassword(password, function(err, hash) {
           user.password = hash // Note the salt is embedded in the final hash
