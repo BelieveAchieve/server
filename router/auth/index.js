@@ -232,7 +232,7 @@ module.exports = function(app) {
           .lean()
           .exec()
 
-        referredById = referredById._id
+        referredById = referredBy._id
       } catch (error) {
         Sentry.captureException(error)
       }
