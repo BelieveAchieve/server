@@ -1,108 +1,77 @@
-var async = require('async')
-var crypto = require('crypto')
+const crypto = require('crypto')
 
-var MailService = require('../services/MailService')
+const MailService = require('../services/MailService')
 
-var User = require('../models/User')
+const User = require('../models/User')
 
 module.exports = {
-  initiateVerification: function(options, callback) {
-    var userId = options.userId
+  initiateVerification: async function({ userId }, callback) {
+    // Find the user to be verified
+    const user = await User.findOne({ _id: userId })
+      .select('verified email')
+      .lean()
+      .exec()
 
-    async.waterfall(
-      [
-        // Find the user to be verified
-        function(done) {
-          User.findById(userId, function(err, user) {
-            if (err) {
-              return done(err)
-            }
-            if (!user) {
-              return done(new Error('No account with that id found.'))
-            } else if (user.verified) {
-              return done(new Error('User is already verified'))
-            }
-            done(null, user)
-          })
-        },
+    if (!user) {
+      throw new Error('No account with that id found')
+    }
 
-        // Generate the token and save token and user email to database
-        function(user, done) {
-          crypto.randomBytes(16, function(err, buf) {
-            if (err) {
-              return done(err)
-            }
+    if (user.verified) {
+      throw new Error('User is already verified')
+    }
 
-            var token = buf.toString('hex')
-
-            user.verificationToken = token
-
-            user.save(function(err) {
-              done(err, token, user.email)
-            })
-          })
-        },
-
-        // Send an email
-        function(token, email, done) {
-          MailService.sendVerification(
-            {
-              email: email,
-              token: token
-            },
-            function(err) {
-              done(err, email)
-            }
-          )
+    // Generate the verification token
+    const token = await new Promise((resolve, reject) => {
+      crypto.randomBytes(16, (err, buf) => {
+        if (err) {
+          return reject(new Error('Error generating verification token'))
         }
-      ],
-      callback
-    )
+
+        const hexToken = buf.toString('hex')
+        return resolve(hexToken)
+      })
+    })
+
+    // Save token to user in database
+    await User.updateOne({ _id: userId }, { verificationToken: token })
+
+    // Send verification email
+    MailService.sendVerification({ email: user.email, token })
+
+    // Temporary support for callback usage
+    if (callback) {
+      return callback(null, user.email)
+    } else {
+      return user.email
+    }
   },
 
-  finishVerification: function(options, callback) {
-    var token = options.token
-
+  finishVerification: async function({ token }) {
     // make sure token is a valid 16-byte hex string
     if (!token.match(/^[a-f0-9]{32}$/)) {
       // early exit
-      return callback(new Error('Invalid verification token'))
+      throw new Error('Invalid verification token')
     }
 
-    async.waterfall(
-      [
-        function(done) {
-          User.findOne({ verificationToken: token }, function(err, user) {
-            if (!user) {
-              return done(
-                new Error('No user found with that verification token')
-              )
-            } else if (err) {
-              return done(err)
-            }
-            done(null, user)
-          })
-        },
-        function(user, done) {
-          user.verificationToken = undefined
-          user.verified = true
-          user.save(function(err) {
-            done(err, user)
-          })
-        },
-        function(user, done) {
-          MailService.sendWelcomeEmail(
-            {
-              email: user.email,
-              firstName: user.firstname
-            },
-            function(err) {
-              done(err, user.email)
-            }
-          )
-        }
-      ],
-      callback
-    )
+    const user = await User.findOne({ verificationToken: token })
+      .select('firstname email')
+      .lean()
+      .exec()
+
+    if (!user) {
+      throw new Error('No user found with that verification token')
+    }
+
+    MailService.sendWelcomeEmail({
+      email: user.email,
+      firstName: user.firstname
+    })
+
+    const userUpdates = {
+      verified: true,
+      $unset: { verificationToken: 1 }
+    }
+
+    return User.updateOne({ _id: user._id }, userUpdates)
   }
 }

@@ -24,11 +24,15 @@ module.exports = function(router, io) {
       })
 
       const userAgent = req.get('User-Agent')
+      const ipAddress = req.ip
+
       UserActionCtrl.requestedSession(
         user.id,
         session._id,
-        userAgent
+        userAgent,
+        ipAddress
       ).catch(error => Sentry.captureException(error))
+
       res.json({ sessionId: session._id })
     } catch (err) {
       next(err)
@@ -82,8 +86,7 @@ module.exports = function(router, io) {
         })
       } else {
         res.json({
-          sessionId: session._id,
-          whiteboardUrl: session.whiteboardUrl
+          sessionId: session._id
         })
       }
     } catch (err) {
