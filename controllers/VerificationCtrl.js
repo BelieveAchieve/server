@@ -44,9 +44,7 @@ module.exports = {
 
     // Temporary support for callback usage
     if (callback) {
-      return callback(null, user.email)
-    } else {
-      return user.email
+      return callback(null)
     }
   },
 

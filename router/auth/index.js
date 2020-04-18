@@ -271,7 +271,7 @@ module.exports = function(app) {
                       userId: user._id,
                       email: user.email
                     },
-                    function(err, email) {
+                    function(err) {
                       if (err) {
                         Sentry.captureException(err)
                       }
