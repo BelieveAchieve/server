@@ -52,8 +52,9 @@ Local Development
 Docker provides an alternative for local development. A docker-compose file exists, tied to Mongo. Here's how to work in docker-compose.
 
 1. Navigate to this directory and run `mkdir mongo-volume` to create a directory for the MongoDB volume.
-2. Run `docker-compose up` to launch the server.
-3. After any change: Run `docker-compose down --rmi all` to destry images and containers. Then run `docker-compose up`
+2. Run `cp config.example.js config.js` to copy the default config as your own config. 
+3. Run `docker-compose up` to launch the server.
+4. After any change: Run `docker-compose down --rmi all` to destry images and containers. Then run `docker-compose up`
 
 Note: the default command ran when starting the server will populate/refresh all seed data, so any changes will be lost unless this behavior is changed.
 
@@ -89,12 +90,12 @@ asdf install mongodb [VERSION]
 ### Setup
 
 1. Start a local MongoDB server by running `mongod`. In a separate terminal, you can try connecting to the database by running `mongo` (`mongod` to start the database vs. `mongo` to connect via command line!). Run `quit()` to exit the shell. You can also interface with the database using a free MongoDB GUI such as [MongoDB Compass Community](https://docs.mongodb.com/manual/administration/install-community/)
-2. Run `bin/setup` to set up the database with test users and install dependencies.
-   Run with `--verbose` to debug if needed.
-3. Run `node init` to add "questions" collection to database
-4. If you want to test Twilio voice calling functionality, set the `host` property to `[your public IP address]:3000` (minus the brackets), and configure your router/firewall to allow connections to port 3000 from the Internet. Twilio will need to connect to your system to obtain TwiML instructions.
-5. Run `npm run dev` to start the dev server on `http://localhost:3000`. If you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
-6. See [the web client repo](https://github.com/UPchieve/web) for client
+2. Run `cp config.example.js config.js` to copy the default config as your own config.
+3. Run `npm install` to install the required dependancies.
+4. Run `node init` to add "questions" collection to database
+5. If you want to test Twilio voice calling functionality, set the `host` property to `[your public IP address]:3000` (minus the brackets), and configure your router/firewall to allow connections to port 3000 from the Internet. Twilio will need to connect to your system to obtain TwiML instructions.
+6. Run `npm run dev` to start the dev server on `http://localhost:3000`. If you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
+7. See [the web client repo](https://github.com/UPchieve/web) for client
    installation
 
 [bcrypt]: https://www.npmjs.com/package/bcrypt
