@@ -8,7 +8,7 @@ module.exports = {
   initiateVerification: async function({ userId }, callback) {
     // Find the user to be verified
     const user = await User.findOne({ _id: userId })
-      .select('verified email')
+      .select('verified email verificationToken')
       .lean()
       .exec()
 
@@ -20,20 +20,24 @@ module.exports = {
       throw new Error('User is already verified')
     }
 
-    // Generate the verification token
-    const token = await new Promise((resolve, reject) => {
-      crypto.randomBytes(16, (err, buf) => {
-        if (err) {
-          return reject(new Error('Error generating verification token'))
-        }
+    let token = user.verificationToken
 
-        const hexToken = buf.toString('hex')
-        return resolve(hexToken)
+    // Generate verification token if the user doesn't have one
+    if (!user.verificationToken) {
+      token = await new Promise((resolve, reject) => {
+        crypto.randomBytes(16, (err, buf) => {
+          if (err) {
+            return reject(new Error('Error generating verification token'))
+          }
+
+          const hexToken = buf.toString('hex')
+          return resolve(hexToken)
+        })
       })
-    })
 
-    // Save token to user in database
-    await User.updateOne({ _id: userId }, { verificationToken: token })
+      // Save token to user in database
+      await User.updateOne({ _id: userId }, { verificationToken: token })
+    }
 
     // Send verification email
     MailService.sendVerification({ email: user.email, token })
