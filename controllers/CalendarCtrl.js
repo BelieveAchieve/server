@@ -54,9 +54,8 @@ module.exports = {
   },
 
   clearSchedule: function(user, tz, callback) {
-    const availabilityCopy = user.availability.toObject()
     const clearedAvailability = _.reduce(
-      availabilityCopy,
+      user.availability,
       (clearedWeek, dayVal, dayKey) => {
         clearedWeek[dayKey] = _.reduce(
           dayVal,
