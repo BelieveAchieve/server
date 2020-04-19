@@ -12,9 +12,6 @@ const mongoose = require('mongoose')
 const Sentry = require('@sentry/node')
 const expressWs = require('@small-tech/express-ws')
 
-// Cron jobs
-const startCronJobs = require('./cron-jobs')
-
 // Configuration
 const config = require('./config')
 
@@ -31,9 +28,6 @@ db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', function() {
   console.log('Connected to database')
 })
-
-// Initiate cron jobs
-startCronJobs()
 
 const app = express()
 app.set('port', process.env.PORT || 3000)
