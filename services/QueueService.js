@@ -1,5 +1,5 @@
-const config = require('../config');
-const Queue = require('bull');
+const config = require('../config')
+const Queue = require('bull')
 
 const queue = new Queue(config.workerQueueName, config.redisConnectionString)
 

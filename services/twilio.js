@@ -1,7 +1,7 @@
 const config = require('../config.js')
 const User = require('../models/User')
 const twilio = require('twilio')
-const queue = require('./QueueService');
+const queue = require('./QueueService')
 const moment = require('moment-timezone')
 const twilioClient =
   config.accountSid && config.authToken
@@ -390,8 +390,8 @@ module.exports = {
 
     // Delay initial wave of notifications by 1 min if new student or
     // send initial wave of notifications (right now)
-    const queueOptions = { delay: config.smsTimeout };
-    if (isNewStudent) queueOptions[delay] = 1000 * 60;
+    const queueOptions = { delay: config.smsTimeout }
+    if (isNewStudent) queueOptions.delay = 1000 * 60
     else notifyRegular(session)
     queue.add('NotifyTutors', { sessionId: session._id }, queueOptions)
   },
