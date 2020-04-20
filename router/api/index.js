@@ -20,6 +20,7 @@ module.exports = function(app, sessionStore) {
   require('./feedback')(router)
   require('./sockets')(io, sessionStore)
   require('./moderate')(router)
+  require('./push-token')(router)
 
   app.use(addLastActivity)
   app.use(addUserAction)

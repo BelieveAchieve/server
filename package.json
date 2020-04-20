@@ -54,6 +54,7 @@
     "express": "^4.16.4",
     "express-ejs-layouts": "^2.5.0",
     "express-session": "^1.14.2",
+    "firebase-admin": "^8.10.0",
     "jszip": "^3.2.2",
     "kerberos": "0.0.24",
     "lodash": "^4.17.15",

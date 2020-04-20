@@ -4,6 +4,8 @@ const WhiteboardCtrl = require('../controllers/WhiteboardCtrl')
 const sessionService = require('../services/SessionService')
 const twilioService = require('../services/twilio')
 const Sentry = require('@sentry/node')
+const PushTokenService = require('../services/PushTokenService')
+const PushToken = require('../models/PushToken')
 
 module.exports = function(socketService) {
   return {
@@ -113,6 +115,15 @@ module.exports = function(socketService) {
             session._id,
             userAgent
           ).catch(error => Sentry.captureException(error))
+
+          const pushTokens = await PushToken.find({ user: session.student })
+            .lean()
+            .exec()
+
+          if (pushTokens && pushTokens.length > 0) {
+            const tokens = pushTokens.map(token => token.token)
+            PushTokenService.sendVolunteerJoined(session, tokens)
+          }
         }
 
         // After 30 seconds of the this.createdAt, we can assume the user is
