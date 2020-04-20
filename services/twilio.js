@@ -1,6 +1,7 @@
 const config = require('../config.js')
 const User = require('../models/User')
 const twilio = require('twilio')
+const queue = require('./QueueService');
 const moment = require('moment-timezone')
 const twilioClient =
   config.accountSid && config.authToken
@@ -343,6 +344,7 @@ function getSessionTimeoutFor(session) {
 }
 
 module.exports = {
+  notifyRegular,
   getSessionUrl: function(sessionId) {
     return getSessionUrl(sessionId)
   },
@@ -388,15 +390,10 @@ module.exports = {
 
     // Delay initial wave of notifications by 1 min if new student or
     // send initial wave of notifications (right now)
-    if (isNewStudent) {
-      const oneMinute = 1000 * 60
-      const timeoutId = setTimeout(() => {
-        notifyRegular(session)
-      }, oneMinute)
-      getSessionTimeoutFor(session).timeouts.push(timeoutId)
-    } else {
-      notifyRegular(session)
-    }
+    const queueOptions = { delay: config.smsTimeout };
+    if (isNewStudent) queueOptions[delay] = 1000 * 60;
+    else notifyRegular(session)
+    queue.add('NotifyTutors', { sessionId: session._id }, queueOptions)
   },
 
   // begin notifying failsafe volunteers for a session

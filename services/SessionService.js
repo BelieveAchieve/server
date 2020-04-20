@@ -1,3 +1,4 @@
+const Session = require('../models/Session')
 const User = require('../models/User')
 
 module.exports = {
@@ -24,5 +25,9 @@ module.exports = {
     }
 
     await session.endSession(user)
+  },
+
+  isSessionFilled: function(session) {
+    return session.student && session.volunteer
   }
 }
