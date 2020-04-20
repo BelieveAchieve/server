@@ -9,7 +9,7 @@ dbconnect(mongoose, function() {
     user: { $exists: false }
   })
     .then(() => {
-      UserAction.update({ actionType: 'PROFILE' }, { actionType: 'ACCOUNT' })
+      return UserAction.update({ actionType: 'PROFILE' }, { actionType: 'ACCOUNT' })
     })
     .catch(err => {
       if (err) {
