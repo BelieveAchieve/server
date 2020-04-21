@@ -371,7 +371,9 @@ module.exports = function(app) {
       })
     }
 
-    const studentPartnerKey = findKey(allStudentPartnerManifests, { signupCode: partnerSignupCode.toUpperCase() })
+    const studentPartnerKey = findKey(allStudentPartnerManifests, {
+      signupCode: partnerSignupCode.toUpperCase()
+    })
 
     if (!studentPartnerKey) {
       return res.status(404).json({
