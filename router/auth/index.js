@@ -1,6 +1,7 @@
 const express = require('express')
 const passport = require('passport')
 const Sentry = require('@sentry/node')
+const { findKey } = require('lodash')
 
 const authPassport = require('./passport')
 
@@ -351,6 +352,34 @@ module.exports = function(app) {
     }
 
     return res.json({ studentPartner: partnerManifest })
+  })
+
+  router.get('/partner/student/code', function(req, res) {
+    const partnerSignupCode = req.query.partnerSignupCode
+
+    if (!partnerSignupCode) {
+      return res.status(422).json({
+        err: 'Missing partnerSignupCode query string'
+      })
+    }
+
+    const allStudentPartnerManifests = config.studentPartnerManifests
+
+    if (!allStudentPartnerManifests) {
+      return res.status(422).json({
+        err: 'Missing studentPartnerManifests in config'
+      })
+    }
+
+    const studentPartnerKey = findKey(allStudentPartnerManifests, { signupCode: partnerSignupCode.toUpperCase() })
+
+    if (!studentPartnerKey) {
+      return res.status(404).json({
+        err: `No partner key found for partnerSignupCode "${partnerSignupCode}"`
+      })
+    }
+
+    return res.json({ studentPartnerKey })
   })
 
   router.post('/register/check', function(req, res, next) {
