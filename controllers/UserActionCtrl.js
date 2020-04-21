@@ -16,23 +16,30 @@ const createQuizAction = async (userId, quizSubcategory, action) => {
   return userActionDoc.save()
 }
 
-const createSessionAction = async (userId, sessionId, userAgent, action) => {
+const createSessionAction = async (
+  userId,
+  sessionId,
+  userAgent,
+  ipAddress,
+  action
+) => {
   const userAgentResult = getUserAgentInfo(userAgent)
   const userActionDoc = new UserAction({
     user: userId,
     session: sessionId,
     actionType: USER_ACTION.TYPE.SESSION,
     action,
+    ipAddress,
     ...userAgentResult
   })
 
   return userActionDoc.save()
 }
 
-const createProfileAction = async (userId, action) => {
+const createAccountAction = async (userId, action) => {
   const userActionDoc = new UserAction({
     user: userId,
-    actionType: USER_ACTION.TYPE.PROFILE,
+    actionType: USER_ACTION.TYPE.ACCOUNT,
     action
   })
   return userActionDoc.save()
@@ -76,57 +83,71 @@ const viewedMaterials = (userId, quizCategory) => {
   )
 }
 
-const requestedSession = (userId, sessionId, userAgent) => {
+const requestedSession = (userId, sessionId, userAgent, ipAddress = '') => {
   return createSessionAction(
     userId,
     sessionId,
     userAgent,
+    ipAddress,
     USER_ACTION.SESSION.REQUESTED
   )
 }
 
-const repliedYesToSession = (userId, sessionId, userAgent = '') => {
+const repliedYesToSession = (
+  userId,
+  sessionId,
+  userAgent = '',
+  ipAddress = ''
+) => {
   return createSessionAction(
     userId,
     sessionId,
     userAgent,
+    ipAddress,
     USER_ACTION.SESSION.REPLIED_YES
   )
 }
 
-const joinedSession = (userId, sessionId, userAgent) => {
+const joinedSession = (userId, sessionId, userAgent, ipAddress = '') => {
   return createSessionAction(
     userId,
     sessionId,
     userAgent,
+    ipAddress,
     USER_ACTION.SESSION.JOINED
   )
 }
 
-const rejoinedSession = (userId, sessionId, userAgent) => {
+const rejoinedSession = (userId, sessionId, userAgent, ipAddress = '') => {
   return createSessionAction(
     userId,
     sessionId,
     userAgent,
+    ipAddress,
     USER_ACTION.SESSION.REJOINED
   )
 }
 
-const endedSession = (userId, sessionId, userAgent) => {
+const endedSession = (userId, sessionId, userAgent, ipAddress = '') => {
   return createSessionAction(
     userId,
     sessionId,
     userAgent,
+    ipAddress,
     USER_ACTION.SESSION.ENDED
   )
 }
 
 const updatedProfile = userId => {
-  return createProfileAction(userId, USER_ACTION.PROFILE.UPDATED_PROFILE)
+  return createAccountAction(userId, USER_ACTION.ACCOUNT.UPDATED_PROFILE)
 }
 
 const updatedAvailability = userId => {
-  return createProfileAction(userId, USER_ACTION.PROFILE.UPDATED_AVAILABILITY)
+  return createAccountAction(userId, USER_ACTION.ACCOUNT.UPDATED_AVAILABILITY)
+}
+
+const createdAccount = userId => {
+  return createAccountAction(userId, USER_ACTION.ACCOUNT.CREATED)
 }
 
 module.exports = {
@@ -140,5 +161,6 @@ module.exports = {
   endedSession,
   repliedYesToSession,
   updatedProfile,
-  updatedAvailability
+  updatedAvailability,
+  createdAccount
 }

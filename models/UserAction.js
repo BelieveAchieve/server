@@ -25,7 +25,7 @@ const userActionSchema = new mongoose.Schema({
     enum: [
       USER_ACTION.TYPE.QUIZ,
       USER_ACTION.TYPE.SESSION,
-      USER_ACTION.TYPE.PROFILE
+      USER_ACTION.TYPE.ACCOUNT
     ]
   },
   // Specific action
@@ -41,8 +41,9 @@ const userActionSchema = new mongoose.Schema({
       USER_ACTION.SESSION.JOINED,
       USER_ACTION.SESSION.REJOINED,
       USER_ACTION.SESSION.ENDED,
-      USER_ACTION.PROFILE.UPDATED_AVAILABILITY,
-      USER_ACTION.PROFILE.UPDATED_PROFILE
+      USER_ACTION.ACCOUNT.UPDATED_AVAILABILITY,
+      USER_ACTION.ACCOUNT.UPDATED_PROFILE,
+      USER_ACTION.ACCOUNT.CREATED
     ]
   },
   quizCategory: String,
@@ -51,7 +52,8 @@ const userActionSchema = new mongoose.Schema({
   browser: String,
   browserVersion: String,
   operatingSystem: String,
-  operatingSystemVersion: String
+  operatingSystemVersion: String,
+  ipAddress: String
 })
 
 module.exports = mongoose.model('UserAction', userActionSchema)

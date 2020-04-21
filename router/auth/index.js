@@ -13,6 +13,7 @@ const MailService = require('../../services/MailService')
 const config = require('../../config.js')
 const User = require('../../models/User.js')
 const School = require('../../models/School.js')
+const UserActionCtrl = require('../../controllers/UserActionCtrl')
 
 // Validation functions
 function checkPassword(password) {
@@ -297,6 +298,10 @@ module.exports = function(app) {
                     }
                   )
                 }
+
+                UserActionCtrl.createdAccount(user._id).catch(error =>
+                  Sentry.captureException(error)
+                )
 
                 return res.json({
                   user: user

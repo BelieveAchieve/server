@@ -201,6 +201,7 @@ var userSchema = new mongoose.Schema(
     },
     zipCode: String,
     studentPartnerOrg: String,
+
     /**
      * END STUDENT ATTRS
      */
