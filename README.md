@@ -271,7 +271,7 @@ Expects the following query string:
 ?partnerSignupCode=PARTNER_SIGNUP_CODE
 ```
 
-where `PARTNER_SIGNUP_CODE` is equal to one of the `signupCode`s defined in `config.js` under `studentPartnerManifests`.
+where `PARTNER_SIGNUP_CODE` is equal to a `signupCode` defined in `config.js` under `studentPartnerManifests`.
 
 Returns a student partner manifest key name.
 
