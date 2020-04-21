@@ -25,7 +25,9 @@ UPchieve web server
     - [POST /auth/reset/send](#post-authresetsend)
     - [POST /auth/reset/confirm](#post-authresetconfirm)
     - [POST /auth/reset/verify](#post-authresetverify)
-    - [GET /auth/org-manifest](#get-authorg-manifest)
+    - [GET /auth/partner/volunteer](#get-authpartnervolunteer)
+    - [GET /auth/partner/student](#get-authpartnerstudent)
+    - [GET /auth/partner/student/code](#get-authpartnerstudentcode)
     - [POST /api/session/new](#post-apisessionnew)
     - [POST /api/session/check](#post-apisessioncheck)
     - [POST /api/session/latest](#post-apisessioncheck)
@@ -246,6 +248,32 @@ Expects the following query string:
 ```
 
 where `PARTNER_ID` is the key name of the volunteer partner organization defined in `config.js` under `volunteerPartnerManifests`.
+
+Returns a volunteer partner manifest object.
+
+### GET /auth/partner/student
+
+Expects the following query string:
+
+```
+?partnerId=PARTNER_ID
+```
+
+where `PARTNER_ID` is the key name of the student partner organization defined in `config.js` under `studentPartnerManifests`.
+
+Returns a student partner manifest object.
+
+### GET /auth/partner/student/code
+
+Expects the following query string:
+
+```
+?partnerSignupCode=PARTNER_SIGNUP_CODE
+```
+
+where `PARTNER_SIGNUP_CODE` is equal to one of the `signupCode`s defined in `config.js` under `studentPartnerManifests`.
+
+Returns a student partner manifest key name.
 
 ### POST /api/session/new
 
