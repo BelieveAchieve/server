@@ -92,6 +92,7 @@ module.exports = function(socketService) {
       const sessionId = options.sessionId
       const user = options.user
       const userAgent = socket.request.headers['user-agent']
+      const ipAddress = socket.handshake.address
 
       if (!user) {
         throw new Error('User not authenticated')
@@ -113,7 +114,8 @@ module.exports = function(socketService) {
           UserActionCtrl.joinedSession(
             user._id,
             session._id,
-            userAgent
+            userAgent,
+            ipAddress
           ).catch(error => Sentry.captureException(error))
 
           const pushTokens = await PushToken.find({ user: session.student })
@@ -136,7 +138,8 @@ module.exports = function(socketService) {
           UserActionCtrl.rejoinedSession(
             user._id,
             session._id,
-            userAgent
+            userAgent,
+            ipAddress
           ).catch(error => Sentry.captureException(error))
         }
 

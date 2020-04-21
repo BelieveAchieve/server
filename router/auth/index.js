@@ -280,9 +280,12 @@ module.exports = function(app) {
                   )
                 }
 
-                UserActionCtrl.createdAccount(user._id).catch(error =>
-                  Sentry.captureException(error)
-                )
+                const ipAddress = req.ip
+
+                UserActionCtrl.createdAccount(
+                  user._id,
+                  ipAddress
+                ).catch(error => Sentry.captureException(error))
 
                 return res.json({
                   user: user

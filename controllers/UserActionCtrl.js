@@ -4,13 +4,21 @@ const getSupercategory = require('../utils/getSupercategory')
 const getDeviceFromUserAgent = require('../utils/getDeviceFromUserAgent')
 const userAgentParser = require('ua-parser-js')
 
-const createQuizAction = async (userId, quizSubcategory, action) => {
+// @todo: refactor using TypeScript
+
+const createQuizAction = async (
+  userId,
+  quizSubcategory,
+  ipAddress = '',
+  action
+) => {
   const userActionDoc = new UserAction({
     actionType: USER_ACTION.TYPE.QUIZ,
     action,
     user: userId,
     quizSubcategory: quizSubcategory.toUpperCase(),
-    quizCategory: getSupercategory(quizSubcategory)
+    quizCategory: getSupercategory(quizSubcategory),
+    ipAddress
   })
 
   return userActionDoc.save()
@@ -19,8 +27,8 @@ const createQuizAction = async (userId, quizSubcategory, action) => {
 const createSessionAction = async (
   userId,
   sessionId,
-  userAgent,
-  ipAddress,
+  userAgent = '',
+  ipAddress = '',
   action
 ) => {
   const userAgentResult = getUserAgentInfo(userAgent)
@@ -36,10 +44,11 @@ const createSessionAction = async (
   return userActionDoc.save()
 }
 
-const createAccountAction = async (userId, action) => {
+const createAccountAction = async (userId, ipAddress = '', action) => {
   const userActionDoc = new UserAction({
     user: userId,
     actionType: USER_ACTION.TYPE.ACCOUNT,
+    ipAddress,
     action
   })
   return userActionDoc.save()
@@ -63,27 +72,43 @@ const getUserAgentInfo = userAgent => {
   return result
 }
 
-const startedQuiz = (userId, quizCategory) => {
-  return createQuizAction(userId, quizCategory, USER_ACTION.QUIZ.STARTED)
-}
-
-const passedQuiz = (userId, quizCategory) => {
-  return createQuizAction(userId, quizCategory, USER_ACTION.QUIZ.PASSED)
-}
-
-const failedQuiz = (userId, quizCategory) => {
-  return createQuizAction(userId, quizCategory, USER_ACTION.QUIZ.FAILED)
-}
-
-const viewedMaterials = (userId, quizCategory) => {
+const startedQuiz = (userId, quizCategory, ipAddress) => {
   return createQuizAction(
     userId,
     quizCategory,
+    ipAddress,
+    USER_ACTION.QUIZ.STARTED
+  )
+}
+
+const passedQuiz = (userId, quizCategory, ipAddress) => {
+  return createQuizAction(
+    userId,
+    quizCategory,
+    ipAddress,
+    USER_ACTION.QUIZ.PASSED
+  )
+}
+
+const failedQuiz = (userId, quizCategory, ipAddress) => {
+  return createQuizAction(
+    userId,
+    quizCategory,
+    ipAddress,
+    USER_ACTION.QUIZ.FAILED
+  )
+}
+
+const viewedMaterials = (userId, quizCategory, ipAddress) => {
+  return createQuizAction(
+    userId,
+    quizCategory,
+    ipAddress,
     USER_ACTION.QUIZ.VIEWED_MATERIALS
   )
 }
 
-const requestedSession = (userId, sessionId, userAgent, ipAddress = '') => {
+const requestedSession = (userId, sessionId, userAgent, ipAddress) => {
   return createSessionAction(
     userId,
     sessionId,
@@ -93,12 +118,7 @@ const requestedSession = (userId, sessionId, userAgent, ipAddress = '') => {
   )
 }
 
-const repliedYesToSession = (
-  userId,
-  sessionId,
-  userAgent = '',
-  ipAddress = ''
-) => {
+const repliedYesToSession = (userId, sessionId, userAgent, ipAddress) => {
   return createSessionAction(
     userId,
     sessionId,
@@ -108,7 +128,7 @@ const repliedYesToSession = (
   )
 }
 
-const joinedSession = (userId, sessionId, userAgent, ipAddress = '') => {
+const joinedSession = (userId, sessionId, userAgent, ipAddress) => {
   return createSessionAction(
     userId,
     sessionId,
@@ -118,7 +138,7 @@ const joinedSession = (userId, sessionId, userAgent, ipAddress = '') => {
   )
 }
 
-const rejoinedSession = (userId, sessionId, userAgent, ipAddress = '') => {
+const rejoinedSession = (userId, sessionId, userAgent, ipAddress) => {
   return createSessionAction(
     userId,
     sessionId,
@@ -128,7 +148,7 @@ const rejoinedSession = (userId, sessionId, userAgent, ipAddress = '') => {
   )
 }
 
-const endedSession = (userId, sessionId, userAgent, ipAddress = '') => {
+const endedSession = (userId, sessionId, userAgent, ipAddress) => {
   return createSessionAction(
     userId,
     sessionId,
@@ -138,16 +158,24 @@ const endedSession = (userId, sessionId, userAgent, ipAddress = '') => {
   )
 }
 
-const updatedProfile = userId => {
-  return createAccountAction(userId, USER_ACTION.ACCOUNT.UPDATED_PROFILE)
+const updatedProfile = (userId, ipAddress) => {
+  return createAccountAction(
+    userId,
+    ipAddress,
+    USER_ACTION.ACCOUNT.UPDATED_PROFILE
+  )
 }
 
-const updatedAvailability = userId => {
-  return createAccountAction(userId, USER_ACTION.ACCOUNT.UPDATED_AVAILABILITY)
+const updatedAvailability = (userId, ipAddress) => {
+  return createAccountAction(
+    userId,
+    ipAddress,
+    USER_ACTION.ACCOUNT.UPDATED_AVAILABILITY
+  )
 }
 
-const createdAccount = userId => {
-  return createAccountAction(userId, USER_ACTION.ACCOUNT.CREATED)
+const createdAccount = (userId, ipAddress) => {
+  return createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.CREATED)
 }
 
 module.exports = {
