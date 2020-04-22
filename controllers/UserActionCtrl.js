@@ -36,10 +36,10 @@ const createSessionAction = async (
   return userActionDoc.save()
 }
 
-const createProfileAction = async (userId, action) => {
+const createAccountAction = async (userId, action) => {
   const userActionDoc = new UserAction({
     user: userId,
-    actionType: USER_ACTION.TYPE.PROFILE,
+    actionType: USER_ACTION.TYPE.ACCOUNT,
     action
   })
   return userActionDoc.save()
@@ -139,11 +139,15 @@ const endedSession = (userId, sessionId, userAgent, ipAddress = '') => {
 }
 
 const updatedProfile = userId => {
-  return createProfileAction(userId, USER_ACTION.PROFILE.UPDATED_PROFILE)
+  return createAccountAction(userId, USER_ACTION.ACCOUNT.UPDATED_PROFILE)
 }
 
 const updatedAvailability = userId => {
-  return createProfileAction(userId, USER_ACTION.PROFILE.UPDATED_AVAILABILITY)
+  return createAccountAction(userId, USER_ACTION.ACCOUNT.UPDATED_AVAILABILITY)
+}
+
+const createdAccount = userId => {
+  return createAccountAction(userId, USER_ACTION.ACCOUNT.CREATED)
 }
 
 module.exports = {
@@ -157,5 +161,6 @@ module.exports = {
   endedSession,
   repliedYesToSession,
   updatedProfile,
-  updatedAvailability
+  updatedAvailability,
+  createdAccount
 }

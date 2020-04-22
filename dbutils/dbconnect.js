@@ -1,13 +1,16 @@
 // Configuration
 var config = require('../config')
+var importedMongoose = require ('mongoose')
 
-module.exports = function(mongoose, callback) {
+module.exports = function(parameterMongoose, callback) {
   // Database
+  const mongoose = parameterMongoose || importedMongoose;
   mongoose.connect(config.database, { useNewUrlParser: true })
   var db = mongoose.connection
   db.on('error', console.error.bind(console, 'connection error:'))
-  db.once('open', function () {
+  return new Promise(resolve => db.once('open', function () {
     console.log('Connected to database')
-    callback()
-  })
+    if (callback) callback()
+    resolve();
+  }))
 }
