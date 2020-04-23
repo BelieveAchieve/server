@@ -34,12 +34,16 @@ module.exports = function(router) {
       })
 
       passed
-        ? UserActionCtrl.passedQuiz(user._id, category, ipAddress).catch(error =>
-            Sentry.captureException(error)
-          )
-        : UserActionCtrl.failedQuiz(user._id, category, ipAddress).catch(error =>
-            Sentry.captureException(error)
-          )
+        ? UserActionCtrl.passedQuiz(
+            user._id,
+            category,
+            ipAddress
+          ).catch(error => Sentry.captureException(error))
+        : UserActionCtrl.failedQuiz(
+            user._id,
+            category,
+            ipAddress
+          ).catch(error => Sentry.captureException(error));
 
       res.json({
         msg: 'Score calculated and saved',
