@@ -34,10 +34,10 @@ module.exports = function(router) {
       })
 
       passed
-        ? UserActionCtrl.passedQuiz(user.id, category, ipAddress).catch(error =>
+        ? UserActionCtrl.passedQuiz(user._id, category, ipAddress).catch(error =>
             Sentry.captureException(error)
           )
-        : UserActionCtrl.failedQuiz(user.id, category, ipAddress).catch(error =>
+        : UserActionCtrl.failedQuiz(user._id, category, ipAddress).catch(error =>
             Sentry.captureException(error)
           )
 
@@ -54,11 +54,11 @@ module.exports = function(router) {
   })
 
   router.get('/training/review/:category', function(req, res, next) {
-    const { id } = req.user
+    const { _id } = req.user
     const { category } = req.params
     const { ip: ipAddress } = req
 
-    UserActionCtrl.viewedMaterials(id, category, ipAddress).catch(error =>
+    UserActionCtrl.viewedMaterials(_id, category, ipAddress).catch(error =>
       Sentry.captureException(error)
     )
 

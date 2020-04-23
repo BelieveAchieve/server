@@ -27,7 +27,7 @@ module.exports = function(router, io) {
       const ipAddress = req.ip
 
       UserActionCtrl.requestedSession(
-        user.id,
+        user._id,
         session._id,
         userAgent,
         ipAddress
