@@ -43,7 +43,7 @@ module.exports = function(router) {
             user._id,
             category,
             ipAddress
-          ).catch(error => Sentry.captureException(error));
+          ).catch(error => Sentry.captureException(error))
 
       res.json({
         msg: 'Score calculated and saved',
