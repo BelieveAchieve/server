@@ -39,10 +39,8 @@ module.exports = function(router) {
           phone: data.phone,
           phonePretty: data.phonePretty,
           college: data.college,
-          favoriteAcademicSubject: data.favoriteAcademicSubject,
-          heardFrom: data.heardFrom,
-          referred: data.referred,
           pastSessions: data.pastSessions
+          favoriteAcademicSubject: data.favoriteAcademicSubject
         }
       },
       function(err, parsedUser) {
