@@ -33,13 +33,9 @@ module.exports = function(router) {
       {
         userId: req.user._id,
         data: {
-          firstname: data.firstname,
-          lastname: data.lastname,
-          preferredTimes: data.preferredTimes,
           phone: data.phone,
           phonePretty: data.phonePretty,
           college: data.college,
-          pastSessions: data.pastSessions
           favoriteAcademicSubject: data.favoriteAcademicSubject
         }
       },
