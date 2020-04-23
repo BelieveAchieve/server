@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-bash setup -y
+sed -i 's/mongodb:\/\/localhost/mongodb:\/\/host.docker.internal/g' ../config.js
 
 node init
 
