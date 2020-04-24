@@ -371,7 +371,7 @@ currently authenticated user:
 
 ```json
 {
-  "picture": "String"
+  "favoriteAcademicSubject": "String"
 }
 ```
 
