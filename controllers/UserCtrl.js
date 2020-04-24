@@ -22,8 +22,6 @@ function iterateKeys(update, data, callback) {
     'phone',
     'college',
     'favoriteAcademicSubject',
-    'referred',
-    'heardFrom',
     'phonePretty'
   ].forEach(function(key) {
     if (data[key]) {

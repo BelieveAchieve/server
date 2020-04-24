@@ -180,11 +180,17 @@ var userSchema = new mongoose.Schema(
 
     lastActivityAt: { type: Date, default: Date.now },
 
+    referralCode: { type: String, unique: true },
+
+    referredBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      select: false
+    },
+
     /**
      * BEGIN STUDENT ATTRS
      */
-    heardFrom: String,
-    referred: String,
     approvedHighschool: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'School'
@@ -361,7 +367,6 @@ userSchema.methods.parseProfile = function() {
     isVolunteer: this.isVolunteer,
     isAdmin: this.isAdmin,
     isTestUser: this.isTestUser,
-    referred: this.referred,
     createdAt: this.createdAt,
     phone: this.phone,
     availability: this.availability,
@@ -369,7 +374,6 @@ userSchema.methods.parseProfile = function() {
     timezone: this.timezone,
     college: this.college,
     favoriteAcademicSubject: this.favoriteAcademicSubject,
-    heardFrom: this.heardFrom,
     isFakeUser: this.isFakeUser,
     certifications: this.certifications
   }
