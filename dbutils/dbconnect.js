@@ -1,6 +1,6 @@
 // Configuration
 var config = require('../config')
-var importedMongoose = require ('mongoose')
+var importedMongoose = require('mongoose')
 
 module.exports = function(parameterMongoose, callback) {
   // Database
