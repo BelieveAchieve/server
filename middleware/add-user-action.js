@@ -4,16 +4,17 @@ const Sentry = require('@sentry/node')
 function addUserAction(req, res, next) {
   if (req.user) {
     const { _id } = req.user
+    const { ip: ipAddress } = req
 
     if (req.url === '/api/calendar/save') {
-      UserActionCtrl.updatedAvailability(_id).catch(error =>
+      UserActionCtrl.updatedAvailability(_id, ipAddress).catch(error =>
         Sentry.captureException(error)
       )
     }
 
     if (req.url === '/api/training/questions') {
       const { category } = req.body
-      UserActionCtrl.startedQuiz(_id, category).catch(error =>
+      UserActionCtrl.startedQuiz(_id, category, ipAddress).catch(error =>
         Sentry.captureException(error)
       )
     }
@@ -25,7 +26,7 @@ function addUserAction(req, res, next) {
       req.method === 'PUT' &&
       referer.includes('profile')
     ) {
-      UserActionCtrl.updatedProfile(_id).catch(error =>
+      UserActionCtrl.updatedProfile(_id, ipAddress).catch(error =>
         Sentry.captureException(error)
       )
     }

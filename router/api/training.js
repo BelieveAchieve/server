@@ -20,6 +20,7 @@ module.exports = function(router) {
     try {
       const { user } = req
       const { category, idAnswerMap } = req.body
+      const { ip: ipAddress } = req
 
       const {
         tries,
@@ -33,12 +34,16 @@ module.exports = function(router) {
       })
 
       passed
-        ? UserActionCtrl.passedQuiz(user._id, category).catch(error =>
-            Sentry.captureException(error)
-          )
-        : UserActionCtrl.failedQuiz(user._id, category).catch(error =>
-            Sentry.captureException(error)
-          )
+        ? UserActionCtrl.passedQuiz(
+            user._id,
+            category,
+            ipAddress
+          ).catch(error => Sentry.captureException(error))
+        : UserActionCtrl.failedQuiz(
+            user._id,
+            category,
+            ipAddress
+          ).catch(error => Sentry.captureException(error))
 
       res.json({
         msg: 'Score calculated and saved',
@@ -55,8 +60,9 @@ module.exports = function(router) {
   router.get('/training/review/:category', function(req, res, next) {
     const { _id } = req.user
     const { category } = req.params
+    const { ip: ipAddress } = req
 
-    UserActionCtrl.viewedMaterials(_id, category).catch(error =>
+    UserActionCtrl.viewedMaterials(_id, category, ipAddress).catch(error =>
       Sentry.captureException(error)
     )
 

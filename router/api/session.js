@@ -44,17 +44,21 @@ module.exports = function(router, io) {
     const sessionId = data.sessionId
     const user = req.user
     const userAgent = req.get('User-Agent')
+    const ipAddress = req.ip
 
     try {
       const session = await sessionCtrl.end({
         sessionId: sessionId,
         user: user
       })
-      UserActionCtrl.endedSession(user._id, session._id, userAgent).catch(
-        error => {
-          Sentry.captureException(error)
-        }
-      )
+      UserActionCtrl.endedSession(
+        user._id,
+        session._id,
+        userAgent,
+        ipAddress
+      ).catch(error => {
+        Sentry.captureException(error)
+      })
       res.json({ sessionId: session._id })
     } catch (err) {
       next(err)
