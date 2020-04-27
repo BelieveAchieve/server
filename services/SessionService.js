@@ -26,7 +26,10 @@ module.exports = {
     await session.endSession(user)
   },
 
-  isSessionFilled: function(session) {
-    return session.student && session.volunteer
+  isSessionFulfilled: function(session) {
+    const hasEnded = !!session.endedAt
+    const hasVolunteerJoined = !!session.volunteer
+
+    return hasEnded || hasVolunteerJoined
   }
 }
