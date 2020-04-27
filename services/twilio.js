@@ -117,8 +117,8 @@ function sendTextMessage(phoneNumber, messageText, isTestUserRequest) {
     phoneNumber[0] === '+' ? phoneNumber : `+1${phoneNumber}`
 
   if (!twilioClient) {
-    console.log('Twilio client not loaded.');
-    return Promise.resolve();
+    console.log('Twilio client not loaded.')
+    return Promise.resolve()
   }
   return twilioClient.messages
     .create({
@@ -156,8 +156,8 @@ function sendVoiceMessage(phoneNumber, messageText) {
   // initiate call, giving Twilio the aforementioned URL which Twilio
   // opens when the call is answered to get the TwiML instructions
   if (!twilioClient) {
-    console.log('Twilio client not loaded.');
-    return Promise.resolve();
+    console.log('Twilio client not loaded.')
+    return Promise.resolve()
   }
   return twilioClient.calls
     .create({
