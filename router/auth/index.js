@@ -287,17 +287,11 @@ module.exports = function(app) {
                     })
                   }
 
-                  VerificationCtrl.initiateVerification(
-                    {
-                      userId: user._id,
-                      email: user.email
-                    },
-                    function(err) {
-                      if (err) {
-                        Sentry.captureException(err)
-                      }
+                  VerificationCtrl.initiateVerification({ user }, err => {
+                    if (err) {
+                      Sentry.captureException(err)
                     }
-                  )
+                  })
                 }
 
                 const ipAddress = req.ip
