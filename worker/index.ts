@@ -6,7 +6,13 @@ import { addJobProcessors } from './jobs';
 const main = async (): Promise<void> => {
   try {
     log('Starting queue');
-    const queue = new Queue(workerQueueName, redisConnectionString);
+    const queue = new Queue(workerQueueName, redisConnectionString, {
+      settings: {
+        // to prevent stalling long jobs
+        stalledInterval: 1000 * 60 * 10,
+        lockDuration: 1000 * 60 * 10
+      }
+    });
     addJobProcessors(queue);
   } catch (error) {
     if (error.code === 'ECONNREFUSED') {
