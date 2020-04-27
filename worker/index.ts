@@ -8,6 +8,7 @@ const main = async (): Promise<void> => {
     log('Starting queue');
     const queue = new Queue(workerQueueName, redisConnectionString, {
       settings: {
+        // to prevent stalling long jobs
         stalledInterval: 1000 * 60 * 10,
         lockDuration: 1000 * 60 * 10
       }
