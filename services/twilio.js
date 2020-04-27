@@ -12,23 +12,6 @@ const base64url = require('base64url')
 const Session = require('../models/Session')
 const Notification = require('../models/Notification')
 
-// todo
-// limit instead of stopping at the index of 3
-// move code to separate functions
-// foreach
-// limit data response from server
-// lodash
-// ensureindex
-// logging
-
-const SessionTimeout = function(sessionId, timeouts, intervals) {
-  this.sessionId = sessionId
-  this.timeouts = timeouts
-  this.intervals = intervals
-}
-
-const sessionTimeouts = {} // sessionId => SessionTimeout
-
 // get the availability field to query for the current time
 function getAvailability() {
   const dateString = new Date().toUTCString()
@@ -340,19 +323,9 @@ function recordNotification(sendPromise, notification) {
     })
 }
 
-/**
- * Helper function that gets the SessionTimeout object corresponding
- * to the given session
- */
-function getSessionTimeoutFor(session) {
-  if (!(session._id in sessionTimeouts)) {
-    sessionTimeouts[session._id] = new SessionTimeout(session._id, [], [])
-  }
-  return sessionTimeouts[session._id]
-}
-
 module.exports = {
   notifyRegular,
+
   getSessionUrl: function(sessionId) {
     return getSessionUrl(sessionId)
   },
@@ -405,21 +378,5 @@ module.exports = {
       desperate: false,
       voice: false
     })
-  },
-
-  stopNotifications: function(session) {
-    const sessionTimeout = getSessionTimeoutFor(session)
-
-    if (!sessionTimeout) {
-      // early exit
-      return
-    }
-
-    // clear all timeouts and intervals
-    sessionTimeout.timeouts.forEach(timeout => clearTimeout(timeout))
-    sessionTimeout.intervals.forEach(interval => clearInterval(interval))
-
-    // remove them from memory
-    delete sessionTimeouts[session._id]
   }
 }
