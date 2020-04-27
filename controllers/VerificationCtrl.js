@@ -34,7 +34,10 @@ module.exports = {
     }
 
     // Send verification email
-    MailService.sendVerification({ email: user.email, token: verificationToken })
+    MailService.sendVerification({
+      email: user.email,
+      token: verificationToken
+    })
 
     // Temporary support for callback usage
     if (callback) {
