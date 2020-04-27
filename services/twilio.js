@@ -106,7 +106,7 @@ const getFailsafeVolunteersFromDb = function() {
 }
 
 function sendTextMessage(phoneNumber, messageText, isTestUserRequest) {
-  console.log(`Sending SMS to ${phoneNumber}...`)
+  console.log(`Sending text message "${messageText}" to ${phoneNumber}`)
 
   const testUserNotice = isTestUserRequest ? '[TEST USER] ' : ''
 
@@ -116,6 +116,10 @@ function sendTextMessage(phoneNumber, messageText, isTestUserRequest) {
   const fullPhoneNumber =
     phoneNumber[0] === '+' ? phoneNumber : `+1${phoneNumber}`
 
+  if (!twilioClient) {
+    console.log('Twilio client not loaded.');
+    return Promise.resolve();
+  }
   return twilioClient.messages
     .create({
       to: fullPhoneNumber,
@@ -131,7 +135,7 @@ function sendTextMessage(phoneNumber, messageText, isTestUserRequest) {
 }
 
 function sendVoiceMessage(phoneNumber, messageText) {
-  console.log(`Initiating voice call to ${phoneNumber}...`)
+  console.log(`Sending voice message "${messageText}" to ${phoneNumber}`)
 
   let apiRoot
   if (config.NODE_ENV === 'production') {
@@ -151,6 +155,10 @@ function sendVoiceMessage(phoneNumber, messageText) {
 
   // initiate call, giving Twilio the aforementioned URL which Twilio
   // opens when the call is answered to get the TwiML instructions
+  if (!twilioClient) {
+    console.log('Twilio client not loaded.');
+    return Promise.resolve();
+  }
   return twilioClient.calls
     .create({
       url: url,
@@ -376,12 +384,6 @@ module.exports = {
 
   // Begin notifying non-failsafe volunteers for a session
   beginRegularNotifications: async function(session) {
-    // Check that twilio client has been authenticated
-    if (!twilioClient) {
-      // early exit
-      return
-    }
-
     const student = await User.findOne({ _id: session.student })
       .lean()
       .exec()
@@ -398,12 +400,6 @@ module.exports = {
 
   // begin notifying failsafe volunteers for a session
   beginFailsafeNotifications: async function(session) {
-    // check that client has been authenticated
-    if (!twilioClient) {
-      // early exit
-      return
-    }
-
     // Send first SMS failsafe notifications (Send right now)
     notifyFailsafe(session, {
       desperate: false,
