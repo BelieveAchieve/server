@@ -1,6 +1,6 @@
 import { ProcessPromiseFunction, Queue } from 'bull';
-import { log } from '../logger';
 import { map } from 'lodash';
+import { log } from '../logger';
 import updateElapsedAvailability from './updateElapsedAvailability';
 
 export enum Jobs {
