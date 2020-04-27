@@ -1,6 +1,8 @@
 const express = require('express')
 const passport = require('passport')
 const Sentry = require('@sentry/node')
+const base64url = require('base64url')
+const { findKey } = require('lodash')
 
 const authPassport = require('./passport')
 
@@ -12,6 +14,7 @@ const MailService = require('../../services/MailService')
 const config = require('../../config.js')
 const User = require('../../models/User.js')
 const School = require('../../models/School.js')
+const UserActionCtrl = require('../../controllers/UserActionCtrl')
 
 // Validation functions
 function checkPassword(password) {
@@ -103,7 +106,7 @@ module.exports = function(app) {
     })
   })
 
-  router.post('/register', function(req, res, next) {
+  router.post('/register', async function(req, res, next) {
     const isVolunteer = req.body.isVolunteer
     const email = req.body.email
     const password = req.body.password
@@ -119,6 +122,7 @@ module.exports = function(app) {
     const firstName = req.body.firstName.trim()
     const lastName = req.body.lastName.trim()
     const terms = req.body.terms
+    const referredByCode = req.body.referredByCode
 
     if (!terms) {
       return res.status(422).json({
@@ -221,6 +225,21 @@ module.exports = function(app) {
       })
     })
 
+    let referredById
+
+    if (referredByCode) {
+      try {
+        const referredBy = await User.findOne({ referralCode: referredByCode })
+          .select('_id')
+          .lean()
+          .exec()
+
+        referredById = referredBy._id
+      } catch (error) {
+        Sentry.captureException(error)
+      }
+    }
+
     highschoolLookupPromise
       .then(({ isVolunteer, school }) => {
         const user = new User()
@@ -238,6 +257,8 @@ module.exports = function(app) {
         user.firstname = firstName
         user.lastname = lastName
         user.verified = !isVolunteer // Currently only volunteers need to verify their email
+        user.referralCode = base64url(Buffer.from(user.id, 'hex'))
+        user.referredBy = referredById
 
         user.hashPassword(password, function(err, hash) {
           user.password = hash // Note the salt is embedded in the final hash
@@ -278,6 +299,13 @@ module.exports = function(app) {
                     }
                   )
                 }
+
+                const ipAddress = req.ip
+
+                UserActionCtrl.createdAccount(
+                  user._id,
+                  ipAddress
+                ).catch(error => Sentry.captureException(error))
 
                 return res.json({
                   user: user
@@ -346,6 +374,36 @@ module.exports = function(app) {
     }
 
     return res.json({ studentPartner: partnerManifest })
+  })
+
+  router.get('/partner/student/code', function(req, res) {
+    const partnerSignupCode = req.query.partnerSignupCode
+
+    if (!partnerSignupCode) {
+      return res.status(422).json({
+        err: 'Missing partnerSignupCode query string'
+      })
+    }
+
+    const allStudentPartnerManifests = config.studentPartnerManifests
+
+    if (!allStudentPartnerManifests) {
+      return res.status(422).json({
+        err: 'Missing studentPartnerManifests in config'
+      })
+    }
+
+    const studentPartnerKey = findKey(allStudentPartnerManifests, {
+      signupCode: partnerSignupCode.toUpperCase()
+    })
+
+    if (!studentPartnerKey) {
+      return res.status(404).json({
+        err: `No partner key found for partnerSignupCode "${partnerSignupCode}"`
+      })
+    }
+
+    return res.json({ studentPartnerKey })
   })
 
   router.post('/register/check', function(req, res, next) {

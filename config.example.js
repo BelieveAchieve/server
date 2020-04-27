@@ -53,18 +53,24 @@ module.exports = {
   studentPartnerManifests: {
     example: {
       name: 'Example - No School',
+      signupCode: 'EX1',
       highSchoolSignup: false,
       highSchoolSignupRequired: false
     },
     example2: {
       name: 'Example - School Optional',
+      signupCode: 'EX2',
       highSchoolSignup: true,
       highSchoolSignupRequired: false
     },
     example3: {
       name: 'Example - School Required',
+      signupCode: 'EX3',
       highSchoolSignup: true,
       highSchoolSignupRequired: true
+    },
+    example4: {
+      signupCode: 'EX4'
     }
   },
 
@@ -89,6 +95,8 @@ module.exports = {
 
   VOLUNTEER_CODES: process.env.UPCHIEVE_VOLUNTEER_CODES || '',
   STUDENT_CODES: process.env.UPCHIEVE_STUDENT_CODES || '',
+  workerQueueName: 'main',
+  redisConnectionString: 'redis://127.0.0.1:6379',
   firebase: {
     projectId: 123456789012
   }

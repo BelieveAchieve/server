@@ -18,8 +18,6 @@ const user = new User({
 
   favoriteAcademicSubject: 'favoriteAcademicSubject',
   college: 'college',
-  heardFrom: 'heardFrom',
-  referred: 'referred',
 
   availability: {
     Sunday: {

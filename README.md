@@ -25,7 +25,9 @@ UPchieve web server
     - [POST /auth/reset/send](#post-authresetsend)
     - [POST /auth/reset/confirm](#post-authresetconfirm)
     - [POST /auth/reset/verify](#post-authresetverify)
-    - [GET /auth/org-manifest](#get-authorg-manifest)
+    - [GET /auth/partner/volunteer](#get-authpartnervolunteer)
+    - [GET /auth/partner/student](#get-authpartnerstudent)
+    - [GET /auth/partner/student/code](#get-authpartnerstudentcode)
     - [POST /api/session/new](#post-apisessionnew)
     - [POST /api/session/check](#post-apisessioncheck)
     - [POST /api/session/latest](#post-apisessioncheck)
@@ -45,6 +47,8 @@ UPchieve web server
     - [GET /eligibility/school/search](#get-eligibilityschoolsearch)
     - [POST /eligibility/school/approvalnotify](#post-eligibilityschoolapprovalnotify)
     - [GET /eligibility/school/studentusers/:schoolUpchieveId](#get-eligibilityschoolstudentusersschoolupchieveid)
+- [Worker](#worker)
+    - [Jobs](#worker-jobs)
 
 Local Development
 -----------------
@@ -52,8 +56,9 @@ Local Development
 Docker provides an alternative for local development. A docker-compose file exists, tied to Mongo. Here's how to work in docker-compose.
 
 1. Navigate to this directory and run `mkdir mongo-volume` to create a directory for the MongoDB volume.
-2. Run `docker-compose up` to launch the server.
-3. After any change: Run `docker-compose down --rmi all` to destry images and containers. Then run `docker-compose up`
+2. Run `cp config.example.js config.js` to copy the default config as your own config. 
+3. Run `docker-compose up` to launch the server.
+4. After any change: Run `docker-compose down --rmi all` to destry images and containers. Then run `docker-compose up`
 
 Note: the default command ran when starting the server will populate/refresh all seed data, so any changes will be lost unless this behavior is changed.
 
@@ -65,6 +70,7 @@ Install the following asdf plugins:
 
 1. Node.js (see version listed in `.tool-versions`)
 2. MongoDB (see version listed in `.tool-versions`)
+3. Redis (see version listed in `.tool-versions`)
 
 - [`asdf-nodejs`][asdf-nodejs]
 
@@ -81,21 +87,30 @@ asdf plugin-add mongodb
 asdf install mongodb [VERSION]
 ```
 
+- [`asdf-redis`][asdf-redis]
+
+```shell-script
+asdf plugin-add redis
+asdf install redis [VERSION]
+```
+
 [wsl]: https://docs.microsoft.com/en-us/windows/wsl/install-win10
 [asdf]: https://github.com/asdf-vm/asdf
 [asdf-nodejs]: https://github.com/asdf-vm/asdf-nodejs
 [asdf-mongodb]: https://github.com/sylph01/asdf-mongodb
+[asdf-redis]: https://github.com/smashedtoatoms/asdf-redis
 
 ### Setup
 
 1. Start a local MongoDB server by running `mongod`. In a separate terminal, you can try connecting to the database by running `mongo` (`mongod` to start the database vs. `mongo` to connect via command line!). Run `quit()` to exit the shell. You can also interface with the database using a free MongoDB GUI such as [MongoDB Compass Community](https://docs.mongodb.com/manual/administration/install-community/)
-2. Run `bin/setup` to set up the database with test users and install dependencies.
-   Run with `--verbose` to debug if needed.
-3. Run `node init` to add "questions" collection to database
-4. If you want to test Twilio voice calling functionality, set the `host` property to `[your public IP address]:3000` (minus the brackets), and configure your router/firewall to allow connections to port 3000 from the Internet. Twilio will need to connect to your system to obtain TwiML instructions.
-5. Run `npm run dev` to start the dev server on `http://localhost:3000`. If you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
-6. See [the web client repo](https://github.com/UPchieve/web) for client
+2. Run `cp config.example.js config.js` to copy the default config as your own config.
+3. Run `npm install` to install the required dependancies.
+4. Run `node init` to seed the database with users, quiz questions, schools, and zip codes
+5. If you want to test Twilio voice calling functionality, set the `host` property to `[your public IP address]:3000` (minus the brackets), and configure your router/firewall to allow connections to port 3000 from the Internet. Twilio will need to connect to your system to obtain TwiML instructions.
+6. Run `npm run dev` to start the dev server on `http://localhost:3000`. If you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
+7. See [the web client repo](https://github.com/UPchieve/web) for client
    installation
+7. (optional) Run `redis-server` and `npm run worker:dev` to start the redis database and dev worker. The dev worker will automatically attempt to connect to your local Redis instance and read jobs from there. Additionally, you can run `ts-node ./scripts/add-cron-jobs.ts` to add all repeatable jobs to the job queue.
 
 [bcrypt]: https://www.npmjs.com/package/bcrypt
 
@@ -247,6 +262,32 @@ Expects the following query string:
 
 where `PARTNER_ID` is the key name of the volunteer partner organization defined in `config.js` under `volunteerPartnerManifests`.
 
+Returns a volunteer partner manifest object.
+
+### GET /auth/partner/student
+
+Expects the following query string:
+
+```
+?partnerId=PARTNER_ID
+```
+
+where `PARTNER_ID` is the key name of the student partner organization defined in `config.js` under `studentPartnerManifests`.
+
+Returns a student partner manifest object.
+
+### GET /auth/partner/student/code
+
+Expects the following query string:
+
+```
+?partnerSignupCode=PARTNER_SIGNUP_CODE
+```
+
+where `PARTNER_SIGNUP_CODE` is equal to a `signupCode` defined in `config.js` under `studentPartnerManifests`.
+
+Returns a student partner manifest key name.
+
 ### POST /api/session/new
 
 ```json
@@ -330,7 +371,7 @@ currently authenticated user:
 
 ```json
 {
-  "picture": "String"
+  "favoriteAcademicSubject": "String"
 }
 ```
 
@@ -477,3 +518,9 @@ Lists all student users registered with a school. Restricted to admins only. If 
   ]
 }
 ```
+
+## Worker
+A [Bull](https://github.com/OptimalBits/bull) worker reading from a local [Redis](https://redis.io/) database. Job definitions live in `worker/jobs` and are registered in `worker/jobs/index.ts`. A script `scripts/add-cron-jobs.ts` will insert all repeatable jobs into the local Redis database.
+
+### Worker Jobs
+- [Update Elapsed Availability](worker/jobs/updateElapsedAvailability.ts): updates all volunteers' elapsed availabilities every day at 4 am.

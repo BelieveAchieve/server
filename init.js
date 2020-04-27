@@ -18,6 +18,12 @@ db.once('open', function() {
   // Data about the seed data we intend to import / update from this file
   const seedDataMetadata = [
     {
+      folder: 'users/',
+      collection: 'users',
+      idField: 'email',
+      files: ['test_users']
+    },
+    {
       folder: 'schools/',
       collection: 'schools',
       idField: 'upchieveId',
@@ -72,6 +78,7 @@ db.once('open', function() {
         })
 
         promises.push(replacePromise)
+        console.log(record)
       })
     })
   })
