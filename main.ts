@@ -13,7 +13,7 @@ import { NODE_ENV, database, sentryDsn, sessionSecret } from './config';
 import router from './router';
 
 interface LoadedRequest extends Request {
-  user: any; // TODO: fix any when changing user model to typescript
+  user: {};
 }
 
 // Set up Sentry error tracking
