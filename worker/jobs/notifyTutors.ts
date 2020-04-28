@@ -13,18 +13,18 @@ interface NotifyTutorsJobData {
 
 export default async (job: Job<NotifyTutorsJobData>): Promise<void> => {
   const { sessionId, notificationSchedule } = job.data;
-  if (!notificationSchedule.length) return;
   await dbconnect();
   const session = await Session.findById(sessionId);
   if (!session) return log(`session ${sessionId} not found`);
   const fulfilled = SessionService.isSessionFulfilled(session);
   if (fulfilled) return;
   const delay = notificationSchedule.shift();
-  job.queue.add(
-    Jobs.NotifyTutors,
-    { sessionId, notificationSchedule },
-    { delay }
-  );
+  if (delay)
+    job.queue.add(
+      Jobs.NotifyTutors,
+      { sessionId, notificationSchedule },
+      { delay }
+    );
   const numNotified = await TwilioService.notifyRegular(session);
   log(`${numNotified} tutors notified`);
 };
