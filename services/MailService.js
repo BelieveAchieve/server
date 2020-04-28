@@ -148,5 +148,5 @@ module.exports = {
       config.sendgrid.unsubscribeGroup.account,
       callback
     )
-  },
+  }
 }
