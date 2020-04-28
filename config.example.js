@@ -16,6 +16,7 @@ module.exports = {
     resetTemplate: 'd-5005d2beb2ad49a883a10364f3e14b81',
     partnerOrgSignupAlertTemplate: 'd-238200a8df0d4493b12defbf472901b9',
     welcomeTemplate: 'd-58fdc5f84f9e4ecbbda3d3c0cd4aa7fa',
+    referralLaunchTemplate: 'd-ee1765afc8694b50b7a02ed2705b4021',
     unsubscribeGroup: {
       newsletter: 12567,
       account: 12570

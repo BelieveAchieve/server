@@ -128,5 +128,25 @@ module.exports = {
       config.sendgrid.unsubscribeGroup.account,
       callback
     )
-  }
+  },
+
+  sendReferralPromoEmail: function(options, callback) {
+    const { email, firstName, referralCode } = options
+    const firstNameCapitalized =
+      firstName.charAt(0).toUpperCase() + firstName.slice(1)
+    const referralLink = `http://${config.client.host}/referral/${referralCode}`
+
+    sendEmail(
+      email,
+      config.mail.senders.noreply,
+      'UPchieve',
+      config.sendgrid.referralLaunchTemplate,
+      {
+        firstName: firstNameCapitalized,
+        referralLink
+      },
+      config.sendgrid.unsubscribeGroup.account,
+      callback
+    )
+  },
 }
