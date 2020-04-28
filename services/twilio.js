@@ -330,31 +330,6 @@ module.exports = {
     return getSessionUrl(sessionId)
   },
 
-  // get total number of available, non-failsafe volunteers in the database
-  // return Promise that resolves to count
-  countAvailableVolunteersInDb: function(subtopic, options) {
-    return User.countDocuments(
-      filterAvailableVolunteers(subtopic, options)
-    ).exec()
-  },
-
-  // count the number of regular volunteers that have been notified for a session
-  // return Promise that resolves to count
-  countVolunteersNotified: function(session) {
-    return Session.findById(session._id)
-      .populate('notifications')
-      .exec()
-      .then(populatedSession => {
-        return populatedSession.notifications
-          .map(notification => notification.volunteer)
-          .filter(
-            (volunteer, index, array) =>
-              array.indexOf(volunteer) === index &&
-              !volunteer.isFailsafeVolunteer
-          ).length
-      })
-  },
-
   // Begin notifying non-failsafe volunteers for a session
   beginRegularNotifications: async function(session) {
     const student = await User.findOne({ _id: session.student })
