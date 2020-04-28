@@ -30,6 +30,6 @@ export default async (job: Job<NotifyTutorsJobData>): Promise<void> => {
     if (volunteerNotified) log(`Volunteer notified: ${volunteerNotified._id}`);
     else log('No volunteer notified');
   } catch (error) {
-    log(error)
+    log(error);
   }
 };
