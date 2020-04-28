@@ -13,7 +13,7 @@ const Session = require('../models/Session')
 const Notification = require('../models/Notification')
 
 // get the availability field to query for the current time
-function getAvailability() {
+function getCurrentAvailabilityPath() {
   const dateString = new Date().toUTCString()
   const date = moment.utc(dateString).tz('America/New_York')
   const day = date.isoWeekday() - 1
@@ -44,40 +44,34 @@ function getAvailability() {
   return `availability.${days[day]}.${hour}`
 }
 
-// return query filter object limiting notifications to the available volunteers
-function filterAvailableVolunteers(subtopic, options) {
-  const availability = getAvailability()
-
+const getNextVolunteer = async ({
+  subtopic,
+  volunteersToExclude = [],
+  priorityFilter = {}
+}) => {
+  const availability = getCurrentAvailabilityPath()
   const certificationPassed = `certifications.${subtopic}.passed`
 
-  // Only notify volunteer test users about requests from student test users (for manual testing)
-  const shouldOnlyGetTestUsers = options.isTestUserRequest || false
-
-  const userQuery = {
+  const filter = {
+    _id: { $nin: volunteersToExclude },
     isVolunteer: true,
     [certificationPassed]: true,
     [availability]: true,
-    isTestUser: shouldOnlyGetTestUsers,
+    phone: { $exists: true },
+    isTestUser: false,
     isFakeUser: false,
-    isFailsafeVolunteer: false
+    isFailsafeVolunteer: false,
+    ...priorityFilter
   }
 
-  return userQuery
-}
-
-// get next wave of non-failsafe volunteers to notify
-const getNextVolunteersFromDb = (subtopic, volunteersToExclude, options) => {
-  const userQuery = filterAvailableVolunteers(subtopic, options)
-
-  userQuery._id = { $nin: volunteersToExclude }
-
   const query = User.aggregate([
-    { $match: userQuery },
+    { $match: filter },
     { $project: { phone: 1, firstname: 1 } },
-    { $sample: { size: 5 } }
+    { $sample: { size: 1 } }
   ])
 
-  return query
+  const volunteers = await query.exec()
+  return volunteers[0]
 }
 
 // query failsafe volunteers to notify
@@ -88,10 +82,8 @@ const getFailsafeVolunteersFromDb = function() {
   return User.find(userQuery).select({ phone: 1, firstname: 1 })
 }
 
-function sendTextMessage(phoneNumber, messageText, isTestUserRequest) {
+function sendTextMessage(phoneNumber, messageText) {
   console.log(`Sending text message "${messageText}" to ${phoneNumber}`)
-
-  const testUserNotice = isTestUserRequest ? '[TEST USER] ' : ''
 
   // If stored phone number doesn't have international calling code (E.164 formatting)
   // then default to US number
@@ -107,7 +99,7 @@ function sendTextMessage(phoneNumber, messageText, isTestUserRequest) {
     .create({
       to: fullPhoneNumber,
       from: config.sendingNumber,
-      body: testUserNotice + messageText
+      body: messageText
     })
     .then(message => {
       console.log(
@@ -161,14 +153,7 @@ function getSessionUrl(sessionId) {
   return `${protocol}://${config.client.host}/s/${sessionIdEncoded}`
 }
 
-const notifyRegular = async function(session) {
-  const populatedSession = await Session.findById(session._id)
-    .populate('student')
-    .exec()
-
-  const subtopic = session.subTopic
-
-  // Get sessions that haven't ended and have a volunteer
+const getActiveSessionVolunteers = async () => {
   const activeSessions = await Session.find({
     endedAt: { $exists: false },
     volunteer: { $exists: true }
@@ -177,80 +162,65 @@ const notifyRegular = async function(session) {
     .lean()
     .exec()
 
-  const volunteersInActiveSessions = activeSessions.map(
-    session => session.volunteer
-  )
+  return activeSessions.map(session => session.volunteer)
+}
 
-  // Date & time of one hour ago
-  const oneHourAgo = new Date(
-    new Date().getTime() - 60 * 60 * 1000
+const getRecentlyNotifiedVolunteers = async () => {
+  const fifteenMinsAgo = new Date(
+    new Date().getTime() - 15 * 60 * 1000
   ).toISOString()
 
-  // Get notifications sent within the past hour
-  const notificationsInLastHour = await Notification.find({
-    sentAt: { $gt: oneHourAgo }
+  const recentNotifications = await Notification.find({
+    sentAt: { $gt: fifteenMinsAgo }
   })
     .select('volunteer')
     .lean()
     .exec()
 
-  const volunteersNotifiedInLastHour = notificationsInLastHour.map(
-    notif => notif.volunteer
+  return recentNotifications.map(notif => notif.volunteer)
+}
+
+const notifyVolunteer = async function(session) {
+  const subtopic = session.subTopic
+  const recentlyNotifiedVolunteers = await getRecentlyNotifiedVolunteers()
+  const activeSessionVolunteers = await getActiveSessionVolunteers()
+  const volunteersToExclude = activeSessionVolunteers.concat(
+    recentlyNotifiedVolunteers
   )
 
-  // Volunteers who are in active sessions or were notified in the past hour
-  const volunteersToExclude = volunteersInActiveSessions.concat(
-    volunteersNotifiedInLastHour
-  )
+  const volunteerPriority = [
+    { volunteerPartnerOrg: { $exists: true } },
+    { volunteerPartnerOrg: { $exists: false } }
+  ]
 
-  // query the database for the next wave
-  const volunteersToNotify = await getNextVolunteersFromDb(
-    subtopic,
-    volunteersToExclude,
-    {
-      isTestUserRequest: populatedSession.student.isTestUser
-    }
-  ).exec()
+  let volunteer
 
-  // notifications to record in the database
-  const notifications = []
-
-  const sessionUrl = getSessionUrl(session._id)
-
-  // notify the volunteers
-  for (const volunteer of volunteersToNotify) {
-    // record notification in database
-    const notification = new Notification({
-      volunteer: volunteer,
-      type: 'REGULAR',
-      method: 'SMS'
+  for (const priorityFilter of volunteerPriority) {
+    volunteer = await getNextVolunteer({
+      subtopic: session.subTopic,
+      volunteersToExclude,
+      priorityFilter
     })
 
-    const name = volunteer.firstname
-
-    const phoneNumber = volunteer.phone
-
-    const isTestUserRequest = session.student.isTestUser
-
-    // format message
-    const messageText = `Hi ${name}, a student needs help in ${subtopic} on UPchieve! ${sessionUrl}`
-
-    const sendPromise = sendTextMessage(
-      phoneNumber,
-      messageText,
-      isTestUserRequest
-    )
-
-    try {
-      notifications.push(await recordNotification(sendPromise, notification))
-    } catch (err) {
-      console.log(err)
-    }
+    if (volunteer) break
   }
 
-  // save notifications to Session instance
-  await session.addNotifications(notifications)
-  return notifications.length
+  if (!volunteer) return null
+
+  const sessionUrl = getSessionUrl(session._id)
+  const messageText = `Hi ${volunteer.firstname}, a student needs help in ${subtopic} on UPchieve! ${sessionUrl}`
+  const sendPromise = sendTextMessage(volunteer.phone, messageText)
+
+  const notification = new Notification({
+    volunteer,
+    type: 'REGULAR',
+    method: 'SMS'
+  })
+
+  await recordNotification(sendPromise, notification)
+  await session.addNotifications([notification])
+
+  return volunteer
 }
 
 const notifyFailsafe = async function(session, options) {
@@ -275,7 +245,7 @@ const notifyFailsafe = async function(session, options) {
 
     const sendPromise = voice
       ? sendVoiceMessage(phoneNumber, messageText)
-      : sendTextMessage(phoneNumber, messageText, false)
+      : sendTextMessage(phoneNumber, messageText)
 
     // record notification to database
     const notification = new Notification({
@@ -324,7 +294,7 @@ function recordNotification(sendPromise, notification) {
 }
 
 module.exports = {
-  notifyRegular,
+  notifyVolunteer,
 
   getSessionUrl: function(sessionId) {
     return getSessionUrl(sessionId)
@@ -336,13 +306,15 @@ module.exports = {
       .lean()
       .exec()
 
+    if (student.isTestUser) return
+
     const isNewStudent = !student.pastSessions || !student.pastSessions.length
 
     // Delay initial wave of notifications by 1 min if new student or
     // send initial wave of notifications (right now)
     const notificationSchedule = config.notificationSchedule.slice()
     if (isNewStudent) notificationSchedule.unshift(1000 * 60)
-    else notifyRegular(session)
+    else notifyVolunteer(session)
     const delay = notificationSchedule.shift()
     queue.add(
       'NotifyTutors',
