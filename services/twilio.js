@@ -365,10 +365,15 @@ module.exports = {
 
     // Delay initial wave of notifications by 1 min if new student or
     // send initial wave of notifications (right now)
-    const queueOptions = { delay: config.smsTimeout }
-    if (isNewStudent) queueOptions.delay = 1000 * 60
+    const notificationSchedule = config.notificationSchedule.slice()
+    if (isNewStudent) notificationSchedule.unshift(1000 * 60)
     else notifyRegular(session)
-    queue.add('NotifyTutors', { sessionId: session._id }, queueOptions)
+    const delay = notificationSchedule.shift()
+    queue.add(
+      'NotifyTutors',
+      { sessionId: session._id, notificationSchedule },
+      { delay }
+    )
   },
 
   // begin notifying failsafe volunteers for a session

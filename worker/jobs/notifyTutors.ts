@@ -1,6 +1,5 @@
 import { Job } from 'bull';
 import * as Session from '../../models/Session';
-import { smsTimeout } from '../../config';
 import * as SessionService from '../../services/SessionService';
 import * as TwilioService from '../../services/twilio';
 import * as dbconnect from '../../dbutils/dbconnect';
@@ -9,16 +8,23 @@ import { log } from '../logger';
 
 interface NotifyTutorsJobData {
   sessionId: string;
+  notificationSchedule: number[];
 }
 
 export default async (job: Job<NotifyTutorsJobData>): Promise<void> => {
+  const { sessionId, notificationSchedule } = job.data;
+  if (!notificationSchedule.length) return;
   await dbconnect();
-  const { sessionId } = job.data;
   const session = await Session.findById(sessionId);
   if (!session) return log(`session ${sessionId} not found`);
   const fulfilled = SessionService.isSessionFulfilled(session);
   if (fulfilled) return;
-  job.queue.add(Jobs.NotifyTutors, job.data, { delay: smsTimeout });
+  const delay = notificationSchedule.shift();
+  job.queue.add(
+    Jobs.NotifyTutors,
+    { sessionId, notificationSchedule },
+    { delay }
+  );
   const numNotified = await TwilioService.notifyRegular(session);
   log(`${numNotified} tutors notified`);
 };
