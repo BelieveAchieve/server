@@ -43,19 +43,14 @@ function getCurrentAvailabilityPath() {
   return `availability.${days[day]}.${hour}`
 }
 
-const getNextVolunteer = async ({
-  subtopic,
-  volunteersToExclude = [],
-  priorityFilter = {}
-}) => {
-  const availability = getCurrentAvailabilityPath()
-  const certificationPassed = `certifications.${subtopic}.passed`
+const getNextVolunteer = async ({ subtopic, priorityFilter = {} }) => {
+  const availabilityPath = getCurrentAvailabilityPath()
+  const certificationPath = `certifications.${subtopic}.passed`
 
   const filter = {
-    _id: { $nin: volunteersToExclude },
     isVolunteer: true,
-    [certificationPassed]: true,
-    [availability]: true,
+    [availabilityPath]: true,
+    [certificationPath]: true,
     phone: { $exists: true },
     isTestUser: false,
     isFakeUser: false,
@@ -74,11 +69,10 @@ const getNextVolunteer = async ({
 }
 
 // query failsafe volunteers to notify
-const getFailsafeVolunteersFromDb = function() {
-  const userQuery = {
-    isFailsafeVolunteer: true
-  }
-  return User.find(userQuery).select({ phone: 1, firstname: 1 })
+const getFailsafeVolunteers = async () => {
+  return User.find({ isFailsafeVolunteer: true })
+    .select({ phone: 1, firstname: 1 })
+    .exec()
 }
 
 function sendTextMessage(phoneNumber, messageText) {
@@ -183,21 +177,24 @@ const notifyVolunteer = async function(session) {
   const subtopic = session.subTopic
   const recentlyNotifiedVolunteers = await getRecentlyNotifiedVolunteers()
   const activeSessionVolunteers = await getActiveSessionVolunteers()
-  const volunteersToExclude = activeSessionVolunteers.concat(
+  const excludedVolunteers = activeSessionVolunteers.concat(
     recentlyNotifiedVolunteers
   )
 
   const volunteerPriority = [
-    { volunteerPartnerOrg: { $exists: true } },
-    { volunteerPartnerOrg: { $exists: false } }
+    {
+      volunteerPartnerOrg: { $exists: true },
+      _id: { $nin: excludedVolunteers }
+    },
+    { _id: { $nin: excludedVolunteers } },
+    { _id: { $nin: activeSessionVolunteers } }
   ]
 
   let volunteer
 
   for (const priorityFilter of volunteerPriority) {
     volunteer = await getNextVolunteer({
-      subtopic: session.subTopic,
-      volunteersToExclude,
+      subtopic,
       priorityFilter
     })
 
@@ -222,15 +219,15 @@ const notifyVolunteer = async function(session) {
   return volunteer
 }
 
-const notifyFailsafe = async function(session, options) {
+const notifyFailsafe = async function({ session, voice = false }) {
   const subtopic = session.subTopic
-  const voice = options.voice
   const sessionUrl = getSessionUrl(session._id)
+  const volunteersToNotify = await getFailsafeVolunteers()
+  const { isTestUser } = await User.findOne({ _id: session.student })
+    .select('isTestUser')
+    .lean()
+    .exec()
 
-  // query the failsafe volunteers to notify
-  const volunteersToNotify = await getFailsafeVolunteersFromDb().exec()
-
-  // notifications to record
   const notifications = []
 
   for (const volunteer of volunteersToNotify) {
@@ -238,9 +235,8 @@ const notifyFailsafe = async function(session, options) {
 
     let messageText = `UPchieve failsafe alert: new ${subtopic} request`
 
-    if (!voice) {
-      messageText = messageText + `\n${sessionUrl}`
-    }
+    if (isTestUser) messageText = '[TEST USER] ' + messageText
+    if (!voice) messageText = messageText + `\n${sessionUrl}`
 
     const sendPromise = voice
       ? sendVoiceMessage(phoneNumber, messageText)
@@ -299,7 +295,6 @@ module.exports = {
     return getSessionUrl(sessionId)
   },
 
-  // Begin notifying non-failsafe volunteers for a session
   beginRegularNotifications: async function(session) {
     const student = await User.findOne({ _id: session.student })
       .lean()
@@ -322,12 +317,7 @@ module.exports = {
     )
   },
 
-  // begin notifying failsafe volunteers for a session
-  beginFailsafeNotifications: async function(session) {
-    // Send first SMS failsafe notifications (Send right now)
-    notifyFailsafe(session, {
-      desperate: false,
-      voice: false
-    })
+  beginFailsafeNotifications: async session => {
+    await notifyFailsafe({ session, voice: false })
   }
 }
