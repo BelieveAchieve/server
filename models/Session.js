@@ -191,7 +191,11 @@ sessionSchema.statics.getUnfulfilledSessions = function(cb) {
   }
 
   return this.find(queryAttrs)
-    .populate({ path: 'student', select: 'firstname isVolunteer isTestUser' })
+    .populate({
+      path: 'student',
+      match: { isBanned: false },
+      select: 'firstname isVolunteer isTestUser'
+    })
     .sort({ createdAt: -1 })
     .exec(cb)
 }

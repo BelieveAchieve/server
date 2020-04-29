@@ -33,8 +33,10 @@ module.exports = function(socketService) {
 
       socketService.emitNewSession(savedSession)
 
-      twilioService.beginRegularNotifications(savedSession)
-      twilioService.beginFailsafeNotifications(savedSession)
+      if (!user.isBanned) {
+        twilioService.beginRegularNotifications(savedSession)
+        twilioService.beginFailsafeNotifications(savedSession)
+      }
 
       return savedSession
     },
