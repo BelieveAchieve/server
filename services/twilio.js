@@ -1,16 +1,15 @@
+const twilio = require('twilio')
+const moment = require('moment-timezone')
+const base64url = require('base64url')
 const config = require('../config.js')
 const User = require('../models/User')
-const twilio = require('twilio')
 const queue = require('./QueueService')
-const moment = require('moment-timezone')
+const Session = require('../models/Session')
+const Notification = require('../models/Notification')
 const twilioClient =
   config.accountSid && config.authToken
     ? twilio(config.accountSid, config.authToken)
     : null
-const base64url = require('base64url')
-
-const Session = require('../models/Session')
-const Notification = require('../models/Notification')
 
 // get the availability field to query for the current time
 function getCurrentAvailabilityPath() {
