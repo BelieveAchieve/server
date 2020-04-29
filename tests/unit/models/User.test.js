@@ -22,8 +22,6 @@ const goodUser = new User({
 
   favoriteAcademicSubject: 'favoriteAcademicSubject',
   college: 'college',
-  heardFrom: 'heardFrom',
-  referred: 'referred',
 
   availability: {
     Sunday: {
@@ -223,7 +221,6 @@ test('Test parsed profile Object', t => {
   t.is(parsedData.lastname, 'lastname')
   t.is(parsedData.isVolunteer, false)
   t.is(parsedData.isAdmin, false)
-  t.is(parsedData.referred, 'referred')
   t.is(parsedData.phone, '5555555555')
 
   t.is(parsedData.availability.Sunday['12a'], false)
@@ -403,7 +400,6 @@ test('Test parsed profile Object', t => {
   t.is(parsedData.timezone, 'EST')
   t.is(parsedData.college, 'college')
   t.is(parsedData.favoriteAcademicSubject, 'favoriteAcademicSubject')
-  t.is(parsedData.heardFrom, 'heardFrom')
   t.is(parsedData.isFakeUser, false)
   t.is(parsedData.password, undefined)
   t.is(parsedData.certifications['prealgebra'].passed, false)

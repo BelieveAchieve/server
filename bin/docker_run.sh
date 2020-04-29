@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-bash setup -y
+sed -i 's/mongodb:\/\/localhost/mongodb:\/\/db/g' ../config.js
+
+sleep 15
 
 node init
 
