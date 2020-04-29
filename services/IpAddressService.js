@@ -20,7 +20,7 @@ module.exports = {
     // Ban IP if user banned
     if (user.isBanned && IpAddress.status === IP_ADDRESS_STATUS.OK)
       await IpAddress.updateOne(
-        { _id: ipAddress._id },
+        { _id: userIpAddress._id },
         { $set: IP_ADDRESS_STATUS.BANNED }
       )
 
