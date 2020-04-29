@@ -203,6 +203,12 @@ var userSchema = new mongoose.Schema(
       select: false
     },
 
+    ipAddresses: {
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'IpAddress' }],
+      default: [],
+      select: false
+    },
+
     /**
      * BEGIN STUDENT ATTRS
      */
