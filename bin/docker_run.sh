@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-sed -i 's/mongodb:\/\/localhost/mongodb:\/\/host.docker.internal/g' ../config.js
+sed -i 's/mongodb:\/\/localhost/mongodb:\/\/db/g' ../config.js
+
+sleep 15
 
 node init
 
