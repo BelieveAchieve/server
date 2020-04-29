@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const Message = require('./Message')
 
-const validTypes = ['Math', 'College']
+const validTypes = ['Math', 'College', 'Science']
 
 const sessionSchema = new mongoose.Schema({
   student: {

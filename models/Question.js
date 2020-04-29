@@ -1,6 +1,6 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-var questionSchema = new mongoose.Schema({
+const questionSchema = new mongoose.Schema({
   questionText: String,
   possibleAnswers: [{ txt: String, val: String }],
   correctAnswer: String,
@@ -20,7 +20,7 @@ questionSchema.methods.parseQuestion = function() {
 }
 
 questionSchema.statics.getSubcategories = function(category) {
-  var categoryToSubcategoryMap = {
+  const categoryToSubcategoryMap = {
     algebra: [
       'linear equations',
       'rational exponents and radicals',
@@ -86,6 +86,19 @@ questionSchema.statics.getSubcategories = function(category) {
       'exponents and radicals',
       'polynomials',
       'fractions'
+    ],
+    biology: [
+      'biochemistry',
+      'the cell',
+      'cell division',
+      'cellular respiration',
+      'photosynthesis and plants',
+      'classical genetics',
+      'molecular genetics',
+      'animal behavior and physiology',
+      'ecology',
+      'human physiology and anatomy',
+      'evolution and taxonomy'
     ]
   }
 
