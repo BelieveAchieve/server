@@ -49,9 +49,11 @@ function checkPassword(password) {
   return true
 }
 
-const getIpInfo = async (ip) => {
+const getIpInfo = async ip => {
   try {
-    const { data } = await axios.get(`http://free.ipwhois.io/json/${ip}`, { timeout: 1500 })
+    const { data } = await axios.get(`http://free.ipwhois.io/json/${ip}`, {
+      timeout: 1500
+    })
     return data
   } catch (err) {
     console.log(err)
