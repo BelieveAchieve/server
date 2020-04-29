@@ -2,7 +2,7 @@ const IpAddress = require('../models/IpAddress')
 const User = require('../models/User')
 const { IP_ADDRESS_STATUS } = require('../constants')
 
-const findOrCreateIpAddress = async (ipString) => {
+const findOrCreateIpAddress = async ipString => {
   const existingIpAddress = await IpAddress.findOne({ ip: ipString })
     .lean()
     .exec()
@@ -19,7 +19,10 @@ module.exports = {
 
     // Ban IP if user banned
     if (user.isBanned && IpAddress.status === IP_ADDRESS_STATUS.OK)
-      await IpAddress.updateOne({ _id: ipAddress._id }, { $set: IP_ADDRESS_STATUS.BANNED })
+      await IpAddress.updateOne(
+        { _id: ipAddress._id },
+        { $set: IP_ADDRESS_STATUS.BANNED }
+      )
 
     // Ban user if IP banned
     if (userIpAddress.status === IP_ADDRESS_STATUS.BANNED && !user.isBanned)
@@ -28,7 +31,13 @@ module.exports = {
     const alreadyRecorded = userIpAddress.users.some(u => u.equals(user._id))
     if (alreadyRecorded) return
 
-    await User.updateOne({ _id: user._id }, { $addToSet: { ipAddresses: userIpAddress._id } })
-    await IpAddress.updateOne({ _id: userIpAddress._id }, { $addToSet: { users: user._id } })
+    await User.updateOne(
+      { _id: user._id },
+      { $addToSet: { ipAddresses: userIpAddress._id } }
+    )
+    await IpAddress.updateOne(
+      { _id: userIpAddress._id },
+      { $addToSet: { users: user._id } }
+    )
   }
 }

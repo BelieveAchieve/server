@@ -14,12 +14,9 @@ const ipAddressSchema = new mongoose.Schema({
 
   status: {
     type: String,
-    enum: [
-      IP_ADDRESS_STATUS.OK,
-      IP_ADDRESS_STATUS.BANNED
-    ],
+    enum: [IP_ADDRESS_STATUS.OK, IP_ADDRESS_STATUS.BANNED],
     default: IP_ADDRESS_STATUS.OK
-  },
+  }
 })
 
 module.exports = mongoose.model('IpAddress', ipAddressSchema)
