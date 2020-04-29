@@ -2,6 +2,7 @@ const Session = require('../../models/Session')
 const SessionCtrl = require('../../controllers/SessionCtrl')
 const UserActionCtrl = require('../../controllers/UserActionCtrl')
 const SocketService = require('../../services/SocketService')
+const IpAddressService = require('../../services/IpAddressService')
 const ObjectId = require('mongodb').ObjectId
 const Sentry = require('@sentry/node')
 
@@ -14,7 +15,13 @@ module.exports = function(router, io) {
     const data = req.body || {}
     const sessionType = data.sessionType
     const sessionSubTopic = data.sessionSubTopic
-    const user = req.user
+    const { user, ip } = req
+
+    try {
+      await IpAddressService.record(user, ip)
+    } catch (error) {
+      Sentry.captureException(error)
+    }
 
     try {
       const session = await sessionCtrl.create({
@@ -24,13 +31,12 @@ module.exports = function(router, io) {
       })
 
       const userAgent = req.get('User-Agent')
-      const ipAddress = req.ip
 
       UserActionCtrl.requestedSession(
         user._id,
         session._id,
         userAgent,
-        ipAddress
+        ip
       ).catch(error => Sentry.captureException(error))
 
       res.json({ sessionId: session._id })
