@@ -274,10 +274,12 @@ module.exports = function(app) {
         user.referralCode = base64url(Buffer.from(user.id, 'hex'))
         user.referredBy = referredById
 
-        const { country_code: countryCode } = await getIpInfo(req.ip)
-        if (countryCode && countryCode !== 'US') {
-          user.isBanned = true
-          user.banReason = USER_BAN_REASON.NON_US_SIGNUP
+        if (!user.isVolunteer) {
+          const { country_code: countryCode } = await getIpInfo(req.ip)
+          if (countryCode && countryCode !== 'US') {
+            user.isBanned = true
+            user.banReason = USER_BAN_REASON.NON_US_SIGNUP
+          }
         }
 
         user.hashPassword(password, function(err, hash) {
