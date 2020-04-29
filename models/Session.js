@@ -184,20 +184,21 @@ sessionSchema.statics.current = function(userId, cb) {
 }
 
 // sessions that have not yet been fulfilled by a volunteer
-sessionSchema.statics.getUnfulfilledSessions = function(cb) {
+sessionSchema.statics.getUnfulfilledSessions = async function() {
   const queryAttrs = {
     volunteerJoinedAt: { $exists: false },
     endedAt: { $exists: false }
   }
 
-  return this.find(queryAttrs)
+  const sessions = await this.find(queryAttrs)
     .populate({
       path: 'student',
-      match: { isBanned: false },
-      select: 'firstname isVolunteer isTestUser'
+      select: 'firstname isVolunteer isTestUser isBanned'
     })
     .sort({ createdAt: -1 })
-    .exec(cb)
+    .exec()
+
+  return sessions.filter(session => !session.student.isBanned)
 }
 
 module.exports = mongoose.model('Session', sessionSchema)
