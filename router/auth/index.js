@@ -56,7 +56,7 @@ const getIpInfo = async ip => {
     })
     return data
   } catch (err) {
-    console.log(err)
+    Sentry.captureException(error)
     return {}
   }
 }
