@@ -90,9 +90,6 @@ module.exports = {
   // voice to use to render speech
   voice: 'man',
 
-  // IP addresses to blacklist
-  ipBlacklist: ['192.0.2.123', '254.254.254.254'],
-
   VOLUNTEER_CODES: process.env.UPCHIEVE_VOLUNTEER_CODES || '',
   STUDENT_CODES: process.env.UPCHIEVE_STUDENT_CODES || '',
   workerQueueName: 'main',
