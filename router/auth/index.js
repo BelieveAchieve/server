@@ -259,7 +259,9 @@ module.exports = function(app) {
         user.referredBy = referredById
 
         if (!user.isVolunteer) {
-          const { country_code: countryCode } = await IpAddressService.getIpWhoIs(req.ip)
+          const {
+            country_code: countryCode
+          } = await IpAddressService.getIpWhoIs(req.ip)
           if (countryCode && countryCode !== 'US') {
             user.isBanned = true
             user.banReason = USER_BAN_REASON.NON_US_SIGNUP

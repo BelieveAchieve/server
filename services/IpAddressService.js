@@ -1,11 +1,13 @@
 const axios = require('axios')
+const Sentry = require('@sentry/node')
 const IpAddress = require('../models/IpAddress')
 const User = require('../models/User')
 const { IP_ADDRESS_STATUS } = require('../constants')
 
 const cleanIpString = rawIpString => {
   // Remove ipv6 prefix if present
-  const ipString = rawIpString.indexOf('::ffff:') === 0 ? rawIpString.slice(7) : rawIpString
+  const ipString =
+    rawIpString.indexOf('::ffff:') === 0 ? rawIpString.slice(7) : rawIpString
   return ipString
 }
 
@@ -13,9 +15,12 @@ const getIpWhoIs = async rawIpString => {
   const ipString = cleanIpString(rawIpString)
 
   try {
-    const { data } = await axios.get(`http://free.ipwhois.io/json/${ipString}`, {
-      timeout: 1500
-    })
+    const { data } = await axios.get(
+      `http://free.ipwhois.io/json/${ipString}`,
+      {
+        timeout: 1500
+      }
+    )
     return data
   } catch (err) {
     Sentry.captureException(err)
