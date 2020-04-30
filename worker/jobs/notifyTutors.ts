@@ -25,11 +25,7 @@ export default async (job: Job<NotifyTutorsJobData>): Promise<void> => {
       { sessionId, notificationSchedule },
       { delay }
     );
-  try {
-    const volunteerNotified = await TwilioService.notifyVolunteer(session);
-    if (volunteerNotified) log(`Volunteer notified: ${volunteerNotified._id}`);
-    else log('No volunteer notified');
-  } catch (error) {
-    log(error);
-  }
+  const volunteerNotified = await TwilioService.notifyVolunteer(session);
+  if (volunteerNotified) log(`Volunteer notified: ${volunteerNotified._id}`);
+  else log('No volunteer notified');
 };
