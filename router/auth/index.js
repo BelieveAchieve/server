@@ -3,6 +3,7 @@ const passport = require('passport')
 const Sentry = require('@sentry/node')
 const base64url = require('base64url')
 const { findKey } = require('lodash')
+const axios = require('axios')
 
 const authPassport = require('./passport')
 
@@ -15,6 +16,7 @@ const config = require('../../config.js')
 const User = require('../../models/User.js')
 const School = require('../../models/School.js')
 const UserActionCtrl = require('../../controllers/UserActionCtrl')
+const { USER_BAN_REASON } = require('../../constants')
 
 // Validation functions
 function checkPassword(password) {
@@ -45,6 +47,21 @@ function checkPassword(password) {
     return 'Password must contain at least one number'
   }
   return true
+}
+
+const getIpInfo = async rawIp => {
+  // Remove ipv6 prefix if present
+  const ip = rawIp.indexOf('::ffff:') === 0 ? rawIp.slice(7) : rawIp
+
+  try {
+    const { data } = await axios.get(`http://free.ipwhois.io/json/${ip}`, {
+      timeout: 1500
+    })
+    return data
+  } catch (err) {
+    Sentry.captureException(err)
+    return {}
+  }
 }
 
 module.exports = function(app) {
@@ -241,7 +258,7 @@ module.exports = function(app) {
     }
 
     highschoolLookupPromise
-      .then(({ isVolunteer, school }) => {
+      .then(async ({ isVolunteer, school }) => {
         const user = new User()
         user.email = email
         user.isVolunteer = isVolunteer
@@ -259,6 +276,14 @@ module.exports = function(app) {
         user.verified = !isVolunteer // Currently only volunteers need to verify their email
         user.referralCode = base64url(Buffer.from(user.id, 'hex'))
         user.referredBy = referredById
+
+        if (!user.isVolunteer) {
+          const { country_code: countryCode } = await getIpInfo(req.ip)
+          if (countryCode && countryCode !== 'US') {
+            user.isBanned = true
+            user.banReason = USER_BAN_REASON.NON_US_SIGNUP
+          }
+        }
 
         user.hashPassword(password, function(err, hash) {
           user.password = hash // Note the salt is embedded in the final hash
@@ -291,6 +316,11 @@ module.exports = function(app) {
                     if (err) {
                       Sentry.captureException(err)
                     }
+                  })
+                } else {
+                  MailService.sendStudentWelcomeEmail({
+                    email: user.email,
+                    firstName: user.firstname
                   })
                 }
 

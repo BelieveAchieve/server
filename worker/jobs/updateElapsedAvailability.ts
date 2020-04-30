@@ -20,7 +20,8 @@ export default async (): Promise<void> => {
         );
 
         volunteer.elapsedAvailability += newElapsedAvailability;
-        volunteer.availabilityLastModifiedAt = currentTime;
+        if (volunteer.availabilityLastModifiedAt)
+          volunteer.availabilityLastModifiedAt = currentTime;
 
         await volunteer.save();
       })

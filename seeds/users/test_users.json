@@ -14,6 +14,10 @@
         "passed": false,
         "tries": 0
       },
+      "biology": {
+        "passed": false,
+        "tries": 0
+      },
       "calculus": {
         "passed": false,
         "tries": 0
@@ -66,6 +70,10 @@
       "applications": {
         "passed": true,
         "tries": 1
+      },
+      "biology": {
+        "passed": false,
+        "tries": 0
       },
       "calculus": {
         "passed": true
@@ -124,6 +132,10 @@
         "passed": true,
         "tries": 1
       },
+      "biology": {
+        "passed": false,
+        "tries": 0
+      },
       "calculus": {
         "passed": true
       },
@@ -178,6 +190,10 @@
         "tries": 0
       },
       "applications": {
+        "passed": false,
+        "tries": 0
+      },
+      "biology": {
         "passed": false,
         "tries": 0
       },
