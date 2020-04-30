@@ -1,10 +1,10 @@
 const _ = require('lodash')
 
-var Question = require('../models/Question')
-var User = require('../models/User')
+const Question = require('../models/Question')
+const User = require('../models/User')
 
 // change depending on how many of each subcategory are wanted
-var numQuestions = {
+const numQuestions = {
   prealgebra: 2,
   algebra: 2,
   geometry: 2,
@@ -13,7 +13,8 @@ var numQuestions = {
   calculus: 3,
   planning: 4,
   essays: 3,
-  applications: 2
+  applications: 2,
+  biology: 1
 }
 const PASS_THRESHOLD = 0.8
 
