@@ -49,7 +49,10 @@ function checkPassword(password) {
   return true
 }
 
-const getIpInfo = async ip => {
+const getIpInfo = async rawIp => {
+  // Remove ipv6 prefix if present
+  const ip = rawIp.indexOf('::ffff:') === 0 ? rawIp.slice(7) : rawIp
+
   try {
     const { data } = await axios.get(`http://free.ipwhois.io/json/${ip}`, {
       timeout: 1500
