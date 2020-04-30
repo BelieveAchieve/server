@@ -2,9 +2,11 @@ import { ProcessPromiseFunction, Queue } from 'bull';
 import { log } from '../logger';
 import { map } from 'lodash';
 import updateElapsedAvailability from './updateElapsedAvailability';
+import sendStudentGiveUsATryEmail from './sendStudentGiveUsATryEmail';
 
 export enum Jobs {
-  UpdateElapsedAvailability = 'UpdateElapsedAvailability'
+  UpdateElapsedAvailability = 'UpdateElapsedAvailability',
+  SendStudentGiveUsATryEmail = 'SendStudentGiveUsATryEmail'
 }
 
 // register new job processors here
@@ -17,6 +19,10 @@ const jobProcessors: JobProcessor[] = [
   {
     name: Jobs.UpdateElapsedAvailability,
     processor: updateElapsedAvailability
+  },
+  {
+    name: Jobs.SendStudentGiveUsATryEmail,
+    processor: sendStudentGiveUsATryEmail
   }
 ];
 
