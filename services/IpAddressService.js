@@ -1,8 +1,31 @@
+const axios = require('axios')
 const IpAddress = require('../models/IpAddress')
 const User = require('../models/User')
 const { IP_ADDRESS_STATUS } = require('../constants')
 
-const findOrCreateIpAddress = async ipString => {
+const cleanIpString = rawIpString => {
+  // Remove ipv6 prefix if present
+  const ipString = rawIpString.indexOf('::ffff:') === 0 ? rawIpString.slice(7) : rawIpString
+  return ipString
+}
+
+const getIpWhoIs = async rawIpString => {
+  const ipString = cleanIpString(rawIpString)
+
+  try {
+    const { data } = await axios.get(`http://free.ipwhois.io/json/${ipString}`, {
+      timeout: 1500
+    })
+    return data
+  } catch (err) {
+    Sentry.captureException(err)
+    return {}
+  }
+}
+
+const findOrCreateIpAddress = async rawIpString => {
+  const ipString = cleanIpString(rawIpString)
+
   const existingIpAddress = await IpAddress.findOne({ ip: ipString })
     .lean()
     .exec()
@@ -14,6 +37,8 @@ const findOrCreateIpAddress = async ipString => {
 }
 
 module.exports = {
+  getIpWhoIs,
+
   record: async (user, ipString) => {
     const userIpAddress = await findOrCreateIpAddress(ipString)
 

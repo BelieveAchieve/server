@@ -3,15 +3,11 @@ const passport = require('passport')
 const Sentry = require('@sentry/node')
 const base64url = require('base64url')
 const { findKey } = require('lodash')
-const axios = require('axios')
-
 const authPassport = require('./passport')
-
 const VerificationCtrl = require('../../controllers/VerificationCtrl')
 const ResetPasswordCtrl = require('../../controllers/ResetPasswordCtrl')
-
 const MailService = require('../../services/MailService')
-
+const IpAddressService = require('../../services/IpAddressService')
 const config = require('../../config.js')
 const User = require('../../models/User.js')
 const School = require('../../models/School.js')
@@ -47,21 +43,6 @@ function checkPassword(password) {
     return 'Password must contain at least one number'
   }
   return true
-}
-
-const getIpInfo = async rawIp => {
-  // Remove ipv6 prefix if present
-  const ip = rawIp.indexOf('::ffff:') === 0 ? rawIp.slice(7) : rawIp
-
-  try {
-    const { data } = await axios.get(`http://free.ipwhois.io/json/${ip}`, {
-      timeout: 1500
-    })
-    return data
-  } catch (err) {
-    Sentry.captureException(err)
-    return {}
-  }
 }
 
 module.exports = function(app) {
@@ -278,7 +259,7 @@ module.exports = function(app) {
         user.referredBy = referredById
 
         if (!user.isVolunteer) {
-          const { country_code: countryCode } = await getIpInfo(req.ip)
+          const { country_code: countryCode } = await IpAddressService.getIpWhoIs(req.ip)
           if (countryCode && countryCode !== 'US') {
             user.isBanned = true
             user.banReason = USER_BAN_REASON.NON_US_SIGNUP
