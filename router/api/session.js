@@ -2,7 +2,7 @@ const Session = require('../../models/Session')
 const SessionCtrl = require('../../controllers/SessionCtrl')
 const UserActionCtrl = require('../../controllers/UserActionCtrl')
 const SocketService = require('../../services/SocketService')
-const IpAddressService = require('../../services/IpAddressService')
+const recordIpAddress = require('../../middleware/record-ip-address')
 const ObjectId = require('mongodb').ObjectId
 const Sentry = require('@sentry/node')
 
@@ -11,39 +11,35 @@ module.exports = function(router, io) {
   const socketService = SocketService(io)
   const sessionCtrl = SessionCtrl(socketService)
 
-  router.route('/session/new').post(async function(req, res, next) {
-    const data = req.body || {}
-    const sessionType = data.sessionType
-    const sessionSubTopic = data.sessionSubTopic
-    const { user, ip } = req
+  router
+    .route('/session/new')
+    .post(recordIpAddress, async function(req, res, next) {
+      const data = req.body || {}
+      const sessionType = data.sessionType
+      const sessionSubTopic = data.sessionSubTopic
+      const { user, ip } = req
 
-    try {
-      await IpAddressService.record(user, ip)
-    } catch (error) {
-      Sentry.captureException(error)
-    }
+      try {
+        const session = await sessionCtrl.create({
+          user,
+          type: sessionType,
+          subTopic: sessionSubTopic
+        })
 
-    try {
-      const session = await sessionCtrl.create({
-        user: user,
-        type: sessionType,
-        subTopic: sessionSubTopic
-      })
+        const userAgent = req.get('User-Agent')
 
-      const userAgent = req.get('User-Agent')
+        UserActionCtrl.requestedSession(
+          user._id,
+          session._id,
+          userAgent,
+          ip
+        ).catch(error => Sentry.captureException(error))
 
-      UserActionCtrl.requestedSession(
-        user._id,
-        session._id,
-        userAgent,
-        ip
-      ).catch(error => Sentry.captureException(error))
-
-      res.json({ sessionId: session._id })
-    } catch (err) {
-      next(err)
-    }
-  })
+        res.json({ sessionId: session._id })
+      } catch (err) {
+        next(err)
+      }
+    })
 
   router.route('/session/end').post(async function(req, res, next) {
     const data = req.body || {}
