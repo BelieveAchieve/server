@@ -1,47 +1,5 @@
 [
   {
-    "__v": 0,
-    "certifications": {
-      "prealgebra": {
-        "passed": false,
-        "tries": 0
-      },
-      "algebra": {
-        "passed": false,
-        "tries": 0
-      },
-      "applications": {
-        "passed": false,
-        "tries": 0
-      },
-      "calculus": {
-        "passed": false,
-        "tries": 0
-      },
-      "essays": {
-        "passed": false,
-        "tries": 0
-      },
-      "geometry": {
-        "passed": false,
-        "tries": 0
-      },
-      "planning": {
-        "passed": false,
-        "tries": 0
-      },
-      "precalculus": {
-        "passed": false,
-        "tries": 0
-      },
-      "trigonometry": {
-        "passed": false,
-        "tries": 0
-      }
-    },
-    "createdAt": {
-      "$date": "2019-02-01T19:43:57.068Z"
-    },
     "email": "student1@upchieve.org",
     "firstname": "Student",
     "heardFrom": "Internet search",
@@ -50,10 +8,10 @@
     "isVolunteer": false,
     "lastname": "Upchieve",
     "password": "$2a$10$z.JMHnbX9IubnNZtqI.FOecTPVY1VTU1DJ6AJGIOT/x/OyAtdw3.y",
-    "verified": true
+    "verified": true,
+    "referralCode": "A"
   },
   {
-    "__v": 0,
     "certifications": {
       "prealgebra": {
         "passed": true,
@@ -67,8 +25,13 @@
         "passed": true,
         "tries": 1
       },
+      "biology": {
+        "passed": true,
+        "tries": 1
+      },
       "calculus": {
-        "passed": true
+        "passed": true,
+        "tries": 1
       },
       "essays": {
         "passed": true,
@@ -92,24 +55,20 @@
       }
     },
     "college": "Volunteer College",
-    "createdAt": {
-      "$date": "2019-02-01T19:43:57.068Z"
-    },
     "email": "volunteer1@upchieve.org",
     "favoriteAcademicSubject": "Math",
     "firstname": "Volunteer",
     "isAdmin": true,
-    "isTestUser": true,
     "isVolunteer": true,
     "lastname": "UPchieve",
     "password": "$2a$10$z.JMHnbX9IubnNZtqI.FOecTPVY1VTU1DJ6AJGIOT/x/OyAtdw3.y",
     "phone": "+12125551212",
     "registrationCode": "VOLUNTEERTESTING18",
     "verificationToken": "f8fa9fdc44c7b3c4378eeabefa8bf8ea",
-    "verified": true
+    "verified": true,
+    "referralCode": "B"
   },
   {
-    "__v": 0,
     "certifications": {
       "prealgebra": {
         "passed": true,
@@ -123,8 +82,13 @@
         "passed": true,
         "tries": 1
       },
+      "biology": {
+        "passed": true,
+        "tries": 1
+      },
       "calculus": {
-        "passed": true
+        "passed": true,
+        "tries": 1
       },
       "essays": {
         "passed": true,
@@ -148,77 +112,32 @@
       }
     },
     "college": "Volunteer College",
-    "createdAt": {
-      "$date": "2019-02-01T19:43:57.068Z"
-    },
     "email": "volunteer2@upchieve.org",
     "favoriteAcademicSubject": "Math",
     "firstname": "Volunteer2",
     "isAdmin": true,
-    "isTestUser": true,
     "isVolunteer": true,
     "lastname": "UPchieve",
     "password": "$2a$10$z.JMHnbX9IubnNZtqI.FOecTPVY1VTU1DJ6AJGIOT/x/OyAtdw3.y",
     "phone": "+12125551212",
     "registrationCode": "VOLUNTEERTESTING18",
     "verificationToken": "f8fa9fdc44c7b3c4378eeabefa8bf8ea",
-    "verified": true
+    "verified": true,
+    "referralCode": "C"
   },
   {
-    "__v": 0,
-    "certifications": {
-      "prealgebra": {
-        "passed": false,
-        "tries": 0
-      },
-      "algebra": {
-        "passed": false,
-        "tries": 0
-      },
-      "applications": {
-        "passed": false,
-        "tries": 0
-      },
-      "calculus": {
-        "passed": false,
-        "tries": 0
-      },
-      "essays": {
-        "passed": false,
-        "tries": 0
-      },
-      "geometry": {
-        "passed": false,
-        "tries": 0
-      },
-      "planning": {
-        "passed": false,
-        "tries": 0
-      },
-      "precalculus": {
-        "passed": false,
-        "tries": 0
-      },
-      "trigonometry": {
-        "passed": false,
-        "tries": 0
-      }
-    },
     "college": "Volunteer College",
-    "createdAt": {
-      "$date": "2019-02-01T19:43:57.068Z"
-    },
     "email": "volunteer3@upchieve.org",
     "favoriteAcademicSubject": "Math",
     "firstname": "Volunteer3",
     "isAdmin": true,
-    "isTestUser": true,
     "isVolunteer": true,
     "lastname": "UPchieve",
     "password": "$2a$10$z.JMHnbX9IubnNZtqI.FOecTPVY1VTU1DJ6AJGIOT/x/OyAtdw3.y",
     "phone": "+12125551212",
     "registrationCode": "VOLUNTEERTESTING18",
     "verificationToken": "f8fa9fdc44c7b3c4378eeabefa8bf8ea",
-    "verified": true
+    "verified": true,
+    "referralCode": "D"
   }
 ]

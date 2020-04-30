@@ -19,26 +19,26 @@ db.once('open', function() {
   const seedDataMetadata = [
     {
       folder: 'users/',
-      collection: 'users',
       idField: 'email',
+      model: 'User',
       files: ['test_users']
     },
     {
       folder: 'schools/',
-      collection: 'schools',
       idField: 'upchieveId',
+      model: 'School',
       files: ['test_high_schools']
     },
     {
       folder: 'zipcodes/',
-      collection: 'zipcodes',
       idField: 'zipCode',
+      model: 'ZipCode',
       files: ['test_zipcodes']
     },
     {
       folder: 'questions/',
-      collection: 'question',
       idField: 'questionText',
+      model: 'Question',
       files: [
         'geometry',
         'algebra',
@@ -54,7 +54,7 @@ db.once('open', function() {
 
   // For each of the above metadata items, replace each record in each file with the value from seed data
   seedDataMetadata.forEach(seedDataMetadataItem => {
-    const aCollection = db.collection(seedDataMetadataItem.collection)
+    const aModel = require('./models/' + seedDataMetadataItem.model)
 
     seedDataMetadataItem.files.forEach(file => {
       const seedData = require('./seeds/' +
@@ -73,8 +73,10 @@ db.once('open', function() {
         idKey[seedDataMetadataItem.idField] =
           record[seedDataMetadataItem.idField]
 
-        const replacePromise = aCollection.replaceOne(idKey, record, {
-          upsert: true
+        const replacePromise = aModel.findOneAndReplace(idKey, record, {
+          upsert: true,
+          new: true,
+          setDefaultsOnInsert: true
         })
 
         promises.push(replacePromise)

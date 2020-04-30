@@ -354,6 +354,17 @@ var userSchema = new mongoose.Schema(
           default: 0
         },
         lastAttemptedAt: { type: Date }
+      },
+      biology: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
       }
     }
     /**

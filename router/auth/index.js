@@ -317,6 +317,11 @@ module.exports = function(app) {
                       Sentry.captureException(err)
                     }
                   })
+                } else {
+                  MailService.sendStudentWelcomeEmail({
+                    email: user.email,
+                    firstName: user.firstname
+                  })
                 }
 
                 const ipAddress = req.ip
