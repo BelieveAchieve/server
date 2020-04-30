@@ -35,7 +35,7 @@ export const addJobProcessors = (queue: Queue): void => {
         log(`Completed job: ${job.name}`);
       } catch (error) {
         log(`Error processing job: ${job.name}`);
-        log(error)
+        log(error);
       }
     })
   );
