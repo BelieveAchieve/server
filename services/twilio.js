@@ -158,35 +158,48 @@ const getActiveSessionVolunteers = async () => {
   return activeSessions.map(session => session.volunteer)
 }
 
-const getRecentlyNotifiedVolunteers = async () => {
-  const fifteenMinsAgo = new Date(
-    new Date().getTime() - 15 * 60 * 1000
-  ).toISOString()
+const relativeDate = msAgo => {
+  return new Date(new Date().getTime() - msAgo).toISOString()
+}
 
-  const recentNotifications = await Notification.find({
-    sentAt: { $gt: fifteenMinsAgo }
+const getVolunteersNotifiedSince = async sinceDate => {
+  const notifications = await Notification.find({
+    sentAt: { $gt: sinceDate }
   })
     .select('volunteer')
     .lean()
     .exec()
 
-  return recentNotifications.map(notif => notif.volunteer)
+  return notifications.map(notif => notif.volunteer)
 }
 
-const notifyVolunteer = async function(session) {
+const notifyVolunteer = async session => {
   const subtopic = session.subTopic
-  const recentlyNotifiedVolunteers = await getRecentlyNotifiedVolunteers()
   const activeSessionVolunteers = await getActiveSessionVolunteers()
-  const excludedVolunteers = activeSessionVolunteers.concat(
-    recentlyNotifiedVolunteers
+  const notifiedLastFifteenMins = await getVolunteersNotifiedSince(
+    relativeDate(15 * 60 * 1000)
+  )
+  const notifiedLastThreeDays = await getVolunteersNotifiedSince(
+    relativeDate(3 * 24 * 60 * 60 * 1000)
   )
 
   const volunteerPriority = [
     {
       volunteerPartnerOrg: { $exists: true },
-      _id: { $nin: excludedVolunteers }
+      _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
     },
-    { _id: { $nin: excludedVolunteers } }
+    {
+      volunteerPartnerOrg: { $exists: false },
+      _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
+    },
+    {
+      volunteerPartnerOrg: { $exists: true },
+      _id: { $nin: activeSessionVolunteers.concat(notifiedLastFifteenMins) }
+    },
+    {
+      volunteerPartnerOrg: { $exists: false },
+      _id: { $nin: activeSessionVolunteers.concat(notifiedLastFifteenMins) }
+    }
   ]
 
   let volunteer
