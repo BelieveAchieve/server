@@ -30,7 +30,6 @@ const getIpWhoIs = async rawIpString => {
 
 const findOrCreateIpAddress = async rawIpString => {
   const ipString = cleanIpString(rawIpString)
-
   const existingIpAddress = await IpAddress.findOne({ ip: ipString })
     .lean()
     .exec()
@@ -46,7 +45,6 @@ module.exports = {
 
   record: async ({ user, ipString }) => {
     const userIpAddress = await findOrCreateIpAddress(ipString)
-
     const alreadyRecorded = userIpAddress.users.some(u => u.equals(user._id))
 
     if (!alreadyRecorded) {
