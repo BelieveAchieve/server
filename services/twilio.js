@@ -186,8 +186,7 @@ const notifyVolunteer = async function(session) {
       volunteerPartnerOrg: { $exists: true },
       _id: { $nin: excludedVolunteers }
     },
-    { _id: { $nin: excludedVolunteers } },
-    { _id: { $nin: activeSessionVolunteers } }
+    { _id: { $nin: excludedVolunteers } }
   ]
 
   let volunteer
