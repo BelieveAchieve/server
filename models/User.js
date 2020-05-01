@@ -2,13 +2,13 @@ const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
 const moment = require('moment-timezone')
+const config = require('../config.js')
 const countAvailabilityHours = require('../utils/count-availability-hours')
 const removeTimeFromDate = require('../utils/remove-time-from-date')
 const getFrequencyOfDays = require('../utils/get-frequency-of-days')
 const calculateTotalHours = require('../utils/calculate-total-hours')
 const countOutOfRangeHours = require('../utils/count-out-of-range-hours')
-
-const config = require('../config.js')
+const { USER_BAN_REASON } = require('../constants')
 
 const weeksSince = date => {
   // 604800000 = milliseconds in a week
@@ -153,6 +153,21 @@ var userSchema = new mongoose.Schema(
       default: false
     },
 
+    isBanned: {
+      type: Boolean,
+      default: false
+    },
+
+    banReason: {
+      type: String,
+      enum: [
+        USER_BAN_REASON.NON_US_SIGNUP,
+        USER_BAN_REASON.BANNED_IP,
+        USER_BAN_REASON.SESSION_REPORT
+      ],
+      select: false
+    },
+
     /**
      * Test users are used to make help requests on production without bothering actual volunteers.
      * A student test user making a help request will only notify volunteer test users.
@@ -185,6 +200,12 @@ var userSchema = new mongoose.Schema(
     referredBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
+      select: false
+    },
+
+    ipAddresses: {
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'IpAddress' }],
+      default: [],
       select: false
     },
 
@@ -330,6 +351,17 @@ var userSchema = new mongoose.Schema(
         lastAttemptedAt: { type: Date }
       },
       planning: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
+      },
+      biology: {
         passed: {
           type: Boolean,
           default: false

@@ -2,7 +2,6 @@ const express = require('express')
 const passport = require('../auth/passport')
 const addLastActivity = require('../../middleware/add-last-activity')
 const addUserAction = require('../../middleware/add-user-action')
-const blockBlacklistedIps = require('../../middleware/block-blacklisted-ips')
 
 module.exports = function(app, sessionStore) {
   console.log('API module')
@@ -24,6 +23,5 @@ module.exports = function(app, sessionStore) {
 
   app.use(addLastActivity)
   app.use(addUserAction)
-  app.use(blockBlacklistedIps)
   app.use('/api', passport.isAuthenticated, router)
 }

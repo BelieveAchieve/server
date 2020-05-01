@@ -15,7 +15,8 @@ module.exports = {
     verifyTemplate: 'd-02281875a1cf4575bd3568e674faf147',
     resetTemplate: 'd-5005d2beb2ad49a883a10364f3e14b81',
     partnerOrgSignupAlertTemplate: 'd-238200a8df0d4493b12defbf472901b9',
-    welcomeTemplate: 'd-58fdc5f84f9e4ecbbda3d3c0cd4aa7fa',
+    volunteerWelcomeTemplate: 'd-58fdc5f84f9e4ecbbda3d3c0cd4aa7fa',
+    studentWelcomeTemplate: 'd-dba390e0c99545d4b18135d869046f50',
     unsubscribeGroup: {
       newsletter: 12567,
       account: 12570
@@ -82,7 +83,15 @@ module.exports = {
   authToken: '',
   sendingNumber: '',
 
-  smsTimeout: 5 * 60 * 1000,
+  notificationSchedule: [
+    2 * 60 * 1000,
+    1 * 60 * 1000,
+    1 * 60 * 1000,
+    1,
+    3 * 60 * 1000,
+    1,
+    1 * 60 * 1000
+  ],
   // Failsafe notification options
   // time until second (desperate) SMS message is sent
   desperateSMSTimeout: 300000,
@@ -90,9 +99,6 @@ module.exports = {
   desperateVoiceTimeout: 600000,
   // voice to use to render speech
   voice: 'man',
-
-  // IP addresses to blacklist
-  ipBlacklist: ['192.0.2.123', '254.254.254.254'],
 
   VOLUNTEER_CODES: process.env.UPCHIEVE_VOLUNTEER_CODES || '',
   STUDENT_CODES: process.env.UPCHIEVE_STUDENT_CODES || '',

@@ -5,16 +5,10 @@ const User = require('../../models/User')
 
 module.exports = function(router) {
   router.post('/verify/send', async function(req, res) {
-    const userId = req.user && req.user._id
-
-    if (!userId) {
-      return res.status(401).json({
-        err: 'Must be authenticated to send verification email'
-      })
-    }
+    const { user } = req
 
     try {
-      await VerificationCtrl.initiateVerification({ userId })
+      await VerificationCtrl.initiateVerification({ user })
 
       return res.json({ msg: 'Verification email sent' })
     } catch (error) {
