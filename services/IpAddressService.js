@@ -48,10 +48,10 @@ module.exports = {
     const userIpAddress = await findOrCreateIpAddress(ipString)
 
     // Ban IP if user banned
-    if (user.isBanned && IpAddress.status === IP_ADDRESS_STATUS.OK)
+    if (user.isBanned && userIpAddress.status === IP_ADDRESS_STATUS.OK)
       await IpAddress.updateOne(
         { _id: userIpAddress._id },
-        { $set: IP_ADDRESS_STATUS.BANNED }
+        { $set: { status: IP_ADDRESS_STATUS.BANNED } }
       )
 
     // Ban user if IP banned
