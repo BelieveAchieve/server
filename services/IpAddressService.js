@@ -2,7 +2,7 @@ const axios = require('axios')
 const Sentry = require('@sentry/node')
 const IpAddress = require('../models/IpAddress')
 const User = require('../models/User')
-const { IP_ADDRESS_STATUS } = require('../constants')
+const { IP_ADDRESS_STATUS, USER_BAN_REASON } = require('../constants')
 
 const cleanIpString = rawIpString => {
   // Remove ipv6 prefix if present
@@ -74,7 +74,10 @@ module.exports = {
     // Ban user if IP banned
     if (ipAddress.status === IP_ADDRESS_STATUS.BANNED && !user.isBanned) {
       didBanUser = true
-      await User.updateOne({ _id: user._id }, { $set: { isBanned: true } })
+      await User.updateOne(
+        { _id: user._id },
+        { $set: { isBanned: true, banReason: USER_BAN_REASON.BANNED_IP } }
+      )
     }
 
     return didBanUser
