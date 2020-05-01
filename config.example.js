@@ -84,13 +84,12 @@ module.exports = {
   sendingNumber: '',
 
   notificationSchedule: [
+    30 * 1000,
+    30 * 1000,
+    30 * 1000,
     2 * 60 * 1000,
-    1 * 60 * 1000,
-    1 * 60 * 1000,
-    1,
-    3 * 60 * 1000,
-    1,
-    1 * 60 * 1000
+    30 * 1000,
+    30 * 1000
   ],
   // Failsafe notification options
   // time until second (desperate) SMS message is sent
