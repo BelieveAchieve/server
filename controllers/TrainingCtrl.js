@@ -59,7 +59,8 @@ module.exports = {
 
     const userUpdates = {
       [`certifications.${category}.passed`]: passed,
-      [`certifications.${category}.tries`]: tries
+      [`certifications.${category}.tries`]: tries,
+      [`certifications.${category}.lastAttemptedAt`]: new Date()
     }
 
     await User.updateOne({ _id: user._id }, userUpdates)
