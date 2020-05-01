@@ -5,44 +5,43 @@ const MailService = require('../services/MailService')
 const User = require('../models/User')
 
 module.exports = {
-  initiateVerification: async function({ userId }, callback) {
-    // Find the user to be verified
-    const user = await User.findOne({ _id: userId })
-      .select('verified email')
-      .lean()
-      .exec()
-
-    if (!user) {
-      throw new Error('No account with that id found')
-    }
-
+  initiateVerification: async ({ user }, callback) => {
     if (user.verified) {
       throw new Error('User is already verified')
     }
 
-    // Generate the verification token
-    const token = await new Promise((resolve, reject) => {
-      crypto.randomBytes(16, (err, buf) => {
-        if (err) {
-          return reject(new Error('Error generating verification token'))
-        }
+    // Get the user's verification token
+    let { verificationToken } = await User.findOne({ _id: user._id })
+      .select('verificationToken')
+      .lean()
+      .exec()
 
-        const hexToken = buf.toString('hex')
-        return resolve(hexToken)
+    // Generate verification token if the user doesn't have one
+    if (!verificationToken) {
+      verificationToken = await new Promise((resolve, reject) => {
+        crypto.randomBytes(16, (err, buf) => {
+          if (err) {
+            return reject(new Error('Error generating verification token'))
+          }
+
+          const hexToken = buf.toString('hex')
+          return resolve(hexToken)
+        })
       })
-    })
 
-    // Save token to user in database
-    await User.updateOne({ _id: userId }, { verificationToken: token })
+      // Save token to user in database
+      await User.updateOne({ _id: user._id }, { verificationToken })
+    }
 
     // Send verification email
-    MailService.sendVerification({ email: user.email, token })
+    MailService.sendVerification({
+      email: user.email,
+      token: verificationToken
+    })
 
     // Temporary support for callback usage
     if (callback) {
-      return callback(null, user.email)
-    } else {
-      return user.email
+      return callback(null)
     }
   },
 
@@ -62,7 +61,7 @@ module.exports = {
       throw new Error('No user found with that verification token')
     }
 
-    MailService.sendWelcomeEmail({
+    MailService.sendVolunteerWelcomeEmail({
       email: user.email,
       firstName: user.firstname
     })
