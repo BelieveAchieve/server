@@ -44,11 +44,30 @@ const findOrCreateIpAddress = async rawIpString => {
 module.exports = {
   getIpWhoIs,
 
-  record: async (user, ipString) => {
+  record: async ({ user, ipString }) => {
     const userIpAddress = await findOrCreateIpAddress(ipString)
 
+    const alreadyRecorded = userIpAddress.users.some(u => u.equals(user._id))
+    
+    if (!alreadyRecorded) {
+      await User.updateOne(
+        { _id: user._id },
+        { $addToSet: { ipAddresses: userIpAddress._id } }
+      )
+      await IpAddress.updateOne(
+        { _id: userIpAddress._id },
+        { $addToSet: { users: user._id } }
+      )
+    }
+
+    return userIpAddress
+  },
+
+  ban: async ({ user, ipAddress }) => {
+    let didBanUser = false
+
     // Ban IP if user banned
-    if (user.isBanned && userIpAddress.status === IP_ADDRESS_STATUS.OK)
+    if (user.isBanned && ipAddress.status === IP_ADDRESS_STATUS.OK)
       await IpAddress.updateOne(
         { _id: userIpAddress._id },
         { $set: { status: IP_ADDRESS_STATUS.BANNED } }
@@ -56,20 +75,10 @@ module.exports = {
 
     // Ban user if IP banned
     if (userIpAddress.status === IP_ADDRESS_STATUS.BANNED && !user.isBanned) {
-      user.isBanned = true
+      didBanUser = true
       await User.updateOne({ _id: user._id }, { $set: { isBanned: true } })
     }
 
-    const alreadyRecorded = userIpAddress.users.some(u => u.equals(user._id))
-    if (alreadyRecorded) return
-
-    await User.updateOne(
-      { _id: user._id },
-      { $addToSet: { ipAddresses: userIpAddress._id } }
-    )
-    await IpAddress.updateOne(
-      { _id: userIpAddress._id },
-      { $addToSet: { users: user._id } }
-    )
+    return didBanUser
   }
 }
