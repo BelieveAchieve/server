@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/node';
-import { size, map } from 'lodash';
-import * as UserModel from '../../models/User';
+import { map, size } from 'lodash';
+import UserModel from '../../models/User';
 import { User } from '../../models/types';
-import * as dbconnect from '../../dbutils/dbconnect';
+import dbconnect from '../../dbutils/dbconnect';
 import { log } from '../logger';
 
 export default async (): Promise<void> => {

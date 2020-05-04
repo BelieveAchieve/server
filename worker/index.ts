@@ -1,6 +1,6 @@
-import * as Queue from 'bull';
+import Queue from 'bull';
+import { redisConnectionString, workerQueueName } from '../config';
 import { log } from './logger';
-import { workerQueueName, redisConnectionString } from '../config';
 import { addJobProcessors } from './jobs';
 
 const main = async (): Promise<void> => {
