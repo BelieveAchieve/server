@@ -1,6 +1,6 @@
 const UserCtrl = require('../../controllers/UserCtrl')
 const passport = require('../auth/passport')
-const config = require('../../config.js')
+const config = require('../../config')
 
 module.exports = function(router) {
   router.route('/user').get(function(req, res) {
