@@ -14,6 +14,10 @@ const jobTemplates: JobTemplate[] = [
   {
     name: Jobs.UpdateElapsedAvailability,
     options: { repeat: { cron: '0 4 * * *', tz: 'America/New_York' } } // each day at 4am
+  },
+  {
+    name: Jobs.SendFinishOnboardingEmail,
+    options: { repeat: { cron: '0 14 * * *', tz: 'America/New_York' } } // each day at 2pm
   }
 ];
 

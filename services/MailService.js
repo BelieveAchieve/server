@@ -1,5 +1,6 @@
 const config = require('../config')
 const sgMail = require('@sendgrid/mail')
+const Sentry = require('@sentry/node')
 const { capitalize } = require('lodash')
 
 sgMail.setApiKey(config.sendgrid.apiKey)
@@ -32,7 +33,7 @@ const sendEmail = function(
     asm
   }
 
-  sgMail.send(msg, callback)
+  return sgMail.send(msg, callback)
 }
 
 module.exports = {
@@ -143,5 +144,31 @@ module.exports = {
       config.sendgrid.unsubscribeGroup.account,
       callback
     )
+  },
+
+  sendFinishOnboardingEmail: async function(options) {
+    const {
+      availabilityLastModifiedAt,
+      isCertified,
+      firstName,
+      email
+    } = options
+
+    try {
+      await sendEmail(
+        email,
+        config.mail.senders.noreply,
+        'UPchieve',
+        config.sendgrid.testTemplate,
+        {
+          firstName: capitalize(firstName),
+          isCertified,
+          availabilityLastModifiedAt: !!availabilityLastModifiedAt
+        },
+        config.sendgrid.unsubscribeGroup.account
+      )
+    } catch (error) {
+      Sentry.captureException(error)
+    }
   }
 }
