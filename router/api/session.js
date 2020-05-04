@@ -143,7 +143,7 @@ module.exports = function(router, io) {
     }
   })
 
-  router.get('/sessions', passport.isAdmin, async function (req, res) {
+  router.get('/sessions', passport.isAdmin, async function(req, res, next) {
     try {
       const sessions = await Session.find({})
         .sort({ createdAt: -1 })
@@ -158,7 +158,7 @@ module.exports = function(router, io) {
     }
   })
 
-  router.get('/session/:sessionId', passport.isAdmin, async function (req, res) {
+  router.get('/session/:sessionId', passport.isAdmin, async function(req, res, next) {
     const { sessionId } = req.params
 
     try {
