@@ -113,3 +113,4 @@ const config: Static<typeof Config> = {
 };
 
 module.exports = config;
+export default config;
