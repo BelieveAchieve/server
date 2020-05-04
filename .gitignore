@@ -2,6 +2,7 @@ build
 node_modules
 npm-debug.log
 config.js
+config.ts
 dist
 sendgrid.env
 *.swp
