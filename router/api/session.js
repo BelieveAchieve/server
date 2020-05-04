@@ -158,7 +158,11 @@ module.exports = function(router, io) {
     }
   })
 
-  router.get('/session/:sessionId', passport.isAdmin, async function(req, res, next) {
+  router.get('/session/:sessionId', passport.isAdmin, async function(
+    req,
+    res,
+    next
+  ) {
     const { sessionId } = req.params
 
     try {
