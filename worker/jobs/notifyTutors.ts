@@ -3,8 +3,8 @@ import * as Session from '../../models/Session';
 import * as SessionService from '../../services/SessionService';
 import * as TwilioService from '../../services/twilio';
 import * as dbconnect from '../../dbutils/dbconnect';
-import { Jobs } from '.';
 import { log } from '../logger';
+import { Jobs } from '.';
 
 interface NotifyTutorsJobData {
   sessionId: string;

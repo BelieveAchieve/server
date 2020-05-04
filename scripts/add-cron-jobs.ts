@@ -1,6 +1,6 @@
-import * as Queue from 'bull';
+import Queue from 'bull';
 import { find, map } from 'lodash';
-import { workerQueueName, redisConnectionString } from '../config';
+import { redisConnectionString, workerQueueName } from '../config';
 import { log } from '../worker/logger';
 import { Jobs } from '../worker/jobs';
 
