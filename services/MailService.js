@@ -1,5 +1,6 @@
 const config = require('../config')
 const sgMail = require('@sendgrid/mail')
+const { capitalize } = require('lodash')
 
 sgMail.setApiKey(config.sendgrid.apiKey)
 
@@ -105,25 +106,39 @@ module.exports = {
     )
   },
 
-  sendWelcomeEmail: function(options, callback) {
-    const email = options.email
-    const firstName = options.firstName
-    const firstNameCapitalized =
-      firstName.charAt(0).toUpperCase() + firstName.slice(1)
-    const coachGuideLink = 'http://' + config.client.host + '/coach-guide'
-    const scheduleLink = 'http://' + config.client.host + '/calendar'
-    const trainingLink = 'http://' + config.client.host + '/training'
+  sendVolunteerWelcomeEmail: function(options, callback) {
+    const { email, firstName } = options
+    const { host } = config.client
+    const coachGuideLink = `http://${host}/coach-guide`
+    const scheduleLink = `http://${host}/calendar`
+    const trainingLink = `http://${host}/training`
 
     sendEmail(
       email,
       config.mail.senders.noreply,
       'UPchieve',
-      config.sendgrid.welcomeTemplate,
+      config.sendgrid.volunteerWelcomeTemplate,
       {
-        firstName: firstNameCapitalized,
+        firstName: capitalize(firstName),
         coachGuideLink,
         scheduleLink,
         trainingLink
+      },
+      config.sendgrid.unsubscribeGroup.account,
+      callback
+    )
+  },
+
+  sendStudentWelcomeEmail: function(options, callback) {
+    const { email, firstName } = options
+
+    sendEmail(
+      email,
+      config.mail.senders.noreply,
+      'UPchieve',
+      config.sendgrid.studentWelcomeTemplate,
+      {
+        firstName: capitalize(firstName)
       },
       config.sendgrid.unsubscribeGroup.account,
       callback

@@ -14,6 +14,9 @@ const getSupercategory = subcategory => {
     case 'applications':
       category = 'COLLEGE'
       break
+    case 'biology':
+      category = 'SCIENCE'
+      break
     default:
       break
   }

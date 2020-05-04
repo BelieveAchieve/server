@@ -1,6 +1,6 @@
 [
     {
-        "upchieveId": "01",
+        "upchieveId": "12345678",
         "nameStored": "test data",
         "districtNameStored": "district1",
         "cityNameStored": "New York",
@@ -23,7 +23,7 @@
         "FIPST": 1
       },
       {
-        "upchieveId": "02",
+        "upchieveId": "23456789",
         "nameStored": "Legacy Signup High School",
         "districtNameStored": "district2",
         "cityNameStored": "New York",

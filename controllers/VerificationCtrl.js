@@ -61,7 +61,7 @@ module.exports = {
       throw new Error('No user found with that verification token')
     }
 
-    MailService.sendWelcomeEmail({
+    MailService.sendVolunteerWelcomeEmail({
       email: user.email,
       firstName: user.firstname
     })
