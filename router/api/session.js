@@ -1,10 +1,11 @@
+const ObjectId = require('mongodb').ObjectId
+const Sentry = require('@sentry/node')
 const Session = require('../../models/Session')
 const SessionCtrl = require('../../controllers/SessionCtrl')
 const UserActionCtrl = require('../../controllers/UserActionCtrl')
 const SocketService = require('../../services/SocketService')
 const recordIpAddress = require('../../middleware/record-ip-address')
-const ObjectId = require('mongodb').ObjectId
-const Sentry = require('@sentry/node')
+const passport = require('../auth/passport')
 
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
@@ -138,6 +139,37 @@ module.exports = function(router, io) {
         })
       }
     } catch (err) {
+      next(err)
+    }
+  })
+
+  router.get('/sessions', passport.isAdmin, async function (req, res) {
+    try {
+      const sessions = await Session.find({})
+        .sort({ createdAt: -1 })
+        .limit(25)
+        .lean()
+        .exec()
+
+      res.json({ sessions })
+    } catch (err) {
+      console.log(err)
+      next(err)
+    }
+  })
+
+  router.get('/session/:sessionId', passport.isAdmin, async function (req, res) {
+    const { sessionId } = req.params
+
+    try {
+      const session = await Session.findOne({ _id: sessionId })
+        .populate('student volunteer notifications')
+        .lean()
+        .exec()
+
+      res.json({ session })
+    } catch (err) {
+      console.log(err)
       next(err)
     }
   })
