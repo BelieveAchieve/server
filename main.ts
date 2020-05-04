@@ -6,15 +6,15 @@ import busboy from 'connect-busboy';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Request } from 'express';
-import { Static } from 'runtypes';
 import expressWs from '@small-tech/express-ws';
 import logger from 'morgan';
 import mongoose from 'mongoose';
+import { Static } from 'runtypes';
 import rawConfig from './config';
 import { Config } from './config-type';
 import router from './router';
 
-const main = () => {
+const main = (): void => {
   let config: Static<typeof Config>;
 
   try {
@@ -23,7 +23,6 @@ const main = () => {
     console.trace(`${error.name}: ${error.message} [${error.key}]`);
     return;
   }
-
   interface LoadedRequest extends Request {
     user: {};
   }
