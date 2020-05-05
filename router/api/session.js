@@ -144,14 +144,21 @@ module.exports = function(router, io) {
   })
 
   router.get('/sessions', passport.isAdmin, async function(req, res, next) {
+    const PER_PAGE = 15
+    const page = parseInt(req.query.page) || 1
+    const skip = (page - 1) * PER_PAGE
+
     try {
       const sessions = await Session.find({})
         .sort({ createdAt: -1 })
-        .limit(25)
+        .skip(skip)
+        .limit(PER_PAGE)
         .lean()
         .exec()
 
-      res.json({ sessions })
+      const isLastPage = sessions.length < PER_PAGE
+
+      res.json({ sessions, isLastPage })
     } catch (err) {
       console.log(err)
       next(err)
@@ -167,7 +174,7 @@ module.exports = function(router, io) {
 
     try {
       const session = await Session.findOne({ _id: sessionId })
-        .populate('student volunteer notifications')
+        .populate('student volunteer')
         .lean()
         .exec()
 
