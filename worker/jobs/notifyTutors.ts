@@ -1,8 +1,8 @@
 import { Job } from 'bull';
-import * as Session from '../../models/Session';
-import * as SessionService from '../../services/SessionService';
-import * as TwilioService from '../../services/twilio';
-import * as dbconnect from '../../dbutils/dbconnect';
+import Session from '../../models/Session';
+import SessionService from '../../services/SessionService';
+import TwilioService from '../../services/twilio';
+import dbconnect from '../../dbutils/dbconnect';
 import { log } from '../logger';
 import { Jobs } from '.';
 
