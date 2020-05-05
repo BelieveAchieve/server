@@ -17,7 +17,8 @@ export default async (job: Job<NotifyTutorsJobData>): Promise<void> => {
   const session = await Session.findById(sessionId);
   if (!session) return log(`session ${sessionId} not found`);
   const fulfilled = SessionService.isSessionFulfilled(session);
-  if (fulfilled) return log(`session ${sessionId} fulfilled, cancelling notifications`);;
+  if (fulfilled)
+    return log(`session ${sessionId} fulfilled, cancelling notifications`);
   const delay = notificationSchedule.shift();
   if (delay)
     job.queue.add(
