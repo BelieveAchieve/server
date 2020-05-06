@@ -1,6 +1,7 @@
 const ObjectId = require('mongodb').ObjectId
 const Sentry = require('@sentry/node')
 const Session = require('../../models/Session')
+const Feedback = require('../../models/Feedback')
 const SessionCtrl = require('../../controllers/SessionCtrl')
 const UserActionCtrl = require('../../controllers/UserActionCtrl')
 const SocketService = require('../../services/SocketService')
@@ -177,6 +178,8 @@ module.exports = function(router, io) {
         .populate('student volunteer')
         .lean()
         .exec()
+
+      session.feedbacks = await Feedback.find({ sessionId })
 
       res.json({ session })
     } catch (err) {

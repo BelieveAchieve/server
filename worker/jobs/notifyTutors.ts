@@ -1,8 +1,8 @@
 import { Job } from 'bull';
-import * as Session from '../../models/Session';
-import * as SessionService from '../../services/SessionService';
-import * as TwilioService from '../../services/twilio';
-import * as dbconnect from '../../dbutils/dbconnect';
+import Session from '../../models/Session';
+import SessionService from '../../services/SessionService';
+import TwilioService from '../../services/twilio';
+import dbconnect from '../../dbutils/dbconnect';
 import { log } from '../logger';
 import { Jobs } from '.';
 
@@ -17,7 +17,8 @@ export default async (job: Job<NotifyTutorsJobData>): Promise<void> => {
   const session = await Session.findById(sessionId);
   if (!session) return log(`session ${sessionId} not found`);
   const fulfilled = SessionService.isSessionFulfilled(session);
-  if (fulfilled) return;
+  if (fulfilled)
+    return log(`session ${sessionId} fulfilled, cancelling notifications`);
   const delay = notificationSchedule.shift();
   if (delay)
     job.queue.add(
