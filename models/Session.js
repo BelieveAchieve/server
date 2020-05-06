@@ -207,8 +207,11 @@ sessionSchema.statics.getUnfulfilledSessions = async function() {
     const wasSessionCreatedAMinuteAgo = moment(oneMinuteAgo).isBefore(
       session.createdAt
     )
+    // Don't show new students' sessions for a minute (they often cancel immediately)
     if (isNewStudent && wasSessionCreatedAMinuteAgo) return false
-    return !session.student.isBanned
+    // Don't show banned students' sessions
+    if (session.student.isBanned) return false
+    return true
   })
 }
 
