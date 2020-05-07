@@ -143,5 +143,16 @@ module.exports = {
       config.sendgrid.unsubscribeGroup.account,
       callback
     )
+  },
+
+  sendReportedSessionAlert: ({ sessionId, reportedByEmail, reportMessage }) => {
+    return sendEmail(
+      email,
+      config.mail.senders.noreply,
+      'UPchieve',
+      config.sendgrid.reportedSessionAlertTemplate,
+      { sessionId, reportedByEmail, reportMessage },
+      config.sendgrid.unsubscribeGroup.account
+    )
   }
 }

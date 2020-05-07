@@ -1,6 +1,11 @@
+const Session = require('../models/Session')
 const User = require('../models/User')
 
 module.exports = {
+  getSession: async (sessionId) => {
+    return Session.findOne({ _id: sessionId })
+  },
+
   addPastSession: async function(user, session) {
     const results = await User.update(
       { _id: user._id },
