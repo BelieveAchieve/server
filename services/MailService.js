@@ -147,7 +147,7 @@ module.exports = {
 
   sendReportedSessionAlert: ({ sessionId, reportedByEmail, reportMessage }) => {
     return sendEmail(
-      email,
+      config.mail.receivers.staff,
       config.mail.senders.noreply,
       'UPchieve',
       config.sendgrid.reportedSessionAlertTemplate,

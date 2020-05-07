@@ -5,6 +5,7 @@ const Feedback = require('../../models/Feedback')
 const SessionCtrl = require('../../controllers/SessionCtrl')
 const UserActionCtrl = require('../../controllers/UserActionCtrl')
 const SocketService = require('../../services/SocketService')
+const SessionService = require('../../services/SessionService')
 const UserService = require('../../services/UserService')
 const MailService = require('../../services/MailService')
 const recordIpAddress = require('../../middleware/record-ip-address')
@@ -157,8 +158,15 @@ module.exports = function(router, io) {
     if (!session || !session.volunteer || !session.volunteer === user._id)
       return res.status(401).json({ err: 'Unable to report this session' })
 
-    await UserService.banUser({ userId: session.student, banReason: USER_BAN_REASON.SESSION_REPORTED })
-    MailService.sendReportedSessionAlert({ sessionId, reportedByEmail: user.email, reportMessage })
+    await UserService.banUser({
+      userId: session.student,
+      banReason: USER_BAN_REASON.SESSION_REPORTED
+    })
+    MailService.sendReportedSessionAlert({
+      sessionId,
+      reportedByEmail: user.email,
+      reportMessage
+    })
 
     return res.json({ msg: 'Success' })
   })

@@ -2,7 +2,7 @@ const Session = require('../models/Session')
 const User = require('../models/User')
 
 module.exports = {
-  getSession: async (sessionId) => {
+  getSession: async sessionId => {
     return Session.findOne({ _id: sessionId })
   },
 
