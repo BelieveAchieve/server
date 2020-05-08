@@ -154,7 +154,6 @@ module.exports = function(router, io) {
     const { user } = req
     const session = await SessionService.getSession(sessionId)
 
-    // TODO: valid equal?
     if (!session || !session.volunteer || !session.volunteer === user._id)
       return res.status(401).json({ err: 'Unable to report this session' })
 
