@@ -162,10 +162,11 @@ module.exports = function(router, io) {
       userId: session.student,
       banReason: USER_BAN_REASON.SESSION_REPORTED
     })
+
     MailService.sendReportedSessionAlert({
       sessionId,
       reportedByEmail: user.email,
-      reportMessage
+      reportMessage: reportMessage || '(no message)'
     })
 
     return res.json({ msg: 'Success' })
