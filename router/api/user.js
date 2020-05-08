@@ -1,4 +1,5 @@
 const UserCtrl = require('../../controllers/UserCtrl')
+const User = require('../../models/User.js')
 const passport = require('../auth/passport')
 const config = require('../../config.js')
 
@@ -49,6 +50,26 @@ module.exports = function(router) {
         }
       }
     )
+  })
+
+  router.get('/user/:userId', passport.isAdmin, async function(
+    req,
+    res,
+    next
+  ) {
+    const { userId } = req.params
+
+    try {
+      const user = await User.findOne({ _id: userId })
+        .populate('pastSessions')
+        .lean()
+        .exec()
+
+      res.json({ user })
+    } catch (err) {
+      console.log(err)
+      next(err)
+    }
   })
 
   /**

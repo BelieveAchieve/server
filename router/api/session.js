@@ -151,7 +151,6 @@ module.exports = function(router, io) {
 
     try {
       const sessions = await Session.find({})
-        .select({ whiteboardDoc: 0 })
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(PER_PAGE)

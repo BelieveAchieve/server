@@ -38,7 +38,8 @@ const sessionSchema = new mongoose.Schema({
 
   whiteboardDoc: {
     type: String,
-    default: ''
+    default: '',
+    select: false
   },
 
   createdAt: {
