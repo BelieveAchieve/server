@@ -14,7 +14,7 @@ test('Should execute next() when given no req.user', t => {
 
 test('Should execute next() when user has lastActivityAt value within one day range', t => {
   t.plan(1)
-  const req = { user: { id: USER_ID, lastActivityAt: new Date() } }
+  const req = { user: { _id: USER_ID, lastActivityAt: new Date() } }
   const next = () => {
     t.pass()
   }

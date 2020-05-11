@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 
 const Message = require('./Message')
+const moment = require('moment-timezone')
 
 const validTypes = ['Math', 'College', 'Science']
 
@@ -193,12 +194,25 @@ sessionSchema.statics.getUnfulfilledSessions = async function() {
   const sessions = await this.find(queryAttrs)
     .populate({
       path: 'student',
-      select: 'firstname isVolunteer isTestUser isBanned'
+      select: 'firstname isVolunteer isTestUser isBanned pastSessions'
     })
     .sort({ createdAt: -1 })
     .exec()
 
-  return sessions.filter(session => !session.student.isBanned)
+  const oneMinuteAgo = moment().subtract(1, 'minutes')
+
+  return sessions.filter(session => {
+    const isNewStudent =
+      session.student.pastSessions && session.student.pastSessions.length === 0
+    const wasSessionCreatedAMinuteAgo = moment(oneMinuteAgo).isBefore(
+      session.createdAt
+    )
+    // Don't show new students' sessions for a minute (they often cancel immediately)
+    if (isNewStudent && wasSessionCreatedAMinuteAgo) return false
+    // Don't show banned students' sessions
+    if (session.student.isBanned) return false
+    return true
+  })
 }
 
 module.exports = mongoose.model('Session', sessionSchema)

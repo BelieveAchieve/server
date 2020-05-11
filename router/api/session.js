@@ -1,10 +1,12 @@
+const ObjectId = require('mongodb').ObjectId
+const Sentry = require('@sentry/node')
 const Session = require('../../models/Session')
+const Feedback = require('../../models/Feedback')
 const SessionCtrl = require('../../controllers/SessionCtrl')
 const UserActionCtrl = require('../../controllers/UserActionCtrl')
 const SocketService = require('../../services/SocketService')
 const recordIpAddress = require('../../middleware/record-ip-address')
-const ObjectId = require('mongodb').ObjectId
-const Sentry = require('@sentry/node')
+const passport = require('../auth/passport')
 
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
@@ -138,6 +140,51 @@ module.exports = function(router, io) {
         })
       }
     } catch (err) {
+      next(err)
+    }
+  })
+
+  router.get('/sessions', passport.isAdmin, async function(req, res, next) {
+    const PER_PAGE = 15
+    const page = parseInt(req.query.page) || 1
+    const skip = (page - 1) * PER_PAGE
+
+    try {
+      const sessions = await Session.find({})
+        .select({ whiteboardDoc: 0 })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(PER_PAGE)
+        .lean()
+        .exec()
+
+      const isLastPage = sessions.length < PER_PAGE
+
+      res.json({ sessions, isLastPage })
+    } catch (err) {
+      console.log(err)
+      next(err)
+    }
+  })
+
+  router.get('/session/:sessionId', passport.isAdmin, async function(
+    req,
+    res,
+    next
+  ) {
+    const { sessionId } = req.params
+
+    try {
+      const session = await Session.findOne({ _id: sessionId })
+        .populate('student volunteer')
+        .lean()
+        .exec()
+
+      session.feedbacks = await Feedback.find({ sessionId })
+
+      res.json({ session })
+    } catch (err) {
+      console.log(err)
       next(err)
     }
   })
