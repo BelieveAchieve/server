@@ -52,16 +52,12 @@ module.exports = function(router) {
     )
   })
 
-  router.get('/user/:userId', passport.isAdmin, async function(
-    req,
-    res,
-    next
-  ) {
+  router.get('/user/:userId', passport.isAdmin, async function(req, res, next) {
     const { userId } = req.params
 
     try {
       const user = await User.findOne({ _id: userId })
-        .populate('pastSessions')
+        .populate('pastSessions approvedHighschool')
         .lean()
         .exec()
 
