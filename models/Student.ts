@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import User from './User.ts'
+import User from './User'
 
 const schemaOptions = {
   toJSON: {
