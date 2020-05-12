@@ -1,10 +1,10 @@
-const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
-const validator = require('validator')
-const config = require('../config.js')
-const { USER_BAN_REASON } = require('../constants')
+import mongoose from 'mongoose'
+import bcrypt from 'bcrypt'
+import validator from 'validator'
+import config from '../config'
+import { USER_BAN_REASON } from '../constants'
 
-const baseUserSchemaOptions = {
+const schemaOptions = {
   /**
    * https://mongoosejs.com/docs/discriminators.html#discriminator-keys
    * The discriminator key is used to discern the different inherited models. The value of the disciminatorKey
@@ -135,7 +135,7 @@ const baseUserSchema = new mongoose.Schema(
       type: String
     }
   },
-  baseUserSchemaOptions
+  schemaOptions
 )
 
 // Given a user record, strip out sensitive data for public consumption
@@ -150,13 +150,7 @@ baseUserSchema.methods.parseProfile = function() {
     isAdmin: this.isAdmin,
     isTestUser: this.isTestUser,
     createdAt: this.createdAt,
-    availability: this.availability,
-    availabilityLastModifiedAt: this.availabilityLastModifiedAt,
-    timezone: this.timezone,
-    college: this.college,
-    favoriteAcademicSubject: this.favoriteAcademicSubject,
-    isFakeUser: this.isFakeUser,
-    certifications: this.certifications
+    isFakeUser: this.isFakeUser
   }
 }
 

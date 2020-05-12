@@ -1,12 +1,12 @@
 import mongoose from 'mongoose'
 import moment from 'moment-timezone'
-import User from './User.ts'
-const config = require('../config')
-const countAvailabilityHours = require('../utils/count-availability-hours')
-const removeTimeFromDate = require('../utils/remove-time-from-date')
-const getFrequencyOfDays = require('../utils/get-frequency-of-days')
-const calculateTotalHours = require('../utils/calculate-total-hours')
-const countOutOfRangeHours = require('../utils/count-out-of-range-hours')
+import config from '../config'
+import countAvailabilityHours from '../utils/count-availability-hours'
+import removeTimeFromDate from '../utils/remove-time-from-date'
+import getFrequencyOfDays from '../utils/get-frequency-of-days'
+import calculateTotalHours from '../utils/calculate-total-hours'
+import countOutOfRangeHours from '../utils/count-out-of-range-hours'
+import User from './User'
 
 const weeksSince = date => {
   // 604800000 = milliseconds in a week
