@@ -48,4 +48,5 @@ studentSchema.methods.getProfile = function(cb) {
 // Use the user schema as the base schema for Student
 const Student = User.discriminator('Student', studentSchema);
 
+module.exports = Student;
 export default Student;

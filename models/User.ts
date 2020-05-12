@@ -183,4 +183,5 @@ baseUserSchema.statics.verifyPassword = (candidatePassword, userPassword) => {
 
 const User = mongoose.model('User', baseUserSchema);
 
+module.exports = User;
 export default User;

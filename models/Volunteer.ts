@@ -447,4 +447,5 @@ volunteerSchema.statics.checkCode = function(code) {
 // Use the user schema as the base schema for Volunteer
 const Volunteer = User.discriminator('Volunteer', volunteerSchema);
 
+module.exports = Volunteer;
 export default Volunteer;
