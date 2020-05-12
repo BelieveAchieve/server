@@ -10,12 +10,12 @@ import User from './User';
 
 const weeksSince = date => {
   // 604800000 = milliseconds in a week
-  return (new Date() - date) / 604800000;
+  return ((new Date() as any) - date) / 604800000;
 };
 
 const minsSince = date => {
   // 60000 = milliseconds in a minute
-  return (new Date() - date) / 60000;
+  return ((new Date() as any) - date) / 60000;
 };
 
 const tallyVolunteerPoints = volunteer => {
