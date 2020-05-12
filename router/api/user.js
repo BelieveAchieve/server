@@ -57,7 +57,14 @@ module.exports = function(router) {
 
     try {
       const user = await User.findOne({ _id: userId })
-        .populate('pastSessions approvedHighschool')
+        .populate({
+          path: 'pastSessions',
+          options: {
+            sort: { created: -1 },
+            limit: 50
+          }
+        })
+        .populate('approvedHighschool')
         .lean()
         .exec()
 
