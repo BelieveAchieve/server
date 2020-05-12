@@ -1,7 +1,7 @@
 const passport = require('../auth/passport')
 
 const VerificationCtrl = require('../../controllers/VerificationCtrl')
-const User = require('../../models/User').default
+const User = require('../../models/User')
 
 module.exports = function(router) {
   router.post('/verify/send', async function(req, res) {

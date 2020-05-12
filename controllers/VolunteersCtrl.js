@@ -1,4 +1,4 @@
-const Volunteer = require('../models/Volunteer').default
+const Volunteer = require('../models/Volunteer')
 
 /**
  * Helper function that, given a single users's

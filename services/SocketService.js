@@ -1,4 +1,4 @@
-const Volunteer = require('../models/Volunteer').default
+const Volunteer = require('../models/Volunteer')
 const Session = require('../models/Session')
 const Message = require('../models/Message')
 
