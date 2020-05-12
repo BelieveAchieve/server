@@ -107,14 +107,17 @@ module.exports = function(io) {
     },
 
     deliverMessage: async function(message, sessionId) {
-      return this.emitToOtherUser(sessionId, message.user, 'messageSend', {
+      const messageData = {
         contents: message.contents,
         name: message.user.firstname,
         userId: message.user._id,
         isVolunteer: message.user.isVolunteer,
         picture: message.user.picture,
         createdAt: message.createdAt
-      })
+      }
+      
+      await this.emitToOtherUser(sessionId, message.user, 'messageSend', messageData)
+      this.emitToUser(message.user, 'messageSend', messageData)
     }
   }
 }
