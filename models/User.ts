@@ -1,8 +1,8 @@
-import mongoose from 'mongoose'
-import bcrypt from 'bcrypt'
-import validator from 'validator'
-import config from '../config'
-import { USER_BAN_REASON } from '../constants'
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
+import validator from 'validator';
+import config from '../config';
+import { USER_BAN_REASON } from '../constants';
 
 const schemaOptions = {
   /**
@@ -20,7 +20,7 @@ const schemaOptions = {
   toObject: {
     virtuals: true
   }
-}
+};
 
 // baseUserSchema is a base schema that the Student and Volunteer schema inherit from
 const baseUserSchema = new mongoose.Schema(
@@ -32,7 +32,7 @@ const baseUserSchema = new mongoose.Schema(
       lowercase: true,
       validate: {
         validator: function(v) {
-          return validator.isEmail(v)
+          return validator.isEmail(v);
         },
         message: '{VALUE} is not a valid email'
       }
@@ -136,7 +136,7 @@ const baseUserSchema = new mongoose.Schema(
     }
   },
   schemaOptions
-)
+);
 
 // Given a user record, strip out sensitive data for public consumption
 baseUserSchema.methods.parseProfile = function() {
@@ -151,36 +151,36 @@ baseUserSchema.methods.parseProfile = function() {
     isTestUser: this.isTestUser,
     createdAt: this.createdAt,
     isFakeUser: this.isFakeUser
-  }
-}
+  };
+};
 
 // Placeholder method to support asynchronous profile parsing
 baseUserSchema.methods.getProfile = function(cb) {
-  cb(null, this.parseProfile())
-}
+  cb(null, this.parseProfile());
+};
 
 baseUserSchema.methods.hashPassword = function(password, cb) {
   bcrypt.genSalt(config.saltRounds, function(err, salt) {
     if (err) {
-      cb(err)
+      cb(err);
     } else {
-      bcrypt.hash(password, salt, cb)
+      bcrypt.hash(password, salt, cb);
     }
-  })
-}
+  });
+};
 
 baseUserSchema.statics.verifyPassword = (candidatePassword, userPassword) => {
   return new Promise((resolve, reject) => {
     bcrypt.compare(candidatePassword, userPassword, (error, isMatch) => {
       if (error) {
-        return reject(error)
+        return reject(error);
       }
 
-      return resolve(isMatch)
-    })
-  })
-}
+      return resolve(isMatch);
+    });
+  });
+};
 
-const User = mongoose.model('User', baseUserSchema)
+const User = mongoose.model('User', baseUserSchema);
 
-export default User
+export default User;

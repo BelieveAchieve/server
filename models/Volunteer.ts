@@ -1,49 +1,49 @@
-import mongoose from 'mongoose'
-import moment from 'moment-timezone'
-import config from '../config'
-import countAvailabilityHours from '../utils/count-availability-hours'
-import removeTimeFromDate from '../utils/remove-time-from-date'
-import getFrequencyOfDays from '../utils/get-frequency-of-days'
-import calculateTotalHours from '../utils/calculate-total-hours'
-import countOutOfRangeHours from '../utils/count-out-of-range-hours'
-import User from './User'
+import mongoose from 'mongoose';
+import moment from 'moment-timezone';
+import config from '../config';
+import countAvailabilityHours from '../utils/count-availability-hours';
+import removeTimeFromDate from '../utils/remove-time-from-date';
+import getFrequencyOfDays from '../utils/get-frequency-of-days';
+import calculateTotalHours from '../utils/calculate-total-hours';
+import countOutOfRangeHours from '../utils/count-out-of-range-hours';
+import User from './User';
 
 const weeksSince = date => {
   // 604800000 = milliseconds in a week
-  return (new Date() - date) / 604800000
-}
+  return (new Date() - date) / 604800000;
+};
 
 const minsSince = date => {
   // 60000 = milliseconds in a minute
-  return (new Date() - date) / 60000
-}
+  return (new Date() - date) / 60000;
+};
 
 const tallyVolunteerPoints = volunteer => {
-  let points = 0
+  let points = 0;
 
   // +2 points if no past sessions
   if (!volunteer.pastSessions || !volunteer.pastSessions.length) {
-    points += 2
+    points += 2;
   }
 
   // +1 point if volunteer is from a partner org
   if (volunteer.volunteerPartnerOrg) {
-    points += 1
+    points += 1;
   }
 
   // +1 point per 1 week since last notification
   if (volunteer.volunteerLastNotification) {
-    points += weeksSince(new Date(volunteer.volunteerLastNotification.sentAt))
+    points += weeksSince(new Date(volunteer.volunteerLastNotification.sentAt));
   } else {
-    points += weeksSince(new Date(volunteer.createdAt))
+    points += weeksSince(new Date(volunteer.createdAt));
   }
 
   // +1 point per 2 weeks since last session
   if (volunteer.volunteerLastSession) {
     points +=
-      0.5 * weeksSince(new Date(volunteer.volunteerLastSession.createdAt))
+      0.5 * weeksSince(new Date(volunteer.volunteerLastSession.createdAt));
   } else {
-    points += weeksSince(new Date(volunteer.createdAt))
+    points += weeksSince(new Date(volunteer.createdAt));
   }
 
   // -10000 points if notified recently
@@ -51,11 +51,11 @@ const tallyVolunteerPoints = volunteer => {
     volunteer.volunteerLastNotification &&
     minsSince(new Date(volunteer.volunteerLastNotification.sentAt)) < 5
   ) {
-    points -= 10000
+    points -= 10000;
   }
 
-  return parseFloat(points.toFixed(2))
-}
+  return parseFloat(points.toFixed(2));
+};
 
 // subdocument schema for each availability day
 const availabilityDaySchema = new mongoose.Schema(
@@ -86,7 +86,7 @@ const availabilityDaySchema = new mongoose.Schema(
     '11p': { type: Boolean, default: false }
   },
   { _id: false }
-)
+);
 
 const availabilitySchema = new mongoose.Schema(
   {
@@ -99,7 +99,7 @@ const availabilitySchema = new mongoose.Schema(
     Saturday: { type: availabilityDaySchema, default: availabilityDaySchema }
   },
   { _id: false }
-)
+);
 
 const volunteerSchemaOptions = {
   toJSON: {
@@ -108,7 +108,7 @@ const volunteerSchemaOptions = {
   toObject: {
     virtuals: true
   }
-}
+};
 
 const volunteerSchema = new mongoose.Schema(
   {
@@ -248,7 +248,7 @@ const volunteerSchema = new mongoose.Schema(
     }
   },
   volunteerSchemaOptions
-)
+);
 
 // Given a user record, strip out sensitive data for public consumption
 volunteerSchema.methods.parseProfile = function() {
@@ -270,13 +270,13 @@ volunteerSchema.methods.parseProfile = function() {
     favoriteAcademicSubject: this.favoriteAcademicSubject,
     isFakeUser: this.isFakeUser,
     certifications: this.certifications
-  }
-}
+  };
+};
 
 // Placeholder method to support asynchronous profile parsing
 volunteerSchema.methods.getProfile = function(cb) {
-  cb(null, this.parseProfile())
-}
+  cb(null, this.parseProfile());
+};
 
 // Calculates the amount of hours between this.availabilityLastModifiedAt
 // and the current time that a user updates to a new availability
@@ -285,111 +285,111 @@ volunteerSchema.methods.calculateElapsedAvailability = function(
 ) {
   // A volunteer must be onboarded before calculating their elapsed availability
   if (!this.isOnboarded) {
-    return 0
+    return 0;
   }
 
   const availabilityLastModifiedAt = moment(
     this.availabilityLastModifiedAt || this.createdAt
   )
     .tz('America/New_York')
-    .format()
+    .format();
   const estTimeNewModifiedDate = moment(newModifiedDate)
     .tz('America/New_York')
-    .format()
+    .format();
 
   // Convert availability to an object formatted with the day of the week
   // as the property and the amount of hours they have available for that day as the value
   // e.g { Monday: 10, Tuesday: 3 }
   const totalAvailabilityHoursMapped = countAvailabilityHours(
     this.availability.toObject()
-  )
+  );
 
   // Count the occurrence of days of the week between a start and end date
   const frequencyOfDaysList = getFrequencyOfDays(
     removeTimeFromDate(availabilityLastModifiedAt),
     removeTimeFromDate(estTimeNewModifiedDate)
-  )
+  );
 
   let totalHours = calculateTotalHours(
     totalAvailabilityHoursMapped,
     frequencyOfDaysList
-  )
+  );
 
   // Deduct the amount hours that fall outside of the start and end date time
   const outOfRangeHours = countOutOfRangeHours(
     availabilityLastModifiedAt,
     estTimeNewModifiedDate,
     this.availability.toObject()
-  )
-  totalHours -= outOfRangeHours
+  );
+  totalHours -= outOfRangeHours;
 
-  return totalHours
-}
+  return totalHours;
+};
 
 // regular expression that accepts multiple valid U. S. phone number formats
 // see http://regexlib.com/REDetails.aspx?regexp_id=58
 // modified to ignore trailing/leading whitespace and disallow alphanumeric characters
-const PHONE_REGEX = /^\s*(?:[0-9](?: |-)?)?(?:\(?([0-9]{3})\)?|[0-9]{3})(?: |-)?(?:([0-9]{3})(?: |-)?([0-9]{4}))\s*$/
+const PHONE_REGEX = /^\s*(?:[0-9](?: |-)?)?(?:\(?([0-9]{3})\)?|[0-9]{3})(?: |-)?(?:([0-9]{3})(?: |-)?([0-9]{4}))\s*$/;
 
 // virtual type for phone number formatted for readability
 volunteerSchema
   .virtual('phonePretty')
   .get(function() {
     if (!this.phone) {
-      return null
+      return null;
     }
 
     // @todo: support better formatting of international numbers in phonePretty
     if (this.phone[0] === '+') {
-      return this.phone
+      return this.phone;
     }
 
     // first test user's phone number to see if it's a valid U.S. phone number
-    const matches = this.phone.match(PHONE_REGEX)
+    const matches = this.phone.match(PHONE_REGEX);
     if (!matches) {
-      return null
+      return null;
     }
 
     // ignore first element of matches, which is the full regex match,
     // and destructure remaining portion
-    const [, area, prefix, line] = matches
+    const [, area, prefix, line] = matches;
     // accepted phone number format in database
-    const reStrict = /^([0-9]{3})([0-9]{3})([0-9]{4})$/
+    const reStrict = /^([0-9]{3})([0-9]{3})([0-9]{4})$/;
     if (!this.phone.match(reStrict)) {
       // autocorrect phone number format
-      const oldPhone = this.phone
-      this.phone = `${area}${prefix}${line}`
+      const oldPhone = this.phone;
+      this.phone = `${area}${prefix}${line}`;
       this.save(function(err, user) {
         if (err) {
-          console.log(err)
+          console.log(err);
         } else {
-          console.log(`Phone number ${oldPhone} corrected to ${user.phone}.`)
+          console.log(`Phone number ${oldPhone} corrected to ${user.phone}.`);
         }
-      })
+      });
     }
-    return `${area}-${prefix}-${line}`
+    return `${area}-${prefix}-${line}`;
   })
   .set(function(v) {
     if (!v) {
-      this.phone = v
+      this.phone = v;
     } else {
       // @todo: support better setting of international numbers in phonePretty
       if (v[0] === '+') {
-        this.phone = `+${v.replace(/\D/g, '')}`
-        return
+        this.phone = `+${v.replace(/\D/g, '')}`;
+        return;
       }
 
       // ignore first element of match result, which is the full match,
       // and destructure the remaining portion
-      const [, area, prefix, line] = v.match(PHONE_REGEX) || []
-      this.phone = `${area}${prefix}${line}`
+      const [, area, prefix, line] = v.match(PHONE_REGEX) || [];
+      this.phone = `${area}${prefix}${line}`;
     }
-  })
+  });
 
 volunteerSchema.virtual('volunteerPointRank').get(function() {
-  if (!this.isVolunteer) return null
-  return tallyVolunteerPoints(this)
-})
+  if (!this.isVolunteer) return null;
+  return tallyVolunteerPoints(this);
+});
 
 // Virtual that gets all notifications that this user has been sent
 volunteerSchema.virtual('notifications', {
@@ -397,7 +397,7 @@ volunteerSchema.virtual('notifications', {
   localField: '_id',
   foreignField: 'volunteer',
   options: { sort: { sentAt: -1 } }
-})
+});
 
 volunteerSchema.virtual('volunteerLastSession', {
   ref: 'Session',
@@ -405,7 +405,7 @@ volunteerSchema.virtual('volunteerLastSession', {
   foreignField: 'volunteer',
   justOne: true,
   options: { sort: { createdAt: -1 } }
-})
+});
 
 volunteerSchema.virtual('volunteerLastNotification', {
   ref: 'Notification',
@@ -413,38 +413,38 @@ volunteerSchema.virtual('volunteerLastNotification', {
   foreignField: 'volunteer',
   justOne: true,
   options: { sort: { sentAt: -1 } }
-})
+});
 
 volunteerSchema.virtual('isOnboarded').get(function() {
-  if (!this.isVolunteer) return null
-  const certifications = this.certifications.toObject()
-  let isCertified = false
+  if (!this.isVolunteer) return null;
+  const certifications = this.certifications.toObject();
+  let isCertified = false;
 
   for (const subject in certifications) {
     if (
       certifications.hasOwnProperty(subject) &&
       certifications[subject].passed
     ) {
-      isCertified = true
-      break
+      isCertified = true;
+      break;
     }
   }
 
-  return !!this.availabilityLastModifiedAt && isCertified
-})
+  return !!this.availabilityLastModifiedAt && isCertified;
+});
 
 // Static method to determine if a registration code is valid
 volunteerSchema.statics.checkCode = function(code) {
-  const volunteerCodes = config.VOLUNTEER_CODES.split(',')
+  const volunteerCodes = config.VOLUNTEER_CODES.split(',');
 
   const isVolunteerCode = volunteerCodes.some(volunteerCode => {
-    return volunteerCode.toUpperCase() === code.toUpperCase()
-  })
+    return volunteerCode.toUpperCase() === code.toUpperCase();
+  });
 
-  return isVolunteerCode
-}
+  return isVolunteerCode;
+};
 
 // Use the user schema as the base schema for Volunteer
-const Volunteer = User.discriminator('Volunteer', volunteerSchema)
+const Volunteer = User.discriminator('Volunteer', volunteerSchema);
 
-export default Volunteer
+export default Volunteer;

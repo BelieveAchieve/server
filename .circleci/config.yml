@@ -21,6 +21,6 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-      - run: cp config.example.js config.js
+      - run: cp config.example.ts config.ts
       - run: npm test
       - run: npm run lint:prod
