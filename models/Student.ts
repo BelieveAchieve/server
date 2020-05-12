@@ -41,7 +41,7 @@ studentSchema.methods.parseProfile = function() {
 };
 
 // Placeholder method to support asynchronous profile parsing
-studentSchema.methods.getProfile = function(cb) {
+studentSchema.methods.getProfile = function(cb): void {
   cb(null, this.parseProfile());
 };
 

@@ -8,17 +8,17 @@ import calculateTotalHours from '../utils/calculate-total-hours';
 import countOutOfRangeHours from '../utils/count-out-of-range-hours';
 import User from './User';
 
-const weeksSince = date => {
+const weeksSince = (date): number => {
   // 604800000 = milliseconds in a week
-  return ((new Date() as any) - date) / 604800000;
+  return ((new Date().getTime() as number) - date) / 604800000;
 };
 
-const minsSince = date => {
+const minsSince = (date): number => {
   // 60000 = milliseconds in a minute
-  return ((new Date() as any) - date) / 60000;
+  return ((new Date().getTime() as number) - date) / 60000;
 };
 
-const tallyVolunteerPoints = volunteer => {
+const tallyVolunteerPoints = (volunteer): number => {
   let points = 0;
 
   // +2 points if no past sessions
@@ -274,7 +274,7 @@ volunteerSchema.methods.parseProfile = function() {
 };
 
 // Placeholder method to support asynchronous profile parsing
-volunteerSchema.methods.getProfile = function(cb) {
+volunteerSchema.methods.getProfile = function(cb): void {
   cb(null, this.parseProfile());
 };
 
@@ -282,7 +282,7 @@ volunteerSchema.methods.getProfile = function(cb) {
 // and the current time that a user updates to a new availability
 volunteerSchema.methods.calculateElapsedAvailability = function(
   newModifiedDate
-) {
+): number {
   // A volunteer must be onboarded before calculating their elapsed availability
   if (!this.isOnboarded) {
     return 0;
@@ -434,7 +434,7 @@ volunteerSchema.virtual('isOnboarded').get(function() {
 });
 
 // Static method to determine if a registration code is valid
-volunteerSchema.statics.checkCode = function(code) {
+volunteerSchema.statics.checkCode = function(code): boolean {
   const volunteerCodes = config.VOLUNTEER_CODES.split(',');
 
   const isVolunteerCode = volunteerCodes.some(volunteerCode => {

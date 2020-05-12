@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import validator from 'validator';
 import config from '../config';
 import { USER_BAN_REASON } from '../constants';
+import { User } from './types';
 
 const schemaOptions = {
   /**
@@ -31,7 +32,7 @@ const baseUserSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       validate: {
-        validator: function(v) {
+        validator: function(v): boolean {
           return validator.isEmail(v);
         },
         message: '{VALUE} is not a valid email'
@@ -155,11 +156,11 @@ baseUserSchema.methods.parseProfile = function() {
 };
 
 // Placeholder method to support asynchronous profile parsing
-baseUserSchema.methods.getProfile = function(cb) {
+baseUserSchema.methods.getProfile = function(cb): void {
   cb(null, this.parseProfile());
 };
 
-baseUserSchema.methods.hashPassword = function(password, cb) {
+baseUserSchema.methods.hashPassword = function(password, cb): void {
   bcrypt.genSalt(config.saltRounds, function(err, salt) {
     if (err) {
       cb(err);
@@ -169,7 +170,10 @@ baseUserSchema.methods.hashPassword = function(password, cb) {
   });
 };
 
-baseUserSchema.statics.verifyPassword = (candidatePassword, userPassword) => {
+baseUserSchema.statics.verifyPassword = (
+  candidatePassword,
+  userPassword
+): Promise<Error | boolean> => {
   return new Promise((resolve, reject) => {
     bcrypt.compare(candidatePassword, userPassword, (error, isMatch) => {
       if (error) {
