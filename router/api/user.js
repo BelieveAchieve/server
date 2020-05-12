@@ -60,7 +60,7 @@ module.exports = function(router) {
         .populate({
           path: 'pastSessions',
           options: {
-            sort: { created: -1 },
+            sort: { createdAt: -1 },
             limit: 50
           }
         })
