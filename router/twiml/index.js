@@ -7,7 +7,7 @@ const MessagingResponse = require('twilio').twiml.MessagingResponse
 
 const config = require('../../config')
 const twilioService = require('../../services/twilio')
-const Volunteer = require('../../models/Volunteer').default
+const Volunteer = require('../../models/Volunteer')
 const UserActionCtrl = require('../../controllers/UserActionCtrl')
 
 module.exports = function(app) {

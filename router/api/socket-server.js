@@ -7,7 +7,7 @@ const http = require('http')
 const https = require('https')
 const socket = require('socket.io')
 
-const config = require('../../config.js')
+const config = require('../../config')
 
 // Create an HTTPS server if in production, otherwise use HTTP.
 const createServer = app => {

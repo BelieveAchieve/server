@@ -1,7 +1,7 @@
 const _ = require('lodash')
 
 const Question = require('../models/Question')
-const Volunteer = require('../models/Volunteer').default
+const Volunteer = require('../models/Volunteer')
 
 // change depending on how many of each subcategory are wanted
 const numQuestions = {

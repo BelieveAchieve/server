@@ -1,4 +1,4 @@
-const User = require('../models/User').default
+const User = require('../models/User')
 
 function addLastActivity(req, res, next) {
   if (req.user) {

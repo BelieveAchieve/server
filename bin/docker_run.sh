@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-sed -i 's/mongodb:\/\/localhost/mongodb:\/\/db/g' ../config.js
+sed -i 's/mongodb:\/\/localhost/mongodb:\/\/db/g' ../config.ts
 
 sleep 15
 
