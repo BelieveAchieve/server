@@ -55,9 +55,11 @@ module.exports = function(io) {
       }
     },
 
-    emitToUser: function (user, event, ...args) {
+    emitToUser: function(user, event, ...args) {
       const socket = userSockets[user._id]
-      if (socket) { socket.emit(event, args) }
+      if (socket) {
+        socket.emit(event, ...args)
+      }
     },
 
     // update the list of sessions displayed on the volunteer web page
@@ -94,7 +96,7 @@ module.exports = function(io) {
 
       const otherUser = session.otherParticipant(user)
       if (otherUser) {
-        this.emitToUser(otherUser, event, args)
+        this.emitToUser(otherUser, event, ...args)
       }
     },
 
