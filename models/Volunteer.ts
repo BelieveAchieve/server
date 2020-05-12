@@ -110,7 +110,7 @@ const volunteerSchemaOptions = {
   }
 }
 
-const VolunteerSchema = new mongoose.Schema(
+const volunteerSchema = new mongoose.Schema(
   {
     registrationCode: { type: String, select: false },
     volunteerPartnerOrg: String,
@@ -251,7 +251,7 @@ const VolunteerSchema = new mongoose.Schema(
 )
 
 // Given a user record, strip out sensitive data for public consumption
-VolunteerSchema.methods.parseProfile = function() {
+volunteerSchema.methods.parseProfile = function() {
   return {
     _id: this._id,
     email: this.email,
@@ -274,13 +274,13 @@ VolunteerSchema.methods.parseProfile = function() {
 }
 
 // Placeholder method to support asynchronous profile parsing
-VolunteerSchema.methods.getProfile = function(cb) {
+volunteerSchema.methods.getProfile = function(cb) {
   cb(null, this.parseProfile())
 }
 
 // Calculates the amount of hours between this.availabilityLastModifiedAt
 // and the current time that a user updates to a new availability
-VolunteerSchema.methods.calculateElapsedAvailability = function(
+volunteerSchema.methods.calculateElapsedAvailability = function(
   newModifiedDate
 ) {
   // A volunteer must be onboarded before calculating their elapsed availability
@@ -332,7 +332,8 @@ VolunteerSchema.methods.calculateElapsedAvailability = function(
 const PHONE_REGEX = /^\s*(?:[0-9](?: |-)?)?(?:\(?([0-9]{3})\)?|[0-9]{3})(?: |-)?(?:([0-9]{3})(?: |-)?([0-9]{4}))\s*$/
 
 // virtual type for phone number formatted for readability
-VolunteerSchema.virtual('phonePretty')
+volunteerSchema
+  .virtual('phonePretty')
   .get(function() {
     if (!this.phone) {
       return null
@@ -385,20 +386,20 @@ VolunteerSchema.virtual('phonePretty')
     }
   })
 
-VolunteerSchema.virtual('volunteerPointRank').get(function() {
+volunteerSchema.virtual('volunteerPointRank').get(function() {
   if (!this.isVolunteer) return null
   return tallyVolunteerPoints(this)
 })
 
 // Virtual that gets all notifications that this user has been sent
-VolunteerSchema.virtual('notifications', {
+volunteerSchema.virtual('notifications', {
   ref: 'Notification',
   localField: '_id',
   foreignField: 'volunteer',
   options: { sort: { sentAt: -1 } }
 })
 
-VolunteerSchema.virtual('volunteerLastSession', {
+volunteerSchema.virtual('volunteerLastSession', {
   ref: 'Session',
   localField: '_id',
   foreignField: 'volunteer',
@@ -406,7 +407,7 @@ VolunteerSchema.virtual('volunteerLastSession', {
   options: { sort: { createdAt: -1 } }
 })
 
-VolunteerSchema.virtual('volunteerLastNotification', {
+volunteerSchema.virtual('volunteerLastNotification', {
   ref: 'Notification',
   localField: '_id',
   foreignField: 'volunteer',
@@ -414,7 +415,7 @@ VolunteerSchema.virtual('volunteerLastNotification', {
   options: { sort: { sentAt: -1 } }
 })
 
-VolunteerSchema.virtual('isOnboarded').get(function() {
+volunteerSchema.virtual('isOnboarded').get(function() {
   if (!this.isVolunteer) return null
   const certifications = this.certifications.toObject()
   let isCertified = false
@@ -433,7 +434,7 @@ VolunteerSchema.virtual('isOnboarded').get(function() {
 })
 
 // Static method to determine if a registration code is valid
-VolunteerSchema.statics.checkCode = function(code) {
+volunteerSchema.statics.checkCode = function(code) {
   const volunteerCodes = config.VOLUNTEER_CODES.split(',')
 
   const isVolunteerCode = volunteerCodes.some(volunteerCode => {
@@ -444,6 +445,6 @@ VolunteerSchema.statics.checkCode = function(code) {
 }
 
 // Use the user schema as the base schema for Volunteer
-const Volunteer = User.discriminator('Volunteer', VolunteerSchema)
+const Volunteer = User.discriminator('Volunteer', volunteerSchema)
 
 export default Volunteer
