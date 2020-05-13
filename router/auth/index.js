@@ -297,7 +297,7 @@ module.exports = function(app) {
       registrationCode: code,
       volunteerPartnerOrg,
       college,
-      phonePretty: phone,
+      phone,
       favoriteAcademicSubject,
       firstname: capitalize(firstName.trim()),
       lastname: capitalize(lastName.trim()),
