@@ -250,34 +250,6 @@ const volunteerSchema = new mongoose.Schema(
   volunteerSchemaOptions
 );
 
-// Given a user record, strip out sensitive data for public consumption
-volunteerSchema.methods.parseProfile = function() {
-  return {
-    _id: this._id,
-    email: this.email,
-    verified: this.verified,
-    firstname: this.firstname,
-    lastname: this.lastname,
-    isVolunteer: this.isVolunteer,
-    isAdmin: this.isAdmin,
-    isTestUser: this.isTestUser,
-    createdAt: this.createdAt,
-    phone: this.phone,
-    availability: this.availability,
-    availabilityLastModifiedAt: this.availabilityLastModifiedAt,
-    timezone: this.timezone,
-    college: this.college,
-    favoriteAcademicSubject: this.favoriteAcademicSubject,
-    isFakeUser: this.isFakeUser,
-    certifications: this.certifications
-  };
-};
-
-// Placeholder method to support asynchronous profile parsing
-volunteerSchema.methods.getProfile = function(cb): void {
-  cb(null, this.parseProfile());
-};
-
 // Calculates the amount of hours between this.availabilityLastModifiedAt
 // and the current time that a user updates to a new availability
 volunteerSchema.methods.calculateElapsedAvailability = function(
