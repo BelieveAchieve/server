@@ -120,7 +120,9 @@ const volunteerSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      required: true
+      required: true,
+      set: (v): string => v.replace(/-/g, ''),
+      trim: true
       // @todo: server-side validation of international phone format
     },
     favoriteAcademicSubject: String,
