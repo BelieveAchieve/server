@@ -121,8 +121,13 @@ module.exports = function(io) {
         picture: message.user.picture,
         createdAt: message.createdAt
       }
-      
-      await this.emitToOtherUser(sessionId, message.user, 'messageSend', messageData)
+
+      await this.emitToOtherUser(
+        sessionId,
+        message.user,
+        'messageSend',
+        messageData
+      )
       this.emitToUser(message.user, 'messageSend', messageData)
     }
   }
