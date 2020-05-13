@@ -42,6 +42,12 @@ module.exports = function(io) {
       if (user && user.isVolunteer) {
         socket.join('volunteers')
       }
+
+      // update user on state of user's current session
+      const currentSession = await Session.current(userId)
+      if (user) {
+        this.emitToUser(user, 'session-change', currentSession || {})
+      }
     },
 
     // to be called by router/api/sockets.js when user socket disconnects
