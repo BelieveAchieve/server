@@ -16,7 +16,6 @@ const School = require('../../models/School.js')
 const UserActionCtrl = require('../../controllers/UserActionCtrl')
 const { USER_BAN_REASON } = require('../../constants')
 const authPassport = require('./passport')
-const { promisify } = require('util')
 const UserCtrl = require('../../controllers/UserCtrl')
 
 // Validation functions
@@ -200,10 +199,7 @@ module.exports = function(app) {
     try {
       student.password = await student.hashPassword(password)
       await student.save()
-
-      // req.login loses its `this` binding when passed into promisify causing `this` not to point to `req`
-      const loginUser = promisify(req.login.bind(req))
-      await loginUser(student)
+      await req.login(student)
     } catch (err) {
       Sentry.captureException(err)
       return next(err)
@@ -310,10 +306,7 @@ module.exports = function(app) {
     try {
       volunteer.password = await volunteer.hashPassword(password)
       await volunteer.save()
-
-      // req.login loses its `this` binding when passed into promisify causing `this` not to point to `req`
-      const loginUser = promisify(req.login.bind(req))
-      await loginUser(volunteer)
+      await req.login(volunteer)
     } catch (err) {
       Sentry.captureException(err)
       return next(err)
