@@ -87,5 +87,6 @@ export const Config = Record({
   redisConnectionString: String,
   firebase: Record({
     projectId: Number
-  })
+  }),
+  bannedServiceProviders: Array(String)
 });
