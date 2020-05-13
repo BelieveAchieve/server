@@ -84,7 +84,8 @@ const baseUserSchema = new mongoose.Schema(
       enum: [
         USER_BAN_REASON.NON_US_SIGNUP,
         USER_BAN_REASON.BANNED_IP,
-        USER_BAN_REASON.SESSION_REPORT
+        USER_BAN_REASON.SESSION_REPORT,
+        USER_BAN_REASON.BANNED_SERVICE_PROVIDER
       ],
       select: false
     },

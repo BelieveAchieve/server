@@ -109,7 +109,8 @@ const config: Static<typeof Config> = {
   redisConnectionString: 'redis://127.0.0.1:6379',
   firebase: {
     projectId: 123456789012
-  }
+  },
+  bannedServiceProviders: ['Example']
 };
 
 module.exports = config;

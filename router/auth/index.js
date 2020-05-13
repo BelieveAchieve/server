@@ -170,11 +170,14 @@ module.exports = function(app) {
         err: `School ${highSchoolUpchieveId} is not approved`
       })
 
-    const { country_code: countryCode } = await IpAddressService.getIpWhoIs(ip)
+    const { country_code: countryCode, org } = await IpAddressService.getIpWhoIs(ip)
     let isBanned = false
     let banReason
 
-    if (countryCode && countryCode !== 'US') {
+    if (config.bannedServiceProviders.includes(org)) {
+      user.isBanned = true
+      user.banReason = USER_BAN_REASON.BANNED_SERVICE_PROVIDER
+    } else if (countryCode && countryCode !== 'US') {
       isBanned = true
       banReason = USER_BAN_REASON.NON_US_SIGNUP
     }
