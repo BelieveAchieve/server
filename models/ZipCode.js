@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const MEDIUM_INCOME_THRESHOLD = 50000
+const MEDIUM_INCOME_THRESHOLD = 60000
 
 const zipCodeSchema = new mongoose.Schema({
   zipCode: {
