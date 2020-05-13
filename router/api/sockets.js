@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser')
 
 const Session = require('../../models/Session.js')
 
-const config = require('../../config.js')
+const config = require('../../config')
 const SessionCtrl = require('../../controllers/SessionCtrl.js')
 const SocketService = require('../../services/SocketService.js')
 

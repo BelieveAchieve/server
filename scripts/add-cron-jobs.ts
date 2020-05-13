@@ -1,6 +1,6 @@
 import Queue from 'bull';
 import { find, map } from 'lodash';
-import { redisConnectionString, workerQueueName } from '../config';
+import config from '../config';
 import { log } from '../worker/logger';
 import { Jobs } from '../worker/jobs';
 
@@ -19,7 +19,10 @@ const jobTemplates: JobTemplate[] = [
 
 const main = async (): Promise<void> => {
   try {
-    const queue = new Queue(workerQueueName, redisConnectionString);
+    const queue = new Queue(
+      config.workerQueueName,
+      config.redisConnectionString
+    );
 
     const repeatableJobs = await queue.getRepeatableJobs();
 
