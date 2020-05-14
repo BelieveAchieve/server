@@ -105,7 +105,7 @@ asdf install redis [VERSION]
 1. Start a local MongoDB server by running `mongod`. In a separate terminal, you can try connecting to the database by running `mongo` (`mongod` to start the database vs. `mongo` to connect via command line!). Run `quit()` to exit the shell. You can also interface with the database using a free MongoDB GUI such as [MongoDB Compass Community](https://docs.mongodb.com/manual/administration/install-community/)
 2. Run `cp config.example.ts config.ts` to copy the default config as your own config.
 3. Run `npm install` to install the required dependancies.
-4. Run `node init` to seed the database with users, quiz questions, schools, and zip codes
+4. Run `npx ts-node init` to seed the database with users, quiz questions, schools, and zip codes
 5. If you want to test Twilio voice calling functionality, set the `host` property to `[your public IP address]:3000` (minus the brackets), and configure your router/firewall to allow connections to port 3000 from the Internet. Twilio will need to connect to your system to obtain TwiML instructions.
 6. Run `npm run dev` to start the dev server on `http://localhost:3000`. If you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
 7. See [the web client repo](https://github.com/UPchieve/web) for client
