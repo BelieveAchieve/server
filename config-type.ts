@@ -82,10 +82,10 @@ export const Config = Record({
   voice: Literal('man'),
 
   VOLUNTEER_CODES: String,
-  STUDENT_CODES: String,
   workerQueueName: String,
   redisConnectionString: String,
   firebase: Record({
     projectId: Number
-  })
+  }),
+  bannedServiceProviders: Array(String)
 });

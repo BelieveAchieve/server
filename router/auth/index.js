@@ -260,9 +260,14 @@ module.exports = function(app) {
 
         if (!user.isVolunteer) {
           const {
-            country_code: countryCode
+            country_code: countryCode,
+            org
           } = await IpAddressService.getIpWhoIs(req.ip)
-          if (countryCode && countryCode !== 'US') {
+
+          if (config.bannedServiceProviders.includes(org)) {
+            user.isBanned = true
+            user.banReason = USER_BAN_REASON.BANNED_SERVICE_PROVIDER
+          } else if (countryCode && countryCode !== 'US') {
             user.isBanned = true
             user.banReason = USER_BAN_REASON.NON_US_SIGNUP
           }
