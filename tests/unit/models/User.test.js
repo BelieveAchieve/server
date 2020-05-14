@@ -211,28 +211,6 @@ const goodUser = new Volunteer({
   pastSessions: null
 })
 
-test('Phone does not match format', t => {
-  goodUser.phonePretty = '222222222'
-  const test = goodUser.phonePretty
-  t.is(test, null)
-})
-
-test('Phone format matches', t => {
-  goodUser.phonePretty = '555-555-5555'
-  t.is(goodUser.phonePretty, '555-555-5555')
-})
-
-// test('Setting phone to null', t => {
-//   goodUser.phone = null
-//   t.is(goodUser.phonePretty, null)
-// })
-
-test('Test international phone number', t => {
-  goodUser.phone = '+123456790'
-  const tempPhone = goodUser.phonePretty
-  t.is(tempPhone, '+123456790')
-})
-
 test('Elapsed availability for partially onboarded users', async t => {
   // EST Time Zone for dates
   const lastModifiedDate = '2020-02-06T00:52:59.538-05:00'

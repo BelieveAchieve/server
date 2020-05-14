@@ -300,66 +300,6 @@ volunteerSchema.methods.calculateElapsedAvailability = function(
   return totalHours;
 };
 
-// regular expression that accepts multiple valid U. S. phone number formats
-// see http://regexlib.com/REDetails.aspx?regexp_id=58
-// modified to ignore trailing/leading whitespace and disallow alphanumeric characters
-const PHONE_REGEX = /^\s*(?:[0-9](?: |-)?)?(?:\(?([0-9]{3})\)?|[0-9]{3})(?: |-)?(?:([0-9]{3})(?: |-)?([0-9]{4}))\s*$/;
-
-// virtual type for phone number formatted for readability
-volunteerSchema
-  .virtual('phonePretty')
-  .get(function() {
-    if (!this.phone) {
-      return null;
-    }
-
-    // @todo: support better formatting of international numbers in phonePretty
-    if (this.phone[0] === '+') {
-      return this.phone;
-    }
-
-    // first test user's phone number to see if it's a valid U.S. phone number
-    const matches = this.phone.match(PHONE_REGEX);
-    if (!matches) {
-      return null;
-    }
-
-    // ignore first element of matches, which is the full regex match,
-    // and destructure remaining portion
-    const [, area, prefix, line] = matches;
-    // accepted phone number format in database
-    const reStrict = /^([0-9]{3})([0-9]{3})([0-9]{4})$/;
-    if (!this.phone.match(reStrict)) {
-      // autocorrect phone number format
-      const oldPhone = this.phone;
-      this.phone = `${area}${prefix}${line}`;
-      this.save(function(err, user) {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(`Phone number ${oldPhone} corrected to ${user.phone}.`);
-        }
-      });
-    }
-    return `${area}-${prefix}-${line}`;
-  })
-  .set(function(v) {
-    if (!v) {
-      this.phone = v;
-    } else {
-      // @todo: support better setting of international numbers in phonePretty
-      if (v[0] === '+') {
-        this.phone = `+${v.replace(/\D/g, '')}`;
-        return;
-      }
-
-      // ignore first element of match result, which is the full match,
-      // and destructure the remaining portion
-      const [, area, prefix, line] = v.match(PHONE_REGEX) || [];
-      this.phone = `${area}${prefix}${line}`;
-    }
-  });
-
 volunteerSchema.virtual('volunteerPointRank').get(function() {
   if (!this.isVolunteer) return null;
   return tallyVolunteerPoints(this);
