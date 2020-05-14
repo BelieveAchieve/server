@@ -29,7 +29,6 @@ module.exports = function(router) {
     }
   })
 
-
   // @note: Currently, only volunteers are able to update their profile
   router.put('/user', async (req, res, next) => {
     const { _id } = req.user

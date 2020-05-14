@@ -170,13 +170,16 @@ module.exports = function(app) {
         err: `School ${highSchoolUpchieveId} is not approved`
       })
 
-    const { country_code: countryCode, org } = await IpAddressService.getIpWhoIs(ip)
+    const {
+      country_code: countryCode,
+      org
+    } = await IpAddressService.getIpWhoIs(ip)
     let isBanned = false
     let banReason
 
     if (config.bannedServiceProviders.includes(org)) {
-      user.isBanned = true
-      user.banReason = USER_BAN_REASON.BANNED_SERVICE_PROVIDER
+      isBanned = true
+      banReason = USER_BAN_REASON.BANNED_SERVICE_PROVIDER
     } else if (countryCode && countryCode !== 'US') {
       isBanned = true
       banReason = USER_BAN_REASON.NON_US_SIGNUP
@@ -262,7 +265,7 @@ module.exports = function(app) {
         err: checkResult
       })
     }
- 
+
     // Volunteer partner org check (if no signup code provided)
     if (!code) {
       const allVolunteerPartnerManifests = config.volunteerPartnerManifests
@@ -303,7 +306,7 @@ module.exports = function(app) {
       lastname: capitalize(lastName.trim()),
       verified: false,
       referredBy
-    });
+    })
     volunteer.referralCode = base64url(Buffer.from(volunteer.id, 'hex'))
 
     try {

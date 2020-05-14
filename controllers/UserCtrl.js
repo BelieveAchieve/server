@@ -1,5 +1,6 @@
 const User = require('../models/User')
 const Session = require('../models/Session')
+const Sentry = require('@sentry/node')
 
 module.exports = {
   getVolunteerStats: async user => {
@@ -44,23 +45,22 @@ module.exports = {
     return User.deleteOne({ email: userEmail }).exec()
   },
 
-  checkReferral: async function(referredByCode){
+  checkReferral: async function(referredByCode) {
     let referredById
-    if (!referredByCode) return referredById
 
-    try {
-      referredById = await User.findOne({
-        referralCode: referredByCode
-      })
-        .select('_id')
-        .lean()
-        .exec()
+    if (referredByCode) {
+      try {
+        const referredBy = await User.findOne({ referralCode: referredByCode })
+          .select('_id')
+          .lean()
+          .exec()
 
-      referredById = referredBy._id
-    } catch (error) {
-      Sentry.captureException(error)
-    } finally {
-      return referredById
+        referredById = referredBy._id
+      } catch (error) {
+        Sentry.captureException(error)
+      }
     }
+
+    return referredById
   }
 }

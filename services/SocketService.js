@@ -47,7 +47,7 @@ module.exports = function(io) {
           endedAt: { $exists: false }
         },
         '_id'
-      ).exec();
+      ).exec()
 
       // join all rooms corresponding to active sessions
       activeSessions.forEach(session => socket.join(session._id))
