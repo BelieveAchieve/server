@@ -104,7 +104,6 @@ const config: Static<typeof Config> = {
   voice: 'man',
 
   VOLUNTEER_CODES: process.env.UPCHIEVE_VOLUNTEER_CODES || '',
-  STUDENT_CODES: process.env.UPCHIEVE_STUDENT_CODES || '',
   workerQueueName: 'main',
   redisConnectionString: 'redis://127.0.0.1:6379',
   firebase: {
