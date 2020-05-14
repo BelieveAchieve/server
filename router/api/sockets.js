@@ -72,7 +72,7 @@ module.exports = function(io, sessionStore) {
     socket.on('typing', function(data) {
       socketService.emitToOtherUser(
         data.sessionId,
-        socket.request.user,
+        socket.request.user._id,
         'is-typing'
       )
     })
@@ -80,7 +80,7 @@ module.exports = function(io, sessionStore) {
     socket.on('notTyping', function(data) {
       socketService.emitToOtherUser(
         data.sessionId,
-        socket.request.user,
+        socket.request.user._id,
         'not-typing'
       )
     })

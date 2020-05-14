@@ -46,7 +46,7 @@ module.exports = function(io) {
       // update user on state of user's current session
       const currentSession = await Session.current(userId)
       if (user) {
-        this.emitToUser(user, 'session-change', currentSession || {})
+        this.emitToUser(userId, 'session-change', currentSession || {})
       }
     },
 
@@ -61,8 +61,8 @@ module.exports = function(io) {
       }
     },
 
-    emitToUser: function(user, event, ...args) {
-      const socket = userSockets[user._id]
+    emitToUser: function(userId, event, ...args) {
+      const socket = userSockets[userId]
       if (socket) {
         socket.emit(event, ...args)
       }
@@ -82,27 +82,25 @@ module.exports = function(io) {
       const session = await getSessionData(sessionId)
 
       if (session.student) {
-        this.emitToUser(session.student, 'session-change', session)
+        this.emitToUser(session.student._id, 'session-change', session)
       }
 
       if (session.volunteer) {
-        this.emitToUser(session.volunteer, 'session-change', session)
+        this.emitToUser(session.volunteer._id, 'session-change', session)
       }
 
       await this.updateSessionList()
     },
 
-    emitToOtherUser: async function(sessionId, user, event, ...args) {
-      const session = await Session.findById(sessionId)
-        .populate([
-          { path: 'student', select: '_id' },
-          { path: 'volunteer', select: '_id' }
-        ])
-        .exec()
+    emitToOtherUser: async function(sessionId, userId, event, ...args) {
+      const session = await Session.findById(sessionId).exec()
 
-      const otherUser = session.otherParticipant(user)
-      if (otherUser) {
-        this.emitToUser(otherUser, event, ...args)
+      if (session.student.equals(userId)) {
+        if (session.volunteer) {
+          this.emitToUser(session.volunteer._id, event, ...args)
+        }
+      } else if (session.volunteer.equals(userId)) {
+        this.emitToUser(session.student._id, event, ...args)
       }
     },
 
@@ -124,11 +122,11 @@ module.exports = function(io) {
 
       await this.emitToOtherUser(
         sessionId,
-        message.user,
+        message.user._id,
         'messageSend',
         messageData
       )
-      this.emitToUser(message.user, 'messageSend', messageData)
+      this.emitToUser(message.user._id, 'messageSend', messageData)
     }
   }
 }
