@@ -155,16 +155,6 @@ sessionSchema.methods.endSession = function(userWhoEnded) {
   )
 }
 
-sessionSchema.methods.otherParticipant = function(user) {
-  if (this.student._id.equals(user._id)) {
-    return this.volunteer
-  } else if (this.volunteer._id.equals(user._id)) {
-    return this.student
-  } else {
-    throw new Error(`User ${user._id} is not a participant`)
-  }
-}
-
 sessionSchema.methods.addNotifications = function(notificationsToAdd, cb) {
   return this.model('Session')
     .findByIdAndUpdate(this._id, {

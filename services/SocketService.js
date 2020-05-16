@@ -2,7 +2,7 @@ const User = require('../models/User')
 const Session = require('../models/Session')
 const Message = require('../models/Message')
 
-const userSockets = {} // userId => socket
+const userSockets = {} // userId => [sockets]
 
 /**
  * Get session data to send to client for a given session ID
@@ -29,12 +29,8 @@ module.exports = function(io) {
   return {
     // to be called by router/api/sockets.js when user connects socket and authenticates
     connectUser: async function(userId, socket) {
-      if (userSockets[userId] && userSockets[userId] !== socket) {
-        // disconnect the user's old socket
-        userSockets[userId].disconnect(false)
-      }
-
-      userSockets[userId] = socket
+      if (!userSockets[userId]) { userSockets[userId] = [] }
+      userSockets[userId].push(socket)
 
       // query database to see if user is a volunteer
       const user = await User.findById(userId, 'isVolunteer').exec()
@@ -53,18 +49,20 @@ module.exports = function(io) {
     // to be called by router/api/sockets.js when user socket disconnects
     disconnectUser: function(socket) {
       const userId = Object.keys(userSockets).find(
-        id => userSockets[id] === socket
+        id => userSockets[id].findIndex(userSocket => socket.id === userSocket.id) !== -1
       )
 
-      if (userId) {
-        delete userSockets[userId]
-      }
+      const socketIndex = userSockets[userId].findIndex(
+        userSocket => socket.id === userSocket.id
+      )
+
+      userSockets[userId].splice(socketIndex, 1)
     },
 
     emitToUser: function(userId, event, ...args) {
-      const socket = userSockets[userId]
-      if (socket) {
-        socket.emit(event, ...args)
+      const sockets = userSockets[userId]
+      if (sockets && sockets.length) {
+        sockets[sockets.length - 1].emit(event, ...args)
       }
     },
 
