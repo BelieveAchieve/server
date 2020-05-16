@@ -88,7 +88,6 @@ module.exports = function(io, sessionStore) {
     socket.on('message', async function(data) {
       if (!data.sessionId) return
 
-      console.log(`received message from ${data.user._id} at ${socket.id}`)
       await sessionCtrl.message(data)
     })
   })
