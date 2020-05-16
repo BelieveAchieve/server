@@ -29,7 +29,9 @@ module.exports = function(io) {
   return {
     // to be called by router/api/sockets.js when user connects socket and authenticates
     connectUser: async function(userId, socket) {
-      if (!userSockets[userId]) { userSockets[userId] = [] }
+      if (!userSockets[userId]) {
+        userSockets[userId] = []
+      }
       userSockets[userId].push(socket)
 
       // query database to see if user is a volunteer
@@ -49,7 +51,10 @@ module.exports = function(io) {
     // to be called by router/api/sockets.js when user socket disconnects
     disconnectUser: function(socket) {
       const userId = Object.keys(userSockets).find(
-        id => userSockets[id].findIndex(userSocket => socket.id === userSocket.id) !== -1
+        id =>
+          userSockets[id].findIndex(
+            userSocket => socket.id === userSocket.id
+          ) !== -1
       )
 
       const socketIndex = userSockets[userId].findIndex(
