@@ -46,7 +46,7 @@ module.exports = function(io) {
       // update user on state of user's current session
       const currentSession = await Session.current(userId)
       if (user) {
-        this.emitToUser(userId, 'session-change', currentSession || {})
+        socket.emit('session-change', currentSession || {})
       }
     },
 
