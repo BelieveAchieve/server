@@ -53,12 +53,10 @@ UPchieve web server
 Local Development
 -----------------
 ### docker-compose
-Docker provides an alternative for local development. A docker-compose file exists, tied to Mongo. Here's how to work in docker-compose.
+Docker provides an alternative for local development. A docker-compose file exists, tied to Mongo. Here's how run in docker-compose.
 
-1. Navigate to this directory and run `mkdir mongo-volume` to create a directory for the MongoDB volume.
-2. Run `cp config.example.ts config.ts` to copy the default config as your own config. 
-3. Run `docker-compose up` to launch the server.
-4. After any change: Run `docker-compose down --rmi all` to destry images and containers. Then run `docker-compose up`
+1. Navigate to this directory and run `cp config.example.ts config.ts` to copy the default config as your own config. 
+1. Run `npm run docker` to create a directory for the MongoDB volume.
 
 Note: the default command ran when starting the server will populate/refresh all seed data, so any changes will be lost unless this behavior is changed.
 
@@ -69,8 +67,8 @@ The recommended tool for runtime version managment is [`asdf`][asdf]. To use `as
 Install the following asdf plugins:
 
 1. Node.js (see version listed in `.tool-versions`)
-2. MongoDB (see version listed in `.tool-versions`)
-3. Redis (see version listed in `.tool-versions`)
+1. MongoDB (see version listed in `.tool-versions`)
+1. Redis (see version listed in `.tool-versions`)
 
 - [`asdf-nodejs`][asdf-nodejs]
 
@@ -103,14 +101,14 @@ asdf install redis [VERSION]
 ### Setup
 
 1. Start a local MongoDB server by running `mongod`. In a separate terminal, you can try connecting to the database by running `mongo` (`mongod` to start the database vs. `mongo` to connect via command line!). Run `quit()` to exit the shell. You can also interface with the database using a free MongoDB GUI such as [MongoDB Compass Community](https://docs.mongodb.com/manual/administration/install-community/)
-2. Run `cp config.example.ts config.ts` to copy the default config as your own config.
-3. Run `npm install` to install the required dependancies.
-4. Run `npx ts-node init` to seed the database with users, quiz questions, schools, and zip codes
-5. If you want to test Twilio voice calling functionality, set the `host` property to `[your public IP address]:3000` (minus the brackets), and configure your router/firewall to allow connections to port 3000 from the Internet. Twilio will need to connect to your system to obtain TwiML instructions.
-6. Run `npm run dev` to start the dev server on `http://localhost:3000`. If you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
-7. See [the web client repo](https://github.com/UPchieve/web) for client
+1. Run `cp config.example.ts config.ts` to copy the default config as your own config.
+1. Run `npm install` to install the required dependancies.
+1. Run `npx ts-node init` to seed the database with users, quiz questions, schools, and zip codes
+1. If you want to test Twilio voice calling functionality, set the `host` property to `[your public IP address]:3000` (minus the brackets), and configure your router/firewall to allow connections to port 3000 from the Internet. Twilio will need to connect to your system to obtain TwiML instructions.
+1. Run `npm run dev` to start the dev server on `http://localhost:3000`. If you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
+1. See [the web client repo](https://github.com/UPchieve/web) for client
    installation
-7. (optional) Run `redis-server` and `npm run worker:dev` to start the redis database and dev worker. The dev worker will automatically attempt to connect to your local Redis instance and read jobs from there. Additionally, you can run `ts-node ./scripts/add-cron-jobs.ts` to add all repeatable jobs to the job queue.
+1. (optional) Run `redis-server` and `npm run worker:dev` to start the redis database and dev worker. The dev worker will automatically attempt to connect to your local Redis instance and read jobs from there. Additionally, you can run `ts-node ./scripts/add-cron-jobs.ts` to add all repeatable jobs to the job queue.
 
 [bcrypt]: https://www.npmjs.com/package/bcrypt
 

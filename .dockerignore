@@ -1,0 +1,2 @@
+# Macintosh bcrypt installs used in linux can encounter issues, so for convenience we do not reuse this
+node_modules/bcrypt*

@@ -10,7 +10,8 @@
     "lint": "eslint '**/*.ts' --fix && eslint '*.js' '{controllers,models,router,services,seeds,worker}/**/*.js' --no-eslintrc --config ./.eslintrc-javascript.js --fix",
     "lint:prod": "eslint '**/*.ts' --max-warnings 0 && eslint '*.js' '{controllers,models,router,services,seeds,worker}/**/*.js' --no-eslintrc --config ./.eslintrc-javascript.js --max-warnings 0",
     "worker": "ts-node worker",
-    "worker:dev": "ts-node-dev worker"
+    "worker:dev": "ts-node-dev worker",
+    "docker": "mkdir -p mongo-volume && docker-compose build && docker-compose up"
   },
   "nyc": {
     "check-coverage": true,
@@ -28,13 +29,13 @@
     "report-dir": "coverage"
   },
   "ava": {
-		"extensions": [
-			"ts"
-		],
-		"require": [
-			"ts-node/register"
-		]
-	},
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
+  },
   "dependencies": {
     "@sendgrid/mail": "^6.4.0",
     "@sentry/node": "^5.8.0",
