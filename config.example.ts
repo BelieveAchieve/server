@@ -1,13 +1,17 @@
 // Server configuration
 
-module.exports = {
+import { Static } from 'runtypes';
+import { Config } from './config-type';
+
+const config: Static<typeof Config> = {
   NODE_ENV: 'dev',
   SSL_CERT_PATH: '',
   // set host to your public IP address to test Twilio voice calling
   host: process.env.SERVER_HOST || 'localhost:3000',
   database: 'mongodb://localhost:27017/upchieve',
   sessionSecret: process.env.SESSION_SECRET || 'secret',
-  sessionCookieMaxAge: process.env.SESSION_COOKIE_MAX_AGE || 5184000000,
+  sessionCookieMaxAge:
+    parseInt(process.env.SESSION_COOKIE_MAX_AGE) || 5184000000,
   saltRounds: 10,
   sendgrid: {
     apiKey: process.env.SENDGRID_API_KEY || '',
@@ -100,11 +104,14 @@ module.exports = {
   // voice to use to render speech
   voice: 'man',
 
-  VOLUNTEER_CODES: process.env.UPCHIEVE_VOLUNTEER_CODES || '',
-  STUDENT_CODES: process.env.UPCHIEVE_STUDENT_CODES || '',
+  VOLUNTEER_CODES: process.env.UPCHIEVE_VOLUNTEER_CODES || 'CODE123,CODE987',
   workerQueueName: 'main',
   redisConnectionString: 'redis://127.0.0.1:6379',
   firebase: {
     projectId: 123456789012
-  }
-}
+  },
+  bannedServiceProviders: ['Example']
+};
+
+module.exports = config;
+export default config;

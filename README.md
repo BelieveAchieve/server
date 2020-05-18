@@ -12,7 +12,7 @@ UPchieve web server
     - [Setup](#setup)
     - [Test Users](#test-users)
 - [Structure](#structure)
-    - [config.js](#configjs)
+    - [config.ts](#config)
     - [models](#models)
     - [router](#router)
     - [controllers](#controllers)
@@ -56,7 +56,7 @@ Local Development
 Docker provides an alternative for local development. A docker-compose file exists, tied to Mongo. Here's how to work in docker-compose.
 
 1. Navigate to this directory and run `mkdir mongo-volume` to create a directory for the MongoDB volume.
-2. Run `cp config.example.js config.js` to copy the default config as your own config. 
+2. Run `cp config.example.ts config.ts` to copy the default config as your own config. 
 3. Run `docker-compose up` to launch the server.
 4. After any change: Run `docker-compose down --rmi all` to destry images and containers. Then run `docker-compose up`
 
@@ -103,9 +103,9 @@ asdf install redis [VERSION]
 ### Setup
 
 1. Start a local MongoDB server by running `mongod`. In a separate terminal, you can try connecting to the database by running `mongo` (`mongod` to start the database vs. `mongo` to connect via command line!). Run `quit()` to exit the shell. You can also interface with the database using a free MongoDB GUI such as [MongoDB Compass Community](https://docs.mongodb.com/manual/administration/install-community/)
-2. Run `cp config.example.js config.js` to copy the default config as your own config.
+2. Run `cp config.example.ts config.ts` to copy the default config as your own config.
 3. Run `npm install` to install the required dependancies.
-4. Run `node init` to seed the database with users, quiz questions, schools, and zip codes
+4. Run `npx ts-node init` to seed the database with users, quiz questions, schools, and zip codes
 5. If you want to test Twilio voice calling functionality, set the `host` property to `[your public IP address]:3000` (minus the brackets), and configure your router/firewall to allow connections to port 3000 from the Internet. Twilio will need to connect to your system to obtain TwiML instructions.
 6. Run `npm run dev` to start the dev server on `http://localhost:3000`. If you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
 7. See [the web client repo](https://github.com/UPchieve/web) for client
@@ -133,9 +133,9 @@ Structure
 The root folder of the repository provides the bootstrap file `main.js` and a
 package definitions file.
 
-### config.js
+### config
 
-`config.js` contains a map of configuration keys for running the server. All
+`config.ts` contains a map of configuration keys for running the server. All
 keys and sensitive information should be placed in this file.
 
 ### models
@@ -260,7 +260,7 @@ Expects the following query string:
 ?partnerId=PARTNER_ID
 ```
 
-where `PARTNER_ID` is the key name of the volunteer partner organization defined in `config.js` under `volunteerPartnerManifests`.
+where `PARTNER_ID` is the key name of the volunteer partner organization defined in `config.ts` under `volunteerPartnerManifests`.
 
 Returns a volunteer partner manifest object.
 
@@ -272,7 +272,7 @@ Expects the following query string:
 ?partnerId=PARTNER_ID
 ```
 
-where `PARTNER_ID` is the key name of the student partner organization defined in `config.js` under `studentPartnerManifests`.
+where `PARTNER_ID` is the key name of the student partner organization defined in `config.ts` under `studentPartnerManifests`.
 
 Returns a student partner manifest object.
 
@@ -284,7 +284,7 @@ Expects the following query string:
 ?partnerSignupCode=PARTNER_SIGNUP_CODE
 ```
 
-where `PARTNER_SIGNUP_CODE` is equal to a `signupCode` defined in `config.js` under `studentPartnerManifests`.
+where `PARTNER_SIGNUP_CODE` is equal to a `signupCode` defined in `config.ts` under `studentPartnerManifests`.
 
 Returns a student partner manifest key name.
 

@@ -1,6 +1,6 @@
 const express = require('express')
 
-const config = require('../../config.js')
+const config = require('../../config')
 const MailService = require('../../services/MailService')
 
 module.exports = function(app) {

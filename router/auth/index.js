@@ -8,7 +8,7 @@ const VerificationCtrl = require('../../controllers/VerificationCtrl')
 const ResetPasswordCtrl = require('../../controllers/ResetPasswordCtrl')
 const MailService = require('../../services/MailService')
 const IpAddressService = require('../../services/IpAddressService')
-const config = require('../../config.js')
+const config = require('../../config')
 const User = require('../../models/User.js')
 const School = require('../../models/School.js')
 const UserActionCtrl = require('../../controllers/UserActionCtrl')
@@ -260,9 +260,14 @@ module.exports = function(app) {
 
         if (!user.isVolunteer) {
           const {
-            country_code: countryCode
+            country_code: countryCode,
+            org
           } = await IpAddressService.getIpWhoIs(req.ip)
-          if (countryCode && countryCode !== 'US') {
+
+          if (config.bannedServiceProviders.includes(org)) {
+            user.isBanned = true
+            user.banReason = USER_BAN_REASON.BANNED_SERVICE_PROVIDER
+          } else if (countryCode && countryCode !== 'US') {
             user.isBanned = true
             user.banReason = USER_BAN_REASON.NON_US_SIGNUP
           }

@@ -16,7 +16,8 @@
     "check-coverage": true,
     "lines": 25,
     "extension": [
-      ".js"
+      ".js",
+      ".ts"
     ],
     "reporter": [
       "html",
@@ -26,6 +27,14 @@
     ],
     "report-dir": "coverage"
   },
+  "ava": {
+		"extensions": [
+			"ts"
+		],
+		"require": [
+			"ts-node/register"
+		]
+	},
   "dependencies": {
     "@sendgrid/mail": "^6.4.0",
     "@sentry/node": "^5.8.0",
@@ -73,6 +82,7 @@
     "prettier": "1.19.1",
     "prettier-config-standard": "^1.0.1",
     "q": "^1.4.1",
+    "runtypes": "^4.2.0",
     "socket.io": "^2.2.0",
     "ts-node": "^8.9.0",
     "twilio": "^3.28.1",

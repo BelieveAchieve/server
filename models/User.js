@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
 const moment = require('moment-timezone')
-const config = require('../config.js')
+const config = require('../config')
 const countAvailabilityHours = require('../utils/count-availability-hours')
 const removeTimeFromDate = require('../utils/remove-time-from-date')
 const getFrequencyOfDays = require('../utils/get-frequency-of-days')
@@ -163,7 +163,8 @@ var userSchema = new mongoose.Schema(
       enum: [
         USER_BAN_REASON.NON_US_SIGNUP,
         USER_BAN_REASON.BANNED_IP,
-        USER_BAN_REASON.SESSION_REPORT
+        USER_BAN_REASON.SESSION_REPORT,
+        USER_BAN_REASON.BANNED_SERVICE_PROVIDER
       ],
       select: false
     },

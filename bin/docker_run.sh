@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
-sed -i 's/mongodb:\/\/localhost/mongodb:\/\/db/g' ../config.js
+
+#Alter a line in default config.ts: 
+#     database: 'mongodb://localhost:27017/upchieve',
+#New line should read
+#     database: 'mongodb://db:27017/upchieve',
+sed -i 's/mongodb:\/\/localhost/mongodb:\/\/db/g' ../config.ts
 
 sleep 15
 
-node init
+npx ts-node init
 
 export NODE_OPTIONS=--max-old-space-size=5000
 npm install bcrypt
