@@ -113,7 +113,7 @@ module.exports = function(io) {
       socket.emit('bump', data, err.toString())
     },
 
-    deliverMessage: async function(message, sessionId) {
+    deliverMessage: function(message, sessionId) {
       const messageData = {
         contents: message.contents,
         name: message.user.firstname,
@@ -123,7 +123,7 @@ module.exports = function(io) {
         createdAt: message.createdAt
       }
 
-      await this.emitToOtherUser(
+      this.emitToOtherUser(
         sessionId,
         message.user._id,
         'messageSend',
