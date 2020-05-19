@@ -67,7 +67,9 @@ module.exports = function(io) {
     emitToUser: function(userId, event, ...args) {
       const sockets = userSockets[userId]
       if (sockets && sockets.length) {
-        sockets[sockets.length - 1].emit(event, ...args)
+        for (const socket of sockets) {
+          socket.emit(event, ...args)
+        }
       }
     },
 
