@@ -26,6 +26,7 @@ export const Config = Record({
     partnerOrgSignupAlertTemplate: String,
     volunteerWelcomeTemplate: String,
     studentWelcomeTemplate: String,
+    reportedSessionAlertTemplate: String,
     unsubscribeGroup: Record({
       newsletter: Number,
       account: Number

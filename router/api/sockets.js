@@ -10,6 +10,7 @@ const Session = require('../../models/Session.js')
 const config = require('../../config')
 const SessionCtrl = require('../../controllers/SessionCtrl.js')
 const SocketService = require('../../services/SocketService.js')
+const Sentry = require('@sentry/node')
 
 // todo handle errors in try-catch blocks
 
@@ -58,8 +59,8 @@ module.exports = function(io, sessionStore) {
       })
     })
 
-    socket.on('disconnect', function() {
-      console.log('Client disconnected. User ID:', socket.request.user._id)
+    socket.on('disconnect', function(reason) {
+      console.log(`${reason} - User ID: ${socket.request.user._id}`)
 
       socketService.disconnectUser(socket)
     })
@@ -70,17 +71,30 @@ module.exports = function(io, sessionStore) {
     })
 
     socket.on('typing', function(data) {
-      socket.broadcast.to(data.sessionId).emit('is-typing')
+      socketService.emitToOtherUser(
+        data.sessionId,
+        socket.request.user._id,
+        'is-typing'
+      )
     })
 
     socket.on('notTyping', function(data) {
-      socket.broadcast.to(data.sessionId).emit('not-typing')
+      socketService.emitToOtherUser(
+        data.sessionId,
+        socket.request.user._id,
+        'not-typing'
+      )
     })
 
     socket.on('message', async function(data) {
       if (!data.sessionId) return
 
       await sessionCtrl.message(data)
+    })
+
+    socket.on('error', function(error) {
+      console.log('Socket error: ', error)
+      Sentry.captureException(error)
     })
   })
 }
