@@ -10,6 +10,7 @@ const Session = require('../../models/Session.js')
 const config = require('../../config')
 const SessionCtrl = require('../../controllers/SessionCtrl.js')
 const SocketService = require('../../services/SocketService.js')
+const Sentry = require('@sentry/node')
 
 // todo handle errors in try-catch blocks
 
@@ -58,8 +59,8 @@ module.exports = function(io, sessionStore) {
       })
     })
 
-    socket.on('disconnect', function() {
-      console.log('Client disconnected. User ID:', socket.request.user._id)
+    socket.on('disconnect', function(reason) {
+      console.log(`${reason} - User ID: ${socket.request.user._id}`)
 
       socketService.disconnectUser(socket)
     })
@@ -81,6 +82,11 @@ module.exports = function(io, sessionStore) {
       if (!data.sessionId) return
 
       await sessionCtrl.message(data)
+    })
+
+    socket.on('error', function(error) {
+      console.log('Socket error: ', error)
+      Sentry.captureException(error)
     })
   })
 }
