@@ -232,7 +232,7 @@ const notifyVolunteer = async session => {
 
 const notifyFailsafe = async function({ session, voice = false }) {
   const subtopic = session.subTopic
-  const sessionUrl = getSessionUrl(session._id)
+  const sessionUrl = getSessionUrl(session)
   const volunteersToNotify = await getFailsafeVolunteers()
   const { isTestUser } = await User.findOne({ _id: session.student })
     .select('isTestUser')
