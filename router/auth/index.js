@@ -206,7 +206,7 @@ module.exports = function(app) {
       })
     } catch (err) {
       Sentry.captureException(err)
-      return res.status(422).json({ err })
+      return res.status(422).json({ err: err.message })
     }
   })
 
@@ -298,7 +298,7 @@ module.exports = function(app) {
       })
     } catch (err) {
       Sentry.captureException(err)
-      return res.status(422).json({ err })
+      return res.status(422).json({ err: err.message })
     }
   })
 
