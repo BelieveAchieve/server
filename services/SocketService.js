@@ -1,3 +1,4 @@
+const User = require('../models/User')
 const Session = require('../models/Session')
 const Message = require('../models/Message')
 
