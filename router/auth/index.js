@@ -291,7 +291,7 @@ module.exports = function(app) {
     }
 
     try {
-      const volunteer = UserCtrl.createVolunteer(volunteerData)
+      const volunteer = await UserCtrl.createVolunteer(volunteerData)
       await req.login(volunteer)
       return res.json({
         user: volunteer
