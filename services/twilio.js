@@ -1,6 +1,5 @@
 const twilio = require('twilio')
 const moment = require('moment-timezone')
-const base64url = require('base64url')
 const config = require('../config')
 const User = require('../models/User')
 const queue = require('./QueueService')
