@@ -140,10 +140,9 @@ function sendVoiceMessage(phoneNumber, messageText) {
 }
 
 // the URL that the volunteer can use to join the session on the client
-function getSessionUrl(sessionId) {
+function getSessionUrl(session) {
   const protocol = config.NODE_ENV === 'production' ? 'https' : 'http'
-  const sessionIdEncoded = base64url(Buffer.from(sessionId.toString(), 'hex'))
-  return `${protocol}://${config.client.host}/s/${sessionIdEncoded}`
+  return `${protocol}://${config.client.host}/session/${session.type}/${session.subTopic}/${session._id}`
 }
 
 const getActiveSessionVolunteers = async () => {
@@ -215,7 +214,7 @@ const notifyVolunteer = async session => {
 
   if (!volunteer) return null
 
-  const sessionUrl = getSessionUrl(session._id)
+  const sessionUrl = getSessionUrl(session)
   const messageText = `Hi ${volunteer.firstname}, a student needs help in ${subtopic} on UPchieve! ${sessionUrl}`
   const sendPromise = sendTextMessage(volunteer.phone, messageText)
 
@@ -303,9 +302,7 @@ function recordNotification(sendPromise, notification) {
 module.exports = {
   notifyVolunteer,
 
-  getSessionUrl: function(sessionId) {
-    return getSessionUrl(sessionId)
-  },
+  getSessionUrl,
 
   beginRegularNotifications: async function(session) {
     const student = await User.findOne({ _id: session.student })

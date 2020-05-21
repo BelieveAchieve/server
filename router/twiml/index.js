@@ -91,7 +91,7 @@ module.exports = function(app) {
           twiml.message('The student has cancelled their help request')
         } else {
           // Handle: No issues, so send the session URL
-          const sessionUrl = twilioService.getSessionUrl(session._id)
+          const sessionUrl = twilioService.getSessionUrl(session)
           twiml.message(sessionUrl)
         }
       } catch (err) {
