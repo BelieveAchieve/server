@@ -10,6 +10,8 @@ const twilioClient =
   config.accountSid && config.authToken
     ? twilio(config.accountSid, config.authToken)
     : null
+const { FORMAT_INTEGRATED_MATH } = require('../constants');
+const isIntegratedMath = require('../utils/is-integrated-math')
 
 // get the availability field to query for the current time
 function getCurrentAvailabilityPath() {
@@ -174,7 +176,7 @@ const getVolunteersNotifiedSince = async sinceDate => {
 }
 
 const notifyVolunteer = async session => {
-  const subtopic = session.subTopic
+  let subtopic = session.subTopic
   const activeSessionVolunteers = await getActiveSessionVolunteers()
   const notifiedLastFifteenMins = await getVolunteersNotifiedSince(
     relativeDate(15 * 60 * 1000)
@@ -215,6 +217,8 @@ const notifyVolunteer = async session => {
 
   if (!volunteer) return null
 
+  // Format integrated math subtopics to capital casing
+  if (isIntegratedMath(subtopic)) subtopic = FORMAT_INTEGRATED_MATH[subtopic];
   const sessionUrl = getSessionUrl(session._id)
   const messageText = `Hi ${volunteer.firstname}, a student needs help in ${subtopic} on UPchieve! ${sessionUrl}`
   const sendPromise = sendTextMessage(volunteer.phone, messageText)

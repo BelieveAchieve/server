@@ -296,6 +296,17 @@ var userSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
+      integratedMathOne: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
+      },
       trigonometry: {
         passed: {
           type: Boolean,
@@ -307,7 +318,40 @@ var userSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
+      integratedMathTwo: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
+      },
       precalculus: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
+      },
+      integratedMathThree: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
+      },
+      integratedMathFour: {
         passed: {
           type: Boolean,
           default: false
