@@ -73,10 +73,26 @@ const IP_ADDRESS_STATUS = {
   BANNED: 'BANNED'
 }
 
+const INTEGRATED_MATH_MAPPING = {
+  integratedmathone: 'integratedMathOne',
+  integratemathtwo: 'integratedMathTwo',
+  integratedmaththree: 'integratedMathThree',
+  integratedmathfour: 'integratedMathFour'
+}
+
+const FORMAT_INTEGRATED_MATH = {
+  integratedMathOne: 'Integrated Math 1',
+  integratedMathTwo: 'Integrated Math 2',
+  integratedMathThree: 'Integrated Math 3',
+  integratedMathFour: 'Integrated Math 4'
+}
+
 module.exports = {
   DAYS,
   UTC_TO_HOUR_MAPPING,
   USER_ACTION,
   USER_BAN_REASON,
-  IP_ADDRESS_STATUS
+  IP_ADDRESS_STATUS,
+  INTEGRATED_MATH_MAPPING,
+  FORMAT_INTEGRATED_MATH
 }
