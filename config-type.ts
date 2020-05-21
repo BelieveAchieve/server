@@ -26,6 +26,7 @@ export const Config = Record({
     partnerOrgSignupAlertTemplate: String,
     volunteerWelcomeTemplate: String,
     studentWelcomeTemplate: String,
+    reportedSessionAlertTemplate: String,
     unsubscribeGroup: Record({
       newsletter: Number,
       account: Number
@@ -82,7 +83,6 @@ export const Config = Record({
   voice: Literal('man'),
 
   VOLUNTEER_CODES: String,
-  STUDENT_CODES: String,
   workerQueueName: String,
   redisConnectionString: String,
   firebase: Record({

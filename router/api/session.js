@@ -5,8 +5,12 @@ const Feedback = require('../../models/Feedback')
 const SessionCtrl = require('../../controllers/SessionCtrl')
 const UserActionCtrl = require('../../controllers/UserActionCtrl')
 const SocketService = require('../../services/SocketService')
+const SessionService = require('../../services/SessionService')
+const UserService = require('../../services/UserService')
+const MailService = require('../../services/MailService')
 const recordIpAddress = require('../../middleware/record-ip-address')
 const passport = require('../auth/passport')
+const { USER_BAN_REASON } = require('../../constants')
 
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
@@ -142,6 +146,29 @@ module.exports = function(router, io) {
     } catch (err) {
       next(err)
     }
+  })
+
+  router.post('/session/:sessionId/report', async function(req, res) {
+    const { sessionId } = req.params
+    const { reportMessage } = req.body
+    const { user } = req
+    const session = await SessionService.getSession(sessionId)
+
+    if (!session || !session.volunteer || !session.volunteer === user._id)
+      return res.status(401).json({ err: 'Unable to report this session' })
+
+    await UserService.banUser({
+      userId: session.student,
+      banReason: USER_BAN_REASON.SESSION_REPORTED
+    })
+
+    MailService.sendReportedSessionAlert({
+      sessionId,
+      reportedByEmail: user.email,
+      reportMessage: reportMessage || '(no message)'
+    })
+
+    return res.json({ msg: 'Success' })
   })
 
   router.get('/sessions', passport.isAdmin, async function(req, res, next) {
