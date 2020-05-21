@@ -1,6 +1,14 @@
 const User = require('../models/User')
+const Student = require('../models/Student')
+const Volunteer = require('../models/Volunteer')
 const Session = require('../models/Session')
 const Sentry = require('@sentry/node')
+const base64url = require('base64url')
+const MailService = require('../services/MailService')
+const VerificationCtrl = require('../controllers/VerificationCtrl')
+const UserActionCtrl = require('../controllers/UserActionCtrl')
+
+const generateReferralCode = userId => base64url(Buffer.from(userId, 'hex'))
 
 module.exports = {
   getVolunteerStats: async user => {
@@ -62,5 +70,72 @@ module.exports = {
     }
 
     return referredById
+  },
+
+  createStudent: async function(studentData) {
+    const { password, ip } = studentData
+    const student = new Student(studentData)
+    student.referralCode = generateReferralCode(student.id)
+
+    try {
+      student.password = await student.hashPassword(password)
+      await student.save()
+    } catch (error) {
+      throw new Error(error)
+    }
+
+    try {
+      await MailService.sendStudentWelcomeEmail({
+        email: student.email,
+        firstName: student.firstname
+      })
+    } catch (err) {
+      Sentry.captureException(err)
+    }
+
+    try {
+      await UserActionCtrl.createdAccount(student._id, ip)
+    } catch (err) {
+      Sentry.captureException(err)
+    }
+
+    return student
+  },
+
+  createVolunteer: async function(volunteerData) {
+    const { password, ip } = volunteerData
+    const volunteer = new Volunteer(volunteerData)
+    volunteer.referralCode = generateReferralCode(volunteer.id)
+
+    try {
+      volunteer.password = await volunteer.hashPassword(password)
+      await volunteer.save()
+    } catch (error) {
+      throw new Error(error)
+    }
+
+    // Send internal email alert if new volunteer is from a partner org
+    if (volunteer.volunteerPartnerOrg) {
+      MailService.sendPartnerOrgSignupAlert({
+        name: `${volunteer.firstname} ${volunteer.lastname}`,
+        email: volunteer.email,
+        company: volunteer.volunteerPartnerOrg,
+        upchieveId: volunteer._id
+      })
+    }
+
+    try {
+      await VerificationCtrl.initiateVerification({ user: volunteer })
+    } catch (err) {
+      Sentry.captureException(err)
+    }
+
+    try {
+      await UserActionCtrl.createdAccount(volunteer._id, ip)
+    } catch (err) {
+      Sentry.captureException(err)
+    }
+
+    return volunteer
   }
 }

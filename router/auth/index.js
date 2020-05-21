@@ -1,19 +1,14 @@
 const express = require('express')
 const passport = require('passport')
 const Sentry = require('@sentry/node')
-const base64url = require('base64url')
 const { findKey } = require('lodash')
 const { capitalize } = require('lodash')
-const VerificationCtrl = require('../../controllers/VerificationCtrl')
 const ResetPasswordCtrl = require('../../controllers/ResetPasswordCtrl')
-const MailService = require('../../services/MailService')
 const IpAddressService = require('../../services/IpAddressService')
 const config = require('../../config')
 const User = require('../../models/User')
-const Student = require('../../models/Student')
 const Volunteer = require('../../models/Volunteer')
 const School = require('../../models/School.js')
-const UserActionCtrl = require('../../controllers/UserActionCtrl')
 const { USER_BAN_REASON } = require('../../constants')
 const authPassport = require('./passport')
 const UserCtrl = require('../../controllers/UserCtrl')
@@ -108,7 +103,7 @@ module.exports = function(app) {
     })
   })
 
-  router.post('/register/student', async function(req, res, next) {
+  router.post('/register/student', async function(req, res) {
     const { ip } = req
     const {
       email,
@@ -186,7 +181,7 @@ module.exports = function(app) {
     }
 
     const referredBy = await UserCtrl.checkReferral(referredByCode)
-    const student = new Student({
+    const studentData = {
       firstname: capitalize(firstName.trim()),
       lastname: capitalize(lastName.trim()),
       email,
@@ -198,40 +193,25 @@ module.exports = function(app) {
       verified: true, // Students are automatically verified
       referredBy,
       isBanned,
-      banReason
-    })
-    student.referralCode = base64url(Buffer.from(student.id, 'hex'))
-
-    try {
-      student.password = await student.hashPassword(password)
-      await student.save()
-      await req.login(student)
-    } catch (err) {
-      Sentry.captureException(err)
-      return next(err)
+      banReason,
+      password,
+      ip
     }
 
     try {
-      await MailService.sendStudentWelcomeEmail({
-        email: student.email,
-        firstName: student.firstname
+      const student = await UserCtrl.createStudent(studentData)
+      await req.login(student)
+      return res.json({
+        user: student
       })
     } catch (err) {
       Sentry.captureException(err)
+      return res.status(422).json({ err })
     }
-
-    try {
-      await UserActionCtrl.createdAccount(student._id, ip)
-    } catch (err) {
-      Sentry.captureException(err)
-    }
-
-    return res.json({
-      user: student
-    })
   })
 
-  router.post('/register/volunteer', async function(req, res, next) {
+  router.post('/register/volunteer', async function(req, res) {
+    const { ip } = req
     const {
       email,
       password,
@@ -294,7 +274,7 @@ module.exports = function(app) {
 
     const referredBy = await UserCtrl.checkReferral(referredByCode)
 
-    const volunteer = new Volunteer({
+    const volunteerData = {
       email,
       isVolunteer: true,
       registrationCode: code,
@@ -305,45 +285,21 @@ module.exports = function(app) {
       firstname: capitalize(firstName.trim()),
       lastname: capitalize(lastName.trim()),
       verified: false,
-      referredBy
-    })
-    volunteer.referralCode = base64url(Buffer.from(volunteer.id, 'hex'))
+      referredBy,
+      password,
+      ip
+    }
 
     try {
-      volunteer.password = await volunteer.hashPassword(password)
-      await volunteer.save()
+      const volunteer = UserCtrl.createVolunteer(volunteerData)
       await req.login(volunteer)
-    } catch (err) {
-      Sentry.captureException(err)
-      return next(err)
-    }
-
-    // Send internal email alert if new volunteer is from a partner org
-    if (volunteer.volunteerPartnerOrg) {
-      MailService.sendPartnerOrgSignupAlert({
-        name: `${volunteer.firstname} ${volunteer.lastname}`,
-        email: volunteer.email,
-        company: volunteerPartnerOrg,
-        upchieveId: volunteer._id
+      return res.json({
+        user: volunteer
       })
-    }
-
-    try {
-      await VerificationCtrl.initiateVerification({ user: volunteer })
     } catch (err) {
       Sentry.captureException(err)
+      return res.status(422).json({ err })
     }
-
-    try {
-      const { ip } = req
-      await UserActionCtrl.createdAccount(volunteer._id, ip)
-    } catch (err) {
-      Sentry.captureException(err)
-    }
-
-    return res.json({
-      user: volunteer
-    })
   })
 
   router.get('/partner/volunteer', function(req, res) {
