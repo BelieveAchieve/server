@@ -9,7 +9,7 @@ const twilioClient =
   config.accountSid && config.authToken
     ? twilio(config.accountSid, config.authToken)
     : null
-const { FORMAT_INTEGRATED_MATH } = require('../constants');
+const { FORMAT_INTEGRATED_MATH } = require('../constants')
 const isIntegratedMath = require('../utils/is-integrated-math')
 
 // get the availability field to query for the current time

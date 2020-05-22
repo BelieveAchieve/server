@@ -22,14 +22,14 @@ const addIntegratedMathCert = (certifications, newlyPassedCategory) => {
     'geometry',
     'trigonometry',
     'precalculus'
-  ];
+  ]
   const update = {}
 
   // early exit if the category is not a prequisite for Integrated Math
   if (!prerequisiteCategories.includes(newlyPassedCategory)) return update
 
   for (const category in certifications) {
-    if (certifications[category].passed) passedCategories.add(category);
+    if (certifications[category].passed) passedCategories.add(category)
   }
   passedCategories.add(newlyPassedCategory)
 
@@ -119,12 +119,12 @@ module.exports = {
 
     const tries = user.certifications[category]['tries'] + 1
 
-    let integratedMathUpdate = {};
+    let integratedMathUpdate = {}
     if (passed)
       integratedMathUpdate = addIntegratedMathCert(
         user.certifications,
         category
-      );
+      )
 
     const userUpdates = {
       [`certifications.${category}.passed`]: passed,
