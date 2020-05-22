@@ -15,7 +15,7 @@ const numQuestions = {
   essays: 3,
   applications: 2,
   biology: 1,
-  chemistry: 0.7,
+  chemistry: 1,
   physics: 1
 }
 const PASS_THRESHOLD = 0.8
