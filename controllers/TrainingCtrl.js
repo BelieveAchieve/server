@@ -3,6 +3,68 @@ const _ = require('lodash')
 const Question = require('../models/Question')
 const User = require('../models/User')
 
+/**
+ *
+ * Build an update object to add Integrated Math Certifications
+ * if requirements are met.
+ *
+ * Integrated Math Certification Requirements:
+ * Integrated Math One    - Algebra and Geometry
+ * Integrated Math Two    - Algebra, Geometry, and Trigonometry
+ * Integrated Math Three  - Algebra, Geometry, and Precalculus
+ * Integrated Math Four   - Algebra, Trigonometry, and Precalculus
+ *
+ */
+const addIntegratedMathCert = (certifications, newlyPassedCategory) => {
+  const passedCategories = new Set()
+  const prerequisiteCategories = [
+    'algebra',
+    'geometry',
+    'trigonometry',
+    'precalculus'
+  ];
+  const update = {}
+
+  // early exit if the category is not a prequisite for Integrated Math
+  if (!prerequisiteCategories.includes(newlyPassedCategory)) return update
+
+  for (const category in certifications) {
+    if (certifications[category].passed) passedCategories.add(category);
+  }
+  passedCategories.add(newlyPassedCategory)
+
+  if (passedCategories.has('algebra')) {
+    if (
+      passedCategories.has('geometry') &&
+      !passedCategories.has('integratedMathOne')
+    )
+      update['certifications.integratedMathOne.passed'] = true
+
+    if (
+      passedCategories.has('geometry') &&
+      passedCategories.has('trigonometry') &&
+      !passedCategories.has('integratedMathTwo')
+    )
+      update['certifications.integratedMathTwo.passed'] = true
+
+    if (
+      passedCategories.has('geometry') &&
+      passedCategories.has('precalculus') &&
+      !passedCategories.has('integratedMathThree')
+    )
+      update['certifications.integratedMathThree.passed'] = true
+
+    if (
+      passedCategories.has('trigonometry') &&
+      passedCategories.has('precalculus') &&
+      !passedCategories.has('integratedMathFour')
+    )
+      update['certifications.integratedMathFour.passed'] = true
+  }
+
+  return update
+}
+
 // change depending on how many of each subcategory are wanted
 const numQuestions = {
   prealgebra: 2,
@@ -57,10 +119,18 @@ module.exports = {
 
     const tries = user.certifications[category]['tries'] + 1
 
+    let integratedMathUpdate = {};
+    if (passed)
+      integratedMathUpdate = addIntegratedMathCert(
+        user.certifications,
+        category
+      );
+
     const userUpdates = {
       [`certifications.${category}.passed`]: passed,
       [`certifications.${category}.tries`]: tries,
-      [`certifications.${category}.lastAttemptedAt`]: new Date()
+      [`certifications.${category}.lastAttemptedAt`]: new Date(),
+      ...integratedMathUpdate
     }
 
     await User.updateOne({ _id: user._id }, userUpdates)
