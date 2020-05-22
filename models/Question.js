@@ -99,6 +99,38 @@ questionSchema.statics.getSubcategories = function(category) {
       'ecology',
       'human physiology and anatomy',
       'evolution and taxonomy'
+    ],
+    chemistry: [
+      'chemical reactions',
+      'atoms, compounds, and ions',
+      'stoichiometry',
+      'electron structure of atoms',
+      'periodic table',
+      'chemical bonds',
+      'gases',
+      'states of matter and intermolecular forces',
+      'chemical equilibrium',
+      'acids and bases',
+      'buffers, titrations, and solubility equilibria',
+      'thermodynamics',
+      'redox reactions and electrochemistry',
+      'kinetics',
+      'nuclear chemistry',
+      'kinematics'
+    ],
+    physics: [
+      'kinematics',
+      // eslint-disable-next-line quotes
+      "newton's laws",
+      'rotational mechanics',
+      'work and energy',
+      'momentum and collisions',
+      'thermodynamics',
+      'electrostatics',
+      'magnetism',
+      'waves and sound',
+      'refraction and reflection',
+      'gravity/gen relativity'
     ]
   }
 

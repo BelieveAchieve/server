@@ -412,6 +412,8 @@ test('Test parsed profile Object', t => {
   t.is(parsedData.certifications['essays'].passed, false)
   t.is(parsedData.certifications['planning'].passed, false)
   t.is(parsedData.certifications['biology'].passed, false)
+  t.is(parsedData.certifications['chemistry'].passed, false)
+  t.is(parsedData.certifications['physics'].passed, false)
   t.is(parsedData.certifications['prealgebra'].tries, 0)
   t.is(parsedData.certifications['algebra'].tries, 0)
   t.is(parsedData.certifications['geometry'].tries, 0)
@@ -421,7 +423,9 @@ test('Test parsed profile Object', t => {
   t.is(parsedData.certifications['applications'].tries, 0)
   t.is(parsedData.certifications['essays'].tries, 0)
   t.is(parsedData.certifications['planning'].tries, 0)
-  t.is(parsedData.certifications['biology'].passed, false)
+  t.is(parsedData.certifications['biology'].tries, 0)
+  t.is(parsedData.certifications['chemistry'].tries, 0)
+  t.is(parsedData.certifications['physics'].tries, 0)
 })
 
 test('Phone does not match format', t => {
