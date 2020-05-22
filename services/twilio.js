@@ -9,6 +9,8 @@ const twilioClient =
   config.accountSid && config.authToken
     ? twilio(config.accountSid, config.authToken)
     : null
+const { FORMAT_PHYSICS } = require('../constants')
+const isPhysics = require('../utils/is-physics')
 
 // get the availability field to query for the current time
 function getCurrentAvailabilityPath() {
@@ -141,7 +143,9 @@ function sendVoiceMessage(phoneNumber, messageText) {
 // the URL that the volunteer can use to join the session on the client
 function getSessionUrl(session) {
   const protocol = config.NODE_ENV === 'production' ? 'https' : 'http'
-  return `${protocol}://${config.client.host}/session/${session.type}/${session.subTopic}/${session._id}`
+  return `${protocol}://${config.client.host}/session/${
+    session.type
+  }/${session.subTopic.toLowerCase()}/${session._id}`
 }
 
 const getActiveSessionVolunteers = async () => {
@@ -172,7 +176,7 @@ const getVolunteersNotifiedSince = async sinceDate => {
 }
 
 const notifyVolunteer = async session => {
-  const subtopic = session.subTopic
+  let subtopic = session.subTopic
   const activeSessionVolunteers = await getActiveSessionVolunteers()
   const notifiedLastFifteenMins = await getVolunteersNotifiedSince(
     relativeDate(15 * 60 * 1000)
@@ -212,6 +216,10 @@ const notifyVolunteer = async session => {
   }
 
   if (!volunteer) return null
+
+  // Format physics subtopics to proper display name
+  // ex: physicsOne -> Physics 1
+  if (isPhysics(subtopic)) subtopic = FORMAT_PHYSICS[subtopic]
 
   const sessionUrl = getSessionUrl(session)
   const messageText = `Hi ${volunteer.firstname}, a student needs help in ${subtopic} on UPchieve! ${sessionUrl}`

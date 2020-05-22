@@ -73,10 +73,20 @@ const IP_ADDRESS_STATUS = {
   BANNED: 'BANNED'
 }
 
+const PHYSICS_MAPPING = {
+  physicsone: 'physicsOne'
+}
+
+const FORMAT_PHYSICS = {
+  physicsOne: 'Physics 1'
+}
+
 module.exports = {
   DAYS,
   UTC_TO_HOUR_MAPPING,
   USER_ACTION,
   USER_BAN_REASON,
-  IP_ADDRESS_STATUS
+  IP_ADDRESS_STATUS,
+  PHYSICS_MAPPING,
+  FORMAT_PHYSICS
 }

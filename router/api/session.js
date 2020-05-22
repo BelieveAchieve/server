@@ -10,7 +10,8 @@ const UserService = require('../../services/UserService')
 const MailService = require('../../services/MailService')
 const recordIpAddress = require('../../middleware/record-ip-address')
 const passport = require('../auth/passport')
-const { USER_BAN_REASON } = require('../../constants')
+const isPhysics = require('../../utils/is-physics')
+const { USER_BAN_REASON, PHYSICS_MAPPING } = require('../../constants')
 
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
@@ -22,8 +23,13 @@ module.exports = function(router, io) {
     .post(recordIpAddress, async function(req, res, next) {
       const data = req.body || {}
       const sessionType = data.sessionType
-      const sessionSubTopic = data.sessionSubTopic
+      let sessionSubTopic = data.sessionSubTopic
       const { user, ip } = req
+
+      // Map multi-word categories from lowercased to how it's defined in the User model
+      // ex: 'physicsone' -> 'physicsOne' and stores 'physicsOne' on the session
+      if (isPhysics(sessionSubTopic))
+        sessionSubTopic = PHYSICS_MAPPING[sessionSubTopic]
 
       try {
         const session = await sessionCtrl.create({
