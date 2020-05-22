@@ -86,13 +86,15 @@ async function upgrade(): Promise<void> {
   } catch (error) {
     console.log('error', error);
   }
+
+  mongoose.disconnect();
 }
 
 async function downgrade(): Promise<void> {
   try {
     await dbconnect();
     const results = await User.updateMany(
-      {},
+      { isVolunteer: true },
       {
         $unset: {
           'certifications.integratedMathOne': '',
