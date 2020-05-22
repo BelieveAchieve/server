@@ -143,7 +143,9 @@ function sendVoiceMessage(phoneNumber, messageText) {
 // the URL that the volunteer can use to join the session on the client
 function getSessionUrl(session) {
   const protocol = config.NODE_ENV === 'production' ? 'https' : 'http'
-  return `${protocol}://${config.client.host}/session/${session.type}/${session.subTopic}/${session._id}`
+  return `${protocol}://${config.client.host}/session/${
+    session.type
+  }/${session.subTopic.toLowerCase()}/${session._id}`
 }
 
 const getActiveSessionVolunteers = async () => {
