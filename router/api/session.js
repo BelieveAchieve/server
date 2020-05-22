@@ -26,6 +26,8 @@ module.exports = function(router, io) {
       let sessionSubTopic = data.sessionSubTopic
       const { user, ip } = req
 
+      // map integratedMath subtopics to how it's defined in the model
+      // ex: 'integratedmathone' -> 'integratedMathOne'
       if (isIntegratedMath(sessionSubTopic))
         sessionSubTopic = INTEGRATED_MATH_MAPPING[sessionSubTopic]
 

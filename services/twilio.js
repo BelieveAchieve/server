@@ -217,7 +217,8 @@ const notifyVolunteer = async session => {
 
   if (!volunteer) return null
 
-  // Format integrated math subtopics to capital casing
+  // Format integrated math subtopics to their proper display name
+  // ex: integratedMathOne -> Integrated Math 1
   if (isIntegratedMath(subtopic)) subtopic = FORMAT_INTEGRATED_MATH[subtopic]
   const sessionUrl = getSessionUrl(session)
   const messageText = `Hi ${volunteer.firstname}, a student needs help in ${subtopic} on UPchieve! ${sessionUrl}`
