@@ -14,7 +14,7 @@ async function upgrade(): Promise<void> {
       {
         $set: {
           'certifications.chemistry': subject,
-          'certifications.physics': subject
+          'certifications.physicsOne': subject
         }
       },
       { strict: false }
@@ -36,7 +36,7 @@ async function downgrade(): Promise<void> {
       {
         $unset: {
           'certifications.chemistry': '',
-          'certifications.physics': ''
+          'certifications.physicsOne': ''
         }
       }
     );

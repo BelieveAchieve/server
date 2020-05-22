@@ -384,7 +384,7 @@ var userSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
-      physics: {
+      physicsOne: {
         passed: {
           type: Boolean,
           default: false

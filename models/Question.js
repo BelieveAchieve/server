@@ -118,7 +118,7 @@ questionSchema.statics.getSubcategories = function(category) {
       'nuclear chemistry',
       'kinematics'
     ],
-    physics: [
+    physicsOne: [
       'kinematics',
       // eslint-disable-next-line quotes
       "newton's laws",
@@ -142,8 +142,6 @@ questionSchema.statics.getSubcategories = function(category) {
         typeof category
     )
   }
-
-  category = category.toLowerCase()
 
   if (categoryToSubcategoryMap.hasOwnProperty(category)) {
     const subcategories = categoryToSubcategoryMap[category]
