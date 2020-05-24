@@ -1,7 +1,7 @@
 import { INTEGRATED_MATH_MAPPING } from '../constants';
 
-const isIntegratedMath = (subTopic): boolean =>
-  Object.keys(INTEGRATED_MATH_MAPPING).includes(subTopic);
+const isIntegratedMath = (subtopic): boolean =>
+  Object.keys(INTEGRATED_MATH_MAPPING).includes(subtopic);
 
 module.exports = isIntegratedMath;
 export default isIntegratedMath;
