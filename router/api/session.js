@@ -10,8 +10,8 @@ const UserService = require('../../services/UserService')
 const MailService = require('../../services/MailService')
 const recordIpAddress = require('../../middleware/record-ip-address')
 const passport = require('../auth/passport')
-const { USER_BAN_REASON, INTEGRATED_MATH_MAPPING } = require('../../constants')
-const isIntegratedMath = require('../../utils/is-integrated-math')
+const mapMultiWordSubtopic = require('../../utils/map-multi-word-subtopic')
+const { USER_BAN_REASON } = require('../../constants')
 
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
@@ -26,10 +26,9 @@ module.exports = function(router, io) {
       let sessionSubTopic = data.sessionSubTopic
       const { user, ip } = req
 
-      // map integratedMath subtopics to how it's defined in the model
-      // ex: 'integratedmathone' -> 'integratedMathOne'
-      if (isIntegratedMath(sessionSubTopic))
-        sessionSubTopic = INTEGRATED_MATH_MAPPING[sessionSubTopic]
+      // Map multi-word categories from lowercased to how it's defined in the User model
+      // ex: 'physicsone' -> 'physicsOne' and stores 'physicsOne' on the session
+      sessionSubTopic = mapMultiWordSubtopic(sessionSubTopic)
 
       try {
         const session = await sessionCtrl.create({
