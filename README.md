@@ -99,7 +99,7 @@ docker run -i --rm --name mongoContainer -p 27017-27019:27017-27019 -v <Absolute
 Pull and run docker image `redis:5.0.8`. You can use any empty directory to which you have write access for your volume.
 
 ```shell-script
-docker run -i --rm --name redis -p 6379:6379 -v <Absolute Path to directory on your drive>:/data -t redis:3.2.0
+docker run -i --rm --name redis -p 6379:6379 -v <Absolute Path to directory on your drive>:/data -t redis:5.0.8
 ```
 
 [wsl]: https://docs.microsoft.com/en-us/windows/wsl/install-win10
