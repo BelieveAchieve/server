@@ -1,12 +1,11 @@
 import { FORMAT_INTEGRATED_MATH, FORMAT_PHYSICS } from '../constants';
-import isIntegratedMath from './is-integrated-math';
-import isPhysics from './is-physics';
 
 const formatMultiWordSubtopic = (subtopic): string => {
-  if (isIntegratedMath(subtopic)) return FORMAT_INTEGRATED_MATH[subtopic];
-  if (isPhysics(subtopic)) return FORMAT_PHYSICS[subtopic];
+  if (FORMAT_INTEGRATED_MATH[subtopic]) return FORMAT_INTEGRATED_MATH[subtopic];
+  if (FORMAT_PHYSICS[subtopic]) return FORMAT_PHYSICS[subtopic];
 
   return subtopic;
 };
 
+module.exports = formatMultiWordSubtopic;
 export default formatMultiWordSubtopic;
