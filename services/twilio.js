@@ -9,8 +9,7 @@ const twilioClient =
   config.accountSid && config.authToken
     ? twilio(config.accountSid, config.authToken)
     : null
-const { FORMAT_INTEGRATED_MATH } = require('../constants')
-const isIntegratedMath = require('../utils/is-integrated-math')
+const formatMultiWordSubtopic = require('../utils/format-multi-word-subtopic')
 
 // get the availability field to query for the current time
 function getCurrentAvailabilityPath() {
@@ -217,9 +216,10 @@ const notifyVolunteer = async session => {
 
   if (!volunteer) return null
 
-  // Format integrated math subtopics to their proper display name
-  // ex: integratedMathOne -> Integrated Math 1
-  if (isIntegratedMath(subtopic)) subtopic = FORMAT_INTEGRATED_MATH[subtopic]
+  // Format multi-word subtopics from a key name to a display name
+  // ex: physicsOne -> Physics 1
+  subtopic = formatMultiWordSubtopic(subtopic)
+
   const sessionUrl = getSessionUrl(session)
   const messageText = `Hi ${volunteer.firstname}, a student needs help in ${subtopic} on UPchieve! ${sessionUrl}`
   const sendPromise = sendTextMessage(volunteer.phone, messageText)

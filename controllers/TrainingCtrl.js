@@ -76,22 +76,23 @@ const numQuestions = {
   planning: 4,
   essays: 3,
   applications: 2,
-  biology: 1
+  biology: 1,
+  chemistry: 1,
+  physicsOne: 1
 }
 const PASS_THRESHOLD = 0.8
 
 module.exports = {
   getQuestions: async function(options) {
-    const subcategories = Question.getSubcategories(options.category)
+    const { category } = options
+    const subcategories = Question.getSubcategories(category)
 
     if (!subcategories) {
-      throw new Error(
-        'No subcategories defined for category: ' + options.category
-      )
+      throw new Error('No subcategories defined for category: ' + category)
     }
 
     const questions = await Question.find({
-      category: options.category
+      category
     })
 
     const questionsBySubcategory = _.groupBy(
@@ -101,7 +102,7 @@ module.exports = {
 
     return _.shuffle(
       Object.entries(questionsBySubcategory).flatMap(([, subQuestions]) =>
-        _.sampleSize(subQuestions, numQuestions[options.category])
+        _.sampleSize(subQuestions, numQuestions[category])
       )
     )
   },

@@ -87,6 +87,14 @@ const FORMAT_INTEGRATED_MATH = {
   integratedMathFour: 'Integrated Math 4'
 }
 
+const PHYSICS_MAPPING = {
+  physicsone: 'physicsOne'
+}
+
+const FORMAT_PHYSICS = {
+  physicsOne: 'Physics 1'
+}
+
 module.exports = {
   DAYS,
   UTC_TO_HOUR_MAPPING,
@@ -94,5 +102,7 @@ module.exports = {
   USER_BAN_REASON,
   IP_ADDRESS_STATUS,
   INTEGRATED_MATH_MAPPING,
-  FORMAT_INTEGRATED_MATH
+  FORMAT_INTEGRATED_MATH,
+  PHYSICS_MAPPING,
+  FORMAT_PHYSICS
 }
