@@ -52,50 +52,59 @@ UPchieve web server
 
 Local Development
 -----------------
-### docker-compose
+## docker-compose
 Docker provides an alternative for local development. A docker-compose file exists, tied to Mongo. Here's how to work in docker-compose.
 
 1. Navigate to this directory and run `mkdir mongo-volume` to create a directory for the MongoDB volume.
-2. Run `cp config.example.ts config.ts` to copy the default config as your own config. 
-3. Run `docker-compose up` to launch the server.
-4. After any change: Run `docker-compose down --rmi all` to destry images and containers. Then run `docker-compose up`
+1. Run `cp config.example.ts config.ts` to copy the default config as your own config. 
+1. Run `docker-compose up` to launch the server.
+1. After any change: Run `docker-compose down --rmi all` to destry images and containers. Then run `docker-compose up`
 
 Note: the default command ran when starting the server will populate/refresh all seed data, so any changes will be lost unless this behavior is changed.
 
+## Without docker-compose
+If not using docker-compose, follow these steps to start required components.
+
 ### Dependencies
 
-The recommended tool for runtime version managment is [`asdf`][asdf]. To use `asdf` on Windows, first install the appropriate Linux shell distribution using [`WSL`][wsl] (Windows Subsystem for Linux).
+The recommended tool for runtime version managment is [`asdf`][asdf] and [`Docker`][Docker]. To use `asdf` on Windows, first install the appropriate Linux shell distribution using [`WSL`][wsl] (Windows Subsystem for Linux).
 
-Install the following asdf plugins:
+#### Node 11.7.0
 
-1. Node.js (see version listed in `.tool-versions`)
-2. MongoDB (see version listed in `.tool-versions`)
-3. Redis (see version listed in `.tool-versions`)
+You must use Node.js version `11.7.0`. Install the following asdf plugin:
+
+- nodejs version `11.7.0`
 
 - [`asdf-nodejs`][asdf-nodejs]
 
 ```shell-script
 asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
 bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
-asdf install nodejs [VERSION]
+asdf install nodejs 11.7.0
+asdf global nodejs 11.7.0
+node -v
 ```
+The output of `node -v` should be: `v11.7.0`
 
-- [`asdf-mongodb`][asdf-mongodb]
+#### Mongo 4.2.3
+
+Using a Volume (else data is not saved), pull and run docker image `mongo:4.2.3-bionic`. You can use any empty directory to which you have write access for your volume.
 
 ```shell-script
-asdf plugin-add mongodb
-asdf install mongodb [VERSION]
+docker run -i --rm --name mongoContainer -p 27017-27019:27017-27019 -v <Absolute Path to directory on your drive>:/data/db mongo:4.2.3-bionic
 ```
 
-- [`asdf-redis`][asdf-redis]
+#### Redis 5.0.8
+
+Pull and run docker image `redis:5.0.8`. You can use any empty directory to which you have write access for your volume.
 
 ```shell-script
-asdf plugin-add redis
-asdf install redis [VERSION]
+docker run -i --rm --name redis -p 6379:6379 -v <Absolute Path to directory on your drive>:/data -t redis:3.2.0
 ```
 
 [wsl]: https://docs.microsoft.com/en-us/windows/wsl/install-win10
 [asdf]: https://github.com/asdf-vm/asdf
+[Docker]: https://www.docker.com/products/docker-desktop
 [asdf-nodejs]: https://github.com/asdf-vm/asdf-nodejs
 [asdf-mongodb]: https://github.com/sylph01/asdf-mongodb
 [asdf-redis]: https://github.com/smashedtoatoms/asdf-redis
@@ -103,18 +112,18 @@ asdf install redis [VERSION]
 ### Setup
 
 1. Start a local MongoDB server by running `mongod`. In a separate terminal, you can try connecting to the database by running `mongo` (`mongod` to start the database vs. `mongo` to connect via command line!). Run `quit()` to exit the shell. You can also interface with the database using a free MongoDB GUI such as [MongoDB Compass Community](https://docs.mongodb.com/manual/administration/install-community/)
-2. Run `cp config.example.ts config.ts` to copy the default config as your own config.
-3. Run `npm install` to install the required dependancies.
-4. Run `npx ts-node init` to seed the database with users, quiz questions, schools, and zip codes
-5. If you want to test Twilio voice calling functionality, set the `host` property to `[your public IP address]:3000` (minus the brackets), and configure your router/firewall to allow connections to port 3000 from the Internet. Twilio will need to connect to your system to obtain TwiML instructions.
-6. Run `npm run dev` to start the dev server on `http://localhost:3000`. If you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
-7. See [the web client repo](https://github.com/UPchieve/web) for client
+1. Run `cp config.example.ts config.ts` to copy the default config as your own config.
+1. Run `npm install` to install the required dependancies.
+1. Run `npx ts-node init` to seed the database with users, quiz questions, schools, and zip codes
+1. If you want to test Twilio voice calling functionality, set the `host` property to `[your public IP address]:3000` (minus the brackets), and configure your router/firewall to allow connections to port 3000 from the Internet. Twilio will need to connect to your system to obtain TwiML instructions.
+1. Run `npm run dev` to start the dev server on `http://localhost:3000`. If you get a [`bcrypt`][bcrypt] compilement error, run `npm rebuild`.
+1. See [the web client repo](https://github.com/UPchieve/web) for client
    installation
-7. (optional) Run `redis-server` and `npm run worker:dev` to start the redis database and dev worker. The dev worker will automatically attempt to connect to your local Redis instance and read jobs from there. Additionally, you can run `ts-node ./scripts/add-cron-jobs.ts` to add all repeatable jobs to the job queue.
+1. (optional) Run `redis-server` and `npm run worker:dev` to start the redis database and dev worker. The dev worker will automatically attempt to connect to your local Redis instance and read jobs from there. Additionally, you can run `ts-node ./scripts/add-cron-jobs.ts` to add all repeatable jobs to the job queue.
 
 [bcrypt]: https://www.npmjs.com/package/bcrypt
 
-### Test Users
+## Test Users
 
 The database is populated with the following users for local development:
 
@@ -133,30 +142,30 @@ Structure
 The root folder of the repository provides the bootstrap file `main.js` and a
 package definitions file.
 
-### config
+## Config
 
 `config.ts` contains a map of configuration keys for running the server. All
 keys and sensitive information should be placed in this file.
 
-### models
+## Models
 
 Model definitions that map to database models, along with related methods to act
 on those models, such as parsing, validation, and data transformations.
 
-### router
+## Router
 
 Directory structure mimics the endpoint structure exposed by the server. Each
 file provides one or more endpoint routes, responsible for request
 acceptance/rejection and error handling.
 
-### controllers
+## Controllers
 
 Routes use controllers to perform the business logic of the server, providing
 separation of concerns: the controllers have no need to be aware of how the
 endpoints work. Instead, a controller provides ways to allow the routes to
 trigger something (a user update, e.g.)
 
-### services
+## Services
 
 A service is a step higher than a controller. Services provide abstract
 functions to one or many controllers, often to interface with third party
