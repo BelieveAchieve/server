@@ -75,7 +75,7 @@ const IP_ADDRESS_STATUS = {
 
 const INTEGRATED_MATH_MAPPING = {
   integratedmathone: 'integratedMathOne',
-  integratemathtwo: 'integratedMathTwo',
+  integratedmathtwo: 'integratedMathTwo',
   integratedmaththree: 'integratedMathThree',
   integratedmathfour: 'integratedMathFour'
 }
