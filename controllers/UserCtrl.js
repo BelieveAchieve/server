@@ -178,8 +178,6 @@ module.exports = {
 
     const { availability, availabilityLastModifiedAt } = volunteer
 
-    // console.log('the avail', availability)
-
     const availabilityLastModifiedAtFormatted = moment(
       availabilityLastModifiedAt
     )
@@ -212,8 +210,6 @@ module.exports = {
       availability
     )
     totalHours -= outOfRangeHours
-
-    console.log('runnning')
 
     return totalHours
   }
