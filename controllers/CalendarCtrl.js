@@ -41,7 +41,7 @@ module.exports = {
     userUpdates.availabilityLastModifiedAt = currentTime
     userUpdates.elapsedAvailability =
       user.elapsedAvailability +
-      UserCtrl.calculateElapsedAvailability(user, currentTime);
+      UserCtrl.calculateElapsedAvailability(user, currentTime)
 
     User.updateOne({ _id: user._id }, userUpdates, function(err) {
       if (err) {
