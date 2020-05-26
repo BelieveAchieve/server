@@ -1,13 +1,7 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
-const moment = require('moment-timezone')
 const config = require('../config')
-const countAvailabilityHours = require('../utils/count-availability-hours')
-const removeTimeFromDate = require('../utils/remove-time-from-date')
-const getFrequencyOfDays = require('../utils/get-frequency-of-days')
-const calculateTotalHours = require('../utils/calculate-total-hours')
-const countOutOfRangeHours = require('../utils/count-out-of-range-hours')
 const { USER_BAN_REASON } = require('../constants')
 
 const weeksSince = date => {
@@ -491,52 +485,6 @@ userSchema.methods.hashPassword = function(password, cb) {
       bcrypt.hash(password, salt, cb)
     }
   })
-}
-
-// Calculates the amount of hours between this.availabilityLastModifiedAt
-// and the current time that a user updates to a new availability
-userSchema.methods.calculateElapsedAvailability = function(newModifiedDate) {
-  // A volunteer must be onboarded before calculating their elapsed availability
-  if (!this.isOnboarded) {
-    return 0
-  }
-
-  const availabilityLastModifiedAt = moment(
-    this.availabilityLastModifiedAt || this.createdAt
-  )
-    .tz('America/New_York')
-    .format()
-  const estTimeNewModifiedDate = moment(newModifiedDate)
-    .tz('America/New_York')
-    .format()
-
-  // Convert availability to an object formatted with the day of the week
-  // as the property and the amount of hours they have available for that day as the value
-  // e.g { Monday: 10, Tuesday: 3 }
-  const totalAvailabilityHoursMapped = countAvailabilityHours(
-    this.availability.toObject()
-  )
-
-  // Count the occurrence of days of the week between a start and end date
-  const frequencyOfDaysList = getFrequencyOfDays(
-    removeTimeFromDate(availabilityLastModifiedAt),
-    removeTimeFromDate(estTimeNewModifiedDate)
-  )
-
-  let totalHours = calculateTotalHours(
-    totalAvailabilityHoursMapped,
-    frequencyOfDaysList
-  )
-
-  // Deduct the amount hours that fall outside of the start and end date time
-  const outOfRangeHours = countOutOfRangeHours(
-    availabilityLastModifiedAt,
-    estTimeNewModifiedDate,
-    this.availability.toObject()
-  )
-  totalHours -= outOfRangeHours
-
-  return totalHours
 }
 
 // regular expression that accepts multiple valid U. S. phone number formats

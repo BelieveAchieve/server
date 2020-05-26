@@ -1,5 +1,11 @@
 const User = require('../models/User')
 const Session = require('../models/Session')
+const moment = require('moment-timezone')
+const countAvailabilityHours = require('../utils/count-availability-hours')
+const removeTimeFromDate = require('../utils/remove-time-from-date')
+const getFrequencyOfDays = require('../utils/get-frequency-of-days')
+const calculateTotalHours = require('../utils/calculate-total-hours')
+const countOutOfRangeHours = require('../utils/count-out-of-range-hours')
 
 // helper to check for errors before getting user profile
 function getProfileIfSuccessful(callback) {
@@ -35,6 +41,27 @@ function iterateKeys(update, data, callback) {
   } else {
     callback(null, update)
   }
+}
+
+function isCertified(certifications) {
+  let isCertified = false
+
+  for (const subject in certifications) {
+    if (
+      certifications.hasOwnProperty(subject) &&
+      certifications[subject].passed
+    ) {
+      isCertified = true
+      break
+    }
+  }
+
+  return isCertified
+}
+
+function isOnboarded(volunteer) {
+  const { availabilityLastModifiedAt, certifications } = volunteer
+  return !!availabilityLastModifiedAt && isCertified(certifications)
 }
 
 module.exports = {
@@ -139,5 +166,55 @@ module.exports = {
 
   deleteUserByEmail: function(userEmail) {
     return User.deleteOne({ email: userEmail }).exec()
+  },
+
+  // Calculates the amount of hours between a volunteer's availabilityLastModifiedAt
+  // and the current time that a user updates to a new availability.
+  // Expects a "lean" (non-Mongoose doc) volunteer to be passed,
+  // otherwise availability needs coerced using toObject()
+  calculateElapsedAvailability: function(volunteer, newModifiedDate) {
+    // A volunteer must be onboarded before calculating their elapsed availability
+    if (!isOnboarded(volunteer)) return 0
+
+    const { availability, availabilityLastModifiedAt } = volunteer
+
+    // console.log('the avail', availability)
+
+    const availabilityLastModifiedAtFormatted = moment(
+      availabilityLastModifiedAt
+    )
+      .tz('America/New_York')
+      .format()
+    const estTimeNewModifiedDate = moment(newModifiedDate)
+      .tz('America/New_York')
+      .format()
+
+    // Convert availability to an object formatted with the day of the week
+    // as the property and the amount of hours they have available for that day as the value
+    // e.g { Monday: 10, Tuesday: 3 }
+    const totalAvailabilityHoursMapped = countAvailabilityHours(availability)
+
+    // Count the occurrence of days of the week between a start and end date
+    const frequencyOfDaysList = getFrequencyOfDays(
+      removeTimeFromDate(availabilityLastModifiedAtFormatted),
+      removeTimeFromDate(estTimeNewModifiedDate)
+    )
+
+    let totalHours = calculateTotalHours(
+      totalAvailabilityHoursMapped,
+      frequencyOfDaysList
+    )
+
+    // Deduct the amount hours that fall outside of the start and end date time
+    const outOfRangeHours = countOutOfRangeHours(
+      availabilityLastModifiedAtFormatted,
+      estTimeNewModifiedDate,
+      availability
+    )
+    totalHours -= outOfRangeHours
+
+    console.log('runnning')
+
+    return totalHours
   }
 }
