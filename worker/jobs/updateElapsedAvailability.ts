@@ -4,6 +4,7 @@ import UserModel from '../../models/User';
 import { User } from '../../models/types';
 import dbconnect from '../../dbutils/dbconnect';
 import { log } from '../logger';
+import UserCtrl from '../../controllers/UserCtrl';
 
 export default async (): Promise<void> => {
   try {
@@ -15,7 +16,8 @@ export default async (): Promise<void> => {
     await Promise.all(
       map(volunteers, async volunteer => {
         const currentTime = new Date();
-        const newElapsedAvailability = volunteer.calculateElapsedAvailability(
+        const newElapsedAvailability = UserCtrl.calculateElapsedAvailability(
+          volunteer.toObject(),
           currentTime
         );
 

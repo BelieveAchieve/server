@@ -1,5 +1,6 @@
 const _ = require('lodash')
 const User = require('../models/User')
+const UserCtrl = require('../controllers/UserCtrl')
 
 module.exports = {
   updateSchedule: function(options, callback) {
@@ -36,13 +37,11 @@ module.exports = {
       timezone: newTimezone
     }
 
-    /**
-     * Set availabilityLastModifiedAt if this is the user's first time modifying their availability
-     * Otherwise, leave it to the nightly cron job
-     */
-    if (!user.availabilityLastModifiedAt) {
-      userUpdates.availabilityLastModifiedAt = new Date().toISOString()
-    }
+    const currentTime = new Date().toISOString()
+    userUpdates.availabilityLastModifiedAt = currentTime
+    userUpdates.elapsedAvailability =
+      user.elapsedAvailability +
+      UserCtrl.calculateElapsedAvailability(user, currentTime);
 
     User.updateOne({ _id: user._id }, userUpdates, function(err) {
       if (err) {
