@@ -9,8 +9,7 @@ const twilioClient =
   config.accountSid && config.authToken
     ? twilio(config.accountSid, config.authToken)
     : null
-const { FORMAT_PHYSICS } = require('../constants')
-const isPhysics = require('../utils/is-physics')
+const formatMultiWordSubtopic = require('../utils/format-multi-word-subtopic')
 
 // get the availability field to query for the current time
 function getCurrentAvailabilityPath() {
@@ -217,9 +216,9 @@ const notifyVolunteer = async session => {
 
   if (!volunteer) return null
 
-  // Format physics subtopics to proper display name
+  // Format multi-word subtopics from a key name to a display name
   // ex: physicsOne -> Physics 1
-  if (isPhysics(subtopic)) subtopic = FORMAT_PHYSICS[subtopic]
+  subtopic = formatMultiWordSubtopic(subtopic)
 
   const sessionUrl = getSessionUrl(session)
   const messageText = `Hi ${volunteer.firstname}, a student needs help in ${subtopic} on UPchieve! ${sessionUrl}`
