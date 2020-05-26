@@ -1,18 +1,17 @@
 const express = require('express')
 const passport = require('passport')
 const Sentry = require('@sentry/node')
-const base64url = require('base64url')
 const { findKey } = require('lodash')
-const authPassport = require('./passport')
-const VerificationCtrl = require('../../controllers/VerificationCtrl')
+const { capitalize } = require('lodash')
 const ResetPasswordCtrl = require('../../controllers/ResetPasswordCtrl')
-const MailService = require('../../services/MailService')
 const IpAddressService = require('../../services/IpAddressService')
 const config = require('../../config')
 const User = require('../../models/User')
+const Volunteer = require('../../models/Volunteer')
 const School = require('../../models/School.js')
-const UserActionCtrl = require('../../controllers/UserActionCtrl')
 const { USER_BAN_REASON } = require('../../constants')
+const authPassport = require('./passport')
+const UserCtrl = require('../../controllers/UserCtrl')
 
 // Validation functions
 function checkPassword(password) {
@@ -20,10 +19,10 @@ function checkPassword(password) {
     return 'Password must be 8 characters or longer'
   }
 
-  var numUpper = 0
-  var numLower = 0
-  var numNumber = 0
-  for (var i = 0; i < password.length; i++) {
+  let numUpper = 0
+  let numLower = 0
+  let numNumber = 0
+  for (let i = 0; i < password.length; i++) {
     if (!isNaN(password[i])) {
       numNumber += 1
     } else if (password[i].toUpperCase() === password[i]) {
@@ -53,7 +52,7 @@ module.exports = function(app) {
   app.use(passport.initialize())
   app.use(passport.session())
 
-  var router = new express.Router()
+  const router = new express.Router()
 
   router.get('/logout', function(req, res) {
     req.session.destroy()
@@ -73,9 +72,9 @@ module.exports = function(app) {
   )
 
   router.post('/register/checkcred', function(req, res) {
-    var email = req.body.email
+    const email = req.body.email
 
-    var password = req.body.password
+    const password = req.body.password
 
     if (!email || !password) {
       return res.status(422).json({
@@ -84,7 +83,7 @@ module.exports = function(app) {
     }
 
     // Verify password for registration
-    let checkResult = checkPassword(password)
+    const checkResult = checkPassword(password)
     if (checkResult !== true) {
       return res.status(422).json({
         err: checkResult
@@ -104,23 +103,20 @@ module.exports = function(app) {
     })
   })
 
-  router.post('/register', async function(req, res, next) {
-    const isVolunteer = req.body.isVolunteer
-    const email = req.body.email
-    const password = req.body.password
-    const code = req.body.code
-    const volunteerPartnerOrg = req.body.volunteerPartnerOrg
-    const studentPartnerOrg = req.body.studentPartnerOrg
-    const partnerUserId = req.body.partnerUserId
-    const highSchoolUpchieveId = req.body.highSchoolId
-    const zipCode = req.body.zipCode
-    const college = req.body.college
-    const phone = req.body.phone
-    const favoriteAcademicSubject = req.body.favoriteAcademicSubject
-    const firstName = req.body.firstName.trim()
-    const lastName = req.body.lastName.trim()
-    const terms = req.body.terms
-    const referredByCode = req.body.referredByCode
+  router.post('/register/student', async function(req, res) {
+    const { ip } = req
+    const {
+      email,
+      password,
+      studentPartnerOrg,
+      partnerUserId,
+      highSchoolId: highSchoolUpchieveId,
+      zipCode,
+      terms,
+      referredByCode,
+      firstName,
+      lastName
+    } = req.body
 
     if (!terms) {
       return res.status(422).json({
@@ -134,8 +130,15 @@ module.exports = function(app) {
       })
     }
 
-    const isStudentPartnerSignup =
-      !isVolunteer && !highSchoolUpchieveId && !zipCode
+    // Verify password for registration
+    const checkResult = checkPassword(password)
+    if (checkResult !== true) {
+      return res.status(422).json({
+        err: checkResult
+      })
+    }
+
+    const isStudentPartnerSignup = !highSchoolUpchieveId && !zipCode
 
     // Student partner org check (if no high school or zip code provided)
     if (isStudentPartnerSignup) {
@@ -150,8 +153,101 @@ module.exports = function(app) {
       }
     }
 
+    const highSchoolProvided = !!highSchoolUpchieveId
+
+    let school
+    if (highSchoolProvided)
+      school = await School.findByUpchieveId(highSchoolUpchieveId)
+
+    const highSchoolApprovalRequired = !studentPartnerOrg && !zipCode
+    if (highSchoolApprovalRequired && school && !school.isApproved)
+      return res.status(422).json({
+        err: `School ${highSchoolUpchieveId} is not approved`
+      })
+
+    const {
+      country_code: countryCode,
+      org
+    } = await IpAddressService.getIpWhoIs(ip)
+    let isBanned = false
+    let banReason
+
+    if (config.bannedServiceProviders.includes(org)) {
+      isBanned = true
+      banReason = USER_BAN_REASON.BANNED_SERVICE_PROVIDER
+    } else if (countryCode && countryCode !== 'US') {
+      isBanned = true
+      banReason = USER_BAN_REASON.NON_US_SIGNUP
+    }
+
+    const referredBy = await UserCtrl.checkReferral(referredByCode)
+    const studentData = {
+      firstname: capitalize(firstName.trim()),
+      lastname: capitalize(lastName.trim()),
+      email,
+      zipCode,
+      studentPartnerOrg,
+      partnerUserId,
+      approvedHighschool: school,
+      isVolunteer: false,
+      verified: true, // Students are automatically verified
+      referredBy,
+      isBanned,
+      banReason,
+      password,
+      ip
+    }
+
+    try {
+      const student = await UserCtrl.createStudent(studentData)
+      await req.login(student)
+      return res.json({
+        user: student
+      })
+    } catch (err) {
+      Sentry.captureException(err)
+      return res.status(422).json({ err: err.message })
+    }
+  })
+
+  router.post('/register/volunteer', async function(req, res) {
+    const { ip } = req
+    const {
+      email,
+      password,
+      code,
+      volunteerPartnerOrg,
+      college,
+      phone,
+      favoriteAcademicSubject,
+      terms,
+      referredByCode,
+      firstName,
+      lastName
+    } = req.body
+
+    if (!terms) {
+      return res.status(422).json({
+        err: 'Must accept the user agreement'
+      })
+    }
+
+    if (!email || !password) {
+      return res.status(422).json({
+        err: 'Must supply an email and password for registration'
+      })
+    }
+
+    // Verify password for registration
+    const checkResult = checkPassword(password)
+    if (checkResult !== true) {
+      return res.status(422).json({
+        err: checkResult
+      })
+    }
+
     // Volunteer partner org check (if no signup code provided)
-    if (isVolunteer && !code) {
+    if (!code) {
       const allVolunteerPartnerManifests = config.volunteerPartnerManifests
       const volunteerPartnerManifest =
         allVolunteerPartnerManifests[volunteerPartnerOrg]
@@ -176,160 +272,34 @@ module.exports = function(app) {
       }
     }
 
-    // Verify password for registration
-    let checkResult = checkPassword(password)
-    if (checkResult !== true) {
-      return res.status(422).json({
-        err: checkResult
-      })
+    const referredBy = await UserCtrl.checkReferral(referredByCode)
+
+    const volunteerData = {
+      email,
+      isVolunteer: true,
+      registrationCode: code,
+      volunteerPartnerOrg,
+      college,
+      phone,
+      favoriteAcademicSubject,
+      firstname: capitalize(firstName.trim()),
+      lastname: capitalize(lastName.trim()),
+      verified: false,
+      referredBy,
+      password,
+      ip
     }
 
-    const highSchoolProvided = !!highSchoolUpchieveId
-    const highSchoolApprovalRequired = !studentPartnerOrg && !zipCode
-
-    // Look up high school
-    const highschoolLookupPromise = new Promise((resolve, reject) => {
-      if (isVolunteer) {
-        // don't look up high schools for volunteers
-        return resolve({
-          isVolunteer: true
-        })
-      } else if (!highSchoolProvided) {
-        // Don't look up high school for students who didn't provide one (it's not required for certain partner orgs)
-        return resolve({
-          isVolunteer: false
-        })
-      }
-
-      School.findByUpchieveId(highSchoolUpchieveId, (err, school) => {
-        if (err) {
-          return reject(err)
-        } else if (!highSchoolApprovalRequired) {
-          // Don't require valid high school for students referred from partner or with eligible zip code
-          return resolve({
-            isVolunteer: false,
-            school
-          })
-        } else if (highSchoolApprovalRequired && !school.isApproved) {
-          return reject(
-            new Error(`School ${highSchoolUpchieveId} is not approved`)
-          )
-        } else {
-          return resolve({
-            isVolunteer: false,
-            school
-          })
-        }
+    try {
+      const volunteer = await UserCtrl.createVolunteer(volunteerData)
+      await req.login(volunteer)
+      return res.json({
+        user: volunteer
       })
-    })
-
-    let referredById
-
-    if (referredByCode) {
-      try {
-        const referredBy = await User.findOne({ referralCode: referredByCode })
-          .select('_id')
-          .lean()
-          .exec()
-
-        referredById = referredBy._id
-      } catch (error) {
-        Sentry.captureException(error)
-      }
+    } catch (err) {
+      Sentry.captureException(err)
+      return res.status(422).json({ err: err.message })
     }
-
-    highschoolLookupPromise
-      .then(async ({ isVolunteer, school }) => {
-        const user = new User()
-        user.email = email
-        user.isVolunteer = isVolunteer
-        user.registrationCode = code
-        user.volunteerPartnerOrg = volunteerPartnerOrg
-        user.studentPartnerOrg = studentPartnerOrg
-        user.partnerUserId = partnerUserId
-        user.approvedHighschool = school
-        user.zipCode = zipCode
-        user.college = college
-        user.phonePretty = phone
-        user.favoriteAcademicSubject = favoriteAcademicSubject
-        user.firstname = firstName
-        user.lastname = lastName
-        user.verified = !isVolunteer // Currently only volunteers need to verify their email
-        user.referralCode = base64url(Buffer.from(user.id, 'hex'))
-        user.referredBy = referredById
-
-        if (!user.isVolunteer) {
-          const {
-            country_code: countryCode,
-            org
-          } = await IpAddressService.getIpWhoIs(req.ip)
-
-          if (config.bannedServiceProviders.includes(org)) {
-            user.isBanned = true
-            user.banReason = USER_BAN_REASON.BANNED_SERVICE_PROVIDER
-          } else if (countryCode && countryCode !== 'US') {
-            user.isBanned = true
-            user.banReason = USER_BAN_REASON.NON_US_SIGNUP
-          }
-        }
-
-        user.hashPassword(password, function(err, hash) {
-          user.password = hash // Note the salt is embedded in the final hash
-
-          if (err) {
-            return next(err)
-          }
-
-          user.save(function(err) {
-            if (err) {
-              next(err)
-            } else {
-              req.login(user, function(err) {
-                if (err) {
-                  return next(err)
-                }
-
-                if (user.isVolunteer) {
-                  // Send internal email alert if new volunteer is from a partner org
-                  if (user.volunteerPartnerOrg) {
-                    MailService.sendPartnerOrgSignupAlert({
-                      name: `${user.firstname} ${user.lastname}`,
-                      email: user.email,
-                      company: volunteerPartnerOrg,
-                      upchieveId: user._id
-                    })
-                  }
-
-                  VerificationCtrl.initiateVerification({ user }, err => {
-                    if (err) {
-                      Sentry.captureException(err)
-                    }
-                  })
-                } else {
-                  MailService.sendStudentWelcomeEmail({
-                    email: user.email,
-                    firstName: user.firstname
-                  })
-                }
-
-                const ipAddress = req.ip
-
-                UserActionCtrl.createdAccount(
-                  user._id,
-                  ipAddress
-                ).catch(error => Sentry.captureException(error))
-
-                return res.json({
-                  user: user
-                })
-              })
-            }
-          })
-        })
-      })
-      .catch(err => {
-        next(err)
-      })
   })
 
   router.get('/partner/volunteer', function(req, res) {
@@ -428,7 +398,7 @@ module.exports = function(app) {
       return
     }
 
-    const isVolunteerCode = User.checkCode(code)
+    const isVolunteerCode = Volunteer.checkCode(code)
 
     res.json({
       isValid: isVolunteerCode
@@ -446,7 +416,7 @@ module.exports = function(app) {
     })
 
   router.post('/reset/send', function(req, res, next) {
-    var email = req.body.email
+    const email = req.body.email
     if (!email) {
       return res.status(422).json({
         err: 'Must supply an email for password reset'
@@ -469,13 +439,13 @@ module.exports = function(app) {
   })
 
   router.post('/reset/confirm', function(req, res, next) {
-    var email = req.body.email
+    const email = req.body.email
 
-    var password = req.body.password
+    const password = req.body.password
 
-    var newpassword = req.body.newpassword
+    const newpassword = req.body.newpassword
 
-    var token = req.body.token
+    const token = req.body.token
 
     if (!token) {
       return res.status(422).json({

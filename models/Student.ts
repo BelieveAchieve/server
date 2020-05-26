@@ -24,27 +24,6 @@ const studentSchema = new mongoose.Schema(
   schemaOptions
 );
 
-// Given a user record, strip out sensitive data for public consumption
-studentSchema.methods.parseProfile = function() {
-  return {
-    _id: this._id,
-    email: this.email,
-    verified: this.verified,
-    firstname: this.firstname,
-    lastname: this.lastname,
-    isVolunteer: this.isVolunteer,
-    isAdmin: this.isAdmin,
-    isTestUser: this.isTestUser,
-    createdAt: this.createdAt,
-    isFakeUser: this.isFakeUser
-  };
-};
-
-// Placeholder method to support asynchronous profile parsing
-studentSchema.methods.getProfile = function(cb): void {
-  cb(null, this.parseProfile());
-};
-
 // Use the user schema as the base schema for Student
 const Student = User.discriminator('Student', studentSchema);
 

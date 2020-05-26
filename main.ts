@@ -13,6 +13,7 @@ import { Static } from 'runtypes';
 import rawConfig from './config';
 import { Config } from './config-type';
 import router from './router';
+import promisifyLogin from './middleware/promisify-login';
 
 const main = (): void => {
   let config: Static<typeof Config>;
@@ -70,6 +71,9 @@ const main = (): void => {
     res.locals.user = req.user || null;
     next();
   });
+
+  // Middleware to make req.login async
+  app.use(promisifyLogin);
 
   // The error handler must be before any other error middleware and after all controllers
   app.use(Sentry.Handlers.errorHandler());

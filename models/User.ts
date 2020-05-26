@@ -140,35 +140,16 @@ const baseUserSchema = new mongoose.Schema(
   schemaOptions
 );
 
-// Given a user record, strip out sensitive data for public consumption
-baseUserSchema.methods.parseProfile = function() {
-  return {
-    _id: this._id,
-    email: this.email,
-    verified: this.verified,
-    firstname: this.firstname,
-    lastname: this.lastname,
-    isVolunteer: this.isVolunteer,
-    isAdmin: this.isAdmin,
-    isTestUser: this.isTestUser,
-    createdAt: this.createdAt,
-    isFakeUser: this.isFakeUser
-  };
-};
-
-// Placeholder method to support asynchronous profile parsing
-baseUserSchema.methods.getProfile = function(cb): void {
-  cb(null, this.parseProfile());
-};
-
-baseUserSchema.methods.hashPassword = function(password, cb): void {
-  bcrypt.genSalt(config.saltRounds, function(err, salt) {
-    if (err) {
-      cb(err);
-    } else {
-      bcrypt.hash(password, salt, cb);
-    }
-  });
+baseUserSchema.methods.hashPassword = async function(
+  password
+): Promise<Error | string> {
+  try {
+    const salt = await bcrypt.genSalt(config.saltRounds);
+    const hash = await bcrypt.hash(password, salt);
+    return hash;
+  } catch (error) {
+    throw new error(error);
+  }
 };
 
 baseUserSchema.statics.verifyPassword = (

@@ -1,42 +1,14 @@
 const User = require('../models/User')
+const Student = require('../models/Student')
 const Volunteer = require('../models/Volunteer')
 const Session = require('../models/Session')
+const Sentry = require('@sentry/node')
+const base64url = require('base64url')
+const MailService = require('../services/MailService')
+const VerificationCtrl = require('../controllers/VerificationCtrl')
+const UserActionCtrl = require('../controllers/UserActionCtrl')
 
-// helper to check for errors before getting user profile
-function getProfileIfSuccessful(callback) {
-  return function(err, user) {
-    if (err) {
-      return callback(err)
-    } else {
-      user.getProfile(callback)
-    }
-  }
-}
-
-// helper to iterate through keys to be added to an update object
-function iterateKeys(update, data, callback) {
-  let hasUpdate = false
-
-  ;[
-    'firstname',
-    'lastname',
-    'phone',
-    'college',
-    'favoriteAcademicSubject',
-    'phonePretty'
-  ].forEach(function(key) {
-    if (data[key]) {
-      update[key] = data[key]
-      hasUpdate = true
-    }
-  })
-
-  if (!hasUpdate) {
-    callback(new Error('No fields defined to update'))
-  } else {
-    callback(null, update)
-  }
-}
+const generateReferralCode = userId => base64url(Buffer.from(userId, 'hex'))
 
 module.exports = {
   getVolunteerStats: async user => {
@@ -77,55 +49,93 @@ module.exports = {
     return stats
   },
 
-  update: function(options, callback) {
-    const userId = options.userId
-    const data = options.data || {}
-    let update = {}
-    // Keys to virtual properties
-    const virtualProps = ['phonePretty']
-
-    if (
-      virtualProps.some(function(key) {
-        return data[key]
-      })
-    ) {
-      // load model object into memory
-      // @note: Currently only a volunteer is able to update their profile
-      Volunteer.findById(userId, function(err, user) {
-        if (err) {
-          callback(err)
-        } else {
-          if (!user) {
-            update = new Volunteer()
-          } else {
-            update = user
-          }
-          iterateKeys(update, data, function(err, update) {
-            if (err) {
-              return callback(err)
-            }
-            // save the model that was loaded into memory, processing the virtuals
-            update.save(getProfileIfSuccessful(callback))
-          })
-        }
-      })
-    } else {
-      iterateKeys(update, data, function(err, update) {
-        if (err) {
-          return callback(new Error('No fields defined to update'))
-        }
-        // update the document directly (more efficient, but ignores virtual props)
-        Volunteer.findByIdAndUpdate(
-          userId,
-          update,
-          { new: true, runValidators: true },
-          getProfileIfSuccessful(callback)
-        )
-      })
-    }
-  },
-
   deleteUserByEmail: function(userEmail) {
     return User.deleteOne({ email: userEmail }).exec()
+  },
+
+  checkReferral: async function(referredByCode) {
+    let referredById
+
+    if (referredByCode) {
+      try {
+        const referredBy = await User.findOne({ referralCode: referredByCode })
+          .select('_id')
+          .lean()
+          .exec()
+
+        referredById = referredBy._id
+      } catch (error) {
+        Sentry.captureException(error)
+      }
+    }
+
+    return referredById
+  },
+
+  createStudent: async function(studentData) {
+    const { password, ip } = studentData
+    const student = new Student(studentData)
+    student.referralCode = generateReferralCode(student.id)
+
+    try {
+      student.password = await student.hashPassword(password)
+      await student.save()
+    } catch (error) {
+      throw new Error(error)
+    }
+
+    try {
+      await MailService.sendStudentWelcomeEmail({
+        email: student.email,
+        firstName: student.firstname
+      })
+    } catch (err) {
+      Sentry.captureException(err)
+    }
+
+    try {
+      await UserActionCtrl.createdAccount(student._id, ip)
+    } catch (err) {
+      Sentry.captureException(err)
+    }
+
+    return student
+  },
+
+  createVolunteer: async function(volunteerData) {
+    const { password, ip } = volunteerData
+    const volunteer = new Volunteer(volunteerData)
+    volunteer.referralCode = generateReferralCode(volunteer.id)
+
+    try {
+      volunteer.password = await volunteer.hashPassword(password)
+      await volunteer.save()
+    } catch (error) {
+      throw new Error(error)
+    }
+
+    // Send internal email alert if new volunteer is from a partner org
+    if (volunteer.volunteerPartnerOrg) {
+      MailService.sendPartnerOrgSignupAlert({
+        name: `${volunteer.firstname} ${volunteer.lastname}`,
+        email: volunteer.email,
+        company: volunteer.volunteerPartnerOrg,
+        upchieveId: volunteer._id
+      })
+    }
+
+    try {
+      await VerificationCtrl.initiateVerification({ user: volunteer })
+    } catch (err) {
+      Sentry.captureException(err)
+    }
+
+    try {
+      await UserActionCtrl.createdAccount(volunteer._id, ip)
+    } catch (err) {
+      Sentry.captureException(err)
+    }
+
+    return volunteer
   }
 }
