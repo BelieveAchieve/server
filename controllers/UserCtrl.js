@@ -85,7 +85,7 @@ module.exports = {
     }
 
     try {
-      await MailService.sendStudentWelcomeEmail({
+      MailService.sendStudentWelcomeEmail({
         email: student.email,
         firstName: student.firstname
       })
