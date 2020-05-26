@@ -4,7 +4,7 @@ const { capitalize } = require('lodash')
 
 sgMail.setApiKey(config.sendgrid.apiKey)
 
-const sendEmail = function(
+const sendEmail = (
   toEmail,
   fromEmail,
   fromName,
@@ -12,7 +12,7 @@ const sendEmail = function(
   dynamicData,
   unsubscribeGroupId,
   callback
-) {
+) => {
   // Unsubscribe email preferences
   const asm = {
     group_id: unsubscribeGroupId,
@@ -36,9 +36,7 @@ const sendEmail = function(
 }
 
 module.exports = {
-  sendVerification: function(options, callback) {
-    const email = options.email
-    const token = options.token
+  sendVerification: ({ email, token }) => {
     const url = 'http://' + config.client.host + '/action/verify/' + token
 
     sendEmail(
@@ -50,15 +48,11 @@ module.exports = {
         userEmail: email,
         verifyLink: url
       },
-      config.sendgrid.unsubscribeGroup.account,
-      callback
+      config.sendgrid.unsubscribeGroup.account
     )
   },
 
-  sendContactForm: function(options, callback) {
-    const email = options.email
-    const responseData = options.responseData
-
+  sendContactForm: ({ email, responseData }, callback) => {
     sendEmail(
       email,
       config.mail.senders.noreply,
@@ -70,9 +64,7 @@ module.exports = {
     )
   },
 
-  sendReset: function(options, callback) {
-    const email = options.email
-    const token = options.token
+  sendReset: ({ email, token }, callback) => {
     const url = 'http://' + config.client.host + '/setpassword/' + token
 
     sendEmail(
@@ -89,25 +81,23 @@ module.exports = {
     )
   },
 
-  sendPartnerOrgSignupAlert: function(options, callback) {
+  sendPartnerOrgSignupAlert: ({ name, email, company, upchieveId }) => {
     sendEmail(
       config.mail.receivers.staff,
       config.mail.senders.noreply,
       'UPchieve',
       config.sendgrid.partnerOrgSignupAlertTemplate,
       {
-        name: options.name,
-        email: options.email,
-        company: options.company,
-        upchieveId: options.upchieveId
+        name,
+        email,
+        company,
+        upchieveId
       },
-      config.sendgrid.unsubscribeGroup.account,
-      callback
+      config.sendgrid.unsubscribeGroup.account
     )
   },
 
-  sendVolunteerWelcomeEmail: function(options, callback) {
-    const { email, firstName } = options
+  sendVolunteerWelcomeEmail: ({ email, firstName }) => {
     const { host } = config.client
     const coachGuideLink = `http://${host}/coach-guide`
     const scheduleLink = `http://${host}/calendar`
@@ -124,14 +114,11 @@ module.exports = {
         scheduleLink,
         trainingLink
       },
-      config.sendgrid.unsubscribeGroup.account,
-      callback
+      config.sendgrid.unsubscribeGroup.account
     )
   },
 
-  sendStudentWelcomeEmail: function(options, callback) {
-    const { email, firstName } = options
-
+  sendStudentWelcomeEmail: ({ email, firstName }) => {
     sendEmail(
       email,
       config.mail.senders.noreply,
@@ -140,8 +127,7 @@ module.exports = {
       {
         firstName: capitalize(firstName)
       },
-      config.sendgrid.unsubscribeGroup.account,
-      callback
+      config.sendgrid.unsubscribeGroup.account
     )
   },
 
