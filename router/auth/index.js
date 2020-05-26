@@ -439,13 +439,7 @@ module.exports = function(app) {
   })
 
   router.post('/reset/confirm', function(req, res, next) {
-    const email = req.body.email
-
-    const password = req.body.password
-
-    const newpassword = req.body.newpassword
-
-    const token = req.body.token
+    const { email, password, newpassword, token } = req.body
 
     if (!token) {
       return res.status(422).json({
