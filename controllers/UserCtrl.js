@@ -170,8 +170,8 @@ module.exports = {
 
   // Calculates the amount of hours between a volunteer's availabilityLastModifiedAt
   // and the current time that a user updates to a new availability.
-  // Expects a "lean" (non-Mongoose doc) volunteer to be passed,
-  // otherwise availability needs coerced using toObject()
+  // Expects a "lean" (non-Mongoose doc) volunteer to be passed in,
+  // otherwise the volunteer needs to be coerced using the mongoose method "toObject()"
   calculateElapsedAvailability: function(volunteer, newModifiedDate) {
     // A volunteer must be onboarded before calculating their elapsed availability
     if (!isOnboarded(volunteer)) return 0
