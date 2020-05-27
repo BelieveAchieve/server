@@ -7,6 +7,10 @@ const getSupercategory = subcategory => {
     case 'trigonometry':
     case 'geometry':
     case 'calculus':
+    case 'integratedmathone':
+    case 'integratedmathtwo':
+    case 'integratedmaththree':
+    case 'integratedmathfour':
       category = 'MATH'
       break
     case 'planning':
