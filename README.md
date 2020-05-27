@@ -111,7 +111,7 @@ docker run -i --rm --name redis -p 6379:6379 -v <Absolute Path to directory on y
 
 ### Setup
 
-1. Yry connecting to your database container by running `mongo` (see Mongo dependancy if this will not connect). Run `quit()` to exit the shell. You can also interface with the database using a free MongoDB GUI such as [MongoDB Compass Community](https://docs.mongodb.com/manual/administration/install-community/)
+1. Try connecting to your database container by running `mongo` (see Mongo dependancy if this will not connect). Run `quit()` to exit the shell. You can also interface with the database using a free MongoDB GUI such as [MongoDB Compass Community](https://docs.mongodb.com/manual/administration/install-community/)
 1. Run `cp config.example.ts config.ts` to copy the default config as your own config.
 1. Run `npm install` to install the required dependancies.
 1. Run `npx ts-node init` to seed the database with users, quiz questions, schools, and zip codes.
