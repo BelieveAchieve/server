@@ -1,0 +1,60 @@
+name: CI
+
+on:
+    push:
+      branches: master
+    pull_request:
+      branches: master
+jobs:
+# This workflow contains a single job called "build"
+  ci:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-16.04
+
+    steps:
+    # To save time, detach and pull some of the largest docker files
+    - run: (docker pull node:11 && docker pull mongo:4.2.3-bionic) &
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '11.7.0'
+    # Create directories to put in web and server
+    - run: mkdir server
+    - run: mkdir web
+    # Checks-out this server repository to $GITHUB_WORKSPACE/server
+    - uses: actions/checkout@v2
+      with:
+        path: 'server'
+    # Create an empty directory to use for the volume, and start the container
+    - run: cd server && cp config.example.ts config.ts && mkdir mongo-volume && docker-compose up -d
+    # Check whether there is a branch with the same name in web repo
+    - name: Check for branch of same name in web repo
+      run: |
+        if curl --head --silent --fail "https://github.com/UPchieve/web/tree/${{ github.head_ref }}" 2> /dev/null;
+         then
+          echo "found companion branch"
+          echo "::set-env name=HAS_SAME_WEB_BRANCH::1"
+         else
+          echo "did not find companion branch"
+          echo "::set-env name=HAS_SAME_WEB_BRANCH::0"
+        fi
+    # If no matching branch is found in web, checkout master to $GITHUB_WORKSPACE/web
+    - name: Checkout default (master) branch from server repo (if there is no matching branch in web)
+      if: env.HAS_SAME_WEB_BRANCH == 0
+      uses: actions/checkout@v2
+      with:
+        repository: 'upchieve/web'
+        path: 'web'
+    # If a matching branch is found in web, checkout that branch to $GITHUB_WORKSPACE/web
+    - name: Checkout a matching feature branch from web repo (if it exists)
+      if: env.HAS_SAME_WEB_BRANCH == 1
+      uses: actions/checkout@v2
+      with:
+        repository: 'upchieve/web'
+        path: 'web'
+        ref: ${{ github.head_ref }}
+    - run: cd web && npm install
+    - uses: cypress-io/github-action@v1
+      with:
+        working-directory: ./web
+        browser: chrome
+        start: npm run e2e
