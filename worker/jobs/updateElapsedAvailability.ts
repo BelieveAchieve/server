@@ -12,20 +12,27 @@ export default async (): Promise<void> => {
     // Fetch volunteers
     const volunteers = (await UserModel.find({
       isVolunteer: true
-    }).exec()) as User[];
+    })
+      .lean()
+      .exec()) as User[];
     await Promise.all(
       map(volunteers, async volunteer => {
+        const updates: {
+          elapsedAvailability?: number;
+          availabilityLastModifiedAt?: Date;
+        } = {};
         const currentTime = new Date();
         const newElapsedAvailability = UserCtrl.calculateElapsedAvailability(
-          volunteer.toObject(),
+          volunteer,
           currentTime
         );
 
-        volunteer.elapsedAvailability += newElapsedAvailability;
+        updates.elapsedAvailability =
+          volunteer.elapsedAvailability + newElapsedAvailability;
         if (volunteer.availabilityLastModifiedAt)
-          volunteer.availabilityLastModifiedAt = currentTime;
+          updates.availabilityLastModifiedAt = currentTime;
 
-        await volunteer.save();
+        return UserModel.updateOne({ _id: volunteer._id }, updates);
       })
     );
     log(`updated ${size(volunteers)} volunteers`);
