@@ -1,5 +1,5 @@
 const test = require('ava')
-const User = require('../../../models/User.js')
+const Volunteer = require('../../../models/Volunteer')
 const UserCtrl = require('../../../controllers/UserCtrl')
 const {
   flexibleHoursSelected,
@@ -7,7 +7,7 @@ const {
   allHoursSelected
 } = require('../../mocks/volunteer-availability')
 
-const goodUser = new User({
+const goodUser = new Volunteer({
   email: 'email@email.com',
   password: 'password',
 
