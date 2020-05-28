@@ -14,7 +14,6 @@ const getFrequencyOfDays = require('../utils/get-frequency-of-days')
 const calculateTotalHours = require('../utils/calculate-total-hours')
 const countOutOfRangeHours = require('../utils/count-out-of-range-hours')
 
-
 const generateReferralCode = userId => base64url(Buffer.from(userId, 'hex'))
 
 function isCertified(certifications) {
