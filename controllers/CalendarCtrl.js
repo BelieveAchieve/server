@@ -38,10 +38,13 @@ module.exports = {
     }
 
     const currentTime = new Date().toISOString()
+    const newElapsedAvailability = UserCtrl.calculateElapsedAvailability(
+      user,
+      currentTime
+    )
     userUpdates.availabilityLastModifiedAt = currentTime
     userUpdates.elapsedAvailability =
-      user.elapsedAvailability +
-      UserCtrl.calculateElapsedAvailability(user, currentTime)
+      user.elapsedAvailability + newElapsedAvailability
 
     User.updateOne({ _id: user._id }, userUpdates, function(err) {
       if (err) {
