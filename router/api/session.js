@@ -180,13 +180,75 @@ module.exports = function(router, io) {
     const PER_PAGE = 15
     const page = parseInt(req.query.page) || 1
     const skip = (page - 1) * PER_PAGE
+    const {
+      showBannedUsers,
+      showTestUsers,
+      minSessionLength,
+      sessionActivityFrom,
+      sessionActivityTo,
+      minMessagesSent
+    } = req.query
+
+    // Add a day to the sessionActivityTo to make it inclusive for the activity range: [sessionActivityFrom, sessionActivityTo]
+    const inclusiveSessionActivityTo =
+      new Date(sessionActivityTo).getTime() + 1000 * 60 * 60 * 24;
 
     try {
-      const sessions = await Session.find({})
+      const sessions = await Session.aggregate([
+        {
+          $addFields: {
+            // Add the length of a session on the session documents
+            sessionLength: {
+              $cond: {
+                if: { $ifNull: ['$endedAt', undefined] },
+                then: { $subtract: ['$endedAt', '$createdAt'] },
+                // $$NOW is a mongodb system variable which returns the current time
+                else: { $subtract: ['$$NOW', '$createdAt'] }
+              }
+            }
+          }
+        },
+        {
+          $match: {
+            // Filter by the length of a session
+            sessionLength: { $gte: parseInt(minSessionLength) * 60000 }, // convert mins to milliseconds
+            // Filter by a specific date range the sessions took place
+            createdAt: {
+              $gte: new Date(sessionActivityFrom),
+              $lte: new Date(inclusiveSessionActivityTo)
+            },
+            // Filter a session by the amount of messages sent
+            $expr: { $gte: [{ $size: '$messages' }, parseInt(minMessagesSent)] }
+          }
+        },
+        {
+          // Populate the student on the session document
+          $lookup: {
+            from: 'users',
+            // reference student on the session document and store the id as studentId
+            let: { studentId: '$student' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    // Match a student _id to the studentId
+                    $eq: ['$_id', '$$studentId']
+                  },
+                  isBanned: showBannedUsers ? { $in: [true, false] } : false,
+                  isTestUser: showTestUsers ? { $in: [true, false] } : false
+                }
+              }
+            ],
+            as: 'student'
+          }
+        },
+        {
+          $unwind: '$student'
+        }
+      ])
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(PER_PAGE)
-        .lean()
         .exec()
 
       const isLastPage = sessions.length < PER_PAGE
