@@ -1,4 +1,4 @@
-const User = require('../models/User')
+const Volunteer = require('../models/Volunteer')
 
 /**
  * Helper function that, given a single users's
@@ -52,7 +52,6 @@ module.exports = {
     const certifiedSubjectQuery = `certifications.${options.certifiedSubject}.passed`
 
     const volunteerQuery = {
-      isVolunteer: true,
       [certifiedSubjectQuery]: true,
       availability: { $exists: true },
       isFakeUser: false,
@@ -60,7 +59,7 @@ module.exports = {
       isFailsafeVolunteer: false
     }
 
-    User.find(volunteerQuery)
+    Volunteer.find(volunteerQuery)
       .lean()
       .exec(function(err, users) {
         // defining and resetting variables
@@ -89,7 +88,7 @@ module.exports = {
    * @param {*} callback
    */
   getVolunteers: function(callback) {
-    User.find({ isVolunteer: true }, function(err, users) {
+    Volunteer.find({}, function(err, users) {
       if (err) {
         return callback(null, err)
       } else {

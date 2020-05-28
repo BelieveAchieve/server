@@ -7,7 +7,7 @@ const MessagingResponse = require('twilio').twiml.MessagingResponse
 
 const config = require('../../config')
 const twilioService = require('../../services/twilio')
-const User = require('../../models/User')
+const Volunteer = require('../../models/Volunteer')
 const UserActionCtrl = require('../../controllers/UserActionCtrl')
 
 module.exports = function(app) {
@@ -63,7 +63,7 @@ module.exports = function(app) {
          * 2. Populate their most recent notification
          * 3. Populate that notification's session
          */
-        const populatedUser = await User.findOne({
+        const populatedUser = await Volunteer.findOne({
           phone: incomingPhoneNumber
         }).populate({
           path: 'volunteerLastNotification',

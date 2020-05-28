@@ -12,8 +12,8 @@ const main = async (): Promise<void> => {
       {
         settings: {
           // to prevent stalling long jobs
-          stalledInterval: 1000 * 60 * 10,
-          lockDuration: 1000 * 60 * 10
+          stalledInterval: 1000 * 60 * 30,
+          lockDuration: 1000 * 60 * 30
         }
       }
     );

@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const User = require('../models/User')
+const Volunteer = require('../models/Volunteer')
 const UserCtrl = require('../controllers/UserCtrl')
 
 module.exports = {
@@ -46,7 +46,7 @@ module.exports = {
     userUpdates.elapsedAvailability =
       user.elapsedAvailability + newElapsedAvailability
 
-    User.updateOne({ _id: user._id }, userUpdates, function(err) {
+    Volunteer.updateOne({ _id: user._id }, userUpdates, function(err) {
       if (err) {
         callback(err, null)
       } else {
