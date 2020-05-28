@@ -437,7 +437,7 @@ module.exports = function(app) {
     )
   })
 
-  router.post('/reset/confirm', function(req, res, next) {
+  router.post('/reset/confirm', async function(req, res) {
     const { email, password, newpassword, token } = req.body
 
     if (!token) {
@@ -466,34 +466,18 @@ module.exports = function(app) {
       })
     }
 
-    ResetPasswordCtrl.finishReset(
-      {
-        token: token,
-        email: email
-      },
-      function(err, user) {
-        if (err) {
-          next(err)
-        } else {
-          user.hashPassword(password, function(err, hash) {
-            if (err) {
-              next(err)
-            } else {
-              user.password = hash // Note the salt is embedded in the final hash
-              user.save(function(err) {
-                if (err) {
-                  next(err)
-                } else {
-                  return res.json({
-                    user: user
-                  })
-                }
-              })
-            }
-          })
-        }
-      }
-    )
+    try {
+      await ResetPasswordCtrl.finishReset({
+        email,
+        password,
+        token
+      })
+      return res.sendStatus(200)
+    } catch (err) {
+      res.status(500).json({
+        err: err.message
+      })
+    }
   })
 
   router.post('/reset/verify', async (req, res, next) => {
