@@ -8,9 +8,12 @@ services:
             - "3000-3001"
         depends_on: 
             - db
+            - cache
     db:
         image: mongo:4.2.3-bionic
         environment:
             - MONGO_INITDB_DATABASE=upchieve
         volumes:
             - ./mongo-volume:/data/db
+    cache:
+        image: redis:5.0.8

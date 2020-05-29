@@ -1,7 +1,7 @@
 const _ = require('lodash')
 
 const Question = require('../models/Question')
-const User = require('../models/User')
+const Volunteer = require('../models/Volunteer')
 
 /**
  *
@@ -134,7 +134,7 @@ module.exports = {
       ...integratedMathUpdate
     }
 
-    await User.updateOne({ _id: user._id }, userUpdates)
+    await Volunteer.updateOne({ _id: user._id }, userUpdates)
 
     const idCorrectAnswerMap = questions.reduce((correctAnswers, question) => {
       correctAnswers[question._id] = question.correctAnswer
