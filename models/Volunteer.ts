@@ -1,11 +1,5 @@
 import mongoose from 'mongoose';
-import moment from 'moment-timezone';
 import config from '../config';
-import countAvailabilityHours from '../utils/count-availability-hours';
-import removeTimeFromDate from '../utils/remove-time-from-date';
-import getFrequencyOfDays from '../utils/get-frequency-of-days';
-import calculateTotalHours from '../utils/calculate-total-hours';
-import countOutOfRangeHours from '../utils/count-out-of-range-hours';
 import User from './User';
 
 const weeksSince = (date): number => {
@@ -316,54 +310,6 @@ const volunteerSchema = new mongoose.Schema(
   },
   volunteerSchemaOptions
 );
-
-// Calculates the amount of hours between this.availabilityLastModifiedAt
-// and the current time that a user updates to a new availability
-volunteerSchema.methods.calculateElapsedAvailability = function(
-  newModifiedDate
-): number {
-  // A volunteer must be onboarded before calculating their elapsed availability
-  if (!this.isOnboarded) {
-    return 0;
-  }
-
-  const availabilityLastModifiedAt = moment(
-    this.availabilityLastModifiedAt || this.createdAt
-  )
-    .tz('America/New_York')
-    .format();
-  const estTimeNewModifiedDate = moment(newModifiedDate)
-    .tz('America/New_York')
-    .format();
-
-  // Convert availability to an object formatted with the day of the week
-  // as the property and the amount of hours they have available for that day as the value
-  // e.g { Monday: 10, Tuesday: 3 }
-  const totalAvailabilityHoursMapped = countAvailabilityHours(
-    this.availability.toObject()
-  );
-
-  // Count the occurrence of days of the week between a start and end date
-  const frequencyOfDaysList = getFrequencyOfDays(
-    removeTimeFromDate(availabilityLastModifiedAt),
-    removeTimeFromDate(estTimeNewModifiedDate)
-  );
-
-  let totalHours = calculateTotalHours(
-    totalAvailabilityHoursMapped,
-    frequencyOfDaysList
-  );
-
-  // Deduct the amount hours that fall outside of the start and end date time
-  const outOfRangeHours = countOutOfRangeHours(
-    availabilityLastModifiedAt,
-    estTimeNewModifiedDate,
-    this.availability.toObject()
-  );
-  totalHours -= outOfRangeHours;
-
-  return totalHours;
-};
 
 volunteerSchema.virtual('volunteerPointRank').get(function() {
   if (!this.isVolunteer) return null;
