@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/node';
 import { map, size } from 'lodash';
-import UserModel from '../../models/User';
+import VolunteerModel from '../../models/Volunteer';
 import { User } from '../../models/types';
 import dbconnect from '../../dbutils/dbconnect';
 import { log } from '../logger';
@@ -10,9 +10,7 @@ export default async (): Promise<void> => {
   try {
     await dbconnect();
     // Fetch volunteers
-    const volunteers = (await UserModel.find({
-      isVolunteer: true
-    })
+    const volunteers = (await VolunteerModel.find()
       .lean()
       .exec()) as User[];
     await Promise.all(
@@ -32,7 +30,7 @@ export default async (): Promise<void> => {
         if (volunteer.availabilityLastModifiedAt)
           updates.availabilityLastModifiedAt = currentTime;
 
-        return UserModel.updateOne({ _id: volunteer._id }, updates);
+        return VolunteerModel.updateOne({ _id: volunteer._id }, updates);
       })
     );
     log(`updated ${size(volunteers)} volunteers`);
