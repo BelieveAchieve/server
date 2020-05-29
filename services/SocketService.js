@@ -83,15 +83,23 @@ module.exports = function(io) {
       await this.updateSessionList()
     },
 
-    emitSessionChange: async function(sessionId) {
+    emitSessionChange: async function(sessionId, eventData) {
       const session = await getSessionData(sessionId)
 
       if (session.student) {
-        this.emitToUser(session.student._id, 'session-change', session)
+        this.emitToUser(
+          session.student._id,
+          'session-change',
+          eventData || session
+        )
       }
 
       if (session.volunteer) {
-        this.emitToUser(session.volunteer._id, 'session-change', session)
+        this.emitToUser(
+          session.volunteer._id,
+          'session-change',
+          eventData || session
+        )
       }
 
       await this.updateSessionList()

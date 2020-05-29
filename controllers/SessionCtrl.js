@@ -67,7 +67,7 @@ module.exports = function(socketService) {
 
       await sessionService.endSession(session, user)
 
-      socketService.emitSessionChange(options.sessionId)
+      socketService.emitSessionChange(options.sessionId, {})
 
       WhiteboardCtrl.saveDocToSession(options.sessionId).then(() => {
         WhiteboardCtrl.clearDocFromCache(options.sessionId)
