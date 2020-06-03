@@ -188,10 +188,11 @@ module.exports = function(router, io) {
       sessionActivityTo,
       minMessagesSent
     } = req.query
+    const oneDayInMS = 1000 * 60 * 60 * 24
 
     // Add a day to the sessionActivityTo to make it inclusive for the activity range: [sessionActivityFrom, sessionActivityTo]
     const inclusiveSessionActivityTo =
-      new Date(sessionActivityTo).getTime() + 1000 * 60 * 60 * 24
+      new Date(sessionActivityTo).getTime() + oneDayInMS
 
     try {
       const sessions = await Session.aggregate([
