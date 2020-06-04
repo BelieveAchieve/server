@@ -1,5 +1,6 @@
 const express = require('express')
 const passport = require('../auth/passport')
+const Sentry = require('@sentry/node')
 
 const SchoolCtrl = require('../../controllers/SchoolCtrl')
 const School = require('../../models/School')
@@ -125,6 +126,34 @@ module.exports = function(app) {
           }
         })
     })
+
+  router.get('/school/:schoolId', passport.isAdmin, async function(
+    req,
+    res,
+    next
+  ) {
+    const { schoolId } = req.params
+
+    try {
+      const school = await SchoolCtrl.getSchool(schoolId)
+      res.json({ school })
+    } catch (err) {
+      console.log(err)
+      next(err)
+    }
+  })
+
+  router.post('/school/approval', passport.isAdmin, async function(req, res) {
+    const { schoolId, isApproved } = req.body
+
+    try {
+      await SchoolCtrl.updateApproval(schoolId, isApproved)
+      res.sendStatus(200)
+    } catch (err) {
+      Sentry.captureException(err)
+      res.sendStatus(500)
+    }
+  })
 
   app.use('/eligibility', router)
 }
