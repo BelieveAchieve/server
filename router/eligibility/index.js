@@ -2,6 +2,7 @@ const express = require('express')
 const passport = require('../auth/passport')
 
 const SchoolCtrl = require('../../controllers/SchoolCtrl')
+const UserCtrl = require('../../controllers/UserCtrl')
 const School = require('../../models/School')
 const ZipCode = require('../../models/ZipCode')
 const IneligibleStudent = require('../../models/IneligibleStudent')
@@ -25,11 +26,12 @@ module.exports = function(app) {
       const isStudentEligible = isSchoolApproved || isZipCodeEligible
 
       if (!isStudentEligible) {
+        const referredBy = await UserCtrl.checkReferral(referredByCode)
         const newIneligibleStudent = new IneligibleStudent({
           zipCode: zipCodeInput,
           school: school._id,
           ipAddress: req.ip,
-          referredByCode
+          referredBy
         })
 
         newIneligibleStudent.save()
