@@ -205,7 +205,6 @@ module.exports = function(socketService) {
       this.verifySessionParticipant(session, user, error)
     },
 
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     getFilteredSessions: async function({
       showBannedUsers,
       showTestUsers,
