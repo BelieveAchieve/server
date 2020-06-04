@@ -12,11 +12,7 @@ module.exports = function(app) {
 
   // Check if a student is eligible
   router.route('/check').post(async function(req, res, next) {
-    const {
-      schoolUpchieveId,
-      zipCode: zipCodeInput,
-      referredByCode
-    } = req.body
+    const { schoolUpchieveId, zipCode: zipCodeInput, referredByCode } = req.body
 
     const schoolFetch = School.findByUpchieveId(schoolUpchieveId).exec()
     const zipCodeFetch = ZipCode.findByZipCode(zipCodeInput).exec()
@@ -28,7 +24,6 @@ module.exports = function(app) {
       const isStudentEligible = isSchoolApproved || isZipCodeEligible
 
       if (!isStudentEligible) {
-
         const referredBy = await UserCtrl.checkReferral(referredByCode)
         const newIneligibleStudent = new IneligibleStudent({
           zipCode: zipCodeInput,

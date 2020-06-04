@@ -10,9 +10,8 @@ const ineligibleStudentSchema = new mongoose.Schema({
   ipAddress: String,
   referredBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    select: false
-  },
+    ref: 'User'
+  }
 })
 
 module.exports = mongoose.model('IneligibleStudent', ineligibleStudentSchema)
