@@ -9,6 +9,7 @@ import expressWs from '@small-tech/express-ws';
 import logger from 'morgan';
 import config from './config';
 import router from './router';
+import promisifyLogin from './middleware/promisify-login';
 
 interface LoadedRequest extends Request {
   user: {};
@@ -49,6 +50,9 @@ app.use((req: LoadedRequest, res, next) => {
   res.locals.user = req.user || null;
   next();
 });
+
+// Middleware to make req.login async
+app.use(promisifyLogin);
 
 // The error handler must be before any other error middleware and after all controllers
 app.use(Sentry.Handlers.errorHandler());

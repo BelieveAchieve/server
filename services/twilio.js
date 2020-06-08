@@ -1,7 +1,8 @@
 const twilio = require('twilio')
 const moment = require('moment-timezone')
 const config = require('../config')
-const User = require('../models/User')
+const Student = require('../models/Student')
+const Volunteer = require('../models/Volunteer')
 const queue = require('./QueueService')
 const Session = require('../models/Session')
 const Notification = require('../models/Notification')
@@ -48,7 +49,6 @@ const getNextVolunteer = async ({ subtopic, priorityFilter = {} }) => {
   const certificationPath = `certifications.${subtopic}.passed`
 
   const filter = {
-    isVolunteer: true,
     [availabilityPath]: true,
     [certificationPath]: true,
     phone: { $exists: true },
@@ -58,7 +58,7 @@ const getNextVolunteer = async ({ subtopic, priorityFilter = {} }) => {
     ...priorityFilter
   }
 
-  const query = User.aggregate([
+  const query = Volunteer.aggregate([
     { $match: filter },
     { $project: { phone: 1, firstname: 1 } },
     { $sample: { size: 1 } }
@@ -70,7 +70,7 @@ const getNextVolunteer = async ({ subtopic, priorityFilter = {} }) => {
 
 // query failsafe volunteers to notify
 const getFailsafeVolunteers = async () => {
-  return User.find({ isFailsafeVolunteer: true })
+  return Volunteer.find({ isFailsafeVolunteer: true })
     .select({ phone: 1, firstname: 1 })
     .exec()
 }
@@ -240,7 +240,7 @@ const notifyFailsafe = async function({ session, voice = false }) {
   const subtopic = session.subTopic
   const sessionUrl = getSessionUrl(session)
   const volunteersToNotify = await getFailsafeVolunteers()
-  const { isTestUser } = await User.findOne({ _id: session.student })
+  const { isTestUser } = await Student.findOne({ _id: session.student })
     .select('isTestUser')
     .lean()
     .exec()
@@ -311,7 +311,7 @@ module.exports = {
   getSessionUrl,
 
   beginRegularNotifications: async function(session) {
-    const student = await User.findOne({ _id: session.student })
+    const student = await Student.findOne({ _id: session.student })
       .lean()
       .exec()
 

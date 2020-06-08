@@ -1,7 +1,6 @@
-var passport = require('passport')
-var LocalStrategy = require('passport-local').Strategy
-
-var User = require('../../models/User.js')
+const passport = require('passport')
+const LocalStrategy = require('passport-local').Strategy
+const User = require('../../models/User')
 
 passport.serializeUser(function(user, done) {
   done(null, user._id)

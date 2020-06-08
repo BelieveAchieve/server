@@ -60,44 +60,26 @@ module.exports = {
     )
   },
 
-  finishReset: function(options, callback) {
-    var email = options.email
-    var token = options.token
-
+  finishReset: async function({ email, password, token }) {
     // make sure token is a valid 16-byte hex string
     if (!token.match(/^[a-f0-9]{32}$/)) {
       // early exit
-      return callback(new Error('Invalid password reset token'))
+      throw new Error('Invalid password reset token')
     }
 
-    async.waterfall(
-      [
-        // Find the user whose password is being reset and check if email matches
-        function(done) {
-          User.findOne({ passwordResetToken: token }, function(err, user) {
-            if (!user) {
-              return done(
-                new Error('No user found with that password reset token')
-              )
-            } else if (err) {
-              return done(err)
-            } else if (user.email !== email) {
-              return done(
-                new Error('Email did not match the password reset token')
-              )
-            }
-            done(null, user)
-          })
-        },
+    try {
+      const user = await User.findOne({ passwordResetToken: token })
 
-        function(user, done) {
-          user.passwordResetToken = undefined
-          user.save(function(err) {
-            done(err, user)
-          })
-        }
-      ],
-      callback
-    )
+      if (!user) throw new Error('No user found with that password reset token')
+
+      if (user.email !== email)
+        throw new Error('Email did not match the password reset token')
+
+      user.passwordResetToken = undefined
+      user.password = await user.hashPassword(password)
+      await user.save()
+    } catch (error) {
+      throw new Error(error.message)
+    }
   }
 }
