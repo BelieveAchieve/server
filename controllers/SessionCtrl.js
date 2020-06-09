@@ -276,6 +276,18 @@ module.exports = function(socketService) {
           },
           {
             $unwind: '$student'
+          },
+          {
+            $unset: [
+              'student.password',
+              'student.verificationToken',
+              'student.passwordResetToken',
+              'student.banReason',
+              'student.referredBy',
+              'student.partnerUserId',
+              'student.ipAddresses',
+              'whiteboarDoc'
+            ]
           }
         ])
           .sort({ createdAt: -1 })
