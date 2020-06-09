@@ -6,6 +6,7 @@ const SchoolCtrl = require('../../controllers/SchoolCtrl')
 const School = require('../../models/School')
 const ZipCode = require('../../models/ZipCode')
 const IneligibleStudent = require('../../models/IneligibleStudent')
+const IneligibleStudentService = require('../../services/IneligibleStudentService')
 
 module.exports = function(app) {
   const router = new express.Router()
@@ -152,6 +153,25 @@ module.exports = function(app) {
     } catch (err) {
       Sentry.captureException(err)
       res.sendStatus(500)
+    }
+  })
+
+  router.get('/ineligible-students', passport.isAdmin, async function(
+    req,
+    res,
+    next
+  ) {
+    const page = parseInt(req.query.page) || 1
+
+    try {
+      const {
+        ineligibleStudents,
+        isLastPage
+      } = await IneligibleStudentService.getStudents(page)
+
+      res.json({ ineligibleStudents, isLastPage })
+    } catch (err) {
+      next(err)
     }
   })
 

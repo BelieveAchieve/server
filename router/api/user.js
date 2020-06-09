@@ -29,25 +29,6 @@ module.exports = function(router) {
     }
   })
 
-  router.get('/user/ineligible-students', passport.isAdmin, async function(
-    req,
-    res,
-    next
-  ) {
-    const page = parseInt(req.query.page) || 1
-
-    try {
-      const {
-        ineligibleStudents,
-        isLastPage
-      } = await UserCtrl.getIneligibleStudents(page)
-
-      res.json({ ineligibleStudents, isLastPage })
-    } catch (err) {
-      next(err)
-    }
-  })
-
   // @note: Currently, only volunteers are able to update their profile
   router.put('/user', async (req, res, next) => {
     const { _id } = req.user
