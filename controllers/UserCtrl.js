@@ -77,10 +77,8 @@ module.exports = {
         }
       }
 
-      const latestMessageDate = new Date(
-        messages[latestMessageIndex].createdAt
-      )
-      sessionLengthMs = latestMessageDate - volunteerJoinDate 
+      const latestMessageDate = new Date(messages[latestMessageIndex].createdAt)
+      sessionLengthMs = latestMessageDate - volunteerJoinDate
 
       return sessionLengthMs + totalMs
     }, 0)
