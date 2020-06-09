@@ -3,6 +3,7 @@ const passport = require('../auth/passport')
 const Sentry = require('@sentry/node')
 
 const SchoolCtrl = require('../../controllers/SchoolCtrl')
+const UserCtrl = require('../../controllers/UserCtrl')
 const School = require('../../models/School')
 const ZipCode = require('../../models/ZipCode')
 const IneligibleStudent = require('../../models/IneligibleStudent')
@@ -12,34 +13,34 @@ module.exports = function(app) {
   const router = new express.Router()
 
   // Check if a student is eligible
-  router.route('/check').post(function(req, res, next) {
-    const schoolUpchieveId = req.body.schoolUpchieveId
-    const zipCodeInput = req.body.zipCode
+  router.route('/check').post(async function(req, res, next) {
+    const { schoolUpchieveId, zipCode: zipCodeInput, referredByCode } = req.body
 
     const schoolFetch = School.findByUpchieveId(schoolUpchieveId).exec()
     const zipCodeFetch = ZipCode.findByZipCode(zipCodeInput).exec()
 
-    Promise.all([schoolFetch, zipCodeFetch])
-      .then(([school, zipCode]) => {
-        const isSchoolApproved = school.isApproved
-        const isZipCodeEligible = zipCode && zipCode.isEligible
-        const isStudentEligible = isSchoolApproved || isZipCodeEligible
+    try {
+      const [school, zipCode] = await Promise.all([schoolFetch, zipCodeFetch])
+      const isSchoolApproved = school.isApproved
+      const isZipCodeEligible = zipCode && zipCode.isEligible
+      const isStudentEligible = isSchoolApproved || isZipCodeEligible
 
-        if (!isStudentEligible) {
-          const newIneligibleStudent = new IneligibleStudent({
-            zipCode: zipCodeInput,
-            school: school._id,
-            ipAddress: req.ip
-          })
+      if (!isStudentEligible) {
+        const referredBy = await UserCtrl.checkReferral(referredByCode)
+        const newIneligibleStudent = new IneligibleStudent({
+          zipCode: zipCodeInput,
+          school: school._id,
+          ipAddress: req.ip,
+          referredBy
+        })
 
-          newIneligibleStudent.save()
-        }
+        newIneligibleStudent.save()
+      }
 
-        return res.json({ isEligible: isStudentEligible })
-      })
-      .catch(err => {
-        next(err)
-      })
+      return res.json({ isEligible: isStudentEligible })
+    } catch (err) {
+      next(err)
+    }
   })
 
   router.route('/school/search').get(function(req, res, next) {
