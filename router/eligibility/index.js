@@ -1,8 +1,7 @@
 const express = require('express')
 const passport = require('../auth/passport')
 const Sentry = require('@sentry/node')
-
-const SchoolCtrl = require('../../controllers/SchoolCtrl')
+const SchoolService = require('../../services/SchoolService')
 const UserCtrl = require('../../controllers/UserCtrl')
 const School = require('../../models/School')
 const ZipCode = require('../../models/ZipCode')
@@ -46,7 +45,7 @@ module.exports = function(app) {
   router.route('/school/search').get(function(req, res, next) {
     const q = req.query.q
 
-    SchoolCtrl.search(q, function(err, results) {
+    SchoolService.search(q, function(err, results) {
       if (err) {
         next(err)
       } else {
@@ -137,7 +136,7 @@ module.exports = function(app) {
     const { schoolId } = req.params
 
     try {
-      const school = await SchoolCtrl.getSchool(schoolId)
+      const school = await SchoolService.getSchool(schoolId)
       res.json({ school })
     } catch (err) {
       console.log(err)
@@ -149,7 +148,7 @@ module.exports = function(app) {
     const { schoolId, isApproved } = req.body
 
     try {
-      await SchoolCtrl.updateApproval(schoolId, isApproved)
+      await SchoolService.updateApproval(schoolId, isApproved)
       res.sendStatus(200)
     } catch (err) {
       Sentry.captureException(err)
