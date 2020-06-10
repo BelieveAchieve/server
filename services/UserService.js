@@ -9,7 +9,7 @@ module.exports = {
       { $set: { isBanned: true, banReason } }
     )
   },
-  
+
   addPhotoId: async ({ userId, photoIdUrl }) => {
     return Volunteer.updateOne(
       { _id: userId },

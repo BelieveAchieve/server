@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
+import { PHOTO_ID_STATUS } from '../constants';
 import User from './User';
-const { PHOTO_ID_STATUS } = require('../constants')
 
 const weeksSince = (date): number => {
   // 604800000 = milliseconds in a week
@@ -116,7 +116,12 @@ const volunteerSchema = new mongoose.Schema(
     },
     photoIdStatus: {
       type: String,
-      enum: [PHOTO_ID_STATUS.EMPTY, PHOTO_ID_STATUS.PENDING, PHOTO_ID_STATUS.REJECTED, PHOTO_ID_STATUS.APPROVED],
+      enum: [
+        PHOTO_ID_STATUS.EMPTY,
+        PHOTO_ID_STATUS.PENDING,
+        PHOTO_ID_STATUS.REJECTED,
+        PHOTO_ID_STATUS.APPROVED
+      ],
       default: PHOTO_ID_STATUS.EMPTY
     },
 
