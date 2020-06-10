@@ -218,6 +218,7 @@ module.exports = function(socketService) {
       const pageNum = parseInt(page) || 1
       const skip = (pageNum - 1) * PER_PAGE
       const oneDayInMS = 1000 * 60 * 60 * 24
+      const estTimeOffset = 1000 * 60 * 60 * 4
 
       // Add a day to the sessionActivityTo to make it inclusive for the activity range: [sessionActivityFrom, sessionActivityTo]
       const inclusiveSessionActivityTo =
@@ -235,6 +236,9 @@ module.exports = function(socketService) {
                   // $$NOW is a mongodb system variable which returns the current time
                   else: { $subtract: ['$$NOW', '$createdAt'] }
                 }
+              },
+              createdAtEstTime: {
+                $subtract: ['$createdAt', estTimeOffset]
               }
             }
           },
@@ -243,7 +247,7 @@ module.exports = function(socketService) {
               // Filter by the length of a session
               sessionLength: { $gte: parseInt(minSessionLength) * 60000 }, // convert mins to milliseconds
               // Filter by a specific date range the sessions took place
-              createdAt: {
+              createdAtEstTime: {
                 $gte: new Date(sessionActivityFrom),
                 $lte: new Date(inclusiveSessionActivityTo)
               },
