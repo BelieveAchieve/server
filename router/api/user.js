@@ -1,4 +1,5 @@
 const UserCtrl = require('../../controllers/UserCtrl')
+const UserService = require('../../services/UserService')
 const User = require('../../models/User')
 const Volunteer = require('../../models/Volunteer')
 const passport = require('../auth/passport')
@@ -42,6 +43,18 @@ module.exports = function(router) {
       res.sendStatus(200)
     } catch (err) {
       next(err)
+    }
+  })
+
+  router.post('/user/volunteer-approval/photo-id', async (req, res, next) => {
+    const { _id } = req.user
+    const { photoIdUrl } = req.body
+
+    try {
+      await UserService.addPhotoId({ userId: _id, photoIdUrl })
+      res.sendStatus(200)
+    } catch (err) {
+      res.sendStatus(500)
     }
   })
 

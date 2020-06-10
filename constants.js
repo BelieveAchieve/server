@@ -95,6 +95,13 @@ const FORMAT_PHYSICS = {
   physicsOne: 'Physics 1'
 }
 
+const PHOTO_ID_STATUS = {
+  EMPTY: 'EMPTY',
+  PENDING: 'PENDING',
+  REJECTED: 'REJECTED',
+  APPROVED: 'APPROVED'
+}
+
 module.exports = {
   DAYS,
   UTC_TO_HOUR_MAPPING,
