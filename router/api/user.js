@@ -49,29 +49,43 @@ module.exports = function(router) {
   router.post('/user/volunteer-approval/photo-id', async (req, res, next) => {
     const { _id } = req.user
     const { photoIdUrl } = req.body
-
-    try {
-      await UserService.addPhotoId({ userId: _id, photoIdUrl })
-      res.sendStatus(200)
-    } catch (err) {
-      res.sendStatus(500)
-    }
+    await UserService.addPhotoId({ userId: _id, photoIdUrl })
+    res.sendStatus(200)
   })
 
   router.post('/user/volunteer-approval/linkedin', async (req, res, next) => {
     const { _id } = req.user
     const { linkedInUrl } = req.body
-
-    try {
-      const isValidLinkedIn = await UserService.addLinkedIn({
-        userId: _id,
-        linkedInUrl
-      })
-      res.status(200).json({ isValidLinkedIn })
-    } catch (err) {
-      res.sendStatus(500)
-    }
+    const isValidLinkedIn = await UserService.addLinkedIn({
+      userId: _id,
+      linkedInUrl
+    })
+    res.status(200).json({ isValidLinkedIn })
   })
+
+  router.post('/user/volunteer-approval/reference', async (req, res, next) => {
+    const { _id } = req.user
+    const { referenceName, referenceEmail } = req.body
+    await UserService.addReference({
+      userId: _id,
+      referenceName,
+      referenceEmail
+    })
+    res.sendStatus(200)
+  })
+
+  router.post(
+    '/user/volunteer-approval/reference/delete',
+    async (req, res, next) => {
+      const { _id } = req.user
+      const { referenceEmail } = req.body
+      await UserService.deleteReference({
+        userId: _id,
+        referenceEmail
+      })
+      res.sendStatus(200)
+    }
+  )
 
   router.get('/user/:userId', passport.isAdmin, async function(req, res, next) {
     const { userId } = req.params

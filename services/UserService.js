@@ -21,14 +21,25 @@ module.exports = {
     const urlPattern = RegExp(/.*linkedin\.com.*\/in\/.+/)
     const isMatch = urlPattern.test(linkedInUrl)
     if (!isMatch) return false
-
-    /**
-     * @todo is there a way to test the validity of a linkedin profile URL?
-     * haven't found a way so far
-     */
-
     await Volunteer.updateOne({ _id: userId }, { $set: { linkedInUrl } })
-
     return true
+  },
+
+  addReference: async ({ userId, referenceName, referenceEmail }) => {
+    const referenceData = {
+      name: referenceName,
+      email: referenceEmail
+    }
+    await Volunteer.updateOne(
+      { _id: userId },
+      { $push: { references: referenceData } }
+    )
+  },
+
+  deleteReference: async ({ userId, referenceEmail }) => {
+    return Volunteer.updateOne(
+      { _id: userId },
+      { $pull: { references: { email: referenceEmail } } }
+    )
   }
 }

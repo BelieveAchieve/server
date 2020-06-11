@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { PHOTO_ID_STATUS } from '../constants';
+import { PHOTO_ID_STATUS, REFERENCE_STATUS } from '../constants';
 import User from './User';
 
 const weeksSince = (date): number => {
@@ -95,6 +95,23 @@ const availabilitySchema = new mongoose.Schema(
   { _id: false }
 );
 
+const referenceSchema = new mongoose.Schema({
+  email: { type: String, required: true },
+  name: { type: String, required: true },
+  status: {
+    type: String,
+    required: true,
+    enum: [
+      REFERENCE_STATUS.UNSENT,
+      REFERENCE_STATUS.SENT,
+      REFERENCE_STATUS.SUBMITTED,
+      REFERENCE_STATUS.APPROVED,
+      REFERENCE_STATUS.REJECTED
+    ],
+    default: REFERENCE_STATUS.UNSENT
+  }
+});
+
 const volunteerSchemaOptions = {
   toJSON: {
     virtuals: true
@@ -124,6 +141,8 @@ const volunteerSchema = new mongoose.Schema(
       ],
       default: PHOTO_ID_STATUS.EMPTY
     },
+    linkedInUrl: String,
+    references: [referenceSchema],
 
     volunteerPartnerOrg: String,
     isFailsafeVolunteer: {
