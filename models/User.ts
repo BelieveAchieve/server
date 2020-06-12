@@ -107,6 +107,11 @@ const baseUserSchema = new mongoose.Schema(
       default: false
     },
 
+    isDeactivated: {
+      type: Boolean,
+      default: false
+    },
+
     pastSessions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Session' }],
 
     partnerUserId: {
