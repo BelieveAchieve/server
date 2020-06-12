@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk')
 const Sentry = require('@sentry/node')
-const config = require('../../config')
+const config = require('../config')
 
 const s3 = new AWS.S3({
   accessKeyId: config.awsS3.accessKeyId,
