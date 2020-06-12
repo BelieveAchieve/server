@@ -1,5 +1,6 @@
 const UserCtrl = require('../../controllers/UserCtrl')
 const UserService = require('../../services/UserService')
+const AwsService = require('../../services/AwsService')
 const User = require('../../models/User')
 const Volunteer = require('../../models/Volunteer')
 const passport = require('../auth/passport')
@@ -46,13 +47,6 @@ module.exports = function(router) {
     }
   })
 
-  router.post('/user/volunteer-approval/photo-id', async (req, res, next) => {
-    const { _id } = req.user
-    const { photoIdUrl } = req.body
-    await UserService.addPhotoId({ userId: _id, photoIdUrl })
-    res.sendStatus(200)
-  })
-
   router.post('/user/volunteer-approval/linkedin', async (req, res, next) => {
     const { _id } = req.user
     const { linkedInUrl } = req.body
@@ -86,6 +80,25 @@ module.exports = function(router) {
       res.sendStatus(200)
     }
   )
+
+  router.get('/user/volunteer-approval/photo-url', async (req, res, next) => {
+    const { _id } = req.user
+    const photoIdS3Key = await UserService.addPhotoId({ userId: _id })
+    const uploadUrl = await AwsService.getPhotoIdUploadUrl({ photoIdS3Key })
+
+    if (uploadUrl) {
+      res.json({
+        success: true,
+        message: 'AWS SDK S3 pre-signed URL generated successfully',
+        uploadUrl
+      })
+    } else {
+      res.json({
+        success: false,
+        message: 'Pre-signed URL error'
+      })
+    }
+  })
 
   router.get('/user/:userId', passport.isAdmin, async function(req, res, next) {
     const { userId } = req.params

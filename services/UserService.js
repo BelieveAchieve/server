@@ -1,3 +1,4 @@
+const crypto = require('crypto')
 const User = require('../models/User')
 const Volunteer = require('../models/Volunteer')
 const { PHOTO_ID_STATUS } = require('../constants')
@@ -10,11 +11,13 @@ module.exports = {
     )
   },
 
-  addPhotoId: async ({ userId, photoIdUrl }) => {
-    return Volunteer.updateOne(
+  addPhotoId: async ({ userId }) => {
+    const photoIdS3Key = crypto.randomBytes(32).toString('hex')
+    await Volunteer.updateOne(
       { _id: userId },
-      { $set: { photoIdUrl, photoIdStatus: PHOTO_ID_STATUS.PENDING } }
+      { $set: { photoIdS3Key, photoIdStatus: PHOTO_ID_STATUS.PENDING } }
     )
+    return photoIdS3Key
   },
 
   addLinkedIn: async ({ userId, linkedInUrl }) => {
