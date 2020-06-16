@@ -129,7 +129,7 @@ const volunteerSchema = new mongoose.Schema(
     },
     photoIdS3Key: {
       type: String,
-      select: false // @todo: should any verification props be selected by default?
+      select: false
     },
     photoIdStatus: {
       type: String,

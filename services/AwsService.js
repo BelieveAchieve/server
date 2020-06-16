@@ -9,7 +9,6 @@ const s3 = new AWS.S3({
   signatureVersion: 'v4'
 })
 
-// @todo: typescript
 module.exports = {
   getPhotoIdUploadUrl: async ({ photoIdS3Key }) => {
     const signedUrlParams = {
