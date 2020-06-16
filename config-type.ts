@@ -87,5 +87,11 @@ export const Config = Record({
   firebase: Record({
     projectId: Number
   }),
-  bannedServiceProviders: Array(String)
+  bannedServiceProviders: Array(String),
+  awsS3: Record({
+    accessKeyId: String,
+    secretAccessKey: String,
+    region: String,
+    photoIdBucket: String
+  })
 });

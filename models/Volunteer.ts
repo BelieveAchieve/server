@@ -136,7 +136,7 @@ const volunteerSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
-    photoIdUrl: {
+    photoIdS3Key: {
       type: String,
       select: false
     },
