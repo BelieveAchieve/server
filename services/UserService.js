@@ -13,7 +13,7 @@ module.exports = {
   addPhotoId: async ({ userId, photoIdUrl }) => {
     return Volunteer.updateOne(
       { _id: userId },
-      { $set: { photoIdUrl, photoIdStatus: PHOTO_ID_STATUS.PENDING } }
+      { $set: { photoIdUrl, photoIdStatus: PHOTO_ID_STATUS.SUBMITTED } }
     )
   },
 
