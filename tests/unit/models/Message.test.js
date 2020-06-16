@@ -1,5 +1,5 @@
 const test = require('ava')
-const Message = require('../../../models//Message')
+const Message = require('../../../models/Message')
 const User = require('../../../models/User')
 
 const user = new User({
