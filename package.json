@@ -7,8 +7,8 @@
     "dev": "ts-node-dev main",
     "dev:autolint": "nodemon main --exec 'npm run lint && node'",
     "test": "nyc ava --verbose",
-    "lint": "eslint '**/*.ts' --fix && eslint '*.js' '{controllers,models,router,services,seeds,worker}/**/*.js' --no-eslintrc --config ./.eslintrc-javascript.js --fix",
-    "lint:prod": "eslint '**/*.ts' --max-warnings 0 && eslint '*.js' '{controllers,models,router,services,seeds,worker}/**/*.js' --no-eslintrc --config ./.eslintrc-javascript.js --max-warnings 0",
+    "lint": "eslint '**/*.ts' --fix && eslint '{controllers,models,router,services,seeds,worker}/**/*.js' --no-eslintrc --config ./.eslintrc-javascript.js --fix",
+    "lint:prod": "eslint '**/*.ts' --max-warnings 0 && eslint '{controllers,models,router,services,seeds,worker}/**/*.js' --no-eslintrc --config ./.eslintrc-javascript.js --max-warnings 0",
     "worker": "ts-node worker",
     "worker:dev": "ts-node-dev worker"
   },
