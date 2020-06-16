@@ -15,7 +15,7 @@ module.exports = {
     const photoIdS3Key = crypto.randomBytes(32).toString('hex')
     await Volunteer.updateOne(
       { _id: userId },
-      { $set: { photoIdS3Key, photoIdStatus: PHOTO_ID_STATUS.PENDING } }
+      { $set: { photoIdS3Key, photoIdStatus: PHOTO_ID_STATUS.SUBMITTED } }
     )
     return photoIdS3Key
   },

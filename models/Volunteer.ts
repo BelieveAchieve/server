@@ -135,7 +135,7 @@ const volunteerSchema = new mongoose.Schema(
       type: String,
       enum: [
         PHOTO_ID_STATUS.EMPTY,
-        PHOTO_ID_STATUS.PENDING,
+        PHOTO_ID_STATUS.SUBMITTED,
         PHOTO_ID_STATUS.REJECTED,
         PHOTO_ID_STATUS.APPROVED
       ],
