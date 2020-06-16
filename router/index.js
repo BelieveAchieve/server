@@ -14,6 +14,7 @@ module.exports = function(app) {
   require('./twiml')(app)
   require('./contact')(app)
   require('./mobile')(app)
+  require('./reference')(app)
 
   // Determine if incoming request is a static asset
   var isStaticReq = function(req) {
@@ -24,6 +25,8 @@ module.exports = function(app) {
       '/eligibility',
       '/twiml',
       '/contact',
+      '/reference',
+      '/mobile',
       '/js',
       '/css'
     ].some(function(whitelist) {

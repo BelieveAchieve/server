@@ -109,7 +109,16 @@ const referenceSchema = new mongoose.Schema({
       REFERENCE_STATUS.REJECTED
     ],
     default: REFERENCE_STATUS.UNSENT
-  }
+  },
+  affiliation: String,
+  relationshipLength: String,
+  patient: Number,
+  positiveRoleModel: Number,
+  agreeableAndApproachable: Number,
+  communicatesEffectively: Number,
+  trustworthyWithChildren: Number,
+  rejectionReason: String,
+  additionalInfo: String
 });
 
 const volunteerSchemaOptions = {
