@@ -252,6 +252,7 @@ test('Elapsed availability over 3 days with all hours available and 7 hours out 
   // Onboard the user
   goodUser.isVolunteer = true
   goodUser.certifications['algebra'].passed = true
+  goodUser.isOnboarded = true
   const result = UserCtrl.calculateElapsedAvailability(
     goodUser.toObject(),
     newModifiedDate
@@ -261,6 +262,7 @@ test('Elapsed availability over 3 days with all hours available and 7 hours out 
   // set user back to default
   goodUser.isVolunteer = false
   goodUser.certifications['algebra'].passed = false
+  goodUser.isOnboarded = false
 })
 
 test('Elapsed availability over 3 days with flexible hours available', async t => {
@@ -274,6 +276,7 @@ test('Elapsed availability over 3 days with flexible hours available', async t =
   // Onboard the user
   goodUser.isVolunteer = true
   goodUser.certifications['algebra'].passed = true
+  goodUser.isOnboarded = true
   const result = UserCtrl.calculateElapsedAvailability(
     goodUser.toObject(),
     newModifiedDate
@@ -283,6 +286,7 @@ test('Elapsed availability over 3 days with flexible hours available', async t =
   // set user back to default
   goodUser.isVolunteer = false
   goodUser.certifications['algebra'].passed = false
+  goodUser.isOnboarded = false
 })
 
 /** 
@@ -307,6 +311,7 @@ test('Elapsed availability over 23 days with flexible hours available', async t 
   // Onboard the user
   goodUser.isVolunteer = true
   goodUser.certifications['algebra'].passed = true
+  goodUser.isOnboarded = true
   const result = UserCtrl.calculateElapsedAvailability(
     goodUser.toObject(),
     newModifiedDate
@@ -316,4 +321,5 @@ test('Elapsed availability over 23 days with flexible hours available', async t 
   // set user back to default
   goodUser.isVolunteer = false
   goodUser.certifications['algebra'].passed = false
+  goodUser.isOnboarded = false
 })

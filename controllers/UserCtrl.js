@@ -16,27 +16,6 @@ const countOutOfRangeHours = require('../utils/count-out-of-range-hours')
 
 const generateReferralCode = userId => base64url(Buffer.from(userId, 'hex'))
 
-function isCertified(certifications) {
-  let isCertified = false
-
-  for (const subject in certifications) {
-    if (
-      certifications.hasOwnProperty(subject) &&
-      certifications[subject].passed
-    ) {
-      isCertified = true
-      break
-    }
-  }
-
-  return isCertified
-}
-
-function isOnboarded(volunteer) {
-  const { availabilityLastModifiedAt, certifications } = volunteer
-  return !!availabilityLastModifiedAt && isCertified(certifications)
-}
-
 module.exports = {
   getVolunteerStats: async user => {
     const pastSessions = await Session.find({ volunteer: user._id })
@@ -103,7 +82,7 @@ module.exports = {
   // otherwise the volunteer needs to be coerced using the mongoose method "toObject()"
   calculateElapsedAvailability: function(volunteer, newModifiedDate) {
     // A volunteer must be onboarded before calculating their elapsed availability
-    if (!isOnboarded(volunteer)) return 0
+    if (!volunteer.isOnboarded) return 0
 
     const { availability, availabilityLastModifiedAt } = volunteer
 
@@ -227,5 +206,21 @@ module.exports = {
     }
 
     return volunteer
+  },
+
+  isCertified: function(certifications) {
+    let isCertified = false
+
+    for (const subject in certifications) {
+      if (
+        certifications.hasOwnProperty(subject) &&
+        certifications[subject].passed
+      ) {
+        isCertified = true
+        break
+      }
+    }
+
+    return isCertified
   }
 }
