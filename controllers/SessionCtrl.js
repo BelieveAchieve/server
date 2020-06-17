@@ -142,6 +142,11 @@ module.exports = function(socketService) {
         }
 
         socketService.emitSessionChange(session._id)
+        socketService.updateConnectionStatus(
+          session,
+          user._id,
+          socketService.isConnected(user._id)
+        )
       } catch (err) {
         // data passed so client knows whether the session has ended or was fulfilled
         socketService.bump(
