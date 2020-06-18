@@ -80,7 +80,7 @@ module.exports = {
       const latestMessageDate = new Date(messages[latestMessageIndex].createdAt)
 
       // skip if the latest message was sent before a volunteer joined
-      if (latestMessageDate <= volunteerJoinDate) return totalMs;
+      if (latestMessageDate <= volunteerJoinDate) return totalMs
 
       sessionLengthMs = latestMessageDate - volunteerJoinDate
 
