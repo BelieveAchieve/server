@@ -147,10 +147,9 @@ module.exports = {
 
   sendReferenceForm: ({ reference, volunteer }) => {
     const emailData = {
-      referenceLink: buildLink(`reference/${reference._id}`),
+      referenceUrl: buildLink(`reference/${reference._id}`),
       referenceName: reference.name,
-      volunteerFirstName: volunteer.firstname,
-      volunteerLastName: volunteer.lastname
+      volunteerName: `${volunteer.firstname} ${volunteer.lastname}`
     }
 
     return sendEmail(
