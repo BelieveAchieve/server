@@ -3,10 +3,12 @@ import { map } from 'lodash';
 import { log } from '../logger';
 import notifyTutors from './notifyTutors';
 import updateElapsedAvailability from './updateElapsedAvailability';
+import emailReferences from './emailReferences';
 
 export enum Jobs {
   NotifyTutors = 'NotifyTutors',
-  UpdateElapsedAvailability = 'UpdateElapsedAvailability'
+  UpdateElapsedAvailability = 'UpdateElapsedAvailability',
+  EmailReferences = 'EmailReferences'
 }
 
 // register new job processors here
@@ -23,6 +25,10 @@ const jobProcessors: JobProcessor[] = [
   {
     name: Jobs.UpdateElapsedAvailability,
     processor: updateElapsedAvailability
+  },
+  {
+    name: Jobs.EmailReferences,
+    processor: emailReferences
   }
 ];
 

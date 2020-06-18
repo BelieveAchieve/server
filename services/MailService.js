@@ -34,6 +34,12 @@ const sendEmail = (
   sgMail.send(msg, callback)
 }
 
+const buildLink = (path) => {
+  const { host } = config.client
+  const protocol = config.NODE_ENV === 'production' ? 'https' : 'http'
+  const coachGuideLink = `${protocol}://${host}/${path}`
+}
+
 module.exports = {
   sendVerification: ({ email, token }) => {
     const url = 'http://' + config.client.host + '/action/verify/' + token
@@ -135,6 +141,24 @@ module.exports = {
       'UPchieve',
       config.sendgrid.reportedSessionAlertTemplate,
       { sessionId, reportedByEmail, reportMessage },
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
+  sendReferenceForm: ({ reference, volunteer }) => {
+    const emailData = {
+      referenceLink: buildLink(`reference/${reference._id}`),
+      referenceName: reference.name,
+      volunteerFirstName: volunteer.firstname,
+      volunteerLastName: volunteer.lastname,
+    }
+
+    return sendEmail(
+      reference.email,
+      config.mail.senders.noreply,
+      'UPchieve',
+      config.sendgrid.referenceFormTemplate,
+      emailData,
       config.sendgrid.unsubscribeGroup.account
     )
   }
