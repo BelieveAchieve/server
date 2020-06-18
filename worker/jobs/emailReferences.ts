@@ -7,7 +7,7 @@ import { Volunteer, Reference } from '../../models/types';
 import MailService from '../../services/MailService';
 import { REFERENCE_STATUS } from '../../constants';
 
-interface Unsent {
+interface UnsentReference {
   reference: Reference;
   volunteer: Volunteer;
 }
@@ -22,7 +22,7 @@ export default async (): Promise<void> => {
       .lean()
       .exec()) as Volunteer[];
 
-    const unsent: Unsent[] = flatten(
+    const unsent: UnsentReference[] = flatten(
       volunteers.map(vol => {
         return vol.references
           .filter(ref => ref.status === REFERENCE_STATUS.UNSENT)

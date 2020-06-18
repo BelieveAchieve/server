@@ -34,6 +34,7 @@ const sendEmail = (
   sgMail.send(msg, callback)
 }
 
+// @todo: use this in other MailService methods
 const buildLink = path => {
   const { host } = config.client
   const protocol = config.NODE_ENV === 'production' ? 'https' : 'http'
