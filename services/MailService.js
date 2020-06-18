@@ -34,10 +34,10 @@ const sendEmail = (
   sgMail.send(msg, callback)
 }
 
-const buildLink = (path) => {
+const buildLink = path => {
   const { host } = config.client
   const protocol = config.NODE_ENV === 'production' ? 'https' : 'http'
-  const coachGuideLink = `${protocol}://${host}/${path}`
+  return `${protocol}://${host}/${path}`
 }
 
 module.exports = {
@@ -150,7 +150,7 @@ module.exports = {
       referenceLink: buildLink(`reference/${reference._id}`),
       referenceName: reference.name,
       volunteerFirstName: volunteer.firstname,
-      volunteerLastName: volunteer.lastname,
+      volunteerLastName: volunteer.lastname
     }
 
     return sendEmail(

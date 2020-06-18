@@ -6,9 +6,9 @@ export interface User extends Document {
 }
 
 export interface Reference extends Document {
-  name: String;
-  email: String;
-  status: String;
+  name: string;
+  email: string;
+  status: string;
 }
 
 export interface Volunteer extends User {
