@@ -50,6 +50,8 @@ module.exports = {
       const { volunteerJoinedAt, endedAt, messages } = session
 
       if (!(volunteerJoinedAt && endedAt)) return totalMs
+      // skip if no messages are sent
+      if (messages.length === 0) return totalMs
 
       const volunteerJoinDate = new Date(volunteerJoinedAt)
       const sessionEndDate = new Date(endedAt)
@@ -58,30 +60,37 @@ module.exports = {
       // skip if volunteer joined after the session ended
       if (sessionLengthMs < 0) return totalMs
 
-      if (messages.length === 0) return sessionLengthMs + totalMs
-
       let latestMessageIndex = messages.length - 1
+      let wasMessageSentAfterSessionEnded =
+        messages[latestMessageIndex].createdAt > sessionEndDate
 
       // get the latest message that was sent within a 15 minute window of the message prior.
       // Sometimes sessions are not ended by either participant and one of the participants may send
       // a message to see if the other participant is still active before ending the session.
       // Exclude these messages when getting the total session end time
-      if (sessionLengthMs > threeHoursMs) {
+      if (sessionLengthMs > threeHoursMs || wasMessageSentAfterSessionEnded) {
         while (
           latestMessageIndex > 0 &&
-          messages[latestMessageIndex].createdAt -
-            messages[latestMessageIndex - 1].createdAt >
-            fifteenMinsMs
+          (wasMessageSentAfterSessionEnded ||
+            messages[latestMessageIndex].createdAt -
+              messages[latestMessageIndex - 1].createdAt >
+              fifteenMinsMs)
         ) {
           latestMessageIndex--
+          wasMessageSentAfterSessionEnded =
+            messages[latestMessageIndex].createdAt > sessionEndDate
         }
       }
 
       const latestMessageDate = new Date(messages[latestMessageIndex].createdAt)
 
       // skip if the latest message was sent before a volunteer joined
-      if (latestMessageDate <= volunteerJoinDate) return totalMs
-
+      // or skip if the only messages that were sent were after a session has ended
+      if (
+        latestMessageDate <= volunteerJoinDate ||
+        wasMessageSentAfterSessionEnded
+      )
+        return totalMs
       sessionLengthMs = latestMessageDate - volunteerJoinDate
 
       return sessionLengthMs + totalMs
