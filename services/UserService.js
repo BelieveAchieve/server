@@ -1,7 +1,11 @@
 const crypto = require('crypto')
 const User = require('../models/User')
 const Volunteer = require('../models/Volunteer')
-const { PHOTO_ID_STATUS, REFERENCE_STATUS } = require('../constants')
+const {
+  PHOTO_ID_STATUS,
+  REFERENCE_STATUS,
+  LINKEDIN_STATUS
+} = require('../constants')
 
 module.exports = {
   banUser: async ({ userId, banReason }) => {
@@ -24,7 +28,10 @@ module.exports = {
     const urlPattern = RegExp(/.*linkedin\.com.*\/in\/.+/)
     const isMatch = urlPattern.test(linkedInUrl)
     if (!isMatch) return false
-    await Volunteer.updateOne({ _id: userId }, { $set: { linkedInUrl } })
+    await Volunteer.updateOne(
+      { _id: userId },
+      { $set: { linkedInUrl, linkedInStatus: LINKEDIN_STATUS.SUBMITTED } }
+    )
     return true
   },
 
@@ -77,5 +84,81 @@ module.exports = {
       { _id: userId },
       { $pull: { references: { email: referenceEmail } } }
     )
+  },
+
+  getPendingVolunteers: async function(page) {
+    const pageNum = parseInt(page) || 1
+    const PER_PAGE = 15
+    const skip = (pageNum - 1) * PER_PAGE
+
+    try {
+      const volunteers = await Volunteer.aggregate([
+        {
+          $match: {
+            isApproved: false,
+            photoIdS3Key: { $ne: null },
+            photoIdStatus: {
+              $in: [PHOTO_ID_STATUS.SUBMITTED, PHOTO_ID_STATUS.APPROVED]
+            },
+            $or: [
+              { linkedInUrl: { $exists: true }, references: { $size: 1 } },
+              { linkedInUrl: { $exists: false }, references: { $size: 2 } }
+            ],
+            'references.status': {
+              $nin: [
+                REFERENCE_STATUS.REJECTED,
+                REFERENCE_STATUS.UNSENT,
+                REFERENCE_STATUS.SENT
+              ]
+            }
+          }
+        },
+        {
+          $project: {
+            firstname: 1,
+            lastname: 1,
+            email: 1,
+            createdAt: 1
+          }
+        }
+      ])
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(PER_PAGE)
+
+      const isLastPage = volunteers.length < PER_PAGE
+      return { volunteers, isLastPage }
+    } catch (error) {
+      throw new Error(error.message)
+    }
+  },
+
+  updatePendingVolunteerStatus: async function({
+    volunteerId,
+    photoIdStatus,
+    referencesStatus,
+    linkedInStatus
+  }) {
+    const referencesAreApproved = referencesStatus.every(
+      status => status === REFERENCE_STATUS.APPROVED
+    )
+    let isApproved =
+      photoIdStatus === PHOTO_ID_STATUS.APPROVED && referencesAreApproved
+
+    // Only one reference is needed when a LinkedIn link is provided
+    if (isApproved && referencesStatus.length === 1)
+      isApproved = linkedInStatus === LINKEDIN_STATUS.APPROVED
+
+    const [referenceOneStatus, referenceTwoStatus] = referencesStatus
+    const update = {
+      isApproved,
+      photoIdStatus,
+      linkedInStatus,
+      'references.0.status': referenceOneStatus
+    }
+
+    if (referenceTwoStatus) update['references.1.status'] = referenceTwoStatus
+
+    return Volunteer.update({ _id: volunteerId }, update)
   }
 }
