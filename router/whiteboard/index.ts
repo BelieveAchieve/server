@@ -22,6 +22,7 @@ const messageHandlers: {
     wsClient: ws;
     // TODO: figure out correct typing
     route: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    messageCache: string;
   }) => void;
 } = {
   [MessageType.INIT]: ({ message, sessionId, wsClient }) => {
@@ -90,8 +91,6 @@ const messageHandlers: {
         })
       );
     }
-    console.log('appending to ' + sessionId);
-    console.log(message.data);
     WhiteboardCtrl.appendToDoc(sessionId, message.data);
     wsClient.send(
       encode({
@@ -107,7 +106,7 @@ const messageHandlers: {
         messageType: MessageType.APPEND,
         offset: documentLength,
         data: message.data,
-        more: 0
+        more: message.more
       })
     );
   },
@@ -165,15 +164,15 @@ const messageHandlers: {
         more: 0
       })
     ),
-  [MessageType.CONTINUATION]: ({ wsClient }) =>
-    wsClient.send(
-      encode({
-        messageType: MessageType.ERROR,
-        description: 'not implemented',
-        errorCode: DecodeError.UNIMPLEMENTED_ERROR,
-        more: 0
-      })
-    )
+  [MessageType.CONTINUATION]: ({ message, wsClient, sessionId, route }) => {
+    WhiteboardCtrl.appendToDoc(sessionId, message.data);
+    const broadcastMessage = encode({
+      messageType: MessageType.CONTINUATION,
+      data: message.data,
+      more: message.more
+    });
+    route.broadcast(wsClient, broadcastMessage);
+  }
 };
 
 const router = function(app) {
@@ -203,6 +202,8 @@ const router = function(app) {
       }
     }, 30 * 1000);
 
+    let messageCache = '';
+
     /**
      * Handle new whiteboard data coming in from clients
      * 1. Save the new chunk of whiteboard data to the whiteboard controller
@@ -214,14 +215,18 @@ const router = function(app) {
       console.log(decode(rawMessage as Uint8Array));
       const message = decode(rawMessage as Uint8Array);
       if (message.messageType === MessageType.INIT) initialized = true;
-      messageHandlers[message.messageType]
+      const output = messageHandlers[message.messageType]
         ? messageHandlers[message.messageType]({
             message,
             sessionId,
             wsClient,
-            route: this
+            route: this,
+            messageCache
           })
         : wsClient.send({ error: 'unsupported message type' });
+
+      if (message.more) messageCache += output;
+      else messageCache = '';
 
       // if (message.type === 'Data') {
       //   // 1. Save to whiteboard controller
