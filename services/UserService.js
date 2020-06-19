@@ -78,7 +78,12 @@ module.exports = {
     await MailService.sendReferenceForm({ reference, volunteer })
     return Volunteer.updateOne(
       { 'references._id': reference._id },
-      { $set: { 'references.$.status': REFERENCE_STATUS.SENT } }
+      {
+        $set: {
+          'references.$.status': REFERENCE_STATUS.SENT,
+          'references.$.sentAt': Date.now()
+        }
+      }
     )
   },
 

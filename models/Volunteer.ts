@@ -100,6 +100,7 @@ const availabilitySchema = new mongoose.Schema(
 );
 
 const referenceSchema = new mongoose.Schema({
+  createdAt: { type: Date, default: Date.now },
   email: { type: String, required: true },
   name: { type: String, required: true },
   status: {
@@ -114,6 +115,7 @@ const referenceSchema = new mongoose.Schema({
     ],
     default: REFERENCE_STATUS.UNSENT
   },
+  sentAt: Date,
   affiliation: String,
   relationshipLength: String,
   patient: Number,
