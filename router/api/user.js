@@ -116,6 +116,11 @@ module.exports = function(router) {
         .lean()
         .exec()
 
+      if (user.isVolunteer && user.photoIdS3Key)
+        user.photoUrl = await AwsService.getPhotoUrl({
+          photoIdS3Key: user.photoIdS3Key
+        })
+
       res.json({ user })
     } catch (err) {
       console.log(err)
