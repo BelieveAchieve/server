@@ -28,17 +28,18 @@
     "report-dir": "coverage"
   },
   "ava": {
-		"extensions": [
-			"ts"
-		],
-		"require": [
-			"ts-node/register"
-		]
-	},
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
+  },
   "dependencies": {
     "@sendgrid/mail": "^6.4.0",
     "@sentry/node": "^5.8.0",
     "@small-tech/express-ws": "^1.0.1",
+    "@types/express-ws": "^3.0.0",
     "async": "^1.5.0",
     "axios": "^0.19.2",
     "base64url": "^3.0.1",

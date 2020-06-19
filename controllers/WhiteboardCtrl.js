@@ -2,18 +2,32 @@ const Session = require('../models/Session')
 
 const whiteboardDocCache = {}
 
-module.exports = {
-  getDoc: function(sessionId) {
-    if (!whiteboardDocCache[sessionId]) {
-      whiteboardDocCache[sessionId] = ''
-    }
+setInterval(() => {
+  console.log(whiteboardDocCache);
+}, 5000)
 
+module.exports = {
+  createDoc: function(sessionId) {
+    whiteboardDocCache[sessionId] = ''
     return whiteboardDocCache[sessionId]
   },
 
+  getDoc: function(sessionId) {
+    return whiteboardDocCache[sessionId]
+  },
+
+  getDocLength: function(sessionId) {
+    const document = this.getDoc(sessionId)
+    if (document === undefined) return 0;
+    return Buffer.byteLength(document, 'utf8');
+  },
+
   appendToDoc: function(sessionId, docAddition) {
-    const newDoc = this.getDoc(sessionId) + docAddition
-    whiteboardDocCache[sessionId] = newDoc
+    const currentDoc = this.getDoc(sessionId)
+    if (currentDoc === undefined) {
+      throw new Error(`document does not exist for session ${sessionId}`)
+    }
+    whiteboardDocCache[sessionId] = currentDoc + docAddition;
   },
 
   clearDocFromCache(sessionId) {
