@@ -1,6 +1,7 @@
 const crypto = require('crypto')
 const User = require('../models/User')
 const Volunteer = require('../models/Volunteer')
+const MailService = require('./MailService')
 const { PHOTO_ID_STATUS, REFERENCE_STATUS } = require('../constants')
 
 module.exports = {
@@ -69,6 +70,15 @@ module.exports = {
           'references.$.trustworthyWithChildren': trustworthyWithChildren
         }
       }
+    )
+  },
+
+  notifyReference: async ({ reference, volunteer }) => {
+    // @todo: error handling
+    await MailService.sendReferenceForm({ reference, volunteer })
+    return Volunteer.updateOne(
+      { 'references._id': reference._id },
+      { $set: { 'references.$.status': REFERENCE_STATUS.SENT } }
     )
   },
 

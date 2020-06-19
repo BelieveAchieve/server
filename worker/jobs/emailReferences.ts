@@ -4,7 +4,7 @@ import dbconnect from '../../dbutils/dbconnect';
 import { log } from '../logger';
 import VolunteerModel from '../../models/Volunteer';
 import { Volunteer, Reference } from '../../models/types';
-import MailService from '../../services/MailService';
+import UserService from '../../services/UserService';
 import { REFERENCE_STATUS } from '../../constants';
 
 interface UnsentReference {
@@ -13,6 +13,7 @@ interface UnsentReference {
 }
 
 export default async (): Promise<void> => {
+  // @todo: don't wrap in giant try/catch?
   try {
     await dbconnect();
 
@@ -36,7 +37,7 @@ export default async (): Promise<void> => {
     if (unsent.length === 0) return log('No references to email');
 
     for (const u of unsent) {
-      await MailService.sendReferenceForm({
+      await UserService.notifyRefernce({
         reference: u.reference,
         volunteer: u.volunteer
       });
