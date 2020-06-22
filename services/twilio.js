@@ -183,22 +183,33 @@ const notifyVolunteer = async session => {
   const notifiedLastThreeDays = await getVolunteersNotifiedSince(
     relativeDate(3 * 24 * 60 * 60 * 1000)
   )
+  const notifiedLastSevenDays = await getVolunteersNotifiedSince(
+    relativeDate(7 * 24 * 60 * 60 * 1000)
+  )
 
+  /**
+   * 1. mizuho or atlassian volunteer not texted in last 3 days
+   * 2. any partner volunteer not texted in last 3 days
+   * 3. any regular volunteer not texted in the last 7 days
+   * 4. any volunteer not texted in the last fifteen mins
+   */
   const volunteerPriority = [
     {
+      volunteerPartnerOrg: {
+        $exists: true,
+        $in: ['mizuho', 'atlassian']
+      },
+      _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
+    },
+    {
       volunteerPartnerOrg: { $exists: true },
       _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
     },
     {
       volunteerPartnerOrg: { $exists: false },
-      _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
+      _id: { $nin: activeSessionVolunteers.concat(notifiedLastSevenDays) }
     },
     {
-      volunteerPartnerOrg: { $exists: true },
-      _id: { $nin: activeSessionVolunteers.concat(notifiedLastFifteenMins) }
-    },
-    {
-      volunteerPartnerOrg: { $exists: false },
       _id: { $nin: activeSessionVolunteers.concat(notifiedLastFifteenMins) }
     }
   ]
