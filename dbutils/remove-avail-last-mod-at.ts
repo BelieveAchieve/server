@@ -18,7 +18,9 @@ const main = async (): Promise<void> => {
       { $group: { _id: '$user' } }
     ]);
 
-    const filteredVolunteersThatUpdatedAvail = volunteersThatUpdatedAvail.filter(v => !!v._id)
+    const filteredVolunteersThatUpdatedAvail = volunteersThatUpdatedAvail.filter(
+      v => !!v._id
+    );
 
     // Query for volunteers that have never updated their availability manually,
     // but were created after UPDATED AVAILABILITY user action was implemented.
