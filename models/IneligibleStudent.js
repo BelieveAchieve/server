@@ -7,7 +7,11 @@ const ineligibleStudentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'School'
   },
-  ipAddress: String
+  ipAddress: String,
+  referredBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
 })
 
 module.exports = mongoose.model('IneligibleStudent', ineligibleStudentSchema)

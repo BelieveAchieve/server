@@ -6,15 +6,9 @@
         "cityNameStored": "New York",
         "stateStored": "NY",
         "isApproved": false,
-        "createdAt": {
-            "$date": "2020-03-29T19:43:57.068Z"
-          },
         "approvalNotifyEmails": [
           {
-            "email": "principal1@upchieve.org",
-            "addedAt": {
-                "$date": "2020-03-29T19:43:57.068Z"
-            }
+            "email": "principal1@upchieve.org"
           },{
             "email": "principal2@upchieve.org"
           }
@@ -29,15 +23,9 @@
         "cityNameStored": "New York",
         "stateStored": "NY",
         "isApproved": true,
-        "createdAt": {
-            "$date": "2020-03-29T19:43:57.068Z"
-          },
         "approvalNotifyEmails": [
           {
-            "email": "principal3@upchieve.org",
-            "addedAt": {
-                "$date": "2020-03-29T19:43:57.068Z"
-            }
+            "email": "principal3@upchieve.org"
           },{
             "email": "principal4@upchieve.org"
           }

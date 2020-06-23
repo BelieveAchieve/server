@@ -41,10 +41,12 @@ module.exports = function(io) {
         socket.join('volunteers')
       }
 
-      // update user on state of user's current session
-      const currentSession = await Session.current(userId)
+      // update user on state of user's latest session
+      const latestSession = await Session.findLatest({
+        $or: [{ student: userId }, { volunteer: userId }]
+      })
       if (user) {
-        socket.emit('session-change', currentSession || {})
+        socket.emit('session-change', latestSession || {})
       }
     },
 

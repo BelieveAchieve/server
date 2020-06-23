@@ -140,10 +140,7 @@ const volunteerSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
-    photoIdS3Key: {
-      type: String,
-      select: false
-    },
+    photoIdS3Key: String,
     photoIdStatus: {
       type: String,
       enum: [
@@ -166,7 +163,10 @@ const volunteerSchema = new mongoose.Schema(
       default: LINKEDIN_STATUS.EMPTY
     },
     references: [referenceSchema],
-
+    isOnboarded: {
+      type: Boolean,
+      default: false
+    },
     volunteerPartnerOrg: String,
     isFailsafeVolunteer: {
       type: Boolean,
@@ -180,7 +180,6 @@ const volunteerSchema = new mongoose.Schema(
     },
     favoriteAcademicSubject: String,
     college: String,
-
     availability: {
       type: availabilitySchema,
       default: availabilitySchema
@@ -188,7 +187,6 @@ const volunteerSchema = new mongoose.Schema(
     timezone: String,
     availabilityLastModifiedAt: { type: Date },
     elapsedAvailability: { type: Number, default: 0 },
-
     certifications: {
       prealgebra: {
         passed: {
@@ -398,24 +396,6 @@ volunteerSchema.virtual('volunteerLastNotification', {
   foreignField: 'volunteer',
   justOne: true,
   options: { sort: { sentAt: -1 } }
-});
-
-volunteerSchema.virtual('isOnboarded').get(function() {
-  if (!this.isVolunteer) return null;
-  const certifications = this.certifications.toObject();
-  let isCertified = false;
-
-  for (const subject in certifications) {
-    if (
-      certifications.hasOwnProperty(subject) &&
-      certifications[subject].passed
-    ) {
-      isCertified = true;
-      break;
-    }
-  }
-
-  return !!this.availabilityLastModifiedAt && isCertified;
 });
 
 // Use the user schema as the base schema for Volunteer

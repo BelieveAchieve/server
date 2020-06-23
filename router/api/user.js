@@ -13,7 +13,9 @@ module.exports = function(router) {
         err: 'Client has no authenticated session'
       })
     }
-    return res.json({ user: req.user })
+
+    const parsedUser = UserService.parseUser(req.user)
+    return res.json({ user: parsedUser })
   })
 
   router.route('/user/volunteer-stats').get(async function(req, res, next) {
