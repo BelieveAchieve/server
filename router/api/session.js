@@ -177,20 +177,10 @@ module.exports = function(router, io) {
   })
 
   router.get('/sessions', passport.isAdmin, async function(req, res, next) {
-    const PER_PAGE = 15
-    const page = parseInt(req.query.page) || 1
-    const skip = (page - 1) * PER_PAGE
-
     try {
-      const sessions = await Session.find({})
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(PER_PAGE)
-        .lean()
-        .exec()
-
-      const isLastPage = sessions.length < PER_PAGE
-
+      const { sessions, isLastPage } = await sessionCtrl.getFilteredSessions(
+        req.query
+      )
       res.json({ sessions, isLastPage })
     } catch (err) {
       console.log(err)

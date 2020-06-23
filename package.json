@@ -6,9 +6,10 @@
     "start": "ts-node main",
     "dev": "ts-node-dev main",
     "dev:autolint": "nodemon main --exec 'npm run lint && node'",
-    "test": "nyc ava --verbose",
-    "lint": "eslint '**/*.ts' --fix && eslint '{controllers,models,router,services,seeds,worker}/**/*.js' --no-eslintrc --config ./.eslintrc-javascript.js --fix",
-    "lint:prod": "eslint '**/*.ts' --max-warnings 0 && eslint '{controllers,models,router,services,seeds,worker}/**/*.js' --no-eslintrc --config ./.eslintrc-javascript.js --max-warnings 0",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint '**/*.ts' --fix && eslint '*.js' '{controllers,models,router,services,seeds,worker}/**/*.js' --no-eslintrc --config ./.eslintrc-javascript.js --fix",
+    "lint:prod": "eslint '**/*.ts' --max-warnings 0 && eslint '*.js' '{controllers,models,router,services,seeds,worker}/**/*.js' --no-eslintrc --config ./.eslintrc-javascript.js --max-warnings 0",
     "worker": "ts-node worker",
     "worker:dev": "ts-node-dev worker"
   },
@@ -26,14 +27,6 @@
       "text-summary"
     ],
     "report-dir": "coverage"
-  },
-  "ava": {
-    "extensions": [
-      "ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ]
   },
   "dependencies": {
     "@sendgrid/mail": "^6.4.0",
@@ -92,20 +85,28 @@
     "validator": "^6.2.0"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.10.3",
+    "@babel/preset-typescript": "^7.10.1",
+    "@shelf/jest-mongodb": "^1.1.5",
     "@types/bull": "^3.12.2",
     "@types/cors": "^2.8.6",
+    "@types/jest": "^25.2.1",
     "@types/lodash": "^4.14.149",
     "@types/mongoose": "^5.7.10",
     "@types/morgan": "^1.9.0",
+    "@types/supertest": "^2.0.9",
     "@typescript-eslint/eslint-plugin": "^2.27.0",
     "@typescript-eslint/parser": "^2.27.0",
-    "ava": "^1.3.1",
+    "babel-jest": "^26.0.1",
     "eslint": "^6.8.0",
     "eslint-plugin-import": "^2.20.2",
+    "jest": "^26.0.1",
     "mongodb-extended-json": "^1.11.0",
     "nodemon": "^1.18.10",
     "nyc": "^13.3.0",
     "prettier-standard": "^9.1.1",
+    "supertest": "^4.0.2",
+    "ts-jest": "^25.5.1",
     "ts-node-dev": "^1.0.0-pre.44"
   },
   "standard": {

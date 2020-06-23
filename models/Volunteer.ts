@@ -106,6 +106,10 @@ const volunteerSchemaOptions = {
 
 const volunteerSchema = new mongoose.Schema(
   {
+    isOnboarded: {
+      type: Boolean,
+      default: false
+    },
     registrationCode: { type: String, select: false },
     volunteerPartnerOrg: String,
     isFailsafeVolunteer: {
@@ -338,24 +342,6 @@ volunteerSchema.virtual('volunteerLastNotification', {
   foreignField: 'volunteer',
   justOne: true,
   options: { sort: { sentAt: -1 } }
-});
-
-volunteerSchema.virtual('isOnboarded').get(function() {
-  if (!this.isVolunteer) return null;
-  const certifications = this.certifications.toObject();
-  let isCertified = false;
-
-  for (const subject in certifications) {
-    if (
-      certifications.hasOwnProperty(subject) &&
-      certifications[subject].passed
-    ) {
-      isCertified = true;
-      break;
-    }
-  }
-
-  return !!this.availabilityLastModifiedAt && isCertified;
 });
 
 // Static method to determine if a registration code is valid

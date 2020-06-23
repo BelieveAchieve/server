@@ -1,7 +1,6 @@
-const test = require('ava')
 const calculateTotalHours = require('../../utils/calculate-total-hours')
 
-test('Sum product of same day', t => {
+test('Sum product of same day', () => {
   const availabilityHours = {
     Sunday: 5,
     Monday: 3,
@@ -14,10 +13,10 @@ test('Sum product of same day', t => {
   const frequencyOfDaysList = [0, 0, 0, 1, 0, 0, 0]
   const expected = 5
   const result = calculateTotalHours(availabilityHours, frequencyOfDaysList)
-  t.deepEqual(expected, result)
+  expect(expected).toEqual(result)
 })
 
-test('Sum product of a week', t => {
+test('Sum product of a week', () => {
   const availabilityHours = {
     Sunday: 5,
     Monday: 3,
@@ -30,10 +29,10 @@ test('Sum product of a week', t => {
   const frequencyOfDaysList = [1, 1, 1, 1, 1, 1, 1]
   const expected = 29
   const result = calculateTotalHours(availabilityHours, frequencyOfDaysList)
-  t.deepEqual(expected, result)
+  expect(expected).toEqual(result)
 })
 
-test('Sum product after 3 days', t => {
+test('Sum product after 3 days', () => {
   const availabilityHours = {
     Sunday: 5,
     Monday: 3,
@@ -46,10 +45,10 @@ test('Sum product after 3 days', t => {
   const frequencyOfDaysList = [0, 1, 1, 1, 0, 0, 0]
   const expected = 12
   const result = calculateTotalHours(availabilityHours, frequencyOfDaysList)
-  t.deepEqual(expected, result)
+  expect(expected).toEqual(result)
 })
 
-test('Sum product after 2 years and 13 days', t => {
+test('Sum product after 2 years and 13 days', () => {
   const availabilityHours = {
     Sunday: 5,
     Monday: 3,
@@ -63,5 +62,5 @@ test('Sum product after 2 years and 13 days', t => {
   const frequencyOfDaysList = [107, 107, 106, 106, 106, 106, 106]
   const expected = 3082
   const result = calculateTotalHours(availabilityHours, frequencyOfDaysList)
-  t.deepEqual(expected, result)
+  expect(expected).toEqual(result)
 })

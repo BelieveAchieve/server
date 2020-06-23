@@ -1,31 +1,25 @@
-const test = require('ava')
 const Question = require('../../../models/Question')
 
-test('Called getSubcategories using good data', t => {
+test('Called getSubcategories using good data', () => {
   const subcategories = Question.getSubcategories('algebra')
-  t.is(subcategories[0], 'linear equations')
+  expect(subcategories[0]).toBe('linear equations')
 })
 
-test('Called getSubcategories using nonexistant category', t => {
-  const error = t.throws(() => {
+test('Called getSubcategories using nonexistant category', () => {
+  expect(() => {
     Question.getSubcategories('math')
-  }, ReferenceError)
-  t.is(error.message, 'math is not a subcategory.')
+  }).toThrowError(ReferenceError)
 })
 
 test.todo('Called getSubcategories using wrong capitalization data')
 
-test('Called getSubcategories using wrong type', t => {
-  const error = t.throws(() => {
+test('Called getSubcategories using wrong type', () => {
+  expect(() => {
     Question.getSubcategories(1)
-  }, TypeError)
-  t.is(
-    error.message,
-    'Category has a value of 1. It must be a string, not number'
-  )
+  }).toThrowError(TypeError)
 })
 
-test('Checks that parse questions contains only insensitive data', t => {
+test('Checks that parse questions contains only insensitive data', () => {
   const q = new Question({
     questionText: 'test',
     possibleAnswers: { txt: 'righttest', val: '1' },
@@ -36,21 +30,21 @@ test('Checks that parse questions contains only insensitive data', t => {
 
   const qt = q.parseQuestion()
 
-  t.is(qt.questionText, q.questionText)
+  expect(qt.questionText).toBe(q.questionText)
 
   // Returns undefined when not referencing 0th index of possibleAnswers array.
   // Maybe something to do with the mongoose array? bug with db?
-  t.is(qt.possibleAnswers[0].txt, 'righttest')
-  t.is(qt.possibleAnswers[0].val, '1')
+  expect(qt.possibleAnswers[0].txt).toBe('righttest')
+  expect(qt.possibleAnswers[0].val).toBe('1')
 
   // Sensitive data that was censored
-  t.is(qt.correctAnswer, undefined)
-  t.is(qt.subcategory, undefined)
-  t.is(qt.category, undefined)
+  expect(qt.correctAnswer).toBe(undefined)
+  expect(qt.subcategory).toBe(undefined)
+  expect(qt.category).toBe(undefined)
 
   // Undefined because parseQuestion contains an image, not the src.
-  t.is(qt.imageSrc, undefined)
+  expect(qt.imageSrc).toBe(undefined)
 
   // id is part of possibleAnswers. Bug with db?
-  t.not(qt.possibleAnswers[0].id, undefined)
+  expect(qt.possibleAnswers[0].id).not.toBe(undefined)
 })
