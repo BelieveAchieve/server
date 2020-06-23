@@ -119,7 +119,7 @@ module.exports = function(router) {
         .exec()
 
       if (user.isVolunteer && user.photoIdS3Key)
-        user.photoUrl = await AwsService.getPhotoUrl({
+        user.photoUrl = await AwsService.getPhotoIdUrl({
           photoIdS3Key: user.photoIdS3Key
         })
 

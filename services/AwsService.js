@@ -30,7 +30,7 @@ module.exports = {
     }
   },
 
-  getPhotoUrl: async ({ photoIdS3Key }) => {
+  getPhotoIdUrl: async ({ photoIdS3Key }) => {
     const signedUrlParams = {
       Bucket: config.awsS3.photoIdBucket,
       Key: photoIdS3Key
