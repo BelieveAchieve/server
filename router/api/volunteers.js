@@ -53,20 +53,16 @@ module.exports = function(router) {
     }
   })
 
-  router.post('/volunteers/pending', passport.isAdmin, async function(
+  router.post('/volunteers/pending/:id', passport.isAdmin, async function(
     req,
     res
   ) {
-    const {
-      volunteerId,
-      photoIdStatus,
-      referencesStatus,
-      linkedInStatus
-    } = req.body
+    const { id } = req.params
+    const { photoIdStatus, referencesStatus, linkedInStatus } = req.body
 
     try {
       await UserService.updatePendingVolunteerStatus({
-        volunteerId,
+        volunteerId: id,
         photoIdStatus,
         referencesStatus,
         linkedInStatus
