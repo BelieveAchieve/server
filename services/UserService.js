@@ -155,15 +155,20 @@ module.exports = {
     referencesStatus,
     linkedInStatus
   }) {
-    const referencesAreApproved = referencesStatus.every(
-      status => status === REFERENCE_STATUS.APPROVED
-    )
-    let isApproved =
-      photoIdStatus === PHOTO_ID_STATUS.APPROVED && referencesAreApproved
+    const statuses = [...referencesStatus, linkedInStatus]
+    const minApprovedStatuses = 2
+    let amountApproved = 0
 
-    // Only one reference is needed when a LinkedIn link is provided
-    if (isApproved && referencesStatus.length === 1)
-      isApproved = linkedInStatus === LINKEDIN_STATUS.APPROVED
+    for (const status of statuses) {
+      if (status === REFERENCE_STATUS.APPROVED) amountApproved++
+    }
+
+    // A volunteer must have the following list items approved before being considered an approved volunteer
+    //  1. two references or one reference and a valid LinkedIn url
+    //  2. photo id
+    const isApproved =
+      amountApproved === minApprovedStatuses &&
+      photoIdStatus === PHOTO_ID_STATUS.APPROVED
 
     const [referenceOneStatus, referenceTwoStatus] = referencesStatus
     const update = {
