@@ -41,7 +41,7 @@ export default async (): Promise<void> => {
           reference: u.reference,
           volunteer: u.volunteer
         });
-      } catch(error) {
+      } catch (error) {
         log(`Error notifying reference ${u.reference._id}: ${error}`);
       }
     }
