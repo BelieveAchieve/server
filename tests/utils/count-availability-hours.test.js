@@ -1,4 +1,3 @@
-const test = require('ava')
 const countAvailabilityHours = require('../../utils/count-availability-hours')
 const {
   flexibleHoursSelected,
@@ -6,7 +5,7 @@ const {
   allHoursSelected
 } = require('../mocks/volunteer-availability')
 
-test('Volunteer with flexible hours covering the span of a week', t => {
+test('Volunteer with flexible hours covering the span of a week', () => {
   const expected = {
     Sunday: 3,
     Monday: 6,
@@ -17,10 +16,10 @@ test('Volunteer with flexible hours covering the span of a week', t => {
     Saturday: 5
   }
   const result = countAvailabilityHours(flexibleHoursSelected)
-  t.deepEqual(expected, result)
+  expect(expected).toEqual(result)
 })
 
-test('Volunteer with 0 hours selected for availability', t => {
+test('Volunteer with 0 hours selected for availability', () => {
   const expected = {
     Sunday: 0,
     Monday: 0,
@@ -31,10 +30,10 @@ test('Volunteer with 0 hours selected for availability', t => {
     Saturday: 0
   }
   const result = countAvailabilityHours(noHoursSelected)
-  t.deepEqual(expected, result)
+  expect(expected).toEqual(result)
 })
 
-test('Volunteer with every hour selected for availability', t => {
+test('Volunteer with every hour selected for availability', () => {
   const expected = {
     Sunday: 24,
     Monday: 24,
@@ -45,5 +44,5 @@ test('Volunteer with every hour selected for availability', t => {
     Saturday: 24
   }
   const result = countAvailabilityHours(allHoursSelected)
-  t.deepEqual(expected, result)
+  expect(expected).toEqual(result)
 })

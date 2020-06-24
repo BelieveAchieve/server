@@ -28,5 +28,23 @@ module.exports = {
       Sentry.captureException(error)
       return null
     }
+  },
+
+  getPhotoIdUrl: async ({ photoIdS3Key }) => {
+    const signedUrlParams = {
+      Bucket: config.awsS3.photoIdBucket,
+      Key: photoIdS3Key
+    }
+
+    try {
+      const photoUrl = await s3.getSignedUrlPromise(
+        'getObject',
+        signedUrlParams
+      )
+      return photoUrl
+    } catch (error) {
+      Sentry.captureException(error)
+      return null
+    }
   }
 }

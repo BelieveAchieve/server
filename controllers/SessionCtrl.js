@@ -207,6 +207,107 @@ module.exports = function(socketService) {
     ) {
       const session = await Session.findById(sessionId)
       this.verifySessionParticipant(session, user, error)
+    },
+
+    getFilteredSessions: async function({
+      showBannedUsers,
+      showTestUsers,
+      minSessionLength,
+      sessionActivityFrom,
+      sessionActivityTo,
+      minMessagesSent,
+      page
+    }) {
+      const PER_PAGE = 15
+      const pageNum = parseInt(page) || 1
+      const skip = (pageNum - 1) * PER_PAGE
+      const oneDayInMS = 1000 * 60 * 60 * 24
+      const estTimeOffset = 1000 * 60 * 60 * 4
+
+      // Add a day to the sessionActivityTo to make it inclusive for the activity range: [sessionActivityFrom, sessionActivityTo]
+      const inclusiveSessionActivityTo =
+        new Date(sessionActivityTo).getTime() + oneDayInMS
+
+      try {
+        const sessions = await Session.aggregate([
+          {
+            $addFields: {
+              // Add the length of a session on the session documents
+              sessionLength: {
+                $cond: {
+                  if: { $ifNull: ['$endedAt', undefined] },
+                  then: { $subtract: ['$endedAt', '$createdAt'] },
+                  // $$NOW is a mongodb system variable which returns the current time
+                  else: { $subtract: ['$$NOW', '$createdAt'] }
+                }
+              },
+              createdAtEstTime: {
+                $subtract: ['$createdAt', estTimeOffset]
+              }
+            }
+          },
+          {
+            $match: {
+              // Filter by the length of a session
+              sessionLength: { $gte: parseInt(minSessionLength) * 60000 }, // convert mins to milliseconds
+              // Filter by a specific date range the sessions took place
+              createdAtEstTime: {
+                $gte: new Date(sessionActivityFrom),
+                $lte: new Date(inclusiveSessionActivityTo)
+              },
+              // Filter a session by the amount of messages sent
+              $expr: {
+                $gte: [{ $size: '$messages' }, parseInt(minMessagesSent)]
+              }
+            }
+          },
+          {
+            // Populate the student on the session document
+            $lookup: {
+              from: 'users',
+              // reference student on the session document and store the id as studentId
+              let: { studentId: '$student' },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      // Match a student _id to the studentId
+                      $eq: ['$_id', '$$studentId']
+                    },
+                    isBanned: showBannedUsers ? { $in: [true, false] } : false,
+                    isTestUser: showTestUsers ? { $in: [true, false] } : false
+                  }
+                }
+              ],
+              as: 'student'
+            }
+          },
+          {
+            $unwind: '$student'
+          },
+          {
+            $project: {
+              createdAt: 1,
+              endedAt: 1,
+              volunteer: 1,
+              messages: 1,
+              notifications: 1,
+              type: 1,
+              subTopic: 1
+            }
+          }
+        ])
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(PER_PAGE)
+          .exec()
+
+        const isLastPage = sessions.length < PER_PAGE
+
+        return { sessions, isLastPage }
+      } catch (err) {
+        throw new Error(err.message)
+      }
     }
   }
 }

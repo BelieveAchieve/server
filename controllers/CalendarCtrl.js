@@ -46,6 +46,10 @@ module.exports = {
     userUpdates.elapsedAvailability =
       user.elapsedAvailability + newElapsedAvailability
 
+    // an onboarded volunteer must have updated their availability and obtained at least one certification
+    if (!user.isOnboarded && UserCtrl.isCertified(user.certifications))
+      userUpdates.isOnboarded = true
+
     Volunteer.updateOne({ _id: user._id }, userUpdates, function(err) {
       if (err) {
         callback(err, null)
