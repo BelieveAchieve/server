@@ -13,7 +13,6 @@ interface UnsentReference {
 }
 
 export default async (): Promise<void> => {
-  // @todo: don't wrap in giant try/catch?
   try {
     await dbconnect();
 
