@@ -37,10 +37,14 @@ export default async (): Promise<void> => {
     if (unsent.length === 0) return log('No references to email');
 
     for (const u of unsent) {
-      await UserService.notifyReference({
-        reference: u.reference,
-        volunteer: u.volunteer
-      });
+      try {
+        await UserService.notifyReference({
+          reference: u.reference,
+          volunteer: u.volunteer
+        });
+      } catch(error) {
+        log(`Error notifying reference ${u.reference._id}: ${error}`);
+      }
     }
 
     return log(`Emailed ${unsent.length} references`);

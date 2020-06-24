@@ -31,7 +31,7 @@ const sendEmail = (
     asm
   }
 
-  sgMail.send(msg, callback)
+  return sgMail.send(msg, callback)
 }
 
 // @todo: use this in other MailService methods
