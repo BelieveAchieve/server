@@ -230,7 +230,7 @@ function writeUint(m: number[], n: number, size: number) {
 }
 
 function writeString(m: number[], str: string) {
-  m.push.apply(m, new TextEncoder().encode(str));
+  new TextEncoder().encode(str).forEach(val => m.push(val));
 }
 
 function readUint(m: number[] | Uint8Array, at: number, size: number): number {
