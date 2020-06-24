@@ -80,7 +80,6 @@ const messageHandlers: {
   },
   [MessageType.APPEND]: ({ message, sessionId, wsClient, route }) => {
     const documentLength = WhiteboardCtrl.getDocLength(sessionId);
-    console.log(documentLength);
     if (message.offset !== documentLength) {
       return wsClient.send(
         encode({
@@ -211,8 +210,6 @@ const router = function(app): void {
      * 3. Broadcast the updated whiteboard document to other clients in the room
      */
     wsClient.on('message', rawMessage => {
-      console.log('message: ');
-      console.log(decode(rawMessage as Uint8Array));
       const message = decode(rawMessage as Uint8Array);
       if (message.messageType === MessageType.INIT) initialized = true;
       const output = messageHandlers[message.messageType]
@@ -227,24 +224,6 @@ const router = function(app): void {
 
       if (message.more) messageCache += output;
       else messageCache = '';
-
-      // if (message.type === 'Data') {
-      //   // 1. Save to whiteboard controller
-      //   const newWhiteboardData = message.data;
-      //   WhiteboardCtrl.appendToDoc(sessionId, newWhiteboardData);
-
-      //   // 2. Acknowledge client
-      //   const clientAcknowledgement = { type: 'Ack' };
-      //   wsClient.send(JSON.stringify(clientAcknowledgement));
-
-      //   // 3. Broadcast update to room
-      //   const whiteboardDoc = WhiteboardCtrl.getDoc(sessionId);
-      //   const whiteboardUpdate = {
-      //     type: 'Data',
-      //     data: whiteboardDoc
-      //   };
-      //   this.broadcast(wsClient, JSON.stringify(whiteboardUpdate));
-      // }
     });
 
     next();

@@ -2,10 +2,6 @@ const Session = require('../models/Session')
 
 const whiteboardDocCache = {}
 
-setInterval(() => {
-  console.log(whiteboardDocCache);
-}, 5000)
-
 module.exports = {
   createDoc: function(sessionId) {
     whiteboardDocCache[sessionId] = ''
