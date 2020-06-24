@@ -18,8 +18,8 @@ module.exports = {
 
   getDocLength: function(sessionId) {
     const document = this.getDoc(sessionId)
-    if (document === undefined) return 0;
-    return Buffer.byteLength(document, 'utf8');
+    if (document === undefined) return 0
+    return Buffer.byteLength(document, 'utf8')
   },
 
   appendToDoc: function(sessionId, docAddition) {
@@ -27,7 +27,7 @@ module.exports = {
     if (currentDoc === undefined) {
       throw new Error(`document does not exist for session ${sessionId}`)
     }
-    whiteboardDocCache[sessionId] = currentDoc + docAddition;
+    whiteboardDocCache[sessionId] = currentDoc + docAddition
   },
 
   clearDocFromCache(sessionId) {

@@ -46,15 +46,15 @@ interface FieldDescriptor {
 }
 
 // Message types
-const INIT = 0x01;
-const ERROR = 0x80;
-const ACK_NACK = 0x81;
-const KEY_INFORMATION = 0x82;
-const SET_KEY_ACK_NACK = 0x83;
-const APPEND = 0x02;
-const SET_KEY = 0x03;
-const BROADCAST = 0x04;
-const CONTINUATION = 0xff;
+// const INIT = 0x01;
+// const ERROR = 0x80;
+// const ACK_NACK = 0x81;
+// const KEY_INFORMATION = 0x82;
+// const SET_KEY_ACK_NACK = 0x83;
+// const APPEND = 0x02;
+// const SET_KEY = 0x03;
+// const BROADCAST = 0x04;
+// const CONTINUATION = 0xff;
 
 const MESSAGE_TYPES = {
   0x01: 'INITIAL CONNECTION',
@@ -101,11 +101,11 @@ const DECODE_KEY_LIFETIME = {
   0x01: 'SESSION-LIFETIME'
 };
 
-const enum CreateMode {
-  POSSIBLY_CREATE = 0,
-  NEVER_CREATE = 1,
-  ALWAYS_CREATE = 2
-}
+// const enum CreateMode {
+//   POSSIBLY_CREATE = 0,
+//   NEVER_CREATE = 1,
+//   ALWAYS_CREATE = 2
+// }
 
 function field(
   length: number,
@@ -205,7 +205,7 @@ interface MessageChunk {
   decoded: string;
 }
 
-function hex(m: Uint8Array) {
+function hex(m: Uint8Array): string {
   const str = [''];
   let j = 0;
   for (let i = 0; i < m.length; i++) {
@@ -221,7 +221,7 @@ function hex(m: Uint8Array) {
   return str.join(' ');
 }
 
-function writeUint(m: number[], n: number, size: number) {
+function writeUint(m: number[], n: number, size: number): void {
   // javascript bitshift operators don't work for 64-bit values.
   do {
     size -= 1;
@@ -229,7 +229,7 @@ function writeUint(m: number[], n: number, size: number) {
   } while (size > 0);
 }
 
-function writeString(m: number[], str: string) {
+function writeString(m: number[], str: string): void {
   new TextEncoder().encode(str).forEach(val => m.push(val));
 }
 
@@ -243,14 +243,17 @@ function readUint(m: number[] | Uint8Array, at: number, size: number): number {
   return ret;
 }
 
-function readString(m: Uint8Array, at: number, length = m.length - at) {
+function readString(m: Uint8Array, at: number, length = m.length - at): string {
   return new TextDecoder().decode(m.slice(at, at + length));
 }
 
-// Encode message encodes a message from JSON into binary format,
-// suitable for sending over a websocket. The message must have all of the fields
-// defined in the field descriptors above.
-export function encode(js: any) {
+/**
+ * Encode message encodes a message from JSON into binary format,
+ * suitable for sending over a websocket. The message must have all of the fields
+ * defined in the field descriptors above.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function encode(js: any): Uint8Array {
   const decoder = Descriptors[js['messageType']];
   if (!decoder) {
     throw new Error('no encoder for message type ' + js['messageType']);
@@ -289,6 +292,7 @@ export function decode(m: Uint8Array): Message {
   const repeatToEndIndex = 0; // index of decoder field
   for (let i = 0; i < decoder.length; i++) {
     const field = decoder[i];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let value: any;
     if (field.type === REPEAT_TO_END) {
       repeatToEndField = field.name;

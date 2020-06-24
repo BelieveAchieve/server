@@ -175,7 +175,7 @@ const messageHandlers: {
   }
 };
 
-const router = function(app) {
+const router = function(app): void {
   const router = express.Router();
 
   /**
