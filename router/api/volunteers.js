@@ -58,14 +58,13 @@ module.exports = function(router) {
     res
   ) {
     const { id } = req.params
-    const { photoIdStatus, referencesStatus, linkedInStatus } = req.body
+    const { photoIdStatus, referencesStatus } = req.body
 
     try {
       await UserService.updatePendingVolunteerStatus({
         volunteerId: id,
         photoIdStatus,
-        referencesStatus,
-        linkedInStatus
+        referencesStatus
       })
       res.sendStatus(200)
     } catch (error) {

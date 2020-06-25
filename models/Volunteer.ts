@@ -1,9 +1,5 @@
 import mongoose from 'mongoose';
-import {
-  PHOTO_ID_STATUS,
-  LINKEDIN_STATUS,
-  REFERENCE_STATUS
-} from '../constants';
+import { PHOTO_ID_STATUS, REFERENCE_STATUS } from '../constants';
 import User from './User';
 
 const weeksSince = (date): number => {
@@ -152,17 +148,6 @@ const volunteerSchema = new mongoose.Schema(
         PHOTO_ID_STATUS.APPROVED
       ],
       default: PHOTO_ID_STATUS.EMPTY
-    },
-    linkedInUrl: String,
-    linkedInStatus: {
-      type: String,
-      enum: [
-        LINKEDIN_STATUS.EMPTY,
-        LINKEDIN_STATUS.SUBMITTED,
-        LINKEDIN_STATUS.REJECTED,
-        LINKEDIN_STATUS.APPROVED
-      ],
-      default: LINKEDIN_STATUS.EMPTY
     },
     references: [referenceSchema],
     isOnboarded: {
