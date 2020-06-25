@@ -1,6 +1,5 @@
 import express from 'express';
 import ws from 'ws';
-import { Router } from '@small-tech/express-ws';
 import WhiteboardCtrl from '../../controllers/WhiteboardCtrl.js';
 import {
   decode,
@@ -21,7 +20,7 @@ const messageHandlers: {
     message: Message;
     sessionId: string;
     wsClient: ws;
-    // TODO: figure out correct typing
+    // @todo: figure out correct typing using @types/express-ws
     route: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     messageCache: string;
   }) => void;
@@ -176,7 +175,8 @@ const messageHandlers: {
 };
 
 const whiteboardRouter = function(app): void {
-  const router = express.Router() as Router;
+  // @todo: figure out correct typing using @types/express-ws
+  const router: any = express.Router(); // eslint-disable-line @typescript-eslint/no-explicit-any
 
   /**
    * This is a web socket Express route
