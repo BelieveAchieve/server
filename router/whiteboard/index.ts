@@ -204,12 +204,6 @@ const whiteboardRouter = function(app): void {
 
     let messageCache = '';
 
-    /**
-     * Handle new whiteboard data coming in from clients
-     * 1. Save the new chunk of whiteboard data to the whiteboard controller
-     * 2. Tell this client that you successfully received their message
-     * 3. Broadcast the updated whiteboard document to other clients in the room
-     */
     wsClient.on('message', rawMessage => {
       const message = decode(rawMessage as Uint8Array);
       if (message.messageType === MessageType.INIT) initialized = true;
