@@ -1,13 +1,13 @@
 export interface Message {
-  messageType: MessageType;
-  more: 0 | 1;
-  protocolVersion: number;
-  maxSize: number;
-  creationMode: 0 | 1 | 2;
-  offset: 0;
-  docIDLength: number;
-  docID: string;
-  data: string;
+  messageType?: MessageType;
+  more?: 0 | 1;
+  protocolVersion?: number;
+  maxSize?: number;
+  creationMode?: 0 | 1 | 2;
+  offset?: 0;
+  docIDLength?: number;
+  docID?: string;
+  data?: string;
 }
 
 export enum MessageType {

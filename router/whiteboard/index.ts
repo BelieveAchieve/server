@@ -1,5 +1,6 @@
 import express from 'express';
 import ws from 'ws';
+import { Router } from '@small-tech/express-ws';
 import WhiteboardCtrl from '../../controllers/WhiteboardCtrl.js';
 import {
   decode,
@@ -174,8 +175,8 @@ const messageHandlers: {
   }
 };
 
-const router = function(app): void {
-  const router = express.Router();
+const whiteboardRouter = function(app): void {
+  const router = express.Router() as Router;
 
   /**
    * This is a web socket Express route
@@ -232,5 +233,5 @@ const router = function(app): void {
   app.use('/whiteboard', router);
 };
 
-module.exports = router;
-export default router;
+module.exports = whiteboardRouter;
+export default whiteboardRouter;
