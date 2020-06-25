@@ -6,7 +6,7 @@
     "start": "ts-node main",
     "dev": "ts-node-dev main",
     "dev:autolint": "nodemon main --exec 'npm run lint && node'",
-    "test": "jest --runInBand --detectOpenHandles",
+    "test": "jest --runInBand --detectOpenHandles --forceExit",
     "test:watch": "jest --watch --runInBand --detectOpenHandles",
     "lint": "eslint '**/*.ts' --fix && eslint '*.js' '{controllers,models,router,services,seeds,worker}/**/*.js' --no-eslintrc --config ./.eslintrc-javascript.js --fix",
     "lint:prod": "eslint '**/*.ts' --max-warnings 0 && eslint '*.js' '{controllers,models,router,services,seeds,worker}/**/*.js' --no-eslintrc --config ./.eslintrc-javascript.js --max-warnings 0",
