@@ -29,7 +29,6 @@ const messageHandlers: {
     wsClient: ws;
     // @todo: figure out correct typing using @types/express-ws
     route: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-    messageCache: string;
   }) => void;
 } = {
   [MessageType.INIT]: ({ message, sessionId, wsClient }) => {
@@ -237,23 +236,17 @@ const whiteboardRouter = function(app): void {
       }
     }, 30 * 1000);
 
-    let messageCache = '';
-
     wsClient.on('message', rawMessage => {
       const message = decode(rawMessage as Uint8Array);
       if (message.messageType === MessageType.INIT) initialized = true;
-      const output = messageHandlers[message.messageType]
+      messageHandlers[message.messageType]
         ? messageHandlers[message.messageType]({
             message,
             sessionId,
             wsClient,
-            route: this,
-            messageCache
+            route: this
           })
         : wsClient.send({ error: 'unsupported message type' });
-
-      if (message.more) messageCache += output;
-      else messageCache = '';
     });
 
     next();
