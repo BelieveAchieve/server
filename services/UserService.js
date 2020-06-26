@@ -159,10 +159,9 @@ module.exports = {
     const update = {
       isApproved,
       photoIdStatus,
-      'references.0.status': referenceOneStatus
+      'references.0.status': referenceOneStatus,
+      'references.1.status': referenceTwoStatus
     }
-
-    if (referenceTwoStatus) update['references.1.status'] = referenceTwoStatus
 
     return Volunteer.update({ _id: volunteerId }, update)
   }
