@@ -1,5 +1,6 @@
 import express from 'express';
 import ws from 'ws';
+import * as Sentry from '@sentry/node';
 import WhiteboardCtrl from '../../controllers/WhiteboardCtrl.js';
 import {
   decode,
@@ -9,6 +10,9 @@ import {
   DecodeError,
   CreationMode
 } from '../../utils/zwibblerDecoder';
+
+const captureUnimplemented = (sessionId, method) =>
+  Sentry.captureMessage(`Unimplemented Zwibbler protocol method ${method} called in session ${sessionId}`);
 
 const messageHandlers: {
   [type in MessageType]: ({
@@ -113,7 +117,8 @@ const messageHandlers: {
       })
     );
   },
-  [MessageType.SET_KEY]: ({ wsClient }) =>
+  [MessageType.SET_KEY]: ({ wsClient, sessionId }) => {
+    captureUnimplemented(sessionId, 'SET_KEY');
     wsClient.send(
       encode({
         messageType: MessageType.ERROR,
@@ -121,8 +126,10 @@ const messageHandlers: {
         errorCode: DecodeError.UNIMPLEMENTED_ERROR,
         more: 0
       })
-    ),
-  [MessageType.BROADCAST]: ({ wsClient }) =>
+    );
+  },
+  [MessageType.BROADCAST]: ({ wsClient, sessionId }) => {
+    captureUnimplemented(sessionId, 'BROADCAST');
     wsClient.send(
       encode({
         messageType: MessageType.ERROR,
@@ -130,8 +137,10 @@ const messageHandlers: {
         errorCode: DecodeError.UNIMPLEMENTED_ERROR,
         more: 0
       })
-    ),
-  [MessageType.ERROR]: ({ wsClient }) =>
+    );
+  },
+  [MessageType.ERROR]: ({ wsClient, sessionId }) => {
+    captureUnimplemented(sessionId, 'ERROR');
     wsClient.send(
       encode({
         messageType: MessageType.ERROR,
@@ -139,8 +148,10 @@ const messageHandlers: {
         errorCode: DecodeError.UNIMPLEMENTED_ERROR,
         more: 0
       })
-    ),
-  [MessageType.ACK_NACK]: ({ wsClient }) =>
+    );
+  },
+  [MessageType.ACK_NACK]: ({ wsClient, sessionId }) => {
+    captureUnimplemented(sessionId, 'ACK_NACK');
     wsClient.send(
       encode({
         messageType: MessageType.ERROR,
@@ -148,8 +159,10 @@ const messageHandlers: {
         errorCode: DecodeError.UNIMPLEMENTED_ERROR,
         more: 0
       })
-    ),
-  [MessageType.KEY_INFORMATION]: ({ wsClient }) =>
+    );
+  },
+  [MessageType.KEY_INFORMATION]: ({ wsClient, sessionId }) => {
+    captureUnimplemented(sessionId, 'KEY_INFORMATION');
     wsClient.send(
       encode({
         messageType: MessageType.ERROR,
@@ -157,8 +170,10 @@ const messageHandlers: {
         errorCode: DecodeError.UNIMPLEMENTED_ERROR,
         more: 0
       })
-    ),
-  [MessageType.SET_KEY_ACK_NACK]: ({ wsClient }) =>
+    );
+  },
+  [MessageType.SET_KEY_ACK_NACK]: ({ wsClient, sessionId }) => {
+    captureUnimplemented(sessionId, 'SET_KEY_ACK_NACK');
     wsClient.send(
       encode({
         messageType: MessageType.ERROR,
@@ -166,7 +181,8 @@ const messageHandlers: {
         errorCode: DecodeError.UNIMPLEMENTED_ERROR,
         more: 0
       })
-    ),
+    );
+  },
   [MessageType.CONTINUATION]: ({ message, wsClient, sessionId, route }) => {
     WhiteboardCtrl.appendToDoc(sessionId, message.data);
     const broadcastMessage = encode({
