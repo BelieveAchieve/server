@@ -9,6 +9,7 @@ import {
   DecodeError,
   CreationMode
 } from '../../utils/zwibblerDecoder';
+import { omit } from 'lodash';
 
 const messageHandlers: {
   [type in MessageType]: ({
@@ -91,14 +92,18 @@ const messageHandlers: {
       );
     }
     WhiteboardCtrl.appendToDoc(sessionId, message.data);
-    wsClient.send(
-      encode({
-        messageType: MessageType.ACK_NACK,
-        ack: 1,
-        offset: WhiteboardCtrl.getDocLength(sessionId),
-        more: 0
-      })
-    );
+
+    // Ack unless this is the beginning of a continuation
+    if (!message.more) {
+      wsClient.send(
+        encode({
+          messageType: MessageType.ACK_NACK,
+          ack: 1,
+          offset: WhiteboardCtrl.getDocLength(sessionId),
+          more: 0
+        })
+      );
+    }
     route.broadcast(
       wsClient,
       encode({
@@ -171,6 +176,18 @@ const messageHandlers: {
       more: message.more
     });
     route.broadcast(wsClient, broadcastMessage);
+
+    // Ack if this is the end of a continuation
+    if (!message.more) {
+      wsClient.send(
+        encode({
+          messageType: MessageType.ACK_NACK,
+          ack: 1,
+          offset: WhiteboardCtrl.getDocLength(sessionId),
+          more: 0
+        })
+      );
+    }
   }
 };
 
@@ -206,6 +223,12 @@ const whiteboardRouter = function(app): void {
 
     wsClient.on('message', rawMessage => {
       const message = decode(rawMessage as Uint8Array);
+
+      console.log('doc length:', WhiteboardCtrl.getDocLength(sessionId))
+      console.log(omit(message, 'data'))
+      if (message.data)
+        console.log('data length:', message.data.length)
+
       if (message.messageType === MessageType.INIT) initialized = true;
       const output = messageHandlers[message.messageType]
         ? messageHandlers[message.messageType]({
