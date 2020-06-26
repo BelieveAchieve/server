@@ -11,8 +11,11 @@ import {
   CreationMode
 } from '../../utils/zwibblerDecoder';
 
-const captureUnimplemented = (sessionId, method) =>
-  Sentry.captureMessage(`Unimplemented Zwibbler protocol method ${method} called in session ${sessionId}`);
+const captureUnimplemented = (sessionId: string, messageType: string): void => {
+  Sentry.captureMessage(
+    `Unimplemented Zwibbler message type ${messageType} called in session ${sessionId}`
+  );
+};
 
 const messageHandlers: {
   [type in MessageType]: ({
