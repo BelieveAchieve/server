@@ -54,8 +54,6 @@ export interface Volunteer {
   references?: Array<Reference>;
   photoIdS3Key?: string;
   photoIdStatus?: string;
-  linkedInUrl?: string;
-  linkedInStatus?: string;
 }
 
 export interface StudentRegistrationForm extends Student {

@@ -1,17 +1,12 @@
 import mongoose from 'mongoose';
 import UserService from '../../../services/UserService';
 import VolunteerModel from '../../../models/Volunteer';
-import {
-  PHOTO_ID_STATUS,
-  LINKEDIN_STATUS,
-  REFERENCE_STATUS
-} from '../../../constants';
+import { PHOTO_ID_STATUS, REFERENCE_STATUS } from '../../../constants';
 import { Volunteer } from '../../utils/types';
 import {
   buildVolunteer,
   buildReference,
   buildReferenceForm,
-  buildLinkedInData,
   buildPhotoIdData,
   buildReferenceWithForm
 } from '../../utils/generate';
@@ -48,53 +43,6 @@ test('Successfully adds photoIdS3Key and photoIdStatus', async () => {
   expect(updatedVolunteer.photoIdS3Key).toEqual(newPhotoIdS3Key);
   expect(updatedVolunteer.photoIdStatus).toEqual(PHOTO_ID_STATUS.SUBMITTED);
   expect(updatedVolunteer.photoIdStatus).not.toEqual(PHOTO_ID_STATUS.EMPTY);
-});
-
-test('Submits valid LinkedIn url', async () => {
-  const volunteer = buildVolunteer();
-  await insertVolunteer(volunteer);
-  const { _id: userId } = volunteer;
-  const linkedInUrl = 'https://www.linkedin.com/in/volunteer/';
-  const input = {
-    userId,
-    linkedInUrl
-  };
-  const isValidLinkedIn = await UserService.addLinkedIn(input);
-
-  const updatedVolunteer: Partial<Volunteer> = await VolunteerModel.findOne({
-    _id: userId
-  })
-    .select('linkedInUrl linkedInStatus')
-    .lean()
-    .exec();
-
-  expect(isValidLinkedIn).toBeTruthy();
-  expect(updatedVolunteer.linkedInUrl).toEqual(linkedInUrl);
-  expect(updatedVolunteer.linkedInStatus).toEqual(LINKEDIN_STATUS.SUBMITTED);
-  expect(updatedVolunteer.linkedInStatus).not.toEqual(LINKEDIN_STATUS.EMPTY);
-});
-
-test('Submits invalid LinkedIn url', async () => {
-  const volunteer = buildVolunteer();
-  await insertVolunteer(volunteer);
-  const { _id: userId } = volunteer;
-  const linkedInUrl = 'https://www.linkedin.com/company/upchieve/';
-  const input = {
-    userId,
-    linkedInUrl
-  };
-  const isValidLinkedIn = await UserService.addLinkedIn(input);
-
-  const updatedVolunteer: Partial<Volunteer> = await VolunteerModel.findOne({
-    _id: userId
-  })
-    .select('linkedInUrl linkedInStatus')
-    .lean()
-    .exec();
-
-  expect(isValidLinkedIn).toBeFalsy();
-  expect(updatedVolunteer.linkedInUrl).toBeUndefined();
-  expect(updatedVolunteer.linkedInStatus).toEqual(LINKEDIN_STATUS.EMPTY);
 });
 
 test('Should add a reference', async () => {
@@ -200,7 +148,6 @@ test.todo('Admin should get pending volunteers');
 test('Pending volunteer should not be approved after being rejected', async () => {
   const options = {
     references: [buildReferenceWithForm(), buildReferenceWithForm()],
-    ...buildLinkedInData(),
     ...buildPhotoIdData()
   };
   const volunteer = buildVolunteer(options);
@@ -208,19 +155,17 @@ test('Pending volunteer should not be approved after being rejected', async () =
   const input = {
     volunteerId: volunteer._id,
     photoIdStatus: PHOTO_ID_STATUS.APPROVED,
-    referencesStatus: [REFERENCE_STATUS.APPROVED, REFERENCE_STATUS.REJECTED],
-    linkedInStatus: LINKEDIN_STATUS.REJECTED
+    referencesStatus: [REFERENCE_STATUS.APPROVED, REFERENCE_STATUS.REJECTED]
   };
 
   await UserService.updatePendingVolunteerStatus(input);
   const updatedVolunteer = await VolunteerModel.findOne({ _id: volunteer._id })
     .lean()
-    .select('photoIdStatus references.status linkedInStatus isApproved')
+    .select('photoIdStatus references.status isApproved')
     .exec();
 
   const expectedResult = {
     photoIdStatus: input.photoIdStatus,
-    linkedInStatus: input.linkedInStatus,
     references: [
       { status: input.referencesStatus[0] },
       { status: input.referencesStatus[1] }
@@ -233,8 +178,7 @@ test('Pending volunteer should not be approved after being rejected', async () =
 
 test('Pending volunteer should be approved after approval', async () => {
   const options = {
-    references: [buildReferenceWithForm()],
-    ...buildLinkedInData(),
+    references: [buildReferenceWithForm(), buildReferenceWithForm()],
     ...buildPhotoIdData()
   };
   const volunteer = buildVolunteer(options);
@@ -242,20 +186,21 @@ test('Pending volunteer should be approved after approval', async () => {
   const input = {
     volunteerId: volunteer._id,
     photoIdStatus: PHOTO_ID_STATUS.APPROVED,
-    referencesStatus: [REFERENCE_STATUS.APPROVED],
-    linkedInStatus: LINKEDIN_STATUS.APPROVED
+    referencesStatus: [REFERENCE_STATUS.APPROVED, REFERENCE_STATUS.APPROVED]
   };
 
   await UserService.updatePendingVolunteerStatus(input);
   const updatedVolunteer = await VolunteerModel.findOne({ _id: volunteer._id })
     .lean()
-    .select('photoIdStatus references.status linkedInStatus isApproved')
+    .select('photoIdStatus references.status isApproved')
     .exec();
 
   const expectedResult = {
     photoIdStatus: input.photoIdStatus,
-    linkedInStatus: input.linkedInStatus,
-    references: [{ status: input.referencesStatus[0] }],
+    references: [
+      { status: input.referencesStatus[0] },
+      { status: input.referencesStatus[1] }
+    ],
     isApproved: true
   };
 

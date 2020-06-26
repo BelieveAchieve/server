@@ -2,11 +2,7 @@ import faker from 'faker';
 import { Test } from 'supertest';
 import { Types } from 'mongoose';
 import base64url from 'base64url';
-import {
-  LINKEDIN_STATUS,
-  PHOTO_ID_STATUS,
-  REFERENCE_STATUS
-} from '../../constants';
+import { PHOTO_ID_STATUS, REFERENCE_STATUS } from '../../constants';
 import {
   Volunteer,
   Student,
@@ -133,16 +129,6 @@ export const buildReferenceWithForm = (overrides = {}): Partial<Reference> => {
   const data = {
     ...buildReferenceForm(),
     ...buildReference(),
-    ...overrides
-  };
-
-  return data;
-};
-
-export const buildLinkedInData = (overrides = {}): Partial<Volunteer> => {
-  const data = {
-    linkedInUrl: `https://www.linkedin.com/in/${getFirstName()}${getLastName()}/`,
-    linkedInStatus: LINKEDIN_STATUS.SUBMITTED,
     ...overrides
   };
 

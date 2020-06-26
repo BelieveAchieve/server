@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import request, { Test } from 'supertest';
+import request from 'supertest';
 import app from '../../../app';
 import { insertVolunteer, resetDb } from '../../utils/db-utils';
 import {
@@ -35,9 +35,6 @@ jest.mock('aws-sdk', () => {
   };
 });
 
-const sendLinkedIn = (linkedInUrl): Test =>
-  agent.post('/api/user/volunteer-approval/linkedin').send({ linkedInUrl });
-
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGO_URL, {
     useNewUrlParser: true
@@ -53,36 +50,6 @@ afterAll(async () => {
 //        workaround is to run jest with the '--runInBand' to run the tests serially
 beforeEach(async () => {
   await resetDb();
-});
-
-test('Volunteer submits an invalid LinkedIn url', async () => {
-  const volunteer = buildVolunteer();
-  await insertVolunteer(volunteer);
-  await authLogin(agent, volunteer);
-  const response = await sendLinkedIn(
-    'https://www.linkedin.com/company/upchieve/'
-  ).expect(200);
-
-  const {
-    body: { isValidLinkedIn }
-  } = response;
-
-  expect(isValidLinkedIn).toBeFalsy();
-});
-
-test('Volunteer submits a valid LinkedIn url', async () => {
-  const volunteer = buildVolunteer();
-  await insertVolunteer(volunteer);
-  await authLogin(agent, volunteer);
-  const response = await sendLinkedIn(
-    'https://www.linkedin.com/in/volunteer1/'
-  ).expect(200);
-
-  const {
-    body: { isValidLinkedIn }
-  } = response;
-
-  expect(isValidLinkedIn).toBeTruthy();
 });
 
 test('Volunteer submits a reference', async () => {
