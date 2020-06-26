@@ -231,7 +231,7 @@ const whiteboardRouter = function(app): void {
 
     setTimeout(() => {
       if (!initialized) {
-        console.log('close connection');
+        console.log(`closing whiteboard socket connection for session ${sessionId}`);
         wsClient.close();
       }
     }, 30 * 1000);
