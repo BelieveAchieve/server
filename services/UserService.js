@@ -3,23 +3,13 @@ const { omit } = require('lodash')
 const User = require('../models/User')
 const Volunteer = require('../models/Volunteer')
 const MailService = require('./MailService')
-const {
-  PHOTO_ID_STATUS,
-  REFERENCE_STATUS,
-  LINKEDIN_STATUS
-} = require('../constants')
+const { PHOTO_ID_STATUS, REFERENCE_STATUS } = require('../constants')
 
 module.exports = {
   parseUser: user => {
     // Approved volunteer
     if (user.isVolunteer && user.isApproved)
-      return omit(user, [
-        'references',
-        'photoIdS3Key',
-        'photoIdStatus',
-        'linkedInUrl',
-        'linkedInStatus'
-      ])
+      return omit(user, ['references', 'photoIdS3Key', 'photoIdStatus'])
 
     // Student or unapproved volunteer
     return user
@@ -39,17 +29,6 @@ module.exports = {
       { $set: { photoIdS3Key, photoIdStatus: PHOTO_ID_STATUS.SUBMITTED } }
     )
     return photoIdS3Key
-  },
-
-  addLinkedIn: async ({ userId, linkedInUrl }) => {
-    const urlPattern = RegExp(/.*linkedin\.com.*\/in\/.+/)
-    const isMatch = urlPattern.test(linkedInUrl)
-    if (!isMatch) return false
-    await Volunteer.updateOne(
-      { _id: userId },
-      { $set: { linkedInUrl, linkedInStatus: LINKEDIN_STATUS.SUBMITTED } }
-    )
-    return true
   },
 
   addReference: async ({ userId, referenceName, referenceEmail }) => {
@@ -131,10 +110,7 @@ module.exports = {
             photoIdStatus: {
               $in: [PHOTO_ID_STATUS.SUBMITTED, PHOTO_ID_STATUS.APPROVED]
             },
-            $or: [
-              { linkedInUrl: { $exists: true }, references: { $size: 1 } },
-              { linkedInUrl: { $exists: false }, references: { $size: 2 } }
-            ],
+            references: { $size: 2 },
             'references.status': {
               $nin: [
                 REFERENCE_STATUS.REJECTED,
@@ -167,29 +143,22 @@ module.exports = {
   updatePendingVolunteerStatus: async function({
     volunteerId,
     photoIdStatus,
-    referencesStatus,
-    linkedInStatus
+    referencesStatus
   }) {
-    const statuses = [...referencesStatus, linkedInStatus]
-    const minApprovedStatuses = 2
-    let amountApproved = 0
-
-    for (const status of statuses) {
-      if (status === REFERENCE_STATUS.APPROVED) amountApproved++
-    }
+    const hasAllReferencesApproved = referencesStatus.every(
+      status => status === REFERENCE_STATUS.APPROVED
+    )
 
     // A volunteer must have the following list items approved before being considered an approved volunteer
-    //  1. two references or one reference and a valid LinkedIn url
+    //  1. two references
     //  2. photo id
     const isApproved =
-      amountApproved === minApprovedStatuses &&
-      photoIdStatus === PHOTO_ID_STATUS.APPROVED
+      hasAllReferencesApproved && photoIdStatus === PHOTO_ID_STATUS.APPROVED
 
     const [referenceOneStatus, referenceTwoStatus] = referencesStatus
     const update = {
       isApproved,
       photoIdStatus,
-      linkedInStatus,
       'references.0.status': referenceOneStatus
     }
 

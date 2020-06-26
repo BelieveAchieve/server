@@ -49,16 +49,6 @@ module.exports = function(router) {
     }
   })
 
-  router.post('/user/volunteer-approval/linkedin', async (req, res, next) => {
-    const { _id } = req.user
-    const { linkedInUrl } = req.body
-    const isValidLinkedIn = await UserService.addLinkedIn({
-      userId: _id,
-      linkedInUrl
-    })
-    res.status(200).json({ isValidLinkedIn })
-  })
-
   router.post('/user/volunteer-approval/reference', async (req, res, next) => {
     const { _id } = req.user
     const { referenceName, referenceEmail } = req.body
