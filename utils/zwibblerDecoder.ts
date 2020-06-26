@@ -1,3 +1,8 @@
+/**
+ * From https://zwibbler.com/collaboration/script.ts
+ * @author Steve Hanov
+ */
+
 export interface Message {
   messageType?: MessageType;
   more?: 0 | 1;
