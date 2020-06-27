@@ -241,12 +241,10 @@ const whiteboardRouter = function(app): void {
     wsClient.on('message', rawMessage => {
       let message = decode(rawMessage as Uint8Array);
       if (!message || !message.messageType) {
-        console.log(
-          `unsupported zwibbler client in session ${sessionId}`
-        );
+        console.log(`unsupported zwibbler client in session ${sessionId}`);
         message = {
-          messageType: MessageType.ERROR,
-        }
+          messageType: MessageType.ERROR
+        };
       }
       if (message.messageType === MessageType.INIT) initialized = true;
       messageHandlers[message.messageType]
