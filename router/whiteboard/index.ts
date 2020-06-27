@@ -240,6 +240,12 @@ const whiteboardRouter = function(app): void {
 
     wsClient.on('message', rawMessage => {
       const message = decode(rawMessage as Uint8Array);
+      if (!message || !message.messageType) {
+        console.log(
+          `closing connection with outdated zwibbler client in session ${sessionId}`
+        );
+        return wsClient.close();
+      }
       if (message.messageType === MessageType.INIT) initialized = true;
       messageHandlers[message.messageType]
         ? messageHandlers[message.messageType]({
