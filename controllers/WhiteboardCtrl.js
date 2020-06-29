@@ -23,7 +23,9 @@ module.exports = {
   appendToDoc: function(sessionId, docAddition) {
     const currentDoc = this.getDoc(sessionId)
     if (currentDoc === undefined) {
-      return Sentry.captureMessage(`document does not exist for session ${sessionId}`)
+      return Sentry.captureMessage(
+        `document does not exist for session ${sessionId}`
+      )
     }
     whiteboardDocCache[sessionId] = currentDoc + docAddition
   },
