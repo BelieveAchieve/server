@@ -1,5 +1,7 @@
+const Sentry = require('@sentry/node')
 const Session = require('../models/Session')
 
+// @todo: store in redis or mongodb, not in-memory
 const whiteboardDocCache = {}
 
 module.exports = {
@@ -21,7 +23,7 @@ module.exports = {
   appendToDoc: function(sessionId, docAddition) {
     const currentDoc = this.getDoc(sessionId)
     if (currentDoc === undefined) {
-      throw new Error(`document does not exist for session ${sessionId}`)
+      return Sentry.captureMessage(`document does not exist for session ${sessionId}`)
     }
     whiteboardDocCache[sessionId] = currentDoc + docAddition
   },
