@@ -127,7 +127,10 @@
     "phone": "+12125551212",
     "verificationToken": "f8fa9fdc44c7b3c4378eeabefa8bf8ea",
     "verified": true,
-    "referralCode": "C"
+    "referralCode": "C",
+    "isApproved": true,
+    "isOnboarded": false
+
   },
   {
     "college": "Volunteer College",
@@ -141,6 +144,8 @@
     "phone": "+12125551212",
     "verificationToken": "f8fa9fdc44c7b3c4378eeabefa8bf8ea",
     "verified": true,
-    "referralCode": "D"
+    "referralCode": "D",
+    "isApproved": false,
+    "isOnboarded": false
   }
 ]
