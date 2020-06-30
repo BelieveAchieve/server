@@ -1,5 +1,6 @@
 import { ProcessPromiseFunction, Queue } from 'bull';
 import { map } from 'lodash';
+import * as Sentry from '@sentry/node';
 import { log } from '../logger';
 import notifyTutors from './notifyTutors';
 import updateElapsedAvailability from './updateElapsedAvailability';
@@ -36,6 +37,7 @@ export const addJobProcessors = (queue: Queue): void => {
       } catch (error) {
         log(`Error processing job: ${job.name}`);
         log(error);
+        Sentry.captureException(error);
       }
     })
   );
