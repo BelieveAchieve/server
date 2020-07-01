@@ -1,5 +1,4 @@
 const Sentry = require('@sentry/node')
-const Session = require('../models/Session')
 
 // @todo: store in redis or mongodb, not in-memory
 const whiteboardDocCache = {}
