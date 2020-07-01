@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/node';
 import { map, size } from 'lodash';
 import VolunteerModel from '../../models/Volunteer';
 import { User } from '../../models/types';

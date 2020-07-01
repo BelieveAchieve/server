@@ -23,7 +23,7 @@ module.exports = {
     )
   },
 
-  isSessionFulfilled: function(session) {
+  isSessionFulfilled: session => {
     const hasEnded = !!session.endedAt
     const hasVolunteerJoined = !!session.volunteer
 
