@@ -28,5 +28,17 @@ module.exports = {
     const hasVolunteerJoined = !!session.volunteer
 
     return hasEnded || hasVolunteerJoined
+  },
+
+  getStaleSessions: async (staleThreshold = 43200000) => {
+    const cutoffDate = new Date(Date.now() - staleThreshold)
+    return Session.find({
+      endedAt: { $exists: false },
+      $expr: {
+        $lt: ['$createdAt', cutoffDate]
+      }
+    })
+      .lean()
+      .exec()
   }
 }

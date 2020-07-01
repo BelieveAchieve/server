@@ -4,10 +4,12 @@ import * as Sentry from '@sentry/node';
 import { log } from '../logger';
 import notifyTutors from './notifyTutors';
 import updateElapsedAvailability from './updateElapsedAvailability';
+import endStaleSessions from './endStaleSessions';
 
 export enum Jobs {
   NotifyTutors = 'NotifyTutors',
-  UpdateElapsedAvailability = 'UpdateElapsedAvailability'
+  UpdateElapsedAvailability = 'UpdateElapsedAvailability',
+  EndStaleSessions = 'EndStaleSessions'
 }
 
 // register new job processors here
@@ -24,6 +26,10 @@ const jobProcessors: JobProcessor[] = [
   {
     name: Jobs.UpdateElapsedAvailability,
     processor: updateElapsedAvailability
+  },
+  {
+    name: Jobs.EndStaleSessions,
+    processor: endStaleSessions
   }
 ];
 
