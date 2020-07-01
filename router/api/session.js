@@ -60,19 +60,20 @@ module.exports = function(router, io) {
     const ipAddress = req.ip
 
     try {
-      const session = await sessionCtrl.end({
-        sessionId: sessionId,
-        user: user
+      await SessionService.endSession({
+        sessionId,
+        endedBy: user
       })
+      socketService.emitSessionChange(sessionId)
       UserActionCtrl.endedSession(
         user._id,
-        session._id,
+        sessionId,
         userAgent,
         ipAddress
       ).catch(error => {
         Sentry.captureException(error)
       })
-      res.json({ sessionId: session._id })
+      res.json({ sessionId })
     } catch (err) {
       next(err)
     }

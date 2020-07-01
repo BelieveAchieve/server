@@ -6,12 +6,26 @@ const addPastSession = async ({ userId, sessionId }) => {
   await User.update({ _id: userId }, { $addToSet: { pastSessions: sessionId } })
 }
 
-module.exports = {
-  getSession: async sessionId => {
-    return Session.findOne({ _id: sessionId })
-  },
+const getSession = async sessionId => {
+  return Session.findOne({ _id: sessionId })
+}
 
-  endSession: async ({ session, endedBy = null }) => {
+const isSessionParticipant = (session, user) => {
+  return [session.student, session.volunteer].some(
+    participant => !!participant && user._id.equals(participant)
+  )
+}
+
+module.exports = {
+  getSession,
+
+  endSession: async ({ sessionId, endedBy = null, isAdmin = false }) => {
+    const session = await getSession(sessionId)
+    if (!session) throw new Error('No session found')
+    if (session.endedAt) return
+    if (!isAdmin && !isSessionParticipant(session, endedBy))
+      throw new Error('Only session participants can end a session')
+
     await addPastSession(session.student, session._id)
     if (session.volunteer) await addPastSession(session.volunteer, session._id)
 
