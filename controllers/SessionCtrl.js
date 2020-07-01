@@ -65,7 +65,7 @@ module.exports = function(socketService) {
         new Error('Only session participants can end a session')
       )
 
-      await sessionService.endSession(session, user)
+      await sessionService.endSession({ session, endedBy: user._id })
 
       socketService.emitSessionChange(options.sessionId)
 

@@ -147,14 +147,6 @@ sessionSchema.methods.joinUser = function(user) {
   return this.save()
 }
 
-sessionSchema.methods.endSession = function(userWhoEnded) {
-  this.endedAt = new Date()
-  this.endedBy = userWhoEnded
-  return this.save().then(() =>
-    console.log(`Ended session ${this._id} at ${this.endedAt}`)
-  )
-}
-
 sessionSchema.methods.addNotifications = function(notificationsToAdd, cb) {
   return this.model('Session')
     .findByIdAndUpdate(this._id, {
