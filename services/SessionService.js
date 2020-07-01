@@ -1,5 +1,6 @@
 const Session = require('../models/Session')
 const User = require('../models/User')
+const WhiteboardService = require('../services/WhiteboardService')
 
 const addPastSession = async ({ userId, sessionId }) => {
   await User.update({ _id: userId }, { $addToSet: { pastSessions: sessionId } })
@@ -18,9 +19,12 @@ module.exports = {
       { _id: session._id },
       {
         endedAt: new Date(),
-        endedBy
+        endedBy,
+        whiteboardDoc: WhiteboardService.getDoc(session._id)
       }
     )
+
+    WhiteboardService.clearDocFromCache(session._id)
   },
 
   isSessionFulfilled: session => {

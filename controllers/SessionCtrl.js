@@ -1,6 +1,5 @@
 const Session = require('../models/Session')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
-const WhiteboardCtrl = require('../controllers/WhiteboardCtrl')
 const sessionService = require('../services/SessionService')
 const twilioService = require('../services/twilio')
 const Sentry = require('@sentry/node')
@@ -68,10 +67,6 @@ module.exports = function(socketService) {
       await sessionService.endSession({ session, endedBy: user._id })
 
       socketService.emitSessionChange(options.sessionId)
-
-      WhiteboardCtrl.saveDocToSession(options.sessionId).then(() => {
-        WhiteboardCtrl.clearDocFromCache(options.sessionId)
-      })
 
       return session
     },

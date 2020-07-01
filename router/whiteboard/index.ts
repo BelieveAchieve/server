@@ -1,7 +1,7 @@
 import express from 'express';
 import ws from 'ws';
 import * as Sentry from '@sentry/node';
-import WhiteboardCtrl from '../../controllers/WhiteboardCtrl.js';
+import WhiteboardService from '../../services/WhiteboardService.js';
 import {
   decode,
   encode,
@@ -32,7 +32,7 @@ const messageHandlers: {
   }) => void;
 } = {
   [MessageType.INIT]: ({ message, sessionId, wsClient }) => {
-    const document = WhiteboardCtrl.getDoc(sessionId);
+    const document = WhiteboardService.getDoc(sessionId);
     if (
       message.creationMode === CreationMode.NEVER_CREATE &&
       document === undefined
@@ -64,12 +64,12 @@ const messageHandlers: {
         message.creationMode === CreationMode.POSSIBLY_CREATE) &&
       document === undefined
     ) {
-      WhiteboardCtrl.createDoc(sessionId);
-      if (message.data) WhiteboardCtrl.appendToDoc(sessionId, message.data);
+      WhiteboardService.createDoc(sessionId);
+      if (message.data) WhiteboardService.appendToDoc(sessionId, message.data);
       return wsClient.send(
         encode({
           messageType: MessageType.APPEND,
-          offset: WhiteboardCtrl.getDocLength(sessionId),
+          offset: WhiteboardService.getDocLength(sessionId),
           data: '',
           more: 0
         })
@@ -79,13 +79,13 @@ const messageHandlers: {
       encode({
         messageType: MessageType.APPEND,
         offset: 0,
-        data: WhiteboardCtrl.getDoc(sessionId),
+        data: WhiteboardService.getDoc(sessionId),
         more: 0
       })
     );
   },
   [MessageType.APPEND]: ({ message, sessionId, wsClient, route }) => {
-    const documentLength = WhiteboardCtrl.getDocLength(sessionId);
+    const documentLength = WhiteboardService.getDocLength(sessionId);
     if (message.offset !== documentLength) {
       return wsClient.send(
         encode({
@@ -96,7 +96,7 @@ const messageHandlers: {
         })
       );
     }
-    WhiteboardCtrl.appendToDoc(sessionId, message.data);
+    WhiteboardService.appendToDoc(sessionId, message.data);
 
     // Ack unless this is the beginning of a continuation
     if (!message.more) {
@@ -104,7 +104,7 @@ const messageHandlers: {
         encode({
           messageType: MessageType.ACK_NACK,
           ack: 1,
-          offset: WhiteboardCtrl.getDocLength(sessionId),
+          offset: WhiteboardService.getDocLength(sessionId),
           more: 0
         })
       );
@@ -186,7 +186,7 @@ const messageHandlers: {
     );
   },
   [MessageType.CONTINUATION]: ({ message, wsClient, sessionId, route }) => {
-    WhiteboardCtrl.appendToDoc(sessionId, message.data);
+    WhiteboardService.appendToDoc(sessionId, message.data);
     const broadcastMessage = encode({
       messageType: MessageType.CONTINUATION,
       data: message.data,
@@ -200,7 +200,7 @@ const messageHandlers: {
         encode({
           messageType: MessageType.ACK_NACK,
           ack: 1,
-          offset: WhiteboardCtrl.getDocLength(sessionId),
+          offset: WhiteboardService.getDocLength(sessionId),
           more: 0
         })
       );

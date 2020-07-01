@@ -32,10 +32,5 @@ module.exports = {
 
   clearDocFromCache(sessionId) {
     delete whiteboardDocCache[sessionId]
-  },
-
-  saveDocToSession(sessionId) {
-    const doc = this.getDoc(sessionId)
-    return Session.updateOne({ _id: sessionId }, { whiteboardDoc: doc })
   }
 }
