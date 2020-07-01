@@ -6,7 +6,7 @@ export default async (): Promise<void> => {
   await dbconnect();
   const staleSessions = await SessionService.getStaleSessions();
   for (const session of staleSessions) {
-    await SessionService.endSession({ session, isAdmin: true });
+    await SessionService.endSession({ sessionId: session._id, isAdmin: true });
   }
   log(`ended ${staleSessions.length} sessions`);
 };
