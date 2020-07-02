@@ -155,7 +155,8 @@ test('Pending volunteer should not be approved after being rejected', async () =
   const input = {
     volunteerId: volunteer._id,
     photoIdStatus: PHOTO_ID_STATUS.APPROVED,
-    referencesStatus: [REFERENCE_STATUS.APPROVED, REFERENCE_STATUS.REJECTED]
+    referencesStatus: [REFERENCE_STATUS.APPROVED, REFERENCE_STATUS.REJECTED],
+    hasCompletedBackgroundInfo: false
   };
 
   await UserService.updatePendingVolunteerStatus(input);
@@ -186,7 +187,8 @@ test('Pending volunteer should be approved after approval', async () => {
   const input = {
     volunteerId: volunteer._id,
     photoIdStatus: PHOTO_ID_STATUS.APPROVED,
-    referencesStatus: [REFERENCE_STATUS.APPROVED, REFERENCE_STATUS.APPROVED]
+    referencesStatus: [REFERENCE_STATUS.APPROVED, REFERENCE_STATUS.APPROVED],
+    hasCompletedBackgroundInfo: true
   };
 
   await UserService.updatePendingVolunteerStatus(input);
@@ -201,6 +203,94 @@ test('Pending volunteer should be approved after approval', async () => {
       { status: input.referencesStatus[0] },
       { status: input.referencesStatus[1] }
     ],
+    isApproved: true
+  };
+
+  expect(updatedVolunteer).toMatchObject(expectedResult);
+});
+
+test('Open volunteer is not approved when submitting their background info is not the final approval step', async () => {
+  const volunteer = buildVolunteer();
+  await insertVolunteer(volunteer);
+  const input = {
+    volunteerId: volunteer._id,
+    isPartnerVolunteer: false,
+    isFinalApprovalStep: false,
+    update: {
+      occupation: ['An undergraduate student'],
+      experience: '5+ years',
+      background: ['Went to a Title 1/low-income high school'],
+      languages: ['Spanish']
+    }
+  };
+
+  await UserService.addBackgroundInfo(input);
+  const updatedVolunteer = await VolunteerModel.findOne({ _id: volunteer._id })
+    .lean()
+    .select('isApproved occupation experience background languages')
+    .exec();
+
+  const expectedResult = {
+    occupation: input.update.occupation,
+    languages: input.update.languages,
+    experience: input.update.experience,
+    background: input.update.background,
+    isApproved: false
+  };
+
+  expect(updatedVolunteer).toMatchObject(expectedResult);
+});
+
+test('Open volunteer is approved when submitting their background info is the final approval step', async () => {
+  const volunteer = buildVolunteer();
+  await insertVolunteer(volunteer);
+  const input = {
+    volunteerId: volunteer._id,
+    isPartnerVolunteer: false,
+    isFinalApprovalStep: true,
+    update: {
+      occupation: ['An undergraduate student'],
+      experience: '5+ years',
+      background: ['Went to a Title 1/low-income high school'],
+      languages: ['Spanish']
+    }
+  };
+
+  await UserService.addBackgroundInfo(input);
+  const updatedVolunteer = await VolunteerModel.findOne({ _id: volunteer._id })
+    .lean()
+    .select('isApproved')
+    .exec();
+
+  const expectedResult = {
+    isApproved: true
+  };
+
+  expect(updatedVolunteer).toMatchObject(expectedResult);
+});
+
+test('Partner Volunteer is approved when submitting background info', async () => {
+  const volunteer = buildVolunteer();
+  await insertVolunteer(volunteer);
+  const input = {
+    volunteerId: volunteer._id,
+    isPartnerVolunteer: true,
+    isFinalApprovalStep: false,
+    update: {
+      occupation: ['An undergraduate student'],
+      experience: '5+ years',
+      background: ['Went to a Title 1/low-income high school'],
+      languages: ['Spanish']
+    }
+  };
+
+  await UserService.addBackgroundInfo(input);
+  const updatedVolunteer = await VolunteerModel.findOne({ _id: volunteer._id })
+    .lean()
+    .select('isApproved')
+    .exec();
+
+  const expectedResult = {
     isApproved: true
   };
 

@@ -143,13 +143,16 @@ module.exports = {
   updatePendingVolunteerStatus: async function({
     volunteerId,
     photoIdStatus,
-    referencesStatus
+    referencesStatus,
+    hasCompletedBackgroundInfo
   }) {
     const statuses = [...referencesStatus, photoIdStatus]
     // A volunteer must have the following list items approved before being considered an approved volunteer
     //  1. two references
     //  2. photo id
-    const isApproved = statuses.every(status => status === STATUS.APPROVED)
+    const isApproved =
+      statuses.every(status => status === STATUS.APPROVED) &&
+      hasCompletedBackgroundInfo;
     const [referenceOneStatus, referenceTwoStatus] = referencesStatus
     const update = {
       isApproved,
@@ -159,5 +162,17 @@ module.exports = {
     }
 
     return Volunteer.update({ _id: volunteerId }, update)
+  },
+
+  addBackgroundInfo: async function({
+    volunteerId,
+    isPartnerVolunteer,
+    isFinalApprovalStep,
+    update
+  }) {
+    if (isPartnerVolunteer) update.isApproved = true
+    if (isFinalApprovalStep) update.isApproved = true
+
+    return Volunteer.update({ _id: volunteerId }, update);
   }
 }
