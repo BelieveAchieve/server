@@ -195,7 +195,8 @@ const notifyVolunteer = async session => {
    */
   const volunteerPriority = [
     {
-      groupName: 'Mizuho and Atlassian volunteers - Not notified in last 3 days',
+      groupName:
+        'Mizuho and Atlassian volunteers - Not notified in last 3 days',
       filter: {
         volunteerPartnerOrg: {
           $exists: true,
@@ -215,7 +216,7 @@ const notifyVolunteer = async session => {
       groupName: 'Regular volunteers - Not notified in last 7 days',
       filter: {
         volunteerPartnerOrg: { $exists: false },
-        _id: { $nin: activeSessionVolunteers.concat(notifiedLastSevenDays) }  
+        _id: { $nin: activeSessionVolunteers.concat(notifiedLastSevenDays) }
       }
     },
     {
