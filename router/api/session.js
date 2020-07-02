@@ -12,6 +12,7 @@ const recordIpAddress = require('../../middleware/record-ip-address')
 const passport = require('../auth/passport')
 const mapMultiWordSubtopic = require('../../utils/map-multi-word-subtopic')
 const { USER_BAN_REASON } = require('../../constants')
+const NotificationService = require('../../services/NotificationService')
 
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
@@ -210,4 +211,16 @@ module.exports = function(router, io) {
       next(err)
     }
   })
+
+  router.get(
+    '/session/:sessionId/notifications',
+    passport.isAdmin,
+    async function(req, res, next) {
+      const { sessionId } = req.params
+      const notifications = await NotificationService.getSessionNotifications(
+        sessionId
+      )
+      res.json({ notifications })
+    }
+  )
 }
