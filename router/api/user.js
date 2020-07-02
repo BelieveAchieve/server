@@ -92,6 +92,25 @@ module.exports = function(router) {
     }
   })
 
+  router.post(
+    '/user/volunteer-approval/background-information',
+    async (req, res) => {
+      const { _id } = req.user
+      const { isFinalApprovalStep, isPartnerVolunteer, ...update } = req.body
+
+      try {
+        await UserService.addBackgroundInfo({
+          volunteerId: _id,
+          isFinalApprovalStep,
+          isPartnerVolunteer,
+          update
+        })
+        res.sendStatus(200)
+      } catch (error) {
+        res.sendStatus(500)
+      }
+  })
+
   router.get('/user/:userId', passport.isAdmin, async function(req, res, next) {
     const { userId } = req.params
 
