@@ -109,7 +109,8 @@ module.exports = function(router) {
       } catch (error) {
         res.sendStatus(500)
       }
-  })
+    }
+  )
 
   router.get('/user/:userId', passport.isAdmin, async function(req, res, next) {
     const { userId } = req.params

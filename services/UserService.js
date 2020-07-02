@@ -152,7 +152,7 @@ module.exports = {
     //  2. photo id
     const isApproved =
       statuses.every(status => status === STATUS.APPROVED) &&
-      hasCompletedBackgroundInfo;
+      hasCompletedBackgroundInfo
     const [referenceOneStatus, referenceTwoStatus] = referencesStatus
     const update = {
       isApproved,
@@ -173,6 +173,6 @@ module.exports = {
     if (isPartnerVolunteer) update.isApproved = true
     if (isFinalApprovalStep) update.isApproved = true
 
-    return Volunteer.update({ _id: volunteerId }, update);
+    return Volunteer.update({ _id: volunteerId }, update)
   }
 }
