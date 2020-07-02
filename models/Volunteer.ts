@@ -167,6 +167,11 @@ const volunteerSchema = new mongoose.Schema(
     },
     favoriteAcademicSubject: String,
     college: String,
+    occupation: [String],
+    experience: String,
+    background: [String],
+    languages: [String],
+    linkedInUrl: String,
     availability: {
       type: availabilitySchema,
       default: availabilitySchema
