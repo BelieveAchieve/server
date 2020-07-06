@@ -158,7 +158,7 @@ module.exports = {
     //  2. photo id
     const isApproved =
       statuses.every(status => status === STATUS.APPROVED) &&
-      hasCompletedBackgroundInfo
+      !!hasCompletedBackgroundInfo
     const [referenceOneStatus, referenceTwoStatus] = referencesStatus
     const update = {
       isApproved,
