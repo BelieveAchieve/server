@@ -31,6 +31,11 @@ const sendEmail = (
     asm
   }
 
+  if (process.env.NODE_ENV === 'test') {
+    if (callback) callback(null)
+    return
+  }
+
   return sgMail.send(msg, callback)
 }
 
