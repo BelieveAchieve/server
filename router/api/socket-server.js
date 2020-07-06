@@ -11,7 +11,7 @@ const config = require('../../config')
 
 // Create an HTTPS server if in production, otherwise use HTTP.
 const createServer = app => {
-  if (config.NODE_ENV === 'production') {
+  if (config.NODE_ENV === 'production' || config.NODE_ENV === 'staging') {
     return https.createServer(
       {
         key: fs.readFileSync(`${config.SSL_CERT_PATH}/privkey.pem`),
