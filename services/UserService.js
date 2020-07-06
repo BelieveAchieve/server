@@ -180,13 +180,13 @@ module.exports = {
   }) {
     let isFinalApprovalStep = false
 
-    if (!isApproved && !volunteerPartnerOrg) {
+    if (!isApproved && !volunteerPartnerOrg && references.length === 2) {
       const referencesStatus = references.map(reference => reference.status)
       const statuses = [...referencesStatus, photoIdStatus]
 
-      isFinalApprovalStep =
-        statuses.every(status => status === STATUS.APPROVED) &&
-        references.length === 2
+      isFinalApprovalStep = statuses.every(
+        status => status === STATUS.APPROVED
+      );
     }
 
     if (volunteerPartnerOrg || isFinalApprovalStep) update.isApproved = true
