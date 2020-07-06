@@ -6,6 +6,12 @@ const MailService = require('./MailService')
 const { PHOTO_ID_STATUS, REFERENCE_STATUS, STATUS } = require('../constants')
 
 module.exports = {
+  getUser: query => {
+    return User.findOne(query)
+      .lean()
+      .exec()
+  },
+
   parseUser: user => {
     // Approved volunteer
     if (user.isVolunteer && user.isApproved)
@@ -165,13 +171,34 @@ module.exports = {
   },
 
   addBackgroundInfo: async function({
+    isApproved,
+    volunteerPartnerOrg,
+    references,
+    photoIdStatus,
     volunteerId,
-    isPartnerVolunteer,
-    isFinalApprovalStep,
     update
   }) {
-    if (isPartnerVolunteer) update.isApproved = true
-    if (isFinalApprovalStep) update.isApproved = true
+    let isFinalApprovalStep = false
+
+    if (!isApproved && !volunteerPartnerOrg) {
+      const referencesStatus = references.map(reference => reference.status)
+      const statuses = [...referencesStatus, photoIdStatus]
+
+      isFinalApprovalStep =
+        statuses.every(status => status === STATUS.APPROVED) &&
+        references.length === 2
+    }
+
+    if (volunteerPartnerOrg || isFinalApprovalStep) update.isApproved = true
+
+    // remove fields with empty strings and empty arrays from the update
+    for (const field in update) {
+      if (
+        (Array.isArray(update[field]) && update[field].length === 0) ||
+        update[field] === ''
+      )
+        delete update[field]
+    }
 
     return Volunteer.update({ _id: volunteerId }, update)
   }
