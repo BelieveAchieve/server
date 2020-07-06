@@ -161,5 +161,27 @@ module.exports = {
       emailData,
       config.sendgrid.unsubscribeGroup.account
     )
+  },
+
+  sendAccountApprovedEmail: (volunteer) => {
+    return sendEmail(
+      volunteer.email,
+      config.mail.senders.noreply,
+      'UPchieve',
+      config.sendgrid.accountApprovedTemplate,
+      { volunteerName: volunteer.firstname },
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
+  sendPhotoRejectedEmail: (volunteer) => {
+    return sendEmail(
+      volunteer.email,
+      config.mail.senders.noreply,
+      'UPchieve',
+      config.sendgrid.photoRejectedTemplate,
+      { volunteerName: volunteer.firstname },
+      config.sendgrid.unsubscribeGroup.account
+    )
   }
 }
