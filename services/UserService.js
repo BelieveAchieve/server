@@ -172,8 +172,9 @@ module.exports = {
       photoIdStatus === PHOTO_ID_STATUS.REJECTED &&
       volunteerBeforeUpdate.photoIdStatus !== PHOTO_ID_STATUS.REJECTED
     )
-      MailService.sendPhotoRejectedEmail(volunteerBeforeUpdate)
+      await MailService.sendPhotoRejectedEmail(volunteerBeforeUpdate)
 
-    if (isApproved) MailService.sendAccountApprovedEmail(volunteerBeforeUpdate)
+    if (isApproved)
+      await MailService.sendAccountApprovedEmail(volunteerBeforeUpdate)
   }
 }
