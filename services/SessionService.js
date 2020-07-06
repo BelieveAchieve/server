@@ -48,6 +48,10 @@ module.exports = {
     return hasEnded || hasVolunteerJoined
   },
 
+  /**
+   * Get open sessions that were started longer ago than staleThreshold (ms)
+   * Defaults to 12 hours old
+   */
   getStaleSessions: async (staleThreshold = 43200000) => {
     const cutoffDate = new Date(Date.now() - staleThreshold)
     return Session.find({
