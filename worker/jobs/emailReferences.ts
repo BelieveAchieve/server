@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/node';
 import { flatten } from 'lodash';
 import dbconnect from '../../dbutils/dbconnect';
 import { log } from '../logger';
