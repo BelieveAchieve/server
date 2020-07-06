@@ -184,9 +184,7 @@ module.exports = {
       const referencesStatus = references.map(reference => reference.status)
       const statuses = [...referencesStatus, photoIdStatus]
 
-      isFinalApprovalStep = statuses.every(
-        status => status === STATUS.APPROVED
-      );
+      isFinalApprovalStep = statuses.every(status => status === STATUS.APPROVED)
     }
 
     if (volunteerPartnerOrg || isFinalApprovalStep) update.isApproved = true

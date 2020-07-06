@@ -63,7 +63,7 @@ module.exports = function(router) {
     try {
       const { occupation, background, experience } = await UserService.getUser({
         _id: volunteerId
-      });
+      })
       await UserService.updatePendingVolunteerStatus({
         volunteerId: id,
         photoIdStatus,
