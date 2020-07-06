@@ -28,6 +28,8 @@ export const Config = Record({
     studentWelcomeTemplate: String,
     reportedSessionAlertTemplate: String,
     referenceFormTemplate: String,
+    accountApprovedTemplate: String,
+    photoRejectedTemplate: String,
     unsubscribeGroup: Record({
       newsletter: Number,
       account: Number
