@@ -5,7 +5,13 @@ const Volunteer = require('../models/Volunteer')
 const MailService = require('./MailService')
 const { PHOTO_ID_STATUS, REFERENCE_STATUS, STATUS } = require('../constants')
 
+const getVolunteer = async volunteerId => {
+  return Volunteer.findOne({ _id: volunteerId })
+}
+
 module.exports = {
+  getVolunteer,
+
   parseUser: user => {
     // Approved volunteer
     if (user.isVolunteer && user.isApproved)
@@ -145,6 +151,7 @@ module.exports = {
     photoIdStatus,
     referencesStatus
   }) {
+    const volunteerBeforeUpdate = await getVolunteer(volunteerId)
     const statuses = [...referencesStatus, photoIdStatus]
     // A volunteer must have the following list items approved before being considered an approved volunteer
     //  1. two references
@@ -158,6 +165,16 @@ module.exports = {
       'references.1.status': referenceTwoStatus
     }
 
-    return Volunteer.update({ _id: volunteerId }, update)
+    await Volunteer.update({ _id: volunteerId }, update)
+
+    // Send email if photo ID has just been rejected
+    if (
+      photoIdStatus === PHOTO_ID_STATUS.REJECTED &&
+      volunteerBeforeUpdate.photoIdStatus !== PHOTO_ID_STATUS.REJECTED
+    )
+      MailService.sendPhotoRejectedEmail(volunteerBeforeUpdate)
+
+    if (isApproved)
+      MailService.sendAccountApprovedEmail(volunteerBeforeUpdate)
   }
 }

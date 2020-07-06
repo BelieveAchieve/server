@@ -163,7 +163,7 @@ module.exports = {
     )
   },
 
-  sendAccountApprovedEmail: (volunteer) => {
+  sendAccountApprovedEmail: volunteer => {
     return sendEmail(
       volunteer.email,
       config.mail.senders.noreply,
@@ -174,7 +174,7 @@ module.exports = {
     )
   },
 
-  sendPhotoRejectedEmail: (volunteer) => {
+  sendPhotoRejectedEmail: volunteer => {
     return sendEmail(
       volunteer.email,
       config.mail.senders.noreply,
