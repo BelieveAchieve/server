@@ -96,13 +96,35 @@ module.exports = function(router) {
     '/user/volunteer-approval/background-information',
     async (req, res) => {
       const { _id } = req.user
-      const { isFinalApprovalStep, isPartnerVolunteer, ...update } = req.body
+      const {
+        occupation,
+        experience,
+        background,
+        linkedInUrl,
+        languages
+      } = req.body
+
+      const update = {
+        occupation,
+        experience,
+        background,
+        linkedInUrl,
+        languages
+      }
 
       try {
+        const {
+          volunteerPartnerOrg,
+          references,
+          photoIdStatus,
+          isApproved
+        } = await UserService.getUser({ _id })
         await UserService.addBackgroundInfo({
+          isApproved,
+          volunteerPartnerOrg,
+          references,
+          photoIdStatus,
           volunteerId: _id,
-          isFinalApprovalStep,
-          isPartnerVolunteer,
           update
         })
         res.sendStatus(200)
