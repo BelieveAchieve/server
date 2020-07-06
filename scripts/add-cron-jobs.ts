@@ -16,6 +16,10 @@ const jobTemplates: JobTemplate[] = [
     options: { repeat: { cron: '0 4 * * *', tz: 'America/New_York' } } // each day at 4am
   },
   {
+    name: Jobs.EndStaleSessions,
+    options: { repeat: { cron: '0 */2 * * *' } } // every 2 hours
+  },
+  {
     name: Jobs.EmailReferences,
     options: { repeat: { cron: '*/15 * * * *' } } // every 15 minutes
   }

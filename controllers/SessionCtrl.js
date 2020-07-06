@@ -1,8 +1,6 @@
 const Session = require('../models/Session')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
-const WhiteboardCtrl = require('../controllers/WhiteboardCtrl')
-const sessionService = require('../services/SessionService')
-const twilioService = require('../services/twilio')
+const TwilioService = require('../services/twilio')
 const Sentry = require('@sentry/node')
 const PushTokenService = require('../services/PushTokenService')
 const PushToken = require('../models/PushToken')
@@ -34,46 +32,11 @@ module.exports = function(socketService) {
       socketService.emitNewSession(savedSession)
 
       if (!user.isBanned) {
-        twilioService.beginRegularNotifications(savedSession)
-        twilioService.beginFailsafeNotifications(savedSession)
+        TwilioService.beginRegularNotifications(savedSession)
+        TwilioService.beginFailsafeNotifications(savedSession)
       }
 
       return savedSession
-    },
-
-    end: async function(options) {
-      const user = options.user
-
-      if (!options.sessionId) {
-        throw new Error('No session ID specified')
-      }
-
-      const session = await Session.findById(options.sessionId).exec()
-
-      if (!session) {
-        throw new Error('No session found')
-      }
-
-      if (session.endedAt) {
-        // Session has already ended (the other user ended it)
-        return session
-      }
-
-      this.verifySessionParticipant(
-        session,
-        user,
-        new Error('Only session participants can end a session')
-      )
-
-      await sessionService.endSession(session, user)
-
-      socketService.emitSessionChange(options.sessionId)
-
-      WhiteboardCtrl.saveDocToSession(options.sessionId).then(() => {
-        WhiteboardCtrl.clearDocFromCache(options.sessionId)
-      })
-
-      return session
     },
 
     // Currently exposed for Cypress e2e tests

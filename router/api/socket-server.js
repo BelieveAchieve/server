@@ -11,7 +11,7 @@ const config = require('../../config')
 
 // Create an HTTPS server if in production, otherwise use HTTP.
 const createServer = app => {
-  if (config.NODE_ENV === 'production') {
+  if (config.NODE_ENV === 'production' || config.NODE_ENV === 'staging') {
     return https.createServer(
       {
         key: fs.readFileSync(`${config.SSL_CERT_PATH}/privkey.pem`),
@@ -28,8 +28,10 @@ const createServer = app => {
 module.exports = function(app) {
   const server = createServer(app)
 
-  const port = config.socketsPort
-  server.listen(port)
+  const port =
+    process.env.NODE_ENV === 'test'
+      ? 4000 + Number(process.env.JEST_WORKER_ID)
+      : config.socketsPort
 
   console.log('Sockets.io listening on port ' + port)
 

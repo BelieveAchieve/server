@@ -56,6 +56,8 @@
     "firstname": "Volunteer",
     "isAdmin": true,
     "isVolunteer": true,
+    "isOnboarded": true,
+    "isApproved": true,
     "lastname": "UPchieve",
     "password": "$2a$10$z.JMHnbX9IubnNZtqI.FOecTPVY1VTU1DJ6AJGIOT/x/OyAtdw3.y",
     "phone": "+12125551212",
@@ -125,7 +127,10 @@
     "phone": "+12125551212",
     "verificationToken": "f8fa9fdc44c7b3c4378eeabefa8bf8ea",
     "verified": true,
-    "referralCode": "C"
+    "referralCode": "C",
+    "isApproved": true,
+    "isOnboarded": false
+
   },
   {
     "college": "Volunteer College",
@@ -139,6 +144,8 @@
     "phone": "+12125551212",
     "verificationToken": "f8fa9fdc44c7b3c4378eeabefa8bf8ea",
     "verified": true,
-    "referralCode": "D"
+    "referralCode": "D",
+    "isApproved": false,
+    "isOnboarded": false
   }
 ]
