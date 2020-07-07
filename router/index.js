@@ -23,6 +23,7 @@ module.exports = function(app) {
       '/auth',
       '/api',
       '/eligibility',
+      '/metrics',
       '/twiml',
       '/contact',
       '/js',
