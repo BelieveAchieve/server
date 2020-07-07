@@ -201,7 +201,6 @@ async function getStudents({ minTime, maxTime, timeScale = 'day' }) {
       ].concat(
         _.filter(
           _.map(_.countBy(students, 'zipCode'), (count, zipCode) => {
-            console.log('count', count, zipCode)
             if (zipCode !== 'undefined') {
               return [
                 {
