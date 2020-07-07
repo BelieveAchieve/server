@@ -1,12 +1,15 @@
 import { ProcessPromiseFunction, Queue } from 'bull';
 import { map } from 'lodash';
+import * as Sentry from '@sentry/node';
 import { log } from '../logger';
 import notifyTutors from './notifyTutors';
 import updateElapsedAvailability from './updateElapsedAvailability';
+import endStaleSessions from './endStaleSessions';
 
 export enum Jobs {
   NotifyTutors = 'NotifyTutors',
-  UpdateElapsedAvailability = 'UpdateElapsedAvailability'
+  UpdateElapsedAvailability = 'UpdateElapsedAvailability',
+  EndStaleSessions = 'EndStaleSessions'
 }
 
 // register new job processors here
@@ -23,6 +26,10 @@ const jobProcessors: JobProcessor[] = [
   {
     name: Jobs.UpdateElapsedAvailability,
     processor: updateElapsedAvailability
+  },
+  {
+    name: Jobs.EndStaleSessions,
+    processor: endStaleSessions
   }
 ];
 
@@ -36,6 +43,7 @@ export const addJobProcessors = (queue: Queue): void => {
       } catch (error) {
         log(`Error processing job: ${job.name}`);
         log(error);
+        Sentry.captureException(error);
       }
     })
   );

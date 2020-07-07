@@ -195,34 +195,50 @@ const notifyVolunteer = async session => {
    */
   const volunteerPriority = [
     {
-      volunteerPartnerOrg: {
-        $exists: true,
-        $in: ['mizuho', 'atlassian']
-      },
-      _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
+      groupName:
+        'Mizuho and Atlassian volunteers - Not notified in last 3 days',
+      filter: {
+        volunteerPartnerOrg: {
+          $exists: true,
+          $in: ['mizuho', 'atlassian']
+        },
+        _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
+      }
     },
     {
-      volunteerPartnerOrg: { $exists: true },
-      _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
+      groupName: 'Partner volunteers - Not notified in last 3 days',
+      filter: {
+        volunteerPartnerOrg: { $exists: true },
+        _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
+      }
     },
     {
-      volunteerPartnerOrg: { $exists: false },
-      _id: { $nin: activeSessionVolunteers.concat(notifiedLastSevenDays) }
+      groupName: 'Regular volunteers - Not notified in last 7 days',
+      filter: {
+        volunteerPartnerOrg: { $exists: false },
+        _id: { $nin: activeSessionVolunteers.concat(notifiedLastSevenDays) }
+      }
     },
     {
-      _id: { $nin: activeSessionVolunteers.concat(notifiedLastFifteenMins) }
+      groupName: 'All volunteers - Not notified in last 15 mins',
+      filter: {
+        _id: { $nin: activeSessionVolunteers.concat(notifiedLastFifteenMins) }
+      }
     }
   ]
 
-  let volunteer
+  let volunteer, priorityGroup
 
   for (const priorityFilter of volunteerPriority) {
     volunteer = await getNextVolunteer({
       subtopic,
-      priorityFilter
+      priorityFilter: priorityFilter.filter
     })
 
-    if (volunteer) break
+    if (volunteer) {
+      priorityGroup = priorityFilter.groupName
+      break
+    }
   }
 
   if (!volunteer) return null
@@ -238,7 +254,8 @@ const notifyVolunteer = async session => {
   const notification = new Notification({
     volunteer,
     type: 'REGULAR',
-    method: 'SMS'
+    method: 'SMS',
+    priorityGroup
   })
 
   await recordNotification(sendPromise, notification)
