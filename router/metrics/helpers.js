@@ -111,14 +111,16 @@ async function getFeedbackStats({ minTime, maxTime, timeScale = 'day' }) {
 async function getSessionStats({ minTime, maxTime, timeScale = 'day' }) {
   const sessions = await Session.find({
     createdAt: { $gte: minTime, $lte: maxTime }
-  }).select([
-    'createdAt',
-    'volunteerJoinedAt',
-    'endedAt',
-    'messages',
-    'type',
-    'subTopic'
-  ])
+  })
+    .select([
+      'createdAt',
+      'volunteerJoinedAt',
+      'endedAt',
+      'messages',
+      'type',
+      'subTopic'
+    ])
+    .lean()
 
   const sessionsWithExtras = _.filter(
     _.map(sessions, session => {
