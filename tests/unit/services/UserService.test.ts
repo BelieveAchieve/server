@@ -215,31 +215,44 @@ test('Open volunteer is not approved when submitting their background info is no
     photoIdStatus: STATUS.APPROVED
   });
   await insertVolunteer(volunteer);
+  const update = {
+    occupation: ['An undergraduate student'],
+    experience: {
+      collegeCounseling: 'No prior experience',
+      mentoring: '1-2 years',
+      tutoring: '0-1 years'
+    },
+    background: ['Went to a Title 1/low-income high school'],
+    languages: ['Spanish'],
+    country: 'United States of America',
+    state: 'New York',
+    city: 'New York City'
+  };
   const input = {
     isApproved: false,
     volunteerId: volunteer._id,
     references: volunteer.references,
     volunteerPartnerOrg: volunteer.volunteerPartnerOrg,
     photoIdStatus: volunteer.photoIdStatus,
-    update: {
-      occupation: ['An undergraduate student'],
-      experience: '5+ years',
-      background: ['Went to a Title 1/low-income high school'],
-      languages: ['Spanish']
-    }
+    update
   };
 
   await UserService.addBackgroundInfo(input);
   const updatedVolunteer = await VolunteerModel.findOne({ _id: volunteer._id })
     .lean()
-    .select('isApproved occupation experience background languages')
+    .select(
+      'isApproved occupation experience background languages country city state'
+    )
     .exec();
 
   const expectedResult = {
-    occupation: input.update.occupation,
-    languages: input.update.languages,
-    experience: input.update.experience,
-    background: input.update.background,
+    occupation: update.occupation,
+    languages: update.languages,
+    experience: update.experience,
+    background: update.background,
+    country: update.country,
+    city: update.city,
+    state: update.state,
     isApproved: false
   };
 
@@ -255,18 +268,27 @@ test('Open volunteer is approved when submitting their background info is the fi
     photoIdStatus: STATUS.APPROVED
   });
   await insertVolunteer(volunteer);
+
+  const update = {
+    occupation: ['An undergraduate student'],
+    experience: {
+      collegeCounseling: 'No prior experience',
+      mentoring: '1-2 years',
+      tutoring: '0-1 years'
+    },
+    background: ['Went to a Title 1/low-income high school'],
+    languages: ['Spanish'],
+    country: 'United States of America',
+    state: 'New York',
+    city: 'New York City'
+  };
   const input = {
     isApproved: volunteer.isApproved,
     volunteerId: volunteer._id,
     references: volunteer.references,
     volunteerPartnerOrg: volunteer.volunteerPartnerOrg,
     photoIdStatus: volunteer.photoIdStatus,
-    update: {
-      occupation: ['An undergraduate student'],
-      experience: '5+ years',
-      background: ['Went to a Title 1/low-income high school'],
-      languages: ['Spanish']
-    }
+    update
   };
 
   await UserService.addBackgroundInfo(input);
@@ -293,30 +315,42 @@ test('Partner Volunteer is approved when submitting background info', async () =
   });
   await insertVolunteer(volunteer);
 
+  const update = {
+    occupation: ['An undergraduate student'],
+    experience: {
+      collegeCounseling: 'No prior experience',
+      mentoring: '1-2 years',
+      tutoring: '0-1 years'
+    },
+    background: ['Went to a Title 1/low-income high school'],
+    languages: [],
+    country: 'United States of America',
+    state: 'New York',
+    city: 'New York City'
+  };
   const input = {
     isApproved: volunteer.isApproved,
     volunteerId: volunteer._id,
     volunteerPartnerOrg: volunteer.volunteerPartnerOrg,
-    update: {
-      occupation: ['An undergraduate student'],
-      experience: '5+ years',
-      background: ['Went to a Title 1/low-income high school'],
-      languages: []
-    }
+    update
   };
 
   await UserService.addBackgroundInfo(input);
   const updatedVolunteer = await VolunteerModel.findOne({ _id: volunteer._id })
     .lean()
-    .select('isApproved occupation experience background languages')
+    .select(
+      'isApproved occupation experience background languages country state city'
+    )
     .exec();
 
   const expectedResult = {
     isApproved: true,
-    occupation: ['An undergraduate student'],
-    experience: '5+ years',
-    background: ['Went to a Title 1/low-income high school'],
-    languages: []
+    occupation: update.occupation,
+    experience: update.experience,
+    background: update.background,
+    country: update.country,
+    state: update.state,
+    city: update.city
   };
 
   expect(updatedVolunteer).toMatchObject(expectedResult);
