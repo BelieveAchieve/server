@@ -101,7 +101,10 @@ module.exports = function(router) {
         experience,
         background,
         linkedInUrl,
-        languages
+        languages,
+        country,
+        state,
+        city
       } = req.body
 
       const update = {
@@ -109,7 +112,10 @@ module.exports = function(router) {
         experience,
         background,
         linkedInUrl,
-        languages
+        languages,
+        country,
+        state,
+        city
       }
 
       try {
