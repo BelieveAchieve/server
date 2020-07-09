@@ -60,6 +60,7 @@ export const buildVolunteer = (overrides = {}): Volunteer => {
     favoriteAcademicSubject: 'Computer Science',
     phone: '+12345678910',
     referralCode: generateReferralCode(_id.toString()),
+    isApproved: false,
     ...overrides
   };
 

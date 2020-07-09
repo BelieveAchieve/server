@@ -92,6 +92,48 @@ module.exports = function(router) {
     }
   })
 
+  router.post(
+    '/user/volunteer-approval/background-information',
+    async (req, res) => {
+      const { _id } = req.user
+      const {
+        occupation,
+        experience,
+        background,
+        linkedInUrl,
+        languages
+      } = req.body
+
+      const update = {
+        occupation,
+        experience,
+        background,
+        linkedInUrl,
+        languages
+      }
+
+      try {
+        const {
+          volunteerPartnerOrg,
+          references,
+          photoIdStatus,
+          isApproved
+        } = await UserService.getUser({ _id })
+        await UserService.addBackgroundInfo({
+          isApproved,
+          volunteerPartnerOrg,
+          references,
+          photoIdStatus,
+          volunteerId: _id,
+          update
+        })
+        res.sendStatus(200)
+      } catch (error) {
+        res.sendStatus(500)
+      }
+    }
+  )
+
   router.get('/user/:userId', passport.isAdmin, async function(req, res, next) {
     const { userId } = req.params
 

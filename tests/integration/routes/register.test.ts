@@ -422,7 +422,7 @@ describe('Partner volunteer registration', () => {
 
       expect(user.firstname).toEqual(expectedFirstName);
       expect(user.email).toEqual(expectedEmail);
-      expect(user.isApproved).toBeTruthy();
+      expect(user.isApproved).toBeFalsy();
     });
   });
 });

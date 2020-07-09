@@ -54,6 +54,7 @@ export interface Volunteer {
   references?: Array<Reference>;
   photoIdS3Key?: string;
   photoIdStatus?: string;
+  isApproved: boolean;
 }
 
 export interface StudentRegistrationForm extends Student {

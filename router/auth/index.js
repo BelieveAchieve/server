@@ -333,7 +333,7 @@ module.exports = function(app) {
 
     const volunteerData = {
       email,
-      isApproved: true,
+      isApproved: false,
       isVolunteer: true,
       volunteerPartnerOrg,
       college,

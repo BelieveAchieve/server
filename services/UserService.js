@@ -12,6 +12,12 @@ const getVolunteer = async volunteerId => {
 module.exports = {
   getVolunteer,
 
+  getUser: query => {
+    return User.findOne(query)
+      .lean()
+      .exec()
+  },
+
   parseUser: user => {
     // Approved volunteer
     if (user.isVolunteer && user.isApproved)
@@ -149,14 +155,17 @@ module.exports = {
   updatePendingVolunteerStatus: async function({
     volunteerId,
     photoIdStatus,
-    referencesStatus
+    referencesStatus,
+    hasCompletedBackgroundInfo
   }) {
     const volunteerBeforeUpdate = await getVolunteer(volunteerId)
     const statuses = [...referencesStatus, photoIdStatus]
     // A volunteer must have the following list items approved before being considered an approved volunteer
     //  1. two references
     //  2. photo id
-    const isApproved = statuses.every(status => status === STATUS.APPROVED)
+    const isApproved =
+      statuses.every(status => status === STATUS.APPROVED) &&
+      !!hasCompletedBackgroundInfo
     const [referenceOneStatus, referenceTwoStatus] = referencesStatus
     const update = {
       isApproved,
@@ -176,5 +185,36 @@ module.exports = {
 
     if (isApproved && !volunteerBeforeUpdate.isApproved)
       await MailService.sendAccountApprovedEmail(volunteerBeforeUpdate)
+  },
+
+  addBackgroundInfo: async function({
+    isApproved,
+    volunteerPartnerOrg,
+    references,
+    photoIdStatus,
+    volunteerId,
+    update
+  }) {
+    let isFinalApprovalStep = false
+
+    if (!isApproved && !volunteerPartnerOrg && references.length === 2) {
+      const referencesStatus = references.map(reference => reference.status)
+      const statuses = [...referencesStatus, photoIdStatus]
+
+      isFinalApprovalStep = statuses.every(status => status === STATUS.APPROVED)
+    }
+
+    if (volunteerPartnerOrg || isFinalApprovalStep) update.isApproved = true
+
+    // remove fields with empty strings and empty arrays from the update
+    for (const field in update) {
+      if (
+        (Array.isArray(update[field]) && update[field].length === 0) ||
+        update[field] === ''
+      )
+        delete update[field]
+    }
+
+    return Volunteer.update({ _id: volunteerId }, update)
   }
 }
