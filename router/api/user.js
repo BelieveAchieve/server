@@ -50,33 +50,38 @@ module.exports = function(router) {
   })
 
   router.post('/user/volunteer-approval/reference', async (req, res, next) => {
+    const { ip } = req
     const { _id } = req.user
     const { referenceName, referenceEmail } = req.body
     await UserService.addReference({
       userId: _id,
       referenceName,
-      referenceEmail
+      referenceEmail,
+      ip
     })
     res.sendStatus(200)
   })
 
   router.post(
     '/user/volunteer-approval/reference/delete',
-    async (req, res, next) => {
+    async (req, res) => {
+      const { ip } = req
       const { _id } = req.user
       const { referenceEmail } = req.body
       await UserService.deleteReference({
         userId: _id,
-        referenceEmail
+        referenceEmail,
+        ip
       })
       res.sendStatus(200)
     }
   )
 
   router.get('/user/volunteer-approval/photo-url', async (req, res, next) => {
+    const { ip } = req
     const { _id } = req.user
-    const photoIdS3Key = await UserService.addPhotoId({ userId: _id })
-    const uploadUrl = await AwsService.getPhotoIdUploadUrl({ photoIdS3Key })
+    const photoIdS3Key = await UserService.addPhotoId({ userId: _id, ip })
+    const uploadUrl = await AwsService.getPhotoIdUploadUrl({ photoIdS3Key, ip })
 
     if (uploadUrl) {
       res.json({
@@ -95,6 +100,7 @@ module.exports = function(router) {
   router.post(
     '/user/volunteer-approval/background-information',
     async (req, res) => {
+      const { ip } = req
       const { _id } = req.user
       const {
         occupation,
@@ -125,6 +131,7 @@ module.exports = function(router) {
           references,
           photoIdStatus,
           volunteerId: _id,
+          ip,
           update
         })
         res.sendStatus(200)
