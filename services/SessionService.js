@@ -27,10 +27,14 @@ module.exports = {
       throw new Error('Only session participants can end a session')
 
     await addPastSession({
-      userId: session.student._id,
+      userId: session.student,
       sessionId: session._id
     })
-    if (session.volunteer) await addPastSession(session.volunteer, session._id)
+    if (session.volunteer)
+      await addPastSession({
+        userId: session.volunteer,
+        sessionId: session._id
+      })
 
     await Session.updateOne(
       { _id: session._id },
