@@ -188,5 +188,16 @@ module.exports = {
       { volunteerName: volunteer.firstname },
       config.sendgrid.unsubscribeGroup.account
     )
+  },
+
+  sendReadyToCoachEmail: volunteer => {
+    return sendEmail(
+      volunteer.email,
+      config.mail.senders.noreply,
+      'UPchieve',
+      config.sendgrid.readyToCoachTemplate,
+      { volunteerName: volunteer.firstname },
+      config.sendgrid.unsubscribeGroup.account
+    )
   }
 }

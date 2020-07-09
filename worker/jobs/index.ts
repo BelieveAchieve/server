@@ -6,12 +6,14 @@ import notifyTutors from './notifyTutors';
 import updateElapsedAvailability from './updateElapsedAvailability';
 import endStaleSessions from './endStaleSessions';
 import emailReferences from './emailReferences';
+import emailReadyToCoach from './emailReadyToCoach';
 
 export enum Jobs {
   NotifyTutors = 'NotifyTutors',
   UpdateElapsedAvailability = 'UpdateElapsedAvailability',
   EndStaleSessions = 'EndStaleSessions',
-  EmailReferences = 'EmailReferences'
+  EmailReferences = 'EmailReferences',
+  EmailReadyToCoach = 'EmailReadyToCoach'
 }
 
 // register new job processors here
@@ -36,6 +38,10 @@ const jobProcessors: JobProcessor[] = [
   {
     name: Jobs.EmailReferences,
     processor: emailReferences
+  },
+  {
+    name: Jobs.EmailReadyToCoach,
+    processor: emailReadyToCoach
   }
 ];
 

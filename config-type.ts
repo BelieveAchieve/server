@@ -30,6 +30,7 @@ export const Config = Record({
     referenceFormTemplate: String,
     accountApprovedTemplate: String,
     photoRejectedTemplate: String,
+    readyToCoachTemplate: String,
     unsubscribeGroup: Record({
       newsletter: Number,
       account: Number

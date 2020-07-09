@@ -174,6 +174,10 @@ const volunteerSchema = new mongoose.Schema(
     timezone: String,
     availabilityLastModifiedAt: { type: Date },
     elapsedAvailability: { type: Number, default: 0 },
+    sentReadyToCoachEmail: {
+      type: Boolean,
+      default: false
+    },
     certifications: {
       prealgebra: {
         passed: {

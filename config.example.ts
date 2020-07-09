@@ -25,6 +25,7 @@ const config: Static<typeof Config> = {
     referenceFormTemplate: 'd-122f9c9953144e62b1f66411b8e85723',
     accountApprovedTemplate: 'd-122f9c9953144e62b1f66411b8e85723', // todo
     photoRejectedTemplate: 'd-122f9c9953144e62b1f66411b8e85723', // todo
+    readyToCoachTemplate: 'd-122f9c9953144e62b1f66411b8e85723', // todo
     unsubscribeGroup: {
       newsletter: 12567,
       account: 12570
