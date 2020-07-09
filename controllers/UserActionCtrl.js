@@ -6,6 +6,24 @@ const userAgentParser = require('ua-parser-js')
 
 // @todo: refactor using TypeScript
 
+const getUserAgentInfo = userAgent => {
+  const userAgentParserResult = userAgentParser(userAgent)
+  const { device, browser, os } = userAgentParserResult
+  let result = {}
+
+  if (userAgent) {
+    result = {
+      device: device.vendor || getDeviceFromUserAgent(userAgent),
+      browser: browser.name || '',
+      browserVersion: browser.version || '',
+      operatingSystem: os.name || '',
+      operatingSystemVersion: os.version || ''
+    }
+  }
+
+  return result
+}
+
 const createQuizAction = async (
   userId,
   quizSubcategory,
@@ -54,23 +72,6 @@ const createAccountAction = async (userId, ipAddress = '', action) => {
   return userActionDoc.save()
 }
 
-const getUserAgentInfo = userAgent => {
-  const userAgentParserResult = userAgentParser(userAgent)
-  const { device, browser, os } = userAgentParserResult
-  let result = {}
-
-  if (userAgent) {
-    result = {
-      device: device.vendor || getDeviceFromUserAgent(userAgent),
-      browser: browser.name || '',
-      browserVersion: browser.version || '',
-      operatingSystem: os.name || '',
-      operatingSystemVersion: os.version || ''
-    }
-  }
-
-  return result
-}
 
 const startedQuiz = (userId, quizCategory, ipAddress) => {
   return createQuizAction(
@@ -178,6 +179,28 @@ const createdAccount = (userId, ipAddress) => {
   return createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.CREATED)
 }
 
+const addedPhotoId = (userId, ipAddress) =>
+  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.ADDED_PHOTO_ID)
+
+const addedReference = (userId, ipAddress) =>
+  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.ADDED_REFERENCE)
+
+const addedBackgroundInfo = (userId, ipAddress) =>
+  createAccountAction(
+    userId,
+    ipAddress,
+    USER_ACTION.ACCOUNT.ADDED_BACKGROUND_INFO
+  )
+
+const deletedReference = (userId, ipAddress) =>
+  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.DELETED_REFERENCE)
+
+const accountApproved = (userId, ipAddress) =>
+  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.APPROVED)
+
+const accountOnboarded = (userId, ipAddress) =>
+  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.ONBOARDED)
+
 module.exports = {
   startedQuiz,
   passedQuiz,
@@ -190,5 +213,11 @@ module.exports = {
   repliedYesToSession,
   updatedProfile,
   updatedAvailability,
-  createdAccount
+  createdAccount,
+  addedPhotoId,
+  addedReference,
+  addedBackgroundInfo,
+  deletedReference,
+  accountApproved,
+  accountOnboarded
 }
