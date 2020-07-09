@@ -174,7 +174,7 @@ module.exports = {
     )
       await MailService.sendPhotoRejectedEmail(volunteerBeforeUpdate)
 
-    if (isApproved)
+    if (isApproved && !volunteerBeforeUpdate.isApproved)
       await MailService.sendAccountApprovedEmail(volunteerBeforeUpdate)
   }
 }
