@@ -72,7 +72,6 @@ const createAccountAction = async (userId, ipAddress = '', action) => {
   return userActionDoc.save()
 }
 
-
 const startedQuiz = (userId, quizCategory, ipAddress) => {
   return createQuizAction(
     userId,
