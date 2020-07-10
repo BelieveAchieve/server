@@ -62,12 +62,14 @@ const createSessionAction = async (
   return userActionDoc.save()
 }
 
-const createAccountAction = async (userId, ipAddress = '', action) => {
+// todo: refactor positional arguments to destructuring
+const createAccountAction = async (userId, ipAddress = '', action, options = {}) => {
   const userActionDoc = new UserAction({
     user: userId,
     actionType: USER_ACTION.TYPE.ACCOUNT,
     ipAddress,
-    action
+    action,
+    ...options
   })
   return userActionDoc.save()
 }
@@ -181,8 +183,13 @@ const createdAccount = (userId, ipAddress) => {
 const addedPhotoId = (userId, ipAddress) =>
   createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.ADDED_PHOTO_ID)
 
-const addedReference = (userId, ipAddress) =>
-  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.ADDED_REFERENCE)
+const addedReference = (userId, ipAddress, options) =>
+  createAccountAction(
+    userId,
+    ipAddress,
+    USER_ACTION.ACCOUNT.ADDED_REFERENCE,
+    options
+  )
 
 const completedBackgroundInfo = (userId, ipAddress) =>
   createAccountAction(
@@ -191,14 +198,38 @@ const completedBackgroundInfo = (userId, ipAddress) =>
     USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
   )
 
-const deletedReference = (userId, ipAddress) =>
-  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.DELETED_REFERENCE)
+const deletedReference = (userId, ipAddress, options) =>
+  createAccountAction(
+    userId,
+    ipAddress,
+    USER_ACTION.ACCOUNT.DELETED_REFERENCE,
+    options
+  )
 
 const accountApproved = (userId, ipAddress) =>
   createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.APPROVED)
 
 const accountOnboarded = (userId, ipAddress) =>
   createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.ONBOARDED)
+
+const submittedReferenceForm = (userId, ipAddress, options) =>
+  createAccountAction(
+    userId,
+    ipAddress,
+    USER_ACTION.ACCOUNT.SUBMITTED_REFERENCE_FORM,
+    options
+  );
+
+const rejectedPhotoId = userId =>
+  createAccountAction(userId, '', USER_ACTION.ACCOUNT.REJECTED_PHOTO_ID)
+
+const rejectedReference = (userId, options) =>
+  createAccountAction(
+    userId,
+    '',
+    USER_ACTION.ACCOUNT.REJECTED_REFERENCE,
+    options
+  );
 
 module.exports = {
   startedQuiz,
@@ -218,5 +249,8 @@ module.exports = {
   completedBackgroundInfo,
   deletedReference,
   accountApproved,
-  accountOnboarded
+  accountOnboarded,
+  submittedReferenceForm,
+  rejectedPhotoId,
+  rejectedReference
 }
