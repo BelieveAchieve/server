@@ -3,6 +3,7 @@ const { omit } = require('lodash')
 const User = require('../models/User')
 const Volunteer = require('../models/Volunteer')
 const MailService = require('./MailService')
+const UserActionCtrl = require('../controllers/UserActionCtrl')
 const { PHOTO_ID_STATUS, REFERENCE_STATUS, STATUS } = require('../constants')
 
 module.exports = {
@@ -28,8 +29,9 @@ module.exports = {
     )
   },
 
-  addPhotoId: async ({ userId }) => {
+  addPhotoId: async ({ userId, ip }) => {
     const photoIdS3Key = crypto.randomBytes(32).toString('hex')
+    UserActionCtrl.addedPhotoId(userId, ip)
     await Volunteer.updateOne(
       { _id: userId },
       { $set: { photoIdS3Key, photoIdStatus: PHOTO_ID_STATUS.SUBMITTED } }
@@ -37,7 +39,7 @@ module.exports = {
     return photoIdS3Key
   },
 
-  addReference: async ({ userId, referenceName, referenceEmail }) => {
+  addReference: async ({ userId, referenceName, referenceEmail, ip }) => {
     const referenceData = {
       name: referenceName,
       email: referenceEmail
@@ -46,6 +48,7 @@ module.exports = {
       { _id: userId },
       { $push: { references: referenceData } }
     )
+    UserActionCtrl.addedReference(userId, ip)
   },
 
   saveReferenceForm: async ({ referenceId, referenceFormData }) => {
@@ -95,7 +98,8 @@ module.exports = {
     )
   },
 
-  deleteReference: async ({ userId, referenceEmail }) => {
+  deleteReference: async ({ userId, referenceEmail, ip }) => {
+    UserActionCtrl.deletedReference(userId, ip)
     return Volunteer.updateOne(
       { _id: userId },
       { $pull: { references: { email: referenceEmail } } }
@@ -167,7 +171,10 @@ module.exports = {
       'references.1.status': referenceTwoStatus
     }
 
-    return Volunteer.update({ _id: volunteerId }, update)
+    // todo: merge with incoming emails pr
+    if (isApproved) UserActionCtrl.accountApproved(volunteerId)
+
+    await Volunteer.update({ _id: volunteerId }, update)
   },
 
   addBackgroundInfo: async function({
@@ -176,6 +183,7 @@ module.exports = {
     references,
     photoIdStatus,
     volunteerId,
+    ip,
     update
   }) {
     let isFinalApprovalStep = false
@@ -198,6 +206,8 @@ module.exports = {
         delete update[field]
     }
 
+    UserActionCtrl.addedBackgroundInfo(volunteerId, ip)
+    if (update.isApproved) UserActionCtrl.accountApproved(volunteerId, ip)
     return Volunteer.update({ _id: volunteerId }, update)
   }
 }

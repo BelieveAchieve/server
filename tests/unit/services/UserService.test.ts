@@ -1,7 +1,13 @@
 import mongoose from 'mongoose';
 import UserService from '../../../services/UserService';
 import VolunteerModel from '../../../models/Volunteer';
-import { PHOTO_ID_STATUS, REFERENCE_STATUS, STATUS } from '../../../constants';
+import UserActionModel from '../../../models/UserAction';
+import {
+  PHOTO_ID_STATUS,
+  REFERENCE_STATUS,
+  STATUS,
+  USER_ACTION
+} from '../../../constants';
 import { Volunteer } from '../../utils/types';
 import {
   buildVolunteer,
@@ -31,6 +37,12 @@ test('Successfully adds photoIdS3Key and photoIdStatus', async () => {
   await insertVolunteer(volunteer);
   const { _id: userId } = volunteer;
   const newPhotoIdS3Key = await UserService.addPhotoId({ userId });
+  // @note: UserActionCtrl methods are not being awaited in the UserService. tests can potentially
+  //        fail if the test completes before the user action is stored
+  const userAction = await UserActionModel.findOne({
+    user: userId,
+    action: USER_ACTION.ACCOUNT.ADDED_PHOTO_ID
+  });
 
   const updatedVolunteer: Partial<Volunteer> = await VolunteerModel.findOne({
     _id: userId
@@ -39,10 +51,16 @@ test('Successfully adds photoIdS3Key and photoIdStatus', async () => {
     .lean()
     .exec();
 
+  const expectedUserAction = {
+    user: userId,
+    action: USER_ACTION.ACCOUNT.ADDED_PHOTO_ID
+  };
+
   expect(newPhotoIdS3Key).toMatch(/^[a-f0-9]{64}$/);
   expect(updatedVolunteer.photoIdS3Key).toEqual(newPhotoIdS3Key);
   expect(updatedVolunteer.photoIdStatus).toEqual(PHOTO_ID_STATUS.SUBMITTED);
   expect(updatedVolunteer.photoIdStatus).not.toEqual(PHOTO_ID_STATUS.EMPTY);
+  expect(userAction).toMatchObject(expectedUserAction);
 });
 
 test('Should add a reference', async () => {
@@ -64,15 +82,24 @@ test('Should add a reference', async () => {
     .select('references')
     .lean()
     .exec();
+  const userAction = await UserActionModel.findOne({
+    user: volunteer._id,
+    action: USER_ACTION.ACCOUNT.ADDED_REFERENCE
+  });
 
-  const expectedResult = {
+  const expectedReference = {
     name: input.referenceName,
     email: input.referenceEmail,
     status: REFERENCE_STATUS.UNSENT
   };
+  const expectedUserAction = {
+    user: volunteer._id,
+    action: USER_ACTION.ACCOUNT.ADDED_REFERENCE
+  };
 
-  expect(updatedVolunteer.references[0]).toMatchObject(expectedResult);
+  expect(updatedVolunteer.references[0]).toMatchObject(expectedReference);
   expect(updatedVolunteer.references.length).toEqual(1);
+  expect(userAction).toMatchObject(expectedUserAction);
 });
 
 test('Should delete a reference', async () => {
@@ -96,16 +123,23 @@ test('Should delete a reference', async () => {
     .select('references')
     .lean()
     .exec();
+  const userAction = await UserActionModel.findOne({
+    user: userId,
+    action: USER_ACTION.ACCOUNT.DELETED_REFERENCE
+  });
 
   const remainingReference = {
     name: referenceTwo.name,
     email: referenceTwo.email,
     status: REFERENCE_STATUS.UNSENT
   };
-
   const removedReference = {
     name: referenceOne.name,
     email: referenceOne.email
+  };
+  const expectedUserAction = {
+    user: userId,
+    action: USER_ACTION.ACCOUNT.DELETED_REFERENCE
   };
 
   expect(updatedVolunteer.references.length).toEqual(1);
@@ -113,6 +147,7 @@ test('Should delete a reference', async () => {
     expect.objectContaining({ ...removedReference })
   );
   expect(updatedVolunteer.references[0]).toMatchObject(remainingReference);
+  expect(userAction).toMatchObject(expectedUserAction);
 });
 
 test('Should save reference form data', async () => {
@@ -164,8 +199,12 @@ test('Pending volunteer should not be approved after being rejected', async () =
     .lean()
     .select('photoIdStatus references.status isApproved')
     .exec();
+  const userAction = await UserActionModel.findOne({
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.APPROVED
+  });
 
-  const expectedResult = {
+  const expectedVolunteer = {
     photoIdStatus: input.photoIdStatus,
     references: [
       { status: input.referencesStatus[0] },
@@ -174,7 +213,8 @@ test('Pending volunteer should not be approved after being rejected', async () =
     isApproved: false
   };
 
-  expect(updatedVolunteer).toMatchObject(expectedResult);
+  expect(updatedVolunteer).toMatchObject(expectedVolunteer);
+  expect(userAction).toBeNull();
 });
 
 test('Pending volunteer should be approved after approval', async () => {
@@ -196,8 +236,12 @@ test('Pending volunteer should be approved after approval', async () => {
     .lean()
     .select('photoIdStatus references.status isApproved')
     .exec();
+  const userAction = await UserActionModel.findOne({
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.APPROVED
+  });
 
-  const expectedResult = {
+  const expectedVolunteer = {
     photoIdStatus: input.photoIdStatus,
     references: [
       { status: input.referencesStatus[0] },
@@ -205,8 +249,13 @@ test('Pending volunteer should be approved after approval', async () => {
     ],
     isApproved: true
   };
+  const expectedUserAction = {
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.APPROVED
+  };
 
-  expect(updatedVolunteer).toMatchObject(expectedResult);
+  expect(updatedVolunteer).toMatchObject(expectedVolunteer);
+  expect(userAction).toMatchObject(expectedUserAction);
 });
 
 test('Open volunteer is not approved when submitting their background info is not the final approval step', async () => {
@@ -234,8 +283,16 @@ test('Open volunteer is not approved when submitting their background info is no
     .lean()
     .select('isApproved occupation experience background languages')
     .exec();
+  const backgroundInfoUserAction = await UserActionModel.findOne({
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.ADDED_BACKGROUND_INFO
+  });
+  const accountApprovedUserAction = await UserActionModel.findOne({
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.APPROVED
+  });
 
-  const expectedResult = {
+  const expectedVolunteer = {
     occupation: input.update.occupation,
     languages: input.update.languages,
     experience: input.update.experience,
@@ -243,7 +300,16 @@ test('Open volunteer is not approved when submitting their background info is no
     isApproved: false
   };
 
-  expect(updatedVolunteer).toMatchObject(expectedResult);
+  const expectedBackgroundInfoUserAction = {
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.ADDED_BACKGROUND_INFO
+  };
+
+  expect(updatedVolunteer).toMatchObject(expectedVolunteer);
+  expect(backgroundInfoUserAction).toMatchObject(
+    expectedBackgroundInfoUserAction
+  );
+  expect(accountApprovedUserAction).toBeNull();
 });
 
 test('Open volunteer is approved when submitting their background info is the final approval step', async () => {
@@ -274,12 +340,34 @@ test('Open volunteer is approved when submitting their background info is the fi
     .lean()
     .select('isApproved')
     .exec();
+  const backgroundInfoUserAction = await UserActionModel.findOne({
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.ADDED_BACKGROUND_INFO
+  });
+  const accountApprovedUserAction = await UserActionModel.findOne({
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.APPROVED
+  });
 
-  const expectedResult = {
+  const expectedVolunteer = {
     isApproved: true
   };
+  const expectedBackgroundInfoUserAction = {
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.ADDED_BACKGROUND_INFO
+  };
+  const expectedAccountApprovedUserAction = {
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.APPROVED
+  };
 
-  expect(updatedVolunteer).toMatchObject(expectedResult);
+  expect(updatedVolunteer).toMatchObject(expectedVolunteer);
+  expect(backgroundInfoUserAction).toMatchObject(
+    expectedBackgroundInfoUserAction
+  );
+  expect(accountApprovedUserAction).toMatchObject(
+    expectedAccountApprovedUserAction
+  );
 });
 
 test('Partner Volunteer is approved when submitting background info', async () => {
@@ -310,14 +398,36 @@ test('Partner Volunteer is approved when submitting background info', async () =
     .lean()
     .select('isApproved occupation experience background languages')
     .exec();
+  const backgroundInfoUserAction = await UserActionModel.findOne({
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.ADDED_BACKGROUND_INFO
+  });
+  const accountApprovedUserAction = await UserActionModel.findOne({
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.APPROVED
+  });
 
-  const expectedResult = {
+  const expectedVolunteer = {
     isApproved: true,
     occupation: ['An undergraduate student'],
     experience: '5+ years',
     background: ['Went to a Title 1/low-income high school'],
     languages: []
   };
+  const expectedBackgroundInfoUserAction = {
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.ADDED_BACKGROUND_INFO
+  };
+  const expectedAccountApprovedUserAction = {
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.APPROVED
+  };
 
-  expect(updatedVolunteer).toMatchObject(expectedResult);
+  expect(updatedVolunteer).toMatchObject(expectedVolunteer);
+  expect(backgroundInfoUserAction).toMatchObject(
+    expectedBackgroundInfoUserAction
+  );
+  expect(accountApprovedUserAction).toMatchObject(
+    expectedAccountApprovedUserAction
+  );
 });
