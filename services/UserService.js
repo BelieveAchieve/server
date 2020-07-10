@@ -206,7 +206,7 @@ module.exports = {
         delete update[field]
     }
 
-    UserActionCtrl.addedBackgroundInfo(volunteerId, ip)
+    UserActionCtrl.completedBackgroundInfo(volunteerId, ip)
     if (update.isApproved) UserActionCtrl.accountApproved(volunteerId, ip)
     return Volunteer.update({ _id: volunteerId }, update)
   }

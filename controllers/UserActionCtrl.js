@@ -184,11 +184,11 @@ const addedPhotoId = (userId, ipAddress) =>
 const addedReference = (userId, ipAddress) =>
   createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.ADDED_REFERENCE)
 
-const addedBackgroundInfo = (userId, ipAddress) =>
+const completedBackgroundInfo = (userId, ipAddress) =>
   createAccountAction(
     userId,
     ipAddress,
-    USER_ACTION.ACCOUNT.ADDED_BACKGROUND_INFO
+    USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
   )
 
 const deletedReference = (userId, ipAddress) =>
@@ -215,7 +215,7 @@ module.exports = {
   createdAccount,
   addedPhotoId,
   addedReference,
-  addedBackgroundInfo,
+  completedBackgroundInfo,
   deletedReference,
   accountApproved,
   accountOnboarded

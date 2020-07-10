@@ -295,7 +295,7 @@ test('Open volunteer is not approved when submitting their background info is no
     .exec();
   const backgroundInfoUserAction = await UserActionModel.findOne({
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.ADDED_BACKGROUND_INFO
+    action: USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
   });
   const accountApprovedUserAction = await UserActionModel.findOne({
     user: input.volunteerId,
@@ -315,7 +315,7 @@ test('Open volunteer is not approved when submitting their background info is no
 
   const expectedBackgroundInfoUserAction = {
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.ADDED_BACKGROUND_INFO
+    action: USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
   };
 
   expect(updatedVolunteer).toMatchObject(expectedVolunteer);
@@ -364,7 +364,7 @@ test('Open volunteer is approved when submitting their background info is the fi
     .exec();
   const backgroundInfoUserAction = await UserActionModel.findOne({
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.ADDED_BACKGROUND_INFO
+    action: USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
   });
   const accountApprovedUserAction = await UserActionModel.findOne({
     user: input.volunteerId,
@@ -376,7 +376,7 @@ test('Open volunteer is approved when submitting their background info is the fi
   };
   const expectedBackgroundInfoUserAction = {
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.ADDED_BACKGROUND_INFO
+    action: USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
   };
   const expectedAccountApprovedUserAction = {
     user: input.volunteerId,
@@ -432,7 +432,7 @@ test('Partner Volunteer is approved when submitting background info', async () =
     .exec();
   const backgroundInfoUserAction = await UserActionModel.findOne({
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.ADDED_BACKGROUND_INFO
+    action: USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
   });
   const accountApprovedUserAction = await UserActionModel.findOne({
     user: input.volunteerId,
@@ -450,7 +450,7 @@ test('Partner Volunteer is approved when submitting background info', async () =
   };
   const expectedBackgroundInfoUserAction = {
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.ADDED_BACKGROUND_INFO
+    action: USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
   };
   const expectedAccountApprovedUserAction = {
     user: input.volunteerId,
