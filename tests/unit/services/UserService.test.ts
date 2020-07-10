@@ -94,7 +94,8 @@ test('Should add a reference', async () => {
   };
   const expectedUserAction = {
     user: volunteer._id,
-    action: USER_ACTION.ACCOUNT.ADDED_REFERENCE
+    action: USER_ACTION.ACCOUNT.ADDED_REFERENCE,
+    referenceEmail: input.referenceEmail
   };
 
   expect(updatedVolunteer.references[0]).toMatchObject(expectedReference);
@@ -139,7 +140,8 @@ test('Should delete a reference', async () => {
   };
   const expectedUserAction = {
     user: userId,
-    action: USER_ACTION.ACCOUNT.DELETED_REFERENCE
+    action: USER_ACTION.ACCOUNT.DELETED_REFERENCE,
+    referenceEmail: input.referenceEmail
   };
 
   expect(updatedVolunteer.references.length).toEqual(1);
@@ -158,8 +160,10 @@ test('Should save reference form data', async () => {
   const { _id: userId } = volunteer;
 
   const referenceFormInput = {
+    userId,
     referenceId: reference._id,
-    referenceFormData: buildReferenceForm()
+    referenceFormData: buildReferenceForm(),
+    referenceEmail: reference.email
   };
 
   await UserService.saveReferenceForm(referenceFormInput);
@@ -172,25 +176,37 @@ test('Should save reference form data', async () => {
     .select('references')
     .lean()
     .exec();
+  const userAction = await UserActionModel.findOne({
+    user: userId,
+    action: USER_ACTION.ACCOUNT.SUBMITTED_REFERENCE_FORM
+  });
 
   const [updatedReference] = updatedReferences;
+  const expectedUserAction = {
+    user: userId,
+    action: USER_ACTION.ACCOUNT.SUBMITTED_REFERENCE_FORM,
+    referenceEmail: referenceFormInput.referenceEmail
+  };
 
   expect(updatedReference).toMatchObject(referenceFormInput.referenceFormData);
+  expect(userAction).toMatchObject(expectedUserAction);
 });
 
 test.todo('Admin should get pending volunteers');
 
 test('Pending volunteer should not be approved after being rejected', async () => {
+  const references = [buildReferenceWithForm(), buildReferenceWithForm()];
   const options = {
-    references: [buildReferenceWithForm(), buildReferenceWithForm()],
+    references,
     ...buildPhotoIdData()
   };
   const volunteer = buildVolunteer(options);
   await insertVolunteer(volunteer);
   const input = {
     volunteerId: volunteer._id,
-    photoIdStatus: PHOTO_ID_STATUS.APPROVED,
+    photoIdStatus: PHOTO_ID_STATUS.REJECTED,
     referencesStatus: [REFERENCE_STATUS.APPROVED, REFERENCE_STATUS.REJECTED],
+    references: volunteer.references,
     hasCompletedBackgroundInfo: false
   };
 
@@ -199,9 +215,17 @@ test('Pending volunteer should not be approved after being rejected', async () =
     .lean()
     .select('photoIdStatus references.status isApproved')
     .exec();
-  const userAction = await UserActionModel.findOne({
+  const accountApprovedUserAction = await UserActionModel.findOne({
     user: input.volunteerId,
     action: USER_ACTION.ACCOUNT.APPROVED
+  });
+  const rejectedReferenceUserAction = await UserActionModel.findOne({
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.REJECTED_REFERENCE
+  });
+  const photoIdRejected = await UserActionModel.findOne({
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.REJECTED_PHOTO_ID
   });
 
   const expectedVolunteer = {
@@ -212,9 +236,22 @@ test('Pending volunteer should not be approved after being rejected', async () =
     ],
     isApproved: false
   };
+  const expectedRejectedReferenceUserAction = {
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.REJECTED_REFERENCE,
+    referenceEmail: references[1].email
+  };
+  const expectedRejectedPhotoIdUserAction = {
+    user: input.volunteerId,
+    action: USER_ACTION.ACCOUNT.REJECTED_PHOTO_ID
+  };
 
   expect(updatedVolunteer).toMatchObject(expectedVolunteer);
-  expect(userAction).toBeNull();
+  expect(accountApprovedUserAction).toBeNull();
+  expect(rejectedReferenceUserAction).toMatchObject(
+    expectedRejectedReferenceUserAction
+  );
+  expect(photoIdRejected).toMatchObject(expectedRejectedPhotoIdUserAction);
 });
 
 test('Pending volunteer should be approved after approval', async () => {

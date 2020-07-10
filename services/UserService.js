@@ -48,10 +48,18 @@ module.exports = {
       { _id: userId },
       { $push: { references: referenceData } }
     )
-    UserActionCtrl.addedReference(userId, ip)
+    UserActionCtrl.addedReference(userId, ip, {
+      referenceEmail
+    })
   },
 
-  saveReferenceForm: async ({ referenceId, referenceFormData }) => {
+  saveReferenceForm: async ({
+    userId,
+    referenceId,
+    referenceEmail,
+    referenceFormData,
+    ip
+  }) => {
     const {
       affiliation,
       relationshipLength,
@@ -63,6 +71,8 @@ module.exports = {
       communicatesEffectively,
       trustworthyWithChildren
     } = referenceFormData
+
+    UserActionCtrl.submittedReferenceForm(userId, ip, { referenceEmail })
 
     // See: https://docs.mongodb.com/manual/reference/operator/update/positional/#up._S_
     return Volunteer.updateOne(
@@ -99,7 +109,7 @@ module.exports = {
   },
 
   deleteReference: async ({ userId, referenceEmail, ip }) => {
-    UserActionCtrl.deletedReference(userId, ip)
+    UserActionCtrl.deletedReference(userId, ip, { referenceEmail })
     return Volunteer.updateOne(
       { _id: userId },
       { $pull: { references: { email: referenceEmail } } }
@@ -154,6 +164,7 @@ module.exports = {
     volunteerId,
     photoIdStatus,
     referencesStatus,
+    references,
     hasCompletedBackgroundInfo
   }) {
     const statuses = [...referencesStatus, photoIdStatus]
@@ -171,7 +182,18 @@ module.exports = {
       'references.1.status': referenceTwoStatus
     }
 
-    // todo: merge with incoming emails pr
+    if (photoIdStatus === STATUS.REJECTED)
+      UserActionCtrl.rejectedPhotoId(volunteerId)
+
+    // @todo: volunteer-signup - pending merge with incoming emails pr
+    for (let i = 0; i < referencesStatus.length; i++) {
+      if (referencesStatus[i] === STATUS.REJECTED)
+        UserActionCtrl.rejectedReference(volunteerId, {
+          referenceEmail: references[i].email
+        })
+    }
+
+    // @todo: volunteer-signup - merge with incoming emails pr
     if (isApproved) UserActionCtrl.accountApproved(volunteerId)
 
     await Volunteer.update({ _id: volunteerId }, update)
