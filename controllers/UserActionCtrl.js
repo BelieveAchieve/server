@@ -63,7 +63,12 @@ const createSessionAction = async (
 }
 
 // todo: refactor positional arguments to destructuring
-const createAccountAction = async (userId, ipAddress = '', action, options = {}) => {
+const createAccountAction = async (
+  userId,
+  ipAddress = '',
+  action,
+  options = {}
+) => {
   const userActionDoc = new UserAction({
     user: userId,
     actionType: USER_ACTION.TYPE.ACCOUNT,
@@ -218,7 +223,7 @@ const submittedReferenceForm = (userId, ipAddress, options) =>
     ipAddress,
     USER_ACTION.ACCOUNT.SUBMITTED_REFERENCE_FORM,
     options
-  );
+  )
 
 const rejectedPhotoId = userId =>
   createAccountAction(userId, '', USER_ACTION.ACCOUNT.REJECTED_PHOTO_ID)
@@ -229,7 +234,7 @@ const rejectedReference = (userId, options) =>
     '',
     USER_ACTION.ACCOUNT.REJECTED_REFERENCE,
     options
-  );
+  )
 
 module.exports = {
   startedQuiz,
