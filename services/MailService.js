@@ -168,12 +168,12 @@ module.exports = {
     )
   },
 
-  sendAccountApprovedEmail: volunteer => {
+  sendApprovedNotOnboardedEmail: volunteer => {
     return sendEmail(
       volunteer.email,
       config.mail.senders.noreply,
       'UPchieve',
-      config.sendgrid.accountApprovedTemplate,
+      config.sendgrid.approvedNotOnboardedTemplate,
       { volunteerName: volunteer.firstname },
       config.sendgrid.unsubscribeGroup.account
     )

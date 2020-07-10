@@ -28,7 +28,7 @@ export const Config = Record({
     studentWelcomeTemplate: String,
     reportedSessionAlertTemplate: String,
     referenceFormTemplate: String,
-    accountApprovedTemplate: String,
+    approvedNotOnboardedTemplate: String,
     photoRejectedTemplate: String,
     readyToCoachTemplate: String,
     unsubscribeGroup: Record({

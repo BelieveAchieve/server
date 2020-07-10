@@ -23,7 +23,7 @@ const config: Static<typeof Config> = {
     studentWelcomeTemplate: 'd-dba390e0c99545d4b18135d869046f50',
     reportedSessionAlertTemplate: 'd-fe338f96339445279c3fa6580fabc286',
     referenceFormTemplate: 'd-122f9c9953144e62b1f66411b8e85723',
-    accountApprovedTemplate: 'd-122f9c9953144e62b1f66411b8e85723', // todo
+    approvedNotOnboardedTemplate: 'd-122f9c9953144e62b1f66411b8e85723', // todo
     photoRejectedTemplate: 'd-122f9c9953144e62b1f66411b8e85723', // todo
     readyToCoachTemplate: 'd-122f9c9953144e62b1f66411b8e85723', // todo
     unsubscribeGroup: {

@@ -183,8 +183,9 @@ module.exports = {
     )
       await MailService.sendPhotoRejectedEmail(volunteerBeforeUpdate)
 
-    if (isApproved && !volunteerBeforeUpdate.isApproved)
-      await MailService.sendAccountApprovedEmail(volunteerBeforeUpdate)
+    const isNewlyApproved = isApproved && !volunteerBeforeUpdate.isApproved
+    if (isNewlyApproved && !volunteerBeforeUpdate.isOnboarded)
+      await MailService.sendApprovedNotOnboardedEmail(volunteerBeforeUpdate)
   },
 
   addBackgroundInfo: async function({
