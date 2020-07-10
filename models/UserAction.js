@@ -49,7 +49,10 @@ const userActionSchema = new mongoose.Schema({
       USER_ACTION.ACCOUNT.ADDED_REFERENCE,
       USER_ACTION.ACCOUNT.ADDED_PHOTO_ID,
       USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO,
-      USER_ACTION.ACCOUNT.DELETED_REFERENCE
+      USER_ACTION.ACCOUNT.DELETED_REFERENCE,
+      USER_ACTION.ACCOUNT.SUBMITTED_REFERENCE_FORM,
+      USER_ACTION.ACCOUNT.REJECTED_PHOTO_ID,
+      USER_ACTION.ACCOUNT.REJECTED_REFERENCE
     ]
   },
   quizCategory: String,
@@ -59,7 +62,8 @@ const userActionSchema = new mongoose.Schema({
   browserVersion: String,
   operatingSystem: String,
   operatingSystemVersion: String,
-  ipAddress: String
+  ipAddress: String,
+  referenceEmail: String
 })
 
 module.exports = mongoose.model('UserAction', userActionSchema)
