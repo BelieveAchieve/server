@@ -62,20 +62,17 @@ module.exports = function(router) {
     res.sendStatus(200)
   })
 
-  router.post(
-    '/user/volunteer-approval/reference/delete',
-    async (req, res) => {
-      const { ip } = req
-      const { _id } = req.user
-      const { referenceEmail } = req.body
-      await UserService.deleteReference({
-        userId: _id,
-        referenceEmail,
-        ip
-      })
-      res.sendStatus(200)
-    }
-  )
+  router.post('/user/volunteer-approval/reference/delete', async (req, res) => {
+    const { ip } = req
+    const { _id } = req.user
+    const { referenceEmail } = req.body
+    await UserService.deleteReference({
+      userId: _id,
+      referenceEmail,
+      ip
+    })
+    res.sendStatus(200)
+  })
 
   router.get('/user/volunteer-approval/photo-url', async (req, res, next) => {
     const { ip } = req
