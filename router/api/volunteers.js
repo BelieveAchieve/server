@@ -61,13 +61,19 @@ module.exports = function(router) {
     const { volunteerId, photoIdStatus, referencesStatus } = req.body
 
     try {
-      const { occupation, background, country } = await UserService.getUser({
+      const {
+        occupation,
+        background,
+        country,
+        references
+      } = await UserService.getUser({
         _id: volunteerId
       })
       await UserService.updatePendingVolunteerStatus({
         volunteerId: id,
         photoIdStatus,
         referencesStatus,
+        references,
         hasCompletedBackgroundInfo:
           occupation &&
           occupation.length > 0 &&
