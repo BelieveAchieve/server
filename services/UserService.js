@@ -193,14 +193,16 @@ module.exports = {
       'references.1.status': referenceTwoStatus
     }
 
-    if (photoIdStatus === STATUS.REJECTED)
+    if (photoIdStatus === PHOTO_ID_STATUS.REJECTED)
       UserActionCtrl.rejectedPhotoId(volunteerId)
 
-    // @todo: volunteer-signup - pending merge with incoming emails pr
     for (let i = 0; i < referencesStatus.length; i++) {
-      if (referencesStatus[i] === STATUS.REJECTED)
+      if (
+        referencesStatus[i] === REFERENCE_STATUS.REJECTED &&
+        volunteerBeforeUpdate.references[i].status !== REFERENCE_STATUS.REJECTED
+      )
         UserActionCtrl.rejectedReference(volunteerId, {
-          referenceEmail: references[i].email
+          referenceEmail: volunteerBeforeUpdate.references[i].email
         })
     }
 
