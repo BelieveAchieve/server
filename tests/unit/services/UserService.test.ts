@@ -8,7 +8,8 @@ import {
   buildReference,
   buildReferenceForm,
   buildPhotoIdData,
-  buildReferenceWithForm
+  buildReferenceWithForm,
+  buildBackgroundInfo
 } from '../../utils/generate';
 import { insertVolunteer, resetDb } from '../../utils/db-utils';
 
@@ -155,8 +156,7 @@ test('Pending volunteer should not be approved after being rejected', async () =
   const input = {
     volunteerId: volunteer._id,
     photoIdStatus: PHOTO_ID_STATUS.APPROVED,
-    referencesStatus: [REFERENCE_STATUS.APPROVED, REFERENCE_STATUS.REJECTED],
-    hasCompletedBackgroundInfo: false
+    referencesStatus: [REFERENCE_STATUS.APPROVED, REFERENCE_STATUS.REJECTED]
   };
 
   await UserService.updatePendingVolunteerStatus(input);
@@ -180,15 +180,15 @@ test('Pending volunteer should not be approved after being rejected', async () =
 test('Pending volunteer should be approved after approval', async () => {
   const options = {
     references: [buildReferenceWithForm(), buildReferenceWithForm()],
-    ...buildPhotoIdData()
+    ...buildPhotoIdData(),
+    ...buildBackgroundInfo()
   };
   const volunteer = buildVolunteer(options);
   await insertVolunteer(volunteer);
   const input = {
     volunteerId: volunteer._id,
     photoIdStatus: PHOTO_ID_STATUS.APPROVED,
-    referencesStatus: [REFERENCE_STATUS.APPROVED, REFERENCE_STATUS.APPROVED],
-    hasCompletedBackgroundInfo: true
+    referencesStatus: [REFERENCE_STATUS.APPROVED, REFERENCE_STATUS.APPROVED]
   };
 
   await UserService.updatePendingVolunteerStatus(input);
@@ -215,25 +215,9 @@ test('Open volunteer is not approved when submitting their background info is no
     photoIdStatus: STATUS.APPROVED
   });
   await insertVolunteer(volunteer);
-  const update = {
-    occupation: ['An undergraduate student'],
-    experience: {
-      collegeCounseling: 'No prior experience',
-      mentoring: '1-2 years',
-      tutoring: '0-1 years'
-    },
-    background: ['Went to a Title 1/low-income high school'],
-    languages: ['Spanish'],
-    country: 'United States of America',
-    state: 'New York',
-    city: 'New York City'
-  };
+  const update = buildBackgroundInfo();
   const input = {
-    isApproved: false,
     volunteerId: volunteer._id,
-    references: volunteer.references,
-    volunteerPartnerOrg: volunteer.volunteerPartnerOrg,
-    photoIdStatus: volunteer.photoIdStatus,
     update
   };
 
@@ -269,25 +253,9 @@ test('Open volunteer is approved when submitting their background info is the fi
   });
   await insertVolunteer(volunteer);
 
-  const update = {
-    occupation: ['An undergraduate student'],
-    experience: {
-      collegeCounseling: 'No prior experience',
-      mentoring: '1-2 years',
-      tutoring: '0-1 years'
-    },
-    background: ['Went to a Title 1/low-income high school'],
-    languages: ['Spanish'],
-    country: 'United States of America',
-    state: 'New York',
-    city: 'New York City'
-  };
+  const update = buildBackgroundInfo();
   const input = {
-    isApproved: volunteer.isApproved,
     volunteerId: volunteer._id,
-    references: volunteer.references,
-    volunteerPartnerOrg: volunteer.volunteerPartnerOrg,
-    photoIdStatus: volunteer.photoIdStatus,
     update
   };
 
@@ -315,23 +283,9 @@ test('Partner Volunteer is approved when submitting background info', async () =
   });
   await insertVolunteer(volunteer);
 
-  const update = {
-    occupation: ['An undergraduate student'],
-    experience: {
-      collegeCounseling: 'No prior experience',
-      mentoring: '1-2 years',
-      tutoring: '0-1 years'
-    },
-    background: ['Went to a Title 1/low-income high school'],
-    languages: [],
-    country: 'United States of America',
-    state: 'New York',
-    city: 'New York City'
-  };
+  const update = buildBackgroundInfo({ languages: [] });
   const input = {
-    isApproved: volunteer.isApproved,
     volunteerId: volunteer._id,
-    volunteerPartnerOrg: volunteer.volunteerPartnerOrg,
     update
   };
 
@@ -350,7 +304,10 @@ test('Partner Volunteer is approved when submitting background info', async () =
     background: update.background,
     country: update.country,
     state: update.state,
-    city: update.city
+    city: update.city,
+    // @note: UserService.addBackgroundInfo manipulates `update` and removes a property if
+    //        it contains an empty string or empty array
+    languages: []
   };
 
   expect(updatedVolunteer).toMatchObject(expectedResult);
