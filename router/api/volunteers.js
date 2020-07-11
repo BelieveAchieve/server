@@ -58,28 +58,13 @@ module.exports = function(router) {
     res
   ) {
     const { id } = req.params
-    const { volunteerId, photoIdStatus, referencesStatus } = req.body
+    const { photoIdStatus, referencesStatus } = req.body
 
     try {
-      const {
-        occupation,
-        background,
-        country,
-        references
-      } = await UserService.getUser({
-        _id: volunteerId
-      })
       await UserService.updatePendingVolunteerStatus({
         volunteerId: id,
         photoIdStatus,
-        referencesStatus,
-        references,
-        hasCompletedBackgroundInfo:
-          occupation &&
-          occupation.length > 0 &&
-          background &&
-          background.length > 0 &&
-          country
+        referencesStatus
       })
       res.sendStatus(200)
     } catch (error) {
