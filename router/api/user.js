@@ -119,17 +119,7 @@ module.exports = function(router) {
       }
 
       try {
-        const {
-          volunteerPartnerOrg,
-          references,
-          photoIdStatus,
-          isApproved
-        } = await UserService.getUser({ _id })
         await UserService.addBackgroundInfo({
-          isApproved,
-          volunteerPartnerOrg,
-          references,
-          photoIdStatus,
           volunteerId: _id,
           update
         })
