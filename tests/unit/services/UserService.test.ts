@@ -205,7 +205,7 @@ test('Pending volunteer should not be approved after being rejected', async () =
   await insertVolunteer(volunteer);
   const input = {
     volunteerId: volunteer._id,
-    photoIdStatus: PHOTO_ID_STATUS.APPROVED,
+    photoIdStatus: PHOTO_ID_STATUS.REJECTED,
     referencesStatus: [REFERENCE_STATUS.APPROVED, REFERENCE_STATUS.REJECTED]
   };
 
@@ -222,7 +222,7 @@ test('Pending volunteer should not be approved after being rejected', async () =
     user: input.volunteerId,
     action: USER_ACTION.ACCOUNT.REJECTED_REFERENCE
   });
-  const photoIdRejected = await UserActionModel.findOne({
+  const rejectedPhotoIdUserAction = await UserActionModel.findOne({
     user: input.volunteerId,
     action: USER_ACTION.ACCOUNT.REJECTED_PHOTO_ID
   });
@@ -250,7 +250,9 @@ test('Pending volunteer should not be approved after being rejected', async () =
   expect(rejectedReferenceUserAction).toMatchObject(
     expectedRejectedReferenceUserAction
   );
-  expect(photoIdRejected).toMatchObject(expectedRejectedPhotoIdUserAction);
+  expect(rejectedPhotoIdUserAction).toMatchObject(
+    expectedRejectedPhotoIdUserAction
+  );
 });
 
 test('Pending volunteer should be approved after approval', async () => {
