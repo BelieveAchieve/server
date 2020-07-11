@@ -5,7 +5,13 @@ const Volunteer = require('../models/Volunteer')
 const MailService = require('./MailService')
 const { PHOTO_ID_STATUS, REFERENCE_STATUS, STATUS } = require('../constants')
 
+const getVolunteer = async volunteerId => {
+  return Volunteer.findOne({ _id: volunteerId })
+}
+
 module.exports = {
+  getVolunteer,
+
   getUser: query => {
     return User.findOne(query)
       .lean()
@@ -149,9 +155,15 @@ module.exports = {
   updatePendingVolunteerStatus: async function({
     volunteerId,
     photoIdStatus,
-    referencesStatus,
-    hasCompletedBackgroundInfo
+    referencesStatus
   }) {
+    const volunteerBeforeUpdate = await getVolunteer(volunteerId)
+    const hasCompletedBackgroundInfo =
+      volunteerBeforeUpdate.occupation &&
+      volunteerBeforeUpdate.occupation.length > 0 &&
+      volunteerBeforeUpdate.background &&
+      volunteerBeforeUpdate.background.length > 0 &&
+      volunteerBeforeUpdate.country
     const statuses = [...referencesStatus, photoIdStatus]
     // A volunteer must have the following list items approved before being considered an approved volunteer
     //  1. two references
@@ -170,14 +182,13 @@ module.exports = {
     return Volunteer.update({ _id: volunteerId }, update)
   },
 
-  addBackgroundInfo: async function({
-    isApproved,
-    volunteerPartnerOrg,
-    references,
-    photoIdStatus,
-    volunteerId,
-    update
-  }) {
+  addBackgroundInfo: async function({ volunteerId, update }) {
+    const {
+      volunteerPartnerOrg,
+      references,
+      photoIdStatus,
+      isApproved
+    } = await getVolunteer(volunteerId)
     let isFinalApprovalStep = false
 
     if (!isApproved && !volunteerPartnerOrg && references.length === 2) {
