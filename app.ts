@@ -57,6 +57,12 @@ app.use(promisifyLogin);
 // The error handler must be before any other error middleware and after all controllers
 app.use(Sentry.Handlers.errorHandler());
 
+// initialize Express WebSockets
+expressWs(app);
+
+// Load server router
+router(app);
+
 // Send error responses to API requests after they are passed to Sentry
 app.use(
   ['/api', '/auth', '/contact', '/school', '/twiml', '/whiteboard'],
@@ -65,11 +71,5 @@ app.use(
     next();
   }
 );
-
-// initialize Express WebSockets
-expressWs(app);
-
-// Load server router
-router(app);
 
 export default app;
