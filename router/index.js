@@ -13,6 +13,7 @@ module.exports = function(app) {
   require('./eligibility')(app)
   require('./twiml')(app)
   require('./contact')(app)
+  require('./metrics')(app)
   require('./mobile')(app)
   require('./reference')(app)
 
@@ -23,6 +24,7 @@ module.exports = function(app) {
       '/auth',
       '/api',
       '/api-public',
+      '/metrics',
       '/twiml',
       '/mobile',
       '/js',
