@@ -166,7 +166,7 @@ module.exports = {
   sendApprovedNotOnboardedEmail: volunteer => {
     return sendEmail(
       volunteer.email,
-      config.mail.senders.noreply,
+      config.mail.senders.support,
       'UPchieve',
       config.sendgrid.approvedNotOnboardedTemplate,
       { volunteerName: volunteer.firstname },
@@ -177,7 +177,7 @@ module.exports = {
   sendPhotoRejectedEmail: volunteer => {
     return sendEmail(
       volunteer.email,
-      config.mail.senders.noreply,
+      config.mail.senders.support,
       'UPchieve',
       config.sendgrid.photoRejectedTemplate,
       { volunteerName: volunteer.firstname },
@@ -188,7 +188,7 @@ module.exports = {
   sendReadyToCoachEmail: volunteer => {
     return sendEmail(
       volunteer.email,
-      config.mail.senders.noreply,
+      config.mail.senders.support,
       'UPchieve',
       config.sendgrid.readyToCoachTemplate,
       { volunteerName: volunteer.firstname },

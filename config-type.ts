@@ -38,7 +38,8 @@ export const Config = Record({
   }),
   mail: Record({
     senders: Record({
-      noreply: String
+      noreply: String,
+      support: String
     }),
     receivers: Record({
       contact: String,

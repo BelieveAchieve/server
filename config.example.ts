@@ -23,9 +23,9 @@ const config: Static<typeof Config> = {
     studentWelcomeTemplate: 'd-dba390e0c99545d4b18135d869046f50',
     reportedSessionAlertTemplate: 'd-fe338f96339445279c3fa6580fabc286',
     referenceFormTemplate: 'd-122f9c9953144e62b1f66411b8e85723',
-    approvedNotOnboardedTemplate: 'd-122f9c9953144e62b1f66411b8e85723', // todo
-    photoRejectedTemplate: 'd-122f9c9953144e62b1f66411b8e85723', // todo
-    readyToCoachTemplate: 'd-122f9c9953144e62b1f66411b8e85723', // todo
+    approvedNotOnboardedTemplate: 'd-2c7a974fc7084a9eaaa152f3498cc99d',
+    photoRejectedTemplate: 'd-5402e8f1aa7d42efad1ae731445e0db9',
+    readyToCoachTemplate: 'd-09ec01c51be54c108b7fae4481acfd38',
     unsubscribeGroup: {
       newsletter: 12567,
       account: 12570
@@ -33,7 +33,8 @@ const config: Static<typeof Config> = {
   },
   mail: {
     senders: {
-      noreply: 'noreply@upchieve.org'
+      noreply: 'noreply@upchieve.org',
+      support: 'support@upchieve.org'
     },
     receivers: {
       contact: 'staff@upchieve.org',
