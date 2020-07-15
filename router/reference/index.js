@@ -6,9 +6,24 @@ module.exports = function(app) {
 
   router.post('/:referenceId/submit', async (req, res, next) => {
     const { referenceId } = req.params
-    const { body: referenceFormData } = req
+    const { body: referenceFormData, ip } = req
 
-    await UserService.saveReferenceForm({ referenceId, referenceFormData })
+    const { references, _id: userId } = await UserService.getUser({
+      'references._id': referenceId
+    })
+
+    let referenceEmail
+    for (const reference of references) {
+      if (reference._id.toString() === referenceId)
+        referenceEmail = reference.email
+    }
+    await UserService.saveReferenceForm({
+      userId,
+      referenceId,
+      referenceEmail,
+      referenceFormData,
+      ip
+    })
     res.sendStatus(200)
   })
 

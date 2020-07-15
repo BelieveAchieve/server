@@ -55,6 +55,18 @@ export interface Volunteer {
   photoIdS3Key?: string;
   photoIdStatus?: string;
   isApproved: boolean;
+  // background information
+  occupation?: Array<string>;
+  background?: Array<string>;
+  experience?: {
+    collegeCounseling: string;
+    mentoring: string;
+    tutoring: string;
+  };
+  languages?: Array<string>;
+  country?: string;
+  state?: string;
+  city?: string;
 }
 
 export interface StudentRegistrationForm extends Student {

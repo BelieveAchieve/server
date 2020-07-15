@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import UserModel from '../../models/User';
 import VolunteerModel from '../../models/Volunteer';
 import StudentModel from '../../models/Student';
+import UserActionModel from '../../models/UserAction';
 import config from '../../config';
 
 const hashPassword = async function(password): Promise<Error | string> {
@@ -17,6 +18,7 @@ const hashPassword = async function(password): Promise<Error | string> {
 
 export const resetDb = async (): Promise<void> => {
   await UserModel.remove({});
+  await UserActionModel.remove({});
 };
 
 export const insertVolunteer = async (volunteer): Promise<Document> => {

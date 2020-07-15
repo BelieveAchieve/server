@@ -146,6 +146,25 @@ export const buildPhotoIdData = (overrides = {}): Partial<Volunteer> => {
   return data;
 };
 
+export const buildBackgroundInfo = (overrides = {}): Partial<Volunteer> => {
+  const data = {
+    occupation: ['An undergraduate student'],
+    experience: {
+      collegeCounseling: 'No prior experience',
+      mentoring: '1-2 years',
+      tutoring: '0-1 years'
+    },
+    background: ['Went to a Title 1/low-income high school'],
+    languages: ['Spanish'],
+    country: 'United States of America',
+    state: 'New York',
+    city: 'New York City',
+    ...overrides
+  };
+
+  return data;
+};
+
 export const authLogin = (agent, { email, password }): Test =>
   agent
     .post('/auth/login')

@@ -18,9 +18,8 @@ module.exports = function(router) {
   })
   router.post('/training/score', async function(req, res, next) {
     try {
-      const { user } = req
+      const { user, ip } = req
       const { category, idAnswerMap } = req.body
-      const { ip: ipAddress } = req
 
       const {
         tries,
@@ -30,20 +29,17 @@ module.exports = function(router) {
       } = await TrainingCtrl.getQuizScore({
         user,
         idAnswerMap,
-        category
+        category,
+        ip
       })
 
       passed
-        ? UserActionCtrl.passedQuiz(
-            user._id,
-            category,
-            ipAddress
-          ).catch(error => Sentry.captureException(error))
-        : UserActionCtrl.failedQuiz(
-            user._id,
-            category,
-            ipAddress
-          ).catch(error => Sentry.captureException(error))
+        ? UserActionCtrl.passedQuiz(user._id, category, ip).catch(error =>
+            Sentry.captureException(error)
+          )
+        : UserActionCtrl.failedQuiz(user._id, category, ip).catch(error =>
+            Sentry.captureException(error)
+          )
 
       res.json({
         msg: 'Score calculated and saved',

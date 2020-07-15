@@ -3,6 +3,7 @@ const { omit } = require('lodash')
 const User = require('../models/User')
 const Volunteer = require('../models/Volunteer')
 const MailService = require('./MailService')
+const UserActionCtrl = require('../controllers/UserActionCtrl')
 const { PHOTO_ID_STATUS, REFERENCE_STATUS, STATUS } = require('../constants')
 
 const getVolunteer = async volunteerId => {
@@ -34,8 +35,9 @@ module.exports = {
     )
   },
 
-  addPhotoId: async ({ userId }) => {
+  addPhotoId: async ({ userId, ip }) => {
     const photoIdS3Key = crypto.randomBytes(32).toString('hex')
+    UserActionCtrl.addedPhotoId(userId, ip)
     await Volunteer.updateOne(
       { _id: userId },
       { $set: { photoIdS3Key, photoIdStatus: PHOTO_ID_STATUS.SUBMITTED } }
@@ -43,7 +45,7 @@ module.exports = {
     return photoIdS3Key
   },
 
-  addReference: async ({ userId, referenceName, referenceEmail }) => {
+  addReference: async ({ userId, referenceName, referenceEmail, ip }) => {
     const referenceData = {
       name: referenceName,
       email: referenceEmail
@@ -52,9 +54,18 @@ module.exports = {
       { _id: userId },
       { $push: { references: referenceData } }
     )
+    UserActionCtrl.addedReference(userId, ip, {
+      referenceEmail
+    })
   },
 
-  saveReferenceForm: async ({ referenceId, referenceFormData }) => {
+  saveReferenceForm: async ({
+    userId,
+    referenceId,
+    referenceEmail,
+    referenceFormData,
+    ip
+  }) => {
     const {
       affiliation,
       relationshipLength,
@@ -66,6 +77,8 @@ module.exports = {
       communicatesEffectively,
       trustworthyWithChildren
     } = referenceFormData
+
+    UserActionCtrl.submittedReferenceForm(userId, ip, { referenceEmail })
 
     // See: https://docs.mongodb.com/manual/reference/operator/update/positional/#up._S_
     return Volunteer.updateOne(
@@ -101,7 +114,8 @@ module.exports = {
     )
   },
 
-  deleteReference: async ({ userId, referenceEmail }) => {
+  deleteReference: async ({ userId, referenceEmail, ip }) => {
+    UserActionCtrl.deletedReference(userId, ip, { referenceEmail })
     return Volunteer.updateOne(
       { _id: userId },
       { $pull: { references: { email: referenceEmail } } }
@@ -155,10 +169,16 @@ module.exports = {
   updatePendingVolunteerStatus: async function({
     volunteerId,
     photoIdStatus,
-    referencesStatus,
-    hasCompletedBackgroundInfo
+    referencesStatus
   }) {
     const volunteerBeforeUpdate = await getVolunteer(volunteerId)
+    const hasCompletedBackgroundInfo =
+      volunteerBeforeUpdate.occupation &&
+      volunteerBeforeUpdate.occupation.length > 0 &&
+      volunteerBeforeUpdate.background &&
+      volunteerBeforeUpdate.background.length > 0 &&
+      volunteerBeforeUpdate.country
+
     const statuses = [...referencesStatus, photoIdStatus]
     // A volunteer must have the following list items approved before being considered an approved volunteer
     //  1. two references
@@ -176,26 +196,38 @@ module.exports = {
 
     await Volunteer.update({ _id: volunteerId }, update)
 
-    // Send email if photo ID has just been rejected
     if (
       photoIdStatus === PHOTO_ID_STATUS.REJECTED &&
       volunteerBeforeUpdate.photoIdStatus !== PHOTO_ID_STATUS.REJECTED
-    )
+    ) {
+      UserActionCtrl.rejectedPhotoId(volunteerId)
       await MailService.sendPhotoRejectedEmail(volunteerBeforeUpdate)
+    }
 
     const isNewlyApproved = isApproved && !volunteerBeforeUpdate.isApproved
-    if (isNewlyApproved && !volunteerBeforeUpdate.isOnboarded)
+    if (isNewlyApproved && !volunteerBeforeUpdate.isOnboarded) {
+      UserActionCtrl.accountApproved(volunteerId)
       await MailService.sendApprovedNotOnboardedEmail(volunteerBeforeUpdate)
+    }
+
+    for (let i = 0; i < referencesStatus.length; i++) {
+      if (
+        referencesStatus[i] === REFERENCE_STATUS.REJECTED &&
+        volunteerBeforeUpdate.references[i].status !== REFERENCE_STATUS.REJECTED
+      )
+        UserActionCtrl.rejectedReference(volunteerId, {
+          referenceEmail: volunteerBeforeUpdate.references[i].email
+        })
+    }
   },
 
-  addBackgroundInfo: async function({
-    isApproved,
-    volunteerPartnerOrg,
-    references,
-    photoIdStatus,
-    volunteerId,
-    update
-  }) {
+  addBackgroundInfo: async function({ volunteerId, update, ip }) {
+    const {
+      volunteerPartnerOrg,
+      references,
+      photoIdStatus,
+      isApproved
+    } = await getVolunteer(volunteerId)
     let isFinalApprovalStep = false
 
     if (!isApproved && !volunteerPartnerOrg && references.length === 2) {
@@ -216,6 +248,8 @@ module.exports = {
         delete update[field]
     }
 
+    UserActionCtrl.completedBackgroundInfo(volunteerId, ip)
+    if (update.isApproved) UserActionCtrl.accountApproved(volunteerId, ip)
     return Volunteer.update({ _id: volunteerId }, update)
   }
 }
