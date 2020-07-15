@@ -103,23 +103,24 @@ module.exports = {
     )
   },
 
-  sendVolunteerWelcomeEmail: ({ email, firstName }) => {
-    const { host } = config.client
-    const coachGuideLink = `http://${host}/coach-guide`
-    const scheduleLink = `http://${host}/calendar`
-    const trainingLink = `http://${host}/training`
-
+  sendOpenVolunteerWelcomeEmail: ({ email, volunteerName }) => {
     sendEmail(
       email,
-      config.mail.senders.noreply,
+      config.mail.senders.support,
       'UPchieve',
-      config.sendgrid.volunteerWelcomeTemplate,
-      {
-        firstName,
-        coachGuideLink,
-        scheduleLink,
-        trainingLink
-      },
+      config.sendgrid.openVolunteerWelcomeTemplate,
+      { volunteerName },
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
+  sendPartnerVolunteerWelcomeEmail: ({ email, volunteerName }) => {
+    sendEmail(
+      email,
+      config.mail.senders.support,
+      'UPchieve',
+      config.sendgrid.partnerVolunteerWelcomeTemplate,
+      { volunteerName },
       config.sendgrid.unsubscribeGroup.account
     )
   },
