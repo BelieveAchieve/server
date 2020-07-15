@@ -1,5 +1,6 @@
 import moment from 'moment-timezone';
 import mongoose, { Types } from 'mongoose';
+import _ from 'lodash';
 import User from '../models/User';
 
 const ObjectId = mongoose.Types.ObjectId;
@@ -42,13 +43,25 @@ function calcAverageRating(allFeedback): number {
 
   for (let i = 0; i < allFeedback.length; i++) {
     const feedback = allFeedback[i];
-    if (feedback.responseData['rate-session']) {
-      ratingsSum += feedback.responseData['rate-session'].rating;
+    const sessionRating = _.get(
+      feedback,
+      'responseData.rate-session.rating',
+      null
+    );
+    if (sessionRating) {
+      ratingsSum += sessionRating;
       ratingsCount += 1;
     }
   }
 
-  return ratingsSum / (ratingsCount || 1);
+  return Number((ratingsSum / (ratingsCount || 1)).toFixed(2));
+}
+
+function getOffsetTime(date?): number {
+  if (!date) return new Date().getTime();
+  const estTimeOffset = 1000 * 60 * 60 * 4;
+
+  return new Date(date).getTime() + estTimeOffset;
 }
 
 export const sessionReport = async ({
@@ -67,142 +80,142 @@ export const sessionReport = async ({
 
   const oneMinuteInMs = 1000 * 60;
   const roundDecimalPlace = 1;
+  const oneDayInMS = 1000 * 60 * 60 * 24;
 
-  let sessionRangeMax;
-  if (!sessionRangeTo) {
-    sessionRangeMax = moment().add(1, 'days');
-  }
+  sessionRangeFrom = getOffsetTime(sessionRangeFrom);
+  sessionRangeTo = sessionRangeTo
+    ? getOffsetTime(sessionRangeTo) + oneDayInMS
+    : getOffsetTime() + oneDayInMS;
 
-  try {
-    const sessions = await User.aggregate([
-      {
-        $match: query
-      },
-      {
-        $project: {
-          email: 1,
-          pastSessions: 1
+  const sessions = await User.aggregate([
+    {
+      $match: query
+    },
+    {
+      $project: {
+        email: 1,
+        pastSessions: 1
+      }
+    },
+    {
+      $lookup: {
+        from: 'sessions',
+        localField: 'pastSessions',
+        foreignField: '_id',
+        as: 'session'
+      }
+    },
+    {
+      $unwind: '$session'
+    },
+    {
+      $match: {
+        'session.createdAt': {
+          $gte: new Date(sessionRangeFrom),
+          $lte: new Date(sessionRangeTo)
         }
-      },
-      {
-        $lookup: {
-          from: 'sessions',
-          localField: 'pastSessions',
-          foreignField: '_id',
-          as: 'session'
-        }
-      },
-      {
-        $unwind: '$session'
-      },
-      {
-        $match: {
-          'session.createdAt': {
-            $gte: new Date(sessionRangeFrom),
-            $lte: new Date(sessionRangeMax)
-          }
-        }
-      },
-      {
-        $addFields: {
-          stringSessionId: { $toString: '$session._id' }
-        }
-      },
-      {
-        $lookup: {
-          from: 'feedbacks',
-          localField: 'stringSessionId',
-          foreignField: 'sessionId',
-          as: 'feedbacks'
-        }
-      },
-      {
-        $addFields: {
-          studentFeedback: {
-            $filter: {
-              input: '$feedbacks',
-              as: 'feedback',
-              cond: { $eq: ['$$feedback.userType', 'student'] }
-            }
-          }
-        }
-      },
-      {
-        $unwind: {
-          path: '$studentFeedback',
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          filteredStuff: 1,
-          createdAt: '$session.createdAt',
-          topic: '$session.type',
-          subtopic: '$session.subTopic',
-          messages: { $size: '$session.messages' },
-          student: '$email',
-          volunteer: {
-            $cond: {
-              if: '$session.volunteer',
-              then: 'YES',
-              else: 'NO'
-            }
-          },
-          volunteerJoinedAt: '$session.volunteerJoinedAt',
-          endedAt: '$session.endedAt',
-          waitTime: {
-            $cond: {
-              if: '$session.volunteerJoinedAt',
-              then: {
-                $round: [
-                  {
-                    $divide: [
-                      {
-                        $subtract: [
-                          '$session.volunteerJoinedAt',
-                          '$session.createdAt'
-                        ]
-                      },
-                      oneMinuteInMs
-                    ]
-                  },
-                  roundDecimalPlace
-                ]
-              },
-              else: null
-            }
-          },
-          sessionRating: {
-            $cond: {
-              if: '$studentFeedback.responseData.rate-session.rating',
-              then: '$studentFeedback.responseData.rate-session.rating',
-              else: null
-            }
+      }
+    },
+    {
+      $addFields: {
+        stringSessionId: { $toString: '$session._id' }
+      }
+    },
+    {
+      $lookup: {
+        from: 'feedbacks',
+        localField: 'stringSessionId',
+        foreignField: 'sessionId',
+        as: 'feedbacks'
+      }
+    },
+    {
+      $addFields: {
+        studentFeedback: {
+          $filter: {
+            input: '$feedbacks',
+            as: 'feedback',
+            cond: { $eq: ['$$feedback.userType', 'student'] }
           }
         }
       }
-    ]);
+    },
+    {
+      $unwind: {
+        path: '$studentFeedback',
+        preserveNullAndEmptyArrays: true
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        filteredStuff: 1,
+        createdAt: '$session.createdAt',
+        topic: '$session.type',
+        subtopic: '$session.subTopic',
+        messages: { $size: '$session.messages' },
+        student: '$email',
+        volunteer: {
+          $cond: {
+            if: '$session.volunteer',
+            then: 'YES',
+            else: 'NO'
+          }
+        },
+        volunteerJoinedAt: '$session.volunteerJoinedAt',
+        endedAt: '$session.endedAt',
+        waitTime: {
+          $cond: {
+            if: '$session.volunteerJoinedAt',
+            then: {
+              $round: [
+                {
+                  $divide: [
+                    {
+                      $subtract: [
+                        '$session.volunteerJoinedAt',
+                        '$session.createdAt'
+                      ]
+                    },
+                    oneMinuteInMs
+                  ]
+                },
+                roundDecimalPlace
+              ]
+            },
+            else: null
+          }
+        },
+        sessionRating: {
+          $cond: {
+            if: '$studentFeedback.responseData.rate-session.rating',
+            then: '$studentFeedback.responseData.rate-session.rating',
+            else: null
+          }
+        }
+      }
+    },
+    {
+      $sort: { createdAt: 1 }
+    }
+  ]);
 
-    const formattedSessions = sessions.map(session => {
-      return {
-        Topic: session.topic,
-        Subtopic: session.subtopic,
-        'Created at': formatDate(session.createdAt),
-        Messages: session.messages,
-        Student: session.student,
-        Volunteer: session.volunteer,
-        'Volunteer join date': formatDate(session.volunteerJoinedAt),
-        'Ended at': formatDate(session.endedAt),
-        'Wait time': session.waitTime && `${session.waitTime}mins`,
-        'Session rating': session.sessionRating
-      };
-    });
+  const formattedSessions = sessions.map(session => {
+    return {
+      Topic: session.topic,
+      Subtopic: session.subtopic,
+      'Created at': formatDate(session.createdAt),
+      Messages: session.messages,
+      Student: session.student,
+      Volunteer: session.volunteer,
+      'Volunteer join date': formatDate(session.volunteerJoinedAt),
+      'Ended at': formatDate(session.endedAt),
+      'Wait time': session.waitTime && `${session.waitTime}mins`,
+      'Session rating': session.sessionRating
+    };
+  });
 
-    return formattedSessions;
-  } catch (error) {
-    throw new Error(error);
-  }
+  return formattedSessions;
 };
 
 export const usageReport = async ({
@@ -218,14 +231,28 @@ export const usageReport = async ({
     approvedHighschool?: Types.ObjectId;
     studentPartnerOrg?: string;
   } = {};
-  if (joinedAfter) query.createdAt = { $gte: new Date(joinedAfter) };
-  if (joinedBefore)
+  const oneDayInMS = 1000 * 60 * 60 * 24;
+
+  if (joinedAfter) {
+    joinedAfter = getOffsetTime(joinedAfter);
+    query.createdAt = { $gte: new Date(joinedAfter) };
+  }
+  if (joinedBefore) {
+    joinedBefore = getOffsetTime(joinedBefore) + oneDayInMS;
     query.createdAt = {
       $gte: new Date(joinedAfter),
       $lte: new Date(joinedBefore)
     };
+  }
+
   if (highSchoolId) query.approvedHighschool = ObjectId(highSchoolId);
   if (studentPartnerOrg) query.studentPartnerOrg = studentPartnerOrg;
+
+  // select a range from date and to date or a range from date and today (inclusive)
+  sessionRangeFrom = getOffsetTime(sessionRangeFrom);
+  sessionRangeTo = sessionRangeTo
+    ? getOffsetTime(sessionRangeTo) + oneDayInMS
+    : getOffsetTime() + oneDayInMS;
 
   const students = await User.aggregate([
     {
@@ -258,12 +285,16 @@ export const usageReport = async ({
     {
       $lookup: {
         from: 'feedbacks',
-        let: { studentId: '$_id' },
+        let: { studentId: { $toString: '$_id' } },
         pipeline: [
           {
             $match: {
-              userType: 'student',
-              studentId: '$studentId'
+              $expr: {
+                $and: [
+                  { $eq: ['$userType', 'student'] },
+                  { $eq: ['$studentId', '$$studentId'] }
+                ]
+              }
             }
           }
         ],
@@ -362,36 +393,42 @@ export const usageReport = async ({
     },
     {
       $project: {
-        'First name': '$firstName',
-        'Last name': '$lastName',
-        Email: '$email',
-        'Minutes over date range': {
-          $round: [{ $divide: ['$range', 60000] }, 2]
-        },
-        'Total minutes': {
+        firstName: 1,
+        lastName: 1,
+        email: 1,
+        joinDate: '$createdAt',
+        totalSessions: 1,
+        totalMinutes: {
           $round: [{ $divide: ['$sessionLength', 60000] }, 2]
         },
-        'Join date': '$createdAt',
-        'Total sessions': '$totalSessions',
-        'Sessions over date range': '$sessionsOverRange',
+        sessionsOverDateRange: '$sessionsOverRange',
+        minsOverDateRange: {
+          $round: [{ $divide: ['$range', 60000] }, 2]
+        },
         feedback: 1,
         _id: 0
       }
     },
     {
       $sort: {
-        'Minutes over date range': -1
+        joinDate: 1
       }
     }
   ]);
 
   const studentUsage = students.map(student => {
     const feedback = Array.from(student.feedback);
-    delete student.feedback;
 
     return {
-      ...student,
-      'Average session rating': calcAverageRating(feedback)
+      'First name': student.firstName,
+      'Last name': student.lastName,
+      Email: student.email,
+      'Join date': formatDate(student.joinDate),
+      'Total sessions': student.totalSessions,
+      'Total minutes': student.totalMinutes,
+      'Average session rating': calcAverageRating(feedback),
+      'Sessions over date range': student.sessionsOverDateRange,
+      'Minutes over date range': student.minsOverDateRange
     };
   });
 
