@@ -13,7 +13,12 @@ module.exports = function(app) {
 
   // Check if a student is eligible
   router.route('/check').post(async function(req, res, next) {
-    const { schoolUpchieveId, zipCode: zipCodeInput, email, referredByCode } = req.body
+    const {
+      schoolUpchieveId,
+      zipCode: zipCodeInput,
+      email,
+      referredByCode
+    } = req.body
 
     const schoolFetch = School.findByUpchieveId(schoolUpchieveId).exec()
     const zipCodeFetch = ZipCode.findByZipCode(zipCodeInput).exec()
