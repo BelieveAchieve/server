@@ -7,7 +7,7 @@ module.exports = {
     'handle-callback-err': ['error', '^(err|error)$'],
     'no-debugger': 'warn'
   },
-  ignorePatterns: ['dbutils/*'],
+  ignorePatterns: ['dbutils/*', 'utils/zwibblerDecoder.ts'],
   overrides: [
     {
       files: ['*.ts'],
