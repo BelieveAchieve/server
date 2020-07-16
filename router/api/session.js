@@ -8,23 +8,13 @@ const SocketService = require('../../services/SocketService')
 const SessionService = require('../../services/SessionService')
 const UserService = require('../../services/UserService')
 const MailService = require('../../services/MailService')
+const AwsService = require('../../services/AwsService')
 const recordIpAddress = require('../../middleware/record-ip-address')
 const passport = require('../auth/passport')
 const mapMultiWordSubtopic = require('../../utils/map-multi-word-subtopic')
 const { USER_BAN_REASON } = require('../../constants')
 const NotificationService = require('../../services/NotificationService')
 
-const extractImages = whiteboardDoc => {
-  const images = []
-  const splitDocument = whiteboardDoc.split('"')
-  const formatTarget = ';base64'
-
-  for (let i = 0; i < splitDocument.length; i++) {
-    if (splitDocument[i].includes(formatTarget)) images.push(splitDocument[i])
-  }
-
-  return images
-}
 
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
@@ -167,6 +157,21 @@ module.exports = function(router, io) {
     }
   })
 
+  router.get('/session/:sessionId/photo-url', async function(req, res, next) {
+    try {
+      const { sessionId } = req.params
+      const sessionPhotoS3Key = await SessionService.getSessionPhotoUploadUrl(
+        sessionId
+      );
+      const uploadUrl = await AwsService.getSessionPhotoUploadUrl(
+        sessionPhotoS3Key
+      );
+      res.json({ uploadUrl })
+    } catch (error) {
+      next(error);
+    }
+  })
+
   router.post('/session/:sessionId/report', async function(req, res) {
     const { sessionId } = req.params
     const { reportMessage } = req.body
@@ -212,15 +217,14 @@ module.exports = function(router, io) {
     try {
       const session = await Session.findOne({ _id: sessionId })
         .populate('student volunteer')
-        .select(
-          'student volunteer type subTopic messages whiteboardDoc createdAt volunteerJoinedAt failedJoins endedAt endedBy notifications'
-        )
         .lean()
         .exec()
 
       session.feedbacks = await Feedback.find({ sessionId })
-      session.images = extractImages(session.whiteboardDoc)
-      delete session.whiteboardDoc
+      session.photos = await AwsService.getObjects({
+        bucket: 'sessionPhotoBucket',
+        s3Keys: session.photos
+      });
 
       res.json({ session })
     } catch (err) {
