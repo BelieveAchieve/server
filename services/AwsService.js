@@ -16,10 +16,7 @@ const getObject = async ({ bucket, s3Key }) => {
   }
 
   try {
-    const objectUrl = await s3.getSignedUrlPromise(
-      'getObject',
-      signedUrlParams
-    )
+    const objectUrl = await s3.getSignedUrlPromise('getObject', signedUrlParams)
     return objectUrl
   } catch (error) {
     Sentry.captureException(error)

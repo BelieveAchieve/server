@@ -15,7 +15,6 @@ const mapMultiWordSubtopic = require('../../utils/map-multi-word-subtopic')
 const { USER_BAN_REASON } = require('../../constants')
 const NotificationService = require('../../services/NotificationService')
 
-
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
   const socketService = SocketService(io)
@@ -162,13 +161,13 @@ module.exports = function(router, io) {
       const { sessionId } = req.params
       const sessionPhotoS3Key = await SessionService.getSessionPhotoUploadUrl(
         sessionId
-      );
+      )
       const uploadUrl = await AwsService.getSessionPhotoUploadUrl(
         sessionPhotoS3Key
-      );
+      )
       res.json({ uploadUrl })
     } catch (error) {
-      next(error);
+      next(error)
     }
   })
 
@@ -224,7 +223,7 @@ module.exports = function(router, io) {
       session.photos = await AwsService.getObjects({
         bucket: 'sessionPhotoBucket',
         s3Keys: session.photos
-      });
+      })
 
       res.json({ session })
     } catch (err) {
