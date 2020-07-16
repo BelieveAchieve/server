@@ -14,11 +14,10 @@ const mapMultiWordSubtopic = require('../../utils/map-multi-word-subtopic')
 const { USER_BAN_REASON } = require('../../constants')
 const NotificationService = require('../../services/NotificationService')
 
-
 const extractImages = whiteboardDoc => {
   const images = []
-  const splitDocument = whiteboardDoc.split("\"")
-  const formatTarget = ";base64"
+  const splitDocument = whiteboardDoc.split('"')
+  const formatTarget = ';base64'
 
   for (let i = 0; i < splitDocument.length; i++) {
     if (splitDocument[i].includes(formatTarget)) images.push(splitDocument[i])
