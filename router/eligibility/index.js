@@ -13,7 +13,7 @@ module.exports = function(app) {
 
   // Check if a student is eligible
   router.route('/check').post(async function(req, res, next) {
-    const { schoolUpchieveId, zipCode: zipCodeInput, referredByCode } = req.body
+    const { schoolUpchieveId, zipCode: zipCodeInput, email, referredByCode } = req.body
 
     const schoolFetch = School.findByUpchieveId(schoolUpchieveId).exec()
     const zipCodeFetch = ZipCode.findByZipCode(zipCodeInput).exec()
@@ -27,6 +27,7 @@ module.exports = function(app) {
       if (!isStudentEligible) {
         const referredBy = await UserCtrl.checkReferral(referredByCode)
         const newIneligibleStudent = new IneligibleStudent({
+          email,
           zipCode: zipCodeInput,
           school: school._id,
           ipAddress: req.ip,
@@ -54,28 +55,6 @@ module.exports = function(app) {
         })
       }
     })
-  })
-
-  // route to add an email to the list for notifying when approved
-  router.route('/school/approvalnotify').post(function(req, res, next) {
-    const schoolUpchieveId = req.body.schoolUpchieveId
-
-    const email = req.body.email
-
-    School.findOneAndUpdate(
-      { upchieveId: schoolUpchieveId },
-      { $push: { approvalNotifyEmails: { email } } },
-      { runValidators: true },
-      function(err, school) {
-        if (err) {
-          next(err)
-        } else {
-          res.json({
-            schoolId: school.upchieveId
-          })
-        }
-      }
-    )
   })
 
   // Paginate eligible high schools (admins only)

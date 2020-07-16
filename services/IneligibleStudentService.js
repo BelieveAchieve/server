@@ -28,6 +28,7 @@ module.exports = {
         {
           $project: {
             createdAt: 1,
+            email: 1,
             zipCode: '$zipCode.zipCode',
             medianIncome: '$zipCode.medianIncome',
             schoolId: '$school._id',
