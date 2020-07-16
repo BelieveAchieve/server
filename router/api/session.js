@@ -14,6 +14,19 @@ const mapMultiWordSubtopic = require('../../utils/map-multi-word-subtopic')
 const { USER_BAN_REASON } = require('../../constants')
 const NotificationService = require('../../services/NotificationService')
 
+
+const extractImages = whiteboardDoc => {
+  const images = []
+  const splitDocument = whiteboardDoc.split("\"")
+  const formatTarget = ";base64"
+
+  for (let i = 0; i < splitDocument.length; i++) {
+    if (splitDocument[i].includes(formatTarget)) images.push(splitDocument[i]);
+  }
+
+  return images
+}
+
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
   const socketService = SocketService(io)
@@ -200,10 +213,15 @@ module.exports = function(router, io) {
     try {
       const session = await Session.findOne({ _id: sessionId })
         .populate('student volunteer')
+        .select(
+          'student volunteer type subTopic messages whiteboardDoc createdAt volunteerJoinedAt failedJoins endedAt endedBy notifications'
+        )
         .lean()
         .exec()
 
       session.feedbacks = await Feedback.find({ sessionId })
+      session.images = extractImages(session.whiteboardDoc)
+      delete session.whiteboardDoc
 
       res.json({ session })
     } catch (err) {
