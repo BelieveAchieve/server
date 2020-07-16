@@ -21,7 +21,7 @@ const extractImages = whiteboardDoc => {
   const formatTarget = ";base64"
 
   for (let i = 0; i < splitDocument.length; i++) {
-    if (splitDocument[i].includes(formatTarget)) images.push(splitDocument[i]);
+    if (splitDocument[i].includes(formatTarget)) images.push(splitDocument[i])
   }
 
   return images
