@@ -1,6 +1,7 @@
 const Session = require('../models/Session')
 const User = require('../models/User')
 const WhiteboardService = require('../services/WhiteboardService')
+const crypto = require('crypto')
 
 const addPastSession = async ({ userId, sessionId }) => {
   await User.update({ _id: userId }, { $addToSet: { pastSessions: sessionId } })
@@ -69,5 +70,14 @@ module.exports = {
     })
       .lean()
       .exec()
+  },
+
+  getSessionPhotoUploadUrl: async sessionId => {
+    const sessionPhotoS3Key = crypto.randomBytes(32).toString('hex')
+    await Session.updateOne(
+      { _id: sessionId },
+      { $push: { photos: sessionPhotoS3Key } }
+    )
+    return sessionPhotoS3Key
   }
 }
