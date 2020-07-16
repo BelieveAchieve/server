@@ -110,7 +110,13 @@ const config: Static<typeof Config> = {
   firebase: {
     projectId: 123456789012
   },
-  bannedServiceProviders: ['Example']
+  bannedServiceProviders: ['Example'],
+  awsS3: {
+    accessKeyId: 'ACCESSKEY123',
+    secretAccessKey: 'SECRETACCESSKEY789',
+    region: 'us-east-2',
+    sessionPhotoBucket: 'session-photo-bucket'
+  }
 };
 
 module.exports = config;
