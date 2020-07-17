@@ -210,10 +210,7 @@ module.exports = {
     const isNewlyApproved = isApproved && !volunteerBeforeUpdate.isApproved
     if (isNewlyApproved) UserActionCtrl.accountApproved(volunteerId)
     if (isNewlyApproved && !volunteerBeforeUpdate.isOnboarded)
-      MailService.sendApprovedNotOnboardedEmail({
-        volunteerName: volunteerBeforeUpdate.firstname,
-        email: volunteerBeforeUpdate.email
-      })
+      MailService.sendApprovedNotOnboardedEmail(volunteerBeforeUpdate)
 
     for (let i = 0; i < referencesStatus.length; i++) {
       if (
@@ -228,24 +225,9 @@ module.exports = {
 
   addBackgroundInfo: async function({ volunteerId, update, ip }) {
     const {
-      volunteerPartnerOrg,
-      references,
-      photoIdStatus,
-      isApproved,
-      isOnboarded,
-      firstname: firstName,
-      email
+      volunteerPartnerOrg
     } = await getVolunteer(volunteerId)
-    let isFinalApprovalStep = false
-
-    if (!isApproved && !volunteerPartnerOrg && references.length === 2) {
-      const referencesStatus = references.map(reference => reference.status)
-      const statuses = [...referencesStatus, photoIdStatus]
-
-      isFinalApprovalStep = statuses.every(status => status === STATUS.APPROVED)
-    }
-
-    if (volunteerPartnerOrg || isFinalApprovalStep) update.isApproved = true
+    if (volunteerPartnerOrg) update.isApproved = true
 
     // remove fields with empty strings and empty arrays from the update
     for (const field in update) {
@@ -257,12 +239,6 @@ module.exports = {
     }
 
     UserActionCtrl.completedBackgroundInfo(volunteerId, ip)
-    if (update.isApproved) UserActionCtrl.accountApproved(volunteerId, ip)
-    if (update.isApproved && !isOnboarded)
-      MailService.sendApprovedNotOnboardedEmail({
-        volunteerName: firstName,
-        email
-      })
     return Volunteer.update({ _id: volunteerId }, update)
   }
 }
