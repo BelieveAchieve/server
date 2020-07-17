@@ -224,9 +224,7 @@ module.exports = {
   },
 
   addBackgroundInfo: async function({ volunteerId, update, ip }) {
-    const {
-      volunteerPartnerOrg
-    } = await getVolunteer(volunteerId)
+    const { volunteerPartnerOrg } = await getVolunteer(volunteerId)
     if (volunteerPartnerOrg) update.isApproved = true
 
     // remove fields with empty strings and empty arrays from the update
