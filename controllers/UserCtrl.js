@@ -2,6 +2,7 @@ const User = require('../models/User')
 const Student = require('../models/Student')
 const Volunteer = require('../models/Volunteer')
 const Session = require('../models/Session')
+const StatsService = require('../services/StatsService')
 const moment = require('moment-timezone')
 const Sentry = require('@sentry/node')
 const base64url = require('base64url')
@@ -181,6 +182,13 @@ module.exports = {
       Sentry.captureException(err)
     }
 
+    StatsService.increment('students', {
+      // state is a 'derived' dimension
+      // calc on impact-api end that gets state from zipCode
+      state: student.zipCode
+    })
+    StatsService.updateActiveStudents(student.id)
+
     return student
   },
 
@@ -205,6 +213,11 @@ module.exports = {
         upchieveId: volunteer._id
       })
     }
+
+    StatsService.increment('volunteers', {
+      partnerOrg: volunteer.volunteerPartnerOrg
+    })
+    StatsService.updateActiveVolunteers(volunteer.id)
 
     try {
       await VerificationCtrl.initiateVerification({ user: volunteer })

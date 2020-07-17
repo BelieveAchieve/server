@@ -2,6 +2,7 @@ const _ = require('lodash')
 
 const Question = require('../models/Question')
 const Volunteer = require('../models/Volunteer')
+const StatsService = require('../services/StatsService')
 
 /**
  *
@@ -133,9 +134,17 @@ module.exports = {
       )
       Object.assign(userUpdates, integratedMathUpdate)
 
+      // doesn't account for the integrate math certs
+      StatsService.increment('certified-volunteers', { subject: category })
+
       // an onboarded volunteer must have updated their availability and obtained at least one certification
-      if (!user.isOnboarded && user.availabilityLastModifiedAt)
+      if (!user.isOnboarded && user.availabilityLastModifiedAt) {
+        StatsService.incrementOnboardedVolunteers(
+          'onboarded-volunteers',
+          user._id
+        )
         userUpdates.isOnboarded = true
+      }
     }
 
     await Volunteer.updateOne({ _id: user._id }, userUpdates)

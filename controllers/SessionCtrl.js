@@ -2,6 +2,7 @@ const Session = require('../models/Session')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
 const TwilioService = require('../services/twilio')
 const Sentry = require('@sentry/node')
+const StatsService = require('../services/StatsService')
 const PushTokenService = require('../services/PushTokenService')
 const PushToken = require('../models/PushToken')
 
@@ -139,6 +140,8 @@ module.exports = function(socketService) {
       )
 
       const savedMessage = await session.saveMessage(message)
+
+      StatsService.increment('chat-messages')
 
       socketService.deliverMessage(savedMessage, sessionId)
     },

@@ -1,9 +1,10 @@
-var Feedback = require('../../models/Feedback')
+const Feedback = require('../../models/Feedback')
+const StatsService = require('../../services/StatsService')
 
 module.exports = function(router) {
   router.post('/feedback', function(req, res, next) {
-    var body = req.body
-    var feedback = new Feedback({
+    const body = req.body
+    const feedback = new Feedback({
       sessionId: body['sessionId'],
       type: body['topic'],
       subTopic: body['subTopic'],
@@ -12,7 +13,20 @@ module.exports = function(router) {
       studentId: body['studentId'],
       volunteerId: body['volunteerId']
     })
-    console.log(feedback)
+
+    const rating =
+      feedback.responseData &&
+      feedback.responseData['rate-session'] &&
+      feedback.responseData['rate-session'].rating
+    if (rating) {
+      const dimensions = {
+        topic: feedback.topic,
+        'sub-topic': feedback.subTopic
+      }
+      StatsService.increment('session-rating', dimensions, rating)
+      StatsService.increment('session-ratings', dimensions)
+    }
+
     feedback.save(function(err, session) {
       if (err) {
         next(err)

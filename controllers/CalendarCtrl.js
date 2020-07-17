@@ -1,6 +1,7 @@
 const _ = require('lodash')
 const Volunteer = require('../models/Volunteer')
 const UserCtrl = require('../controllers/UserCtrl')
+const StatsService = require('../services/StatsService')
 
 module.exports = {
   updateSchedule: function(options, callback) {
@@ -47,8 +48,13 @@ module.exports = {
       user.elapsedAvailability + newElapsedAvailability
 
     // an onboarded volunteer must have updated their availability and obtained at least one certification
-    if (!user.isOnboarded && UserCtrl.isCertified(user.certifications))
+    if (!user.isOnboarded && UserCtrl.isCertified(user.certifications)) {
+      StatsService.incrementOnboardedVolunteers(
+        'onboarded-volunteers',
+        user._id
+      )
       userUpdates.isOnboarded = true
+    }
 
     Volunteer.updateOne({ _id: user._id }, userUpdates, function(err) {
       if (err) {
