@@ -49,10 +49,7 @@ module.exports = {
 
     // an onboarded volunteer must have updated their availability and obtained at least one certification
     if (!user.isOnboarded && UserCtrl.isCertified(user.certifications)) {
-      StatsService.incrementOnboardedVolunteers(
-        'onboarded-volunteers',
-        user._id
-      )
+      StatsService.updateOnboardedVolunteers('onboarded-volunteers', user._id)
       userUpdates.isOnboarded = true
     }
 
