@@ -26,8 +26,15 @@ module.exports = {
     if (!isAdmin && !isSessionParticipant(session, endedBy))
       throw new Error('Only session participants can end a session')
 
-    await addPastSession(session.student, session._id)
-    if (session.volunteer) await addPastSession(session.volunteer, session._id)
+    await addPastSession({
+      userId: session.student,
+      sessionId: session._id
+    })
+    if (session.volunteer)
+      await addPastSession({
+        userId: session.volunteer,
+        sessionId: session._id
+      })
 
     await Session.updateOne(
       { _id: session._id },

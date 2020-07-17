@@ -13,6 +13,7 @@ module.exports = function(app) {
   require('./eligibility')(app)
   require('./twiml')(app)
   require('./contact')(app)
+  require('./metrics')(app)
   require('./mobile')(app)
 
   // Determine if incoming request is a static asset
@@ -22,6 +23,7 @@ module.exports = function(app) {
       '/auth',
       '/api',
       '/eligibility',
+      '/metrics',
       '/twiml',
       '/contact',
       '/js',
