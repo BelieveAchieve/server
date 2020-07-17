@@ -143,7 +143,10 @@ module.exports = {
                 REFERENCE_STATUS.UNSENT,
                 REFERENCE_STATUS.SENT
               ]
-            }
+            },
+            background: { $ne: null },
+            occupation: { $ne: null },
+            country: { $ne: null }
           }
         },
         {
