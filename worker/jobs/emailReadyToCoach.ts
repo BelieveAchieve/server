@@ -25,7 +25,7 @@ export default async (): Promise<void> => {
       sentReadyToCoachEmail: false
     },
     { sentReadyToCoachEmail: true }
-  )
+  );
 
   log(`sent ready-to-coach email to ${volunteers.length} volunteers`);
 };

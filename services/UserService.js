@@ -205,10 +205,12 @@ module.exports = {
     }
 
     const isNewlyApproved = isApproved && !volunteerBeforeUpdate.isApproved
-    if (isNewlyApproved && !volunteerBeforeUpdate.isOnboarded) {
-      UserActionCtrl.accountApproved(volunteerId)
-      await MailService.sendApprovedNotOnboardedEmail(volunteerBeforeUpdate)
-    }
+    if (isNewlyApproved) UserActionCtrl.accountApproved(volunteerId)
+    if (isNewlyApproved && !volunteerBeforeUpdate.isOnboarded)
+      MailService.sendApprovedNotOnboardedEmail({
+        volunteerName: volunteerBeforeUpdate.firstname,
+        email: volunteerBeforeUpdate.email
+      })
 
     for (let i = 0; i < referencesStatus.length; i++) {
       if (
@@ -226,7 +228,10 @@ module.exports = {
       volunteerPartnerOrg,
       references,
       photoIdStatus,
-      isApproved
+      isApproved,
+      isOnboarded,
+      firstname: firstName,
+      email
     } = await getVolunteer(volunteerId)
     let isFinalApprovalStep = false
 
@@ -250,6 +255,11 @@ module.exports = {
 
     UserActionCtrl.completedBackgroundInfo(volunteerId, ip)
     if (update.isApproved) UserActionCtrl.accountApproved(volunteerId, ip)
+    if (update.isApproved && !isOnboarded)
+      MailService.sendApprovedNotOnboardedEmail({
+        volunteerName: firstName,
+        email
+      })
     return Volunteer.update({ _id: volunteerId }, update)
   }
 }
