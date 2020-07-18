@@ -1,7 +1,36 @@
 const config = require('../config')
 const sgMail = require('@sendgrid/mail')
+const axios = require('axios')
 
 sgMail.setApiKey(config.sendgrid.apiKey)
+
+const options = {
+  headers: {
+    Authorization: `Bearer ${config.sendgrid.apiKey}`,
+    'content-type': 'application/json'
+  }
+}
+
+const putContact = data =>
+  axios.put('https://api.sendgrid.com/v3/marketing/contacts', data, options)
+
+const getCustomFields = async () => {
+  const response = await axios.get(
+    'https://api.sendgrid.com/v3/marketing/field_definitions',
+    options
+  )
+
+  const {
+    data: { custom_fields: sendGridCustomFields }
+  } = response
+
+  const customFields = {}
+  for (const field of sendGridCustomFields) {
+    customFields[field.name] = field.id
+  }
+
+  return customFields
+}
 
 const sendEmail = (
   toEmail,
@@ -137,5 +166,34 @@ module.exports = {
       { sessionId, reportedByEmail, reportMessage },
       config.sendgrid.unsubscribeGroup.account
     )
+  },
+
+  createContact: async user => {
+    const customFields = await getCustomFields()
+
+    const contactListId = user.isVolunteer
+      ? config.sendgrid.contactList.volunteers
+      : config.sendgrid.contactList.students
+
+    const data = {
+      list_ids: [contactListId],
+      contacts: [
+        {
+          first_name: user.firstname,
+          last_name: user.lastname,
+          email: user.email,
+          custom_fields: {
+            [customFields.isBanned]: String(user.isBanned),
+            [customFields.isTestUser]: String(user.isTestUser),
+            [customFields.isVolunteer]: String(user.isVolunteer),
+            [customFields.isAdmin]: String(user.isAdmin),
+            [customFields.isFakeUser]: String(user.isFakeUser),
+            [customFields.isDeactivated]: String(user.isDeactivated),
+            [customFields.joined]: user.createdAt
+          }
+        }
+      ]
+    }
+    return putContact(JSON.stringify(data))
   }
 }
