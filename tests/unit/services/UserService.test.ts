@@ -348,7 +348,7 @@ test('Open volunteer is not approved when submitting their background info is no
   expect(accountApprovedUserAction).toBeNull();
 });
 
-test('Open volunteer is approved when submitting their background info is the final approval step', async () => {
+test('Open volunteer is not approved when submitting their background info is the final approval step', async () => {
   const volunteer = buildVolunteer({
     references: [
       buildReference({ status: STATUS.APPROVED }),
@@ -379,24 +379,18 @@ test('Open volunteer is approved when submitting their background info is the fi
   });
 
   const expectedVolunteer = {
-    isApproved: true
+    isApproved: false
   };
   const expectedBackgroundInfoUserAction = {
     user: input.volunteerId,
     action: USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
-  };
-  const expectedAccountApprovedUserAction = {
-    user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.APPROVED
   };
 
   expect(updatedVolunteer).toMatchObject(expectedVolunteer);
   expect(backgroundInfoUserAction).toMatchObject(
     expectedBackgroundInfoUserAction
   );
-  expect(accountApprovedUserAction).toMatchObject(
-    expectedAccountApprovedUserAction
-  );
+  expect(accountApprovedUserAction).toBeNull();
 });
 
 test('Partner Volunteer is approved when submitting background info', async () => {
