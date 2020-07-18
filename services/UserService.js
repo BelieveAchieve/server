@@ -225,7 +225,11 @@ module.exports = {
 
   addBackgroundInfo: async function({ volunteerId, update, ip }) {
     const { volunteerPartnerOrg } = await getVolunteer(volunteerId)
-    if (volunteerPartnerOrg) update.isApproved = true
+    if (volunteerPartnerOrg) {
+      update.isApproved = true
+      UserActionCtrl.accountApproved(volunteerId)
+      // @todo: if not onboarded, send a partner-specific version of the "approved but not onboarded" email
+    }
 
     // remove fields with empty strings and empty arrays from the update
     for (const field in update) {
