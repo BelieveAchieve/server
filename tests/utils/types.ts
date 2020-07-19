@@ -48,6 +48,7 @@ export interface Volunteer extends User {
   photoIdS3Key?: string;
   photoIdStatus?: string;
   isApproved: boolean;
+  isOnboarded: boolean;
   // background information
   occupation?: Array<string>;
   background?: Array<string>;
@@ -60,6 +61,8 @@ export interface Volunteer extends User {
   country?: string;
   state?: string;
   city?: string;
+  certifications: Certifications;
+  availability: Availability;
 }
 
 export interface StudentRegistrationForm extends Student {
@@ -105,6 +108,50 @@ export enum HOURS {
   '9PM' = '9p',
   '10PM' = '10p',
   '11PM' = '11p'
+}
+
+export enum SUBJECTS {
+  PREALGREBA = 'prealgebra',
+  ALGREBA = 'algebra',
+  GEOMETRY = 'geometry',
+  TRIGONOMETRY = 'trigonometry',
+  PRECALCULUS = 'precalculus',
+  CALCULUS = 'calculus',
+  INTEGRATED_MATH_ONE = 'integratedMathOne',
+  INTEGRATED_MATH_TWO = 'integratedMathTwo',
+  INTEGRATED_MATH_THREE = 'integratedMathThree',
+  INTEGRATED_MATH_FOUR = 'integratedMathFour',
+  APPLICATIONS = 'applications',
+  ESSAYS = 'essays',
+  PLANNING = 'planning',
+  BIOLOGY = 'biology',
+  CHEMISTRY = 'chemistry',
+  PHYSICS_ONE = 'physicsOne'
+}
+
+export interface CertificationInfo {
+  passed: boolean;
+  tries: number;
+  lastAttemptedAt?: Date;
+}
+
+export interface Certifications {
+  [SUBJECTS.PREALGREBA]: CertificationInfo;
+  [SUBJECTS.ALGREBA]: CertificationInfo;
+  [SUBJECTS.GEOMETRY]: CertificationInfo;
+  [SUBJECTS.TRIGONOMETRY]: CertificationInfo;
+  [SUBJECTS.PRECALCULUS]: CertificationInfo;
+  [SUBJECTS.CALCULUS]: CertificationInfo;
+  [SUBJECTS.INTEGRATED_MATH_ONE]: CertificationInfo;
+  [SUBJECTS.INTEGRATED_MATH_TWO]: CertificationInfo;
+  [SUBJECTS.INTEGRATED_MATH_THREE]: CertificationInfo;
+  [SUBJECTS.INTEGRATED_MATH_FOUR]: CertificationInfo;
+  [SUBJECTS.APPLICATIONS]: CertificationInfo;
+  [SUBJECTS.ESSAYS]: CertificationInfo;
+  [SUBJECTS.PLANNING]: CertificationInfo;
+  [SUBJECTS.BIOLOGY]: CertificationInfo;
+  [SUBJECTS.CHEMISTRY]: CertificationInfo;
+  [SUBJECTS.PHYSICS_ONE]: CertificationInfo;
 }
 
 export type AvailabilityDay = {
