@@ -2,7 +2,6 @@ const CalendarCtrl = require('../../controllers/CalendarCtrl')
 
 module.exports = function(router) {
   router.post('/calendar/save', async function(req, res, next) {
-
     try {
       await CalendarCtrl.updateSchedule({
         user: req.user,
