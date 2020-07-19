@@ -13,7 +13,8 @@ import {
   Reference,
   Availability,
   DAYS,
-  HOURS
+  HOURS,
+  Certifications
 } from './types';
 
 export const getEmail = faker.internet.email;
@@ -179,7 +180,33 @@ export const buildAvailability = (overrides = {}): Availability => {
     }
   }
 
-  return merge(availability, overrides);
+  const mergedAvailability = merge(availability, overrides);
+
+  return mergedAvailability;
+};
+
+export const buildCertifications = (overrides = {}): Certifications => {
+  const certifications = {
+    prealgebra: { passed: false, tries: 0 },
+    algebra: { passed: false, tries: 0 },
+    geometry: { passed: false, tries: 0 },
+    trigonometry: { passed: false, tries: 0 },
+    precalculus: { passed: false, tries: 0 },
+    calculus: { passed: false, tries: 0 },
+    integratedMathOne: { passed: false, tries: 0 },
+    integratedMathTwo: { passed: false, tries: 0 },
+    integratedMathThree: { passed: false, tries: 0 },
+    integratedMathFour: { passed: false, tries: 0 },
+    applications: { passed: false, tries: 0 },
+    essays: { passed: false, tries: 0 },
+    planning: { passed: false, tries: 0 },
+    biology: { passed: false, tries: 0 },
+    chemistry: { passed: false, tries: 0 },
+    physicsOne: { passed: false, tries: 0 },
+    ...overrides
+  };
+
+  return certifications;
 };
 
 export const authLogin = (agent, { email, password }: Partial<User>): Test =>
