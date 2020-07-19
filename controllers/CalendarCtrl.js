@@ -4,7 +4,7 @@ const UserCtrl = require('../controllers/UserCtrl')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
 
 module.exports = {
-  updateSchedule: function(options, callback) {
+  updateSchedule: async function(options) {
     const user = options.user
     const newAvailability = options.availability
     const newTimezone = options.tz
@@ -13,7 +13,7 @@ module.exports = {
     // verify that newAvailability is defined and not null
     if (!newAvailability) {
       // early exit
-      return callback(new Error('No availability object specified'))
+      throw new Error('No availability object specified')
     }
 
     // verify that all of the day-of-week and time-of-day properties are defined on the
@@ -31,7 +31,7 @@ module.exports = {
         )
       })
     ) {
-      return callback(new Error('Availability object missing required keys'))
+      throw new Error('Availability object missing required keys')
     }
 
     const userUpdates = {
@@ -54,16 +54,10 @@ module.exports = {
       UserActionCtrl.accountOnboarded(user._id, ip)
     }
 
-    Volunteer.updateOne({ _id: user._id }, userUpdates, function(err) {
-      if (err) {
-        callback(err, null)
-      } else {
-        callback(null, newAvailability)
-      }
-    })
+    await Volunteer.updateOne({ _id: user._id }, userUpdates)
   },
 
-  clearSchedule: function(user, tz, callback) {
+  clearSchedule: async function(user, tz) {
     const clearedAvailability = _.reduce(
       user.availability,
       (clearedWeek, dayVal, dayKey) => {
@@ -80,9 +74,6 @@ module.exports = {
       {}
     )
 
-    this.updateSchedule(
-      { user, tz, availability: clearedAvailability },
-      callback
-    )
+    await this.updateSchedule({ user, tz, availability: clearedAvailability })
   }
 }
