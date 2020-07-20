@@ -297,58 +297,7 @@ test('Pending volunteer should be approved after approval', async () => {
   expect(userAction).toMatchObject(expectedUserAction);
 });
 
-test('Open volunteer is not approved when submitting their background info is not the final approval step', async () => {
-  const volunteer = buildVolunteer({
-    references: [],
-    photoIdStatus: STATUS.APPROVED
-  });
-  await insertVolunteer(volunteer);
-  const update = buildBackgroundInfo();
-  const input = {
-    volunteerId: volunteer._id,
-    update
-  };
-
-  await UserService.addBackgroundInfo(input);
-  const updatedVolunteer = await VolunteerModel.findOne({ _id: volunteer._id })
-    .lean()
-    .select(
-      'isApproved occupation experience background languages country city state'
-    )
-    .exec();
-  const backgroundInfoUserAction = await UserActionModel.findOne({
-    user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
-  });
-  const accountApprovedUserAction = await UserActionModel.findOne({
-    user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.APPROVED
-  });
-
-  const expectedVolunteer = {
-    occupation: update.occupation,
-    languages: update.languages,
-    experience: update.experience,
-    background: update.background,
-    country: update.country,
-    city: update.city,
-    state: update.state,
-    isApproved: false
-  };
-
-  const expectedBackgroundInfoUserAction = {
-    user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
-  };
-
-  expect(updatedVolunteer).toMatchObject(expectedVolunteer);
-  expect(backgroundInfoUserAction).toMatchObject(
-    expectedBackgroundInfoUserAction
-  );
-  expect(accountApprovedUserAction).toBeNull();
-});
-
-test('Open volunteer is not approved when submitting their background info is the final approval step', async () => {
+test('Open volunteer is not approved when submitting their background info', async () => {
   const volunteer = buildVolunteer({
     references: [
       buildReference({ status: STATUS.APPROVED }),
@@ -393,7 +342,7 @@ test('Open volunteer is not approved when submitting their background info is th
   expect(accountApprovedUserAction).toBeNull();
 });
 
-test('Partner Volunteer is approved when submitting background info', async () => {
+test('Partner volunteer is approved when submitting background info', async () => {
   const volunteer = buildVolunteer({
     references: [
       buildReference({ status: STATUS.APPROVED }),
