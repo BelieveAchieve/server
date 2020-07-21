@@ -21,7 +21,8 @@ UPchieve web server
     - [POST /auth/login](#post-authlogin)
     - [GET /auth/logout](#get-authlogout)
     - [POST /auth/register/checkcred](#post-authregistercheckcred)
-    - [POST /auth/register](#post-authregister)
+    - [POST /auth/register/student](#post-authregisterstudent)
+    - [POST /auth/register/volunteer](#post-authregistervolunteer)
     - [POST /auth/reset/send](#post-authresetsend)
     - [POST /auth/reset/confirm](#post-authresetconfirm)
     - [POST /auth/reset/verify](#post-authresetverify)
@@ -210,16 +211,20 @@ Possible errors:
 - Email is not valid
 - Email already exists
 
-### POST /auth/register
+### POST /auth/register/student
 
-Create a new account based on the information posted.
+Create a new account for a student based on the information posted.
 
 ```json
 {
   "email": "String",
   "password": "String",
-  "code": "String",
-  "highSchool": "String",
+  "studentPartnerOrg": "Donno",
+  "partnerUserId": "String",
+  "highSchoolId": "String",
+  "zipCode": "String",
+  "terms": "String",
+  "referredByCode": "String",
   "firstName": "String",
   "lastName": "String"
 }
@@ -233,6 +238,37 @@ Possible errors:
 - Email already exists
 - Could not hash password
 - Could not send verification email (for volunteers)
+- Must accept the user agreement
+
+### POST /auth/register/volunteer
+
+Create a new account for a volunteer based on the information posted.
+
+```json
+{
+  "email": "String",
+  "password": "String",
+  "code": "code",
+  "volunteerPartnerOrg": "Donno",
+  "college": "String",
+  "phone": "String",
+  "favoriteAcademicSubject": "String",
+  "terms": "String",
+  "referredByCode": "String",
+  "firstName": "String",
+  "lastName": "String"
+}
+```
+
+Possible errors:
+
+- Email/password not provided
+- Password does not meet requirements
+- Email is not valid
+- Email already exists
+- Could not hash password
+- Could not send verification email (for volunteers)
+- Must accept the user agreement
 
 ### POST /auth/reset/send
 
