@@ -92,6 +92,15 @@ module.exports = function(io, sessionStore) {
       await sessionCtrl.message(data)
     })
 
+    socket.on('transmitQuillDelta', async ({ sessionId, delta }) => {
+      socketService.emitToOtherUser(
+        sessionId,
+        socket.request.user._id,
+        'partnerQuillDelta',
+        { delta }
+      )
+    })
+
     socket.on('error', function(error) {
       console.log('Socket error: ', error)
       Sentry.captureException(error)
