@@ -211,7 +211,6 @@ const goodUser = new Volunteer({
   pastSessions: null
 })
 
-
 test('Elapsed availability for partially onboarded users', () => {
   // EST Time Zone for dates
   const lastModifiedDate = '2020-02-06T00:52:59.538-05:00'
@@ -223,7 +222,7 @@ test('Elapsed availability for partially onboarded users', () => {
     goodUser.toObject(),
     newModifiedDate
   )
-  expect(expected).toBe(result);
+  expect(expected).toBe(result)
 })
 
 test('Elapsed availability over 3 days with no hours available', () => {
@@ -237,7 +236,7 @@ test('Elapsed availability over 3 days with no hours available', () => {
     goodUser.toObject(),
     newModifiedDate
   )
-  expect(expected).toBe(result);
+  expect(expected).toBe(result)
 })
 
 test('Elapsed availability over 3 days with all hours available and 7 hours out of range', () => {
@@ -256,7 +255,7 @@ test('Elapsed availability over 3 days with all hours available and 7 hours out 
     goodUser.toObject(),
     newModifiedDate
   )
-  expect(expected).toBe(result);
+  expect(expected).toBe(result)
 
   // set user back to default
   goodUser.isVolunteer = false
@@ -280,7 +279,7 @@ test('Elapsed availability over 3 days with flexible hours available', () => {
     goodUser.toObject(),
     newModifiedDate
   )
-  expect(expected).toBe(result);
+  expect(expected).toBe(result)
 
   // set user back to default
   goodUser.isVolunteer = false
@@ -315,7 +314,7 @@ test('Elapsed availability over 23 days with flexible hours available', () => {
     goodUser.toObject(),
     newModifiedDate
   )
-  expect(expected).toBe(result);
+  expect(expected).toBe(result)
 
   // set user back to default
   goodUser.isVolunteer = false
