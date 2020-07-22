@@ -2,6 +2,7 @@ const express = require('express')
 const passport = require('../auth/passport')
 const Sentry = require('@sentry/node')
 const SchoolService = require('../../services/SchoolService')
+const UserService = require('../../services/UserService')
 const UserCtrl = require('../../controllers/UserCtrl')
 const School = require('../../models/School')
 const ZipCode = require('../../models/ZipCode')
@@ -19,6 +20,12 @@ module.exports = function(app) {
       email,
       referredByCode
     } = req.body
+
+    const existingUser = await UserService.getUser({ email })
+    if (existingUser)
+      return res.status(422).json({
+        message: 'Email already in use'
+      })
 
     const schoolFetch = School.findByUpchieveId(schoolUpchieveId).exec()
     const zipCodeFetch = ZipCode.findByZipCode(zipCodeInput).exec()
