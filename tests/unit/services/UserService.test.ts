@@ -362,9 +362,7 @@ test('Partner volunteer is approved when submitting background info', async () =
   await UserService.addBackgroundInfo(input);
   const updatedVolunteer = await VolunteerModel.findOne({ _id: volunteer._id })
     .lean()
-    .select(
-      'isApproved occupation experience background languages country state city'
-    )
+    .select('isApproved occupation experience languages country state city')
     .exec();
   const backgroundInfoUserAction = await UserActionModel.findOne({
     user: input.volunteerId,
@@ -379,7 +377,6 @@ test('Partner volunteer is approved when submitting background info', async () =
     isApproved: true,
     occupation: update.occupation,
     experience: update.experience,
-    background: update.background,
     country: update.country,
     state: update.state,
     city: update.city,

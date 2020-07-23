@@ -154,7 +154,6 @@ export const buildBackgroundInfo = (overrides = {}): Partial<Volunteer> => {
       mentoring: '1-2 years',
       tutoring: '0-1 years'
     },
-    background: ['Went to a Title 1/low-income high school'],
     languages: ['Spanish'],
     country: 'United States of America',
     state: 'New York',

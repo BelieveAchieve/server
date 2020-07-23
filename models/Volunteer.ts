@@ -176,7 +176,7 @@ const volunteerSchema = new mongoose.Schema(
     country: String,
     state: String,
     city: String,
-    background: [String],
+    company: String,
     languages: [String],
     linkedInUrl: String,
     availability: {

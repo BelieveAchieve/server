@@ -144,7 +144,6 @@ module.exports = {
                 REFERENCE_STATUS.SENT
               ]
             },
-            background: { $ne: null },
             occupation: { $ne: null },
             country: { $ne: null }
           }
@@ -178,8 +177,6 @@ module.exports = {
     const hasCompletedBackgroundInfo =
       volunteerBeforeUpdate.occupation &&
       volunteerBeforeUpdate.occupation.length > 0 &&
-      volunteerBeforeUpdate.background &&
-      volunteerBeforeUpdate.background.length > 0 &&
       volunteerBeforeUpdate.country
 
     const statuses = [...referencesStatus, photoIdStatus]
