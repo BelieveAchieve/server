@@ -25,6 +25,10 @@ const config: Static<typeof Config> = {
     unsubscribeGroup: {
       newsletter: 12567,
       account: 12570
+    },
+    contactList: {
+      students: '69f3f1c3-18e9-4ce0-b552-c28d8bd7bcee',
+      volunteers: '84a0bb98-a153-4897-9379-33016dccf921'
     }
   },
   mail: {

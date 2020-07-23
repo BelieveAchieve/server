@@ -181,6 +181,12 @@ module.exports = {
       Sentry.captureException(err)
     }
 
+    try {
+      await MailService.createContact(student)
+    } catch (err) {
+      Sentry.captureException(err)
+    }
+
     return student
   },
 
@@ -214,6 +220,12 @@ module.exports = {
 
     try {
       await UserActionCtrl.createdAccount(volunteer._id, ip)
+    } catch (err) {
+      Sentry.captureException(err)
+    }
+
+    try {
+      await MailService.createContact(volunteer)
     } catch (err) {
       Sentry.captureException(err)
     }
