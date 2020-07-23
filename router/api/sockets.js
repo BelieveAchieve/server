@@ -14,6 +14,9 @@ const Sentry = require('@sentry/node')
 
 // todo handle errors in try-catch blocks
 
+const Delta = require('quill-delta')
+const quillSessions = {} // sessionId => Delta
+
 module.exports = function(io, sessionStore) {
   const socketService = SocketService(io)
   const sessionCtrl = SessionCtrl(socketService)
@@ -93,12 +96,21 @@ module.exports = function(io, sessionStore) {
     })
 
     socket.on('transmitQuillDelta', async ({ sessionId, delta }) => {
+      quillSessions[sessionId] = quillSessions[sessionId].compose(delta)
       socketService.emitToOtherUser(
         sessionId,
         socket.request.user._id,
         'partnerQuillDelta',
         { delta }
       )
+    })
+
+    socket.on('requestQuillState', async ({ sessionId }) => {
+      if (!quillSessions[sessionId]) quillSessions[sessionId] = new Delta()
+
+      socketService.emitToUser(socket.request.user._id, 'quillState', {
+        delta: quillSessions[sessionId]
+      })
     })
 
     socket.on('error', function(error) {
