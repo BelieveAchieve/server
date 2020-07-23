@@ -27,6 +27,11 @@ module.exports = function(app) {
         message: 'Email already in use'
       })
 
+    const existingIneligible = await IneligibleStudentService.getStudent({
+      email
+    })
+    if (existingIneligible) return res.json({ isEligible: false })
+
     const schoolFetch = School.findByUpchieveId(schoolUpchieveId).exec()
     const zipCodeFetch = ZipCode.findByZipCode(zipCodeInput).exec()
 
