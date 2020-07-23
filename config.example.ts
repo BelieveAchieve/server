@@ -27,8 +27,8 @@ const config: Static<typeof Config> = {
       account: 12570
     },
     contactList: {
-      students: '69f3f1c3-18e9-4ce0-b552-c28d8bd7bcee',
-      volunteers: '84a0bb98-a153-4897-9379-33016dccf921'
+      students: '1111111a-111b-111c-111d-11111111111e',
+      volunteers: '1111111a-111b-111c-111d-11111111111e'
     }
   },
   mail: {
