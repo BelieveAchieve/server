@@ -45,11 +45,20 @@ const createStudentContacts = async users => {
 
     if (user.studentPartnerOrg) {
       customFields[SG_CUSTOM_FIELDS.studentPartnerOrg] = user.studentPartnerOrg;
-      customFields[SG_CUSTOM_FIELDS.studentPartnerOrgDisplay] =
-        config.studentPartnerManifests[user.studentPartnerOrg].name;
+      if (config.studentPartnerManifests[user.studentPartnerOrg]) {
+        customFields[SG_CUSTOM_FIELDS.studentPartnerOrgDisplay] =
+          config.studentPartnerManifests[user.studentPartnerOrg].name;
+      }
     }
 
-    return customFields;
+    const contact = {
+      first_name: user.firstname,
+      last_name: user.lastname,
+      email: user.email,
+      custom_fields: customFields
+    }
+
+    return contact;
   });
 
   const data = {
@@ -72,13 +81,21 @@ const createVolunteerContacts = async users => {
     };
 
     if (user.volunteerPartnerOrg) {
-      customFields[SG_CUSTOM_FIELDS.volunteerPartnerOrg] =
-        user.volunteerPartnerOrg;
-      customFields[SG_CUSTOM_FIELDS.volunteerPartnerOrgDisplay] =
-        config.volunteerPartnerManifests[user.volunteerPartnerOrg].name;
+      customFields[SG_CUSTOM_FIELDS.volunteerPartnerOrg] = user.volunteerPartnerOrg;
+      if (config.studentPartnerManifests[user.volunteerPartnerOrg]) {
+        customFields[SG_CUSTOM_FIELDS.volunteerPartnerOrgDisplay] =
+          config.studentPartnerManifests[user.volunteerPartnerOrg].name;
+      }
     }
 
-    return customFields;
+    const contact = {
+      first_name: user.firstname,
+      last_name: user.lastname,
+      email: user.email,
+      custom_fields: customFields
+    }
+
+    return contact;
   });
 
   const data = {
