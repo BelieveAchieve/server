@@ -32,6 +32,7 @@ module.exports = {
               .sort((s1, s2) => s1.name - s2.name)
               .map(school => {
                 return {
+                  _id: school._id,
                   upchieveId: school.upchieveId,
                   name: school.name,
                   districtName: school.districtName,
