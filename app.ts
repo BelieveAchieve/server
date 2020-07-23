@@ -1,7 +1,7 @@
 import path from 'path';
+import { promisify } from 'util';
 import * as Sentry from '@sentry/node';
 import bodyParser from 'body-parser';
-import busboy from 'connect-busboy';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Request } from 'express';
@@ -9,10 +9,10 @@ import expressWs from '@small-tech/express-ws';
 import logger from 'morgan';
 import config from './config';
 import router from './router';
-import promisifyLogin from './middleware/promisify-login';
 
 interface LoadedRequest extends Request {
   user: {};
+  login: Function;
 }
 
 // Set up Sentry error tracking
@@ -37,7 +37,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser(config.sessionSecret));
 app.use(express.static(path.join(__dirname, 'dist')));
-app.use(busboy());
 app.use(
   cors({
     origin: true,
@@ -51,8 +50,11 @@ app.use((req: LoadedRequest, res, next) => {
   next();
 });
 
-// Middleware to make req.login async
-app.use(promisifyLogin);
+// Make req.login async
+app.use((req: LoadedRequest, res, next): void => {
+  req.login = promisify(req.login);
+  next();
+});
 
 // The error handler must be before any other error middleware and after all controllers
 app.use(Sentry.Handlers.errorHandler());
