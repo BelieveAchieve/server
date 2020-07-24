@@ -39,10 +39,7 @@ module.exports = function(router) {
     const { phone } = req.body
 
     try {
-      await Volunteer.updateOne(
-        { _id },
-        { phone }
-      )
+      await Volunteer.updateOne({ _id }, { phone })
       res.sendStatus(200)
     } catch (err) {
       next(err)
