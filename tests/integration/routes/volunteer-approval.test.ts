@@ -60,7 +60,8 @@ test('Volunteer submits a reference', async () => {
   await agent
     .post('/api/user/volunteer-approval/reference')
     .send({
-      referenceName: reference.name,
+      referenceFirstName: reference.firstName,
+      referenceLastName: reference.lastName,
       referenceEmail: reference.email
     })
     .expect(200);

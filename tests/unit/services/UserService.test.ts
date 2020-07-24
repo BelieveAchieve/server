@@ -72,7 +72,8 @@ test('Should add a reference', async () => {
   const reference = buildReference();
   const input = {
     userId,
-    referenceName: reference.name,
+    referenceFirstName: reference.firstName,
+    referenceLastName: reference.lastName,
     referenceEmail: reference.email
   };
 
@@ -90,7 +91,8 @@ test('Should add a reference', async () => {
   });
 
   const expectedReference = {
-    name: input.referenceName,
+    firstName: input.referenceFirstName,
+    lastName: input.referenceLastName,
     email: input.referenceEmail,
     status: REFERENCE_STATUS.UNSENT
   };
@@ -132,12 +134,14 @@ test('Should delete a reference', async () => {
   });
 
   const remainingReference = {
-    name: referenceTwo.name,
+    firstName: referenceTwo.firstName,
+    lastName: referenceTwo.lastName,
     email: referenceTwo.email,
     status: REFERENCE_STATUS.UNSENT
   };
   const removedReference = {
-    name: referenceOne.name,
+    firstName: referenceOne.firstName,
+    lastName: referenceOne.lastName,
     email: referenceOne.email
   };
   const expectedUserAction = {

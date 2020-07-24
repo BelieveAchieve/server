@@ -98,7 +98,8 @@ const availabilitySchema = new mongoose.Schema(
 const referenceSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   email: { type: String, required: true },
-  name: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
   status: {
     type: String,
     required: true,

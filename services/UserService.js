@@ -45,9 +45,16 @@ module.exports = {
     return photoIdS3Key
   },
 
-  addReference: async ({ userId, referenceName, referenceEmail, ip }) => {
+  addReference: async ({
+    userId,
+    referenceFirstName,
+    referenceLastName,
+    referenceEmail,
+    ip
+  }) => {
     const referenceData = {
-      name: referenceName,
+      firstName: referenceFirstName,
+      lastName: referenceLastName,
       email: referenceEmail
     }
     await Volunteer.updateOne(

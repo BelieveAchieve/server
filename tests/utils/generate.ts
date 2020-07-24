@@ -94,11 +94,13 @@ export const buildVolunteerRegistrationForm = (
 };
 
 export const buildReference = (overrides = {}): Partial<Reference> => {
-  const referenceName = `${getFirstName()} ${getLastName()}`;
+  const referenceFirstName = getFirstName();
+  const referenceLastName = getLastName();
   const referenceEmail = getEmail();
   const reference = {
     _id: Types.ObjectId(),
-    name: referenceName,
+    firstName: referenceFirstName,
+    lastName: referenceLastName,
     email: referenceEmail,
     ...overrides
   };

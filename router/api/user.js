@@ -52,10 +52,11 @@ module.exports = function(router) {
   router.post('/user/volunteer-approval/reference', async (req, res, next) => {
     const { ip } = req
     const { _id } = req.user
-    const { referenceName, referenceEmail } = req.body
+    const { referenceFirstName, referenceLastName, referenceEmail } = req.body
     await UserService.addReference({
       userId: _id,
-      referenceName,
+      referenceFirstName,
+      referenceLastName,
       referenceEmail,
       ip
     })
