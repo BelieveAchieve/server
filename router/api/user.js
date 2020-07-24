@@ -103,7 +103,8 @@ module.exports = function(router) {
       const {
         occupation,
         experience,
-        background,
+        company,
+        college,
         linkedInUrl,
         languages,
         country,
@@ -114,7 +115,8 @@ module.exports = function(router) {
       const update = {
         occupation,
         experience,
-        background,
+        company,
+        college,
         linkedInUrl,
         languages,
         country,

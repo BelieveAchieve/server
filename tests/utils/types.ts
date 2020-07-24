@@ -46,7 +46,7 @@ export interface Volunteer {
   lastname: string;
   password: string;
   zipCode: string;
-  college: string;
+  college?: string;
   volunteerPartnerOrg?: string;
   favoriteAcademicSubject: string;
   referredByCode: string;
@@ -58,7 +58,7 @@ export interface Volunteer {
   isApproved: boolean;
   // background information
   occupation?: Array<string>;
-  background?: Array<string>;
+  company?: string;
   experience?: {
     collegeCounseling: string;
     mentoring: string;
