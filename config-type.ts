@@ -35,6 +35,10 @@ export const Config = Record({
     unsubscribeGroup: Record({
       newsletter: Number,
       account: Number
+    }),
+    contactList: Record({
+      students: String,
+      volunteers: String
     })
   }),
   mail: Record({

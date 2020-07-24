@@ -437,6 +437,16 @@ module.exports = function(app) {
     return res.json({ studentPartnerKey })
   })
 
+  // List all student partners (admins only)
+  router
+    .route('/partner/student-partners')
+    .all(authPassport.isAdmin)
+    .get(function(req, res, next) {
+      return res.json({
+        partnerOrgs: Object.keys(config.studentPartnerManifests)
+      })
+    })
+
   router.post('/reset/send', function(req, res, next) {
     const email = req.body.email
     if (!email) {
