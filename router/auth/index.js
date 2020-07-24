@@ -8,6 +8,7 @@ const config = require('../../config')
 const User = require('../../models/User')
 const School = require('../../models/School.js')
 const { USER_BAN_REASON } = require('../../constants')
+const authPassport = require('./passport')
 const UserCtrl = require('../../controllers/UserCtrl')
 
 // Validation functions
