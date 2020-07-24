@@ -6,7 +6,8 @@ export interface User extends Document {
 }
 
 export interface Reference extends Document {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   status: string;
 }
