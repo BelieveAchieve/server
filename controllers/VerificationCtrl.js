@@ -53,7 +53,7 @@ module.exports = {
     }
 
     const user = await User.findOne({ verificationToken: token })
-      .select('firstname email')
+      .select('firstname email volunteerPartnerOrg')
       .lean()
       .exec()
 
