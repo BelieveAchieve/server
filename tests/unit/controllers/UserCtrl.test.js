@@ -18,8 +18,6 @@ const goodUser = new Volunteer({
   firstname: 'firstname',
   lastname: 'lastname',
   phone: 5555555555,
-
-  favoriteAcademicSubject: 'favoriteAcademicSubject',
   college: 'college',
 
   availability: {

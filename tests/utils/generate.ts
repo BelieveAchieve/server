@@ -57,7 +57,6 @@ export const buildVolunteer = (overrides = {}): Volunteer => {
     zipCode: '11201',
     referredByCode: '',
     college: 'Columbia University',
-    favoriteAcademicSubject: 'Computer Science',
     phone: '+12345678910',
     referralCode: generateReferralCode(_id.toString()),
     isApproved: false,

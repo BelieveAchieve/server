@@ -52,7 +52,6 @@
     },
     "college": "Volunteer College",
     "email": "volunteer1@upchieve.org",
-    "favoriteAcademicSubject": "Math",
     "firstname": "Volunteer",
     "isAdmin": true,
     "isVolunteer": true,
@@ -118,7 +117,6 @@
     },
     "college": "Volunteer College",
     "email": "volunteer2@upchieve.org",
-    "favoriteAcademicSubject": "Math",
     "firstname": "Volunteer2",
     "isAdmin": true,
     "isVolunteer": true,
@@ -135,7 +133,6 @@
   {
     "college": "Volunteer College",
     "email": "volunteer3@upchieve.org",
-    "favoriteAcademicSubject": "Math",
     "firstname": "Volunteer3",
     "isAdmin": true,
     "isVolunteer": true,
@@ -151,7 +148,6 @@
   {
     "college": "Volunteer College",
     "email": "partnervolunteer1@example.com",
-    "favoriteAcademicSubject": "Math",
     "firstname": "Partner-Volunteer",
     "isAdmin": true,
     "isVolunteer": true,

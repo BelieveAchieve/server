@@ -48,7 +48,6 @@ export interface Volunteer {
   zipCode: string;
   college?: string;
   volunteerPartnerOrg?: string;
-  favoriteAcademicSubject: string;
   referredByCode: string;
   phone: string;
   referralCode: string;

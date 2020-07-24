@@ -166,7 +166,6 @@ const volunteerSchema = new mongoose.Schema(
       trim: true
       // @todo: server-side validation of international phone format
     },
-    favoriteAcademicSubject: String,
     college: String,
     occupation: [String],
     experience: {
