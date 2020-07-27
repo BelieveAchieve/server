@@ -1,5 +1,6 @@
-var VolunteersCtrl = require('../../controllers/VolunteersCtrl')
-var passport = require('../auth/passport')
+const VolunteersCtrl = require('../../controllers/VolunteersCtrl')
+const UserService = require('../../services/UserService')
+const passport = require('../auth/passport')
 
 module.exports = function(router) {
   router.get('/volunteers', passport.isAdmin, function(req, res, next) {
@@ -37,4 +38,37 @@ module.exports = function(router) {
       )
     }
   )
+
+  router.get('/volunteers/pending', passport.isAdmin, async function(req, res) {
+    try {
+      const { page } = req.query
+      const { volunteers, isLastPage } = await UserService.getPendingVolunteers(
+        page
+      )
+      res.json({ volunteers, isLastPage })
+    } catch (error) {
+      res
+        .status(500)
+        .json({ err: 'There was an error retrieving the pending volunteers.' })
+    }
+  })
+
+  router.post('/volunteers/pending/:id', passport.isAdmin, async function(
+    req,
+    res
+  ) {
+    const { id } = req.params
+    const { photoIdStatus, referencesStatus } = req.body
+
+    try {
+      await UserService.updatePendingVolunteerStatus({
+        volunteerId: id,
+        photoIdStatus,
+        referencesStatus
+      })
+      res.sendStatus(200)
+    } catch (error) {
+      res.status(500).json({ err: error.message })
+    }
+  })
 }

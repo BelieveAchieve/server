@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import config from '../config';
+import { PHOTO_ID_STATUS, REFERENCE_STATUS } from '../constants';
 import User from './User';
 
 const weeksSince = (date): number => {
@@ -95,6 +95,35 @@ const availabilitySchema = new mongoose.Schema(
   { _id: false }
 );
 
+const referenceSchema = new mongoose.Schema({
+  createdAt: { type: Date, default: Date.now },
+  email: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  status: {
+    type: String,
+    required: true,
+    enum: [
+      REFERENCE_STATUS.UNSENT,
+      REFERENCE_STATUS.SENT,
+      REFERENCE_STATUS.SUBMITTED,
+      REFERENCE_STATUS.APPROVED,
+      REFERENCE_STATUS.REJECTED
+    ],
+    default: REFERENCE_STATUS.UNSENT
+  },
+  sentAt: Date,
+  affiliation: String,
+  relationshipLength: String,
+  patient: Number,
+  positiveRoleModel: Number,
+  agreeableAndApproachable: Number,
+  communicatesEffectively: Number,
+  trustworthyWithChildren: Number,
+  rejectionReason: String,
+  additionalInfo: String
+});
+
 const volunteerSchemaOptions = {
   toJSON: {
     virtuals: true
@@ -106,11 +135,26 @@ const volunteerSchemaOptions = {
 
 const volunteerSchema = new mongoose.Schema(
   {
+    isApproved: {
+      type: Boolean,
+      default: false
+    },
+    photoIdS3Key: String,
+    photoIdStatus: {
+      type: String,
+      enum: [
+        PHOTO_ID_STATUS.EMPTY,
+        PHOTO_ID_STATUS.SUBMITTED,
+        PHOTO_ID_STATUS.REJECTED,
+        PHOTO_ID_STATUS.APPROVED
+      ],
+      default: PHOTO_ID_STATUS.EMPTY
+    },
+    references: [referenceSchema],
     isOnboarded: {
       type: Boolean,
       default: false
     },
-    registrationCode: { type: String, select: false },
     volunteerPartnerOrg: String,
     isFailsafeVolunteer: {
       type: Boolean,
@@ -122,9 +166,19 @@ const volunteerSchema = new mongoose.Schema(
       trim: true
       // @todo: server-side validation of international phone format
     },
-    favoriteAcademicSubject: String,
     college: String,
-
+    occupation: [String],
+    experience: {
+      collegeCounseling: String,
+      mentoring: String,
+      tutoring: String
+    },
+    country: String,
+    state: String,
+    city: String,
+    company: String,
+    languages: [String],
+    linkedInUrl: String,
     availability: {
       type: availabilitySchema,
       default: availabilitySchema
@@ -132,7 +186,10 @@ const volunteerSchema = new mongoose.Schema(
     timezone: String,
     availabilityLastModifiedAt: { type: Date },
     elapsedAvailability: { type: Number, default: 0 },
-
+    sentReadyToCoachEmail: {
+      type: Boolean,
+      default: false
+    },
     certifications: {
       prealgebra: {
         passed: {
@@ -343,17 +400,6 @@ volunteerSchema.virtual('volunteerLastNotification', {
   justOne: true,
   options: { sort: { sentAt: -1 } }
 });
-
-// Static method to determine if a registration code is valid
-volunteerSchema.statics.checkCode = function(code): boolean {
-  const volunteerCodes = config.VOLUNTEER_CODES.split(',');
-
-  const isVolunteerCode = volunteerCodes.some(volunteerCode => {
-    return volunteerCode.toUpperCase() === code.toUpperCase();
-  });
-
-  return isVolunteerCode;
-};
 
 // Use the user schema as the base schema for Volunteer
 const Volunteer = User.discriminator('Volunteer', volunteerSchema);

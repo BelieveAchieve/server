@@ -380,7 +380,7 @@ currently authenticated user:
 
 ```json
 {
-  "favoriteAcademicSubject": "String"
+  "phone": "String"
 }
 ```
 

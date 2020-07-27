@@ -27,5 +27,5 @@ module.exports = function(app) {
     )
   })
 
-  app.use('/contact', router)
+  app.use('/api-public/contact', router)
 }

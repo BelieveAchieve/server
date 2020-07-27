@@ -24,9 +24,14 @@ export const Config = Record({
     verifyTemplate: String,
     resetTemplate: String,
     partnerOrgSignupAlertTemplate: String,
-    volunteerWelcomeTemplate: String,
+    openVolunteerWelcomeTemplate: String,
+    partnerVolunteerWelcomeTemplate: String,
     studentWelcomeTemplate: String,
     reportedSessionAlertTemplate: String,
+    referenceFormTemplate: String,
+    approvedNotOnboardedTemplate: String,
+    openReadyToCoachTemplate: String,
+    partnerReadyToCoachTemplate: String,
     unsubscribeGroup: Record({
       newsletter: Number,
       account: Number
@@ -38,7 +43,8 @@ export const Config = Record({
   }),
   mail: Record({
     senders: Record({
-      noreply: String
+      noreply: String,
+      support: String
     }),
     receivers: Record({
       contact: String,
@@ -86,7 +92,6 @@ export const Config = Record({
   // voice to use to render speech
   voice: Literal('man'),
 
-  VOLUNTEER_CODES: String,
   workerQueueName: String,
   redisConnectionString: String,
   firebase: Record({
@@ -97,6 +102,7 @@ export const Config = Record({
     accessKeyId: String,
     secretAccessKey: String,
     region: String,
+    photoIdBucket: String,
     sessionPhotoBucket: String
   })
 });

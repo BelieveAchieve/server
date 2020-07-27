@@ -1,12 +1,14 @@
 const _ = require('lodash')
 const Volunteer = require('../models/Volunteer')
 const UserCtrl = require('../controllers/UserCtrl')
+const UserActionCtrl = require('../controllers/UserActionCtrl')
 
 module.exports = {
   updateSchedule: function(options, callback) {
     const user = options.user
     const newAvailability = options.availability
     const newTimezone = options.tz
+    const ip = options.ip
 
     // verify that newAvailability is defined and not null
     if (!newAvailability) {
@@ -47,8 +49,10 @@ module.exports = {
       user.elapsedAvailability + newElapsedAvailability
 
     // an onboarded volunteer must have updated their availability and obtained at least one certification
-    if (!user.isOnboarded && UserCtrl.isCertified(user.certifications))
+    if (!user.isOnboarded && UserCtrl.isCertified(user.certifications)) {
       userUpdates.isOnboarded = true
+      UserActionCtrl.accountOnboarded(user._id, ip)
+    }
 
     Volunteer.updateOne({ _id: user._id }, userUpdates, function(err) {
       if (err) {

@@ -53,7 +53,7 @@ module.exports = {
     }
 
     const user = await User.findOne({ verificationToken: token })
-      .select('firstname email')
+      .select('firstname email volunteerPartnerOrg')
       .lean()
       .exec()
 
@@ -61,10 +61,17 @@ module.exports = {
       throw new Error('No user found with that verification token')
     }
 
-    MailService.sendVolunteerWelcomeEmail({
-      email: user.email,
-      firstName: user.firstname
-    })
+    if (user.volunteerPartnerOrg) {
+      MailService.sendPartnerVolunteerWelcomeEmail({
+        email: user.email,
+        volunteerName: user.firstname
+      })
+    } else {
+      MailService.sendOpenVolunteerWelcomeEmail({
+        email: user.email,
+        volunteerName: user.firstname
+      })
+    }
 
     const userUpdates = {
       verified: true,

@@ -15,17 +15,18 @@ module.exports = function(app) {
   require('./contact')(app)
   require('./metrics')(app)
   require('./mobile')(app)
+  require('./reference')(app)
 
-  // Determine if incoming request is a static asset
-  var isStaticReq = function(req) {
+  // True if incoming request is either a static asset or API request
+  var isServerReq = function(req) {
     return [
       '/whiteboard',
       '/auth',
       '/api',
-      '/eligibility',
+      '/api-public',
       '/metrics',
       '/twiml',
-      '/contact',
+      '/mobile',
       '/js',
       '/css'
     ].some(function(whitelist) {
@@ -35,7 +36,7 @@ module.exports = function(app) {
 
   // Single page app routing
   app.use(function(req, res, next) {
-    if (isStaticReq(req)) {
+    if (isServerReq(req)) {
       return next()
     }
     res.sendFile(path.join(__dirname, '../dist/index.html'))

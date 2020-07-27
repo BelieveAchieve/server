@@ -56,7 +56,14 @@ const sendEmail = (
     asm
   }
 
-  sgMail.send(msg, callback)
+  return sgMail.send(msg, callback)
+}
+
+// @todo: use this in other MailService methods
+const buildLink = path => {
+  const { host } = config.client
+  const protocol = config.NODE_ENV === 'production' ? 'https' : 'http'
+  return `${protocol}://${host}/${path}`
 }
 
 module.exports = {
@@ -121,23 +128,24 @@ module.exports = {
     )
   },
 
-  sendVolunteerWelcomeEmail: ({ email, firstName }) => {
-    const { host } = config.client
-    const coachGuideLink = `http://${host}/coach-guide`
-    const scheduleLink = `http://${host}/calendar`
-    const trainingLink = `http://${host}/training`
-
+  sendOpenVolunteerWelcomeEmail: ({ email, volunteerName }) => {
     sendEmail(
       email,
-      config.mail.senders.noreply,
+      config.mail.senders.support,
       'UPchieve',
-      config.sendgrid.volunteerWelcomeTemplate,
-      {
-        firstName,
-        coachGuideLink,
-        scheduleLink,
-        trainingLink
-      },
+      config.sendgrid.openVolunteerWelcomeTemplate,
+      { volunteerName },
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
+  sendPartnerVolunteerWelcomeEmail: ({ email, volunteerName }) => {
+    sendEmail(
+      email,
+      config.mail.senders.support,
+      'UPchieve',
+      config.sendgrid.partnerVolunteerWelcomeTemplate,
+      { volunteerName },
       config.sendgrid.unsubscribeGroup.account
     )
   },
@@ -160,6 +168,48 @@ module.exports = {
       'UPchieve',
       config.sendgrid.reportedSessionAlertTemplate,
       { sessionId, reportedByEmail, reportMessage },
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
+  sendReferenceForm: ({ reference, volunteer }) => {
+    const emailData = {
+      referenceUrl: buildLink(`reference-form/${reference._id}`),
+      referenceName: reference.firstName,
+      volunteerName: `${volunteer.firstname} ${volunteer.lastname}`
+    }
+
+    return sendEmail(
+      reference.email,
+      config.mail.senders.noreply,
+      'UPchieve',
+      config.sendgrid.referenceFormTemplate,
+      emailData,
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
+  sendApprovedNotOnboardedEmail: volunteer => {
+    return sendEmail(
+      volunteer.email,
+      config.mail.senders.support,
+      'UPchieve',
+      config.sendgrid.approvedNotOnboardedTemplate,
+      { volunteerName: volunteer.firstname },
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
+  sendReadyToCoachEmail: volunteer => {
+    const readyToCoachTemplate = volunteer.volunteerPartnerOrg
+      ? config.sendgrid.partnerReadyToCoachTemplate
+      : config.sendgrid.openReadyToCoachTemplate
+    return sendEmail(
+      volunteer.email,
+      config.mail.senders.support,
+      'UPchieve',
+      readyToCoachTemplate,
+      { volunteerName: volunteer.firstname },
       config.sendgrid.unsubscribeGroup.account
     )
   },

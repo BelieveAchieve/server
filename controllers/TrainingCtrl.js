@@ -1,5 +1,5 @@
 const _ = require('lodash')
-
+const UserActionCtrl = require('../controllers/UserActionCtrl')
 const Question = require('../models/Question')
 const Volunteer = require('../models/Volunteer')
 
@@ -107,7 +107,7 @@ module.exports = {
     )
   },
 
-  getQuizScore: async function({ user, idAnswerMap, category }) {
+  getQuizScore: async function({ user, idAnswerMap, category, ip }) {
     const objIDs = Object.keys(idAnswerMap)
     const questions = await Question.find({ _id: { $in: objIDs } }).exec()
 
@@ -134,8 +134,10 @@ module.exports = {
       Object.assign(userUpdates, integratedMathUpdate)
 
       // an onboarded volunteer must have updated their availability and obtained at least one certification
-      if (!user.isOnboarded && user.availabilityLastModifiedAt)
+      if (!user.isOnboarded && user.availabilityLastModifiedAt) {
         userUpdates.isOnboarded = true
+        UserActionCtrl.accountOnboarded(user._id, ip)
+      }
     }
 
     await Volunteer.updateOne({ _id: user._id }, userUpdates)
