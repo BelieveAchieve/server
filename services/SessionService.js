@@ -73,7 +73,9 @@ module.exports = {
   },
 
   getSessionPhotoUploadUrl: async sessionId => {
-    const sessionPhotoS3Key = crypto.randomBytes(32).toString('hex')
+    const sessionPhotoS3Key = `${sessionId}${crypto
+      .randomBytes(8)
+      .toString('hex')}`
     await Session.updateOne(
       { _id: sessionId },
       { $push: { photos: sessionPhotoS3Key } }
