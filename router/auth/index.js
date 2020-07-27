@@ -6,7 +6,6 @@ const ResetPasswordCtrl = require('../../controllers/ResetPasswordCtrl')
 const IpAddressService = require('../../services/IpAddressService')
 const config = require('../../config')
 const User = require('../../models/User')
-const Volunteer = require('../../models/Volunteer')
 const School = require('../../models/School.js')
 const { USER_BAN_REASON } = require('../../constants')
 const authPassport = require('./passport')
@@ -209,16 +208,12 @@ module.exports = function(app) {
     }
   })
 
-  router.post('/register/volunteer', async function(req, res) {
+  router.post('/register/volunteer/open', async function(req, res) {
     const { ip } = req
     const {
       email,
       password,
-      code,
-      volunteerPartnerOrg,
-      college,
       phone,
-      favoriteAcademicSubject,
       terms,
       referredByCode,
       firstName,
@@ -245,29 +240,87 @@ module.exports = function(app) {
       })
     }
 
-    // Volunteer partner org check (if no signup code provided)
-    if (!code) {
-      const allVolunteerPartnerManifests = config.volunteerPartnerManifests
-      const volunteerPartnerManifest =
-        allVolunteerPartnerManifests[volunteerPartnerOrg]
+    const referredBy = await UserCtrl.checkReferral(referredByCode)
 
-      if (!volunteerPartnerManifest) {
+    const volunteerData = {
+      email,
+      isVolunteer: true,
+      isApproved: false,
+      phone,
+      firstname: firstName.trim(),
+      lastname: lastName.trim(),
+      verified: false,
+      referredBy,
+      password,
+      ip
+    }
+
+    try {
+      const volunteer = await UserCtrl.createVolunteer(volunteerData)
+      await req.login(volunteer)
+      return res.json({
+        user: volunteer
+      })
+    } catch (err) {
+      Sentry.captureException(err)
+      return res.status(422).json({ err: err.message })
+    }
+  })
+
+  router.post('/register/volunteer/partner', async function(req, res) {
+    const { ip } = req
+    const {
+      email,
+      password,
+      volunteerPartnerOrg,
+      phone,
+      terms,
+      referredByCode,
+      firstName,
+      lastName
+    } = req.body
+
+    if (!terms) {
+      return res.status(422).json({
+        err: 'Must accept the user agreement'
+      })
+    }
+
+    if (!email || !password) {
+      return res.status(422).json({
+        err: 'Must supply an email and password for registration'
+      })
+    }
+
+    // Verify password for registration
+    const checkResult = checkPassword(password)
+    if (checkResult !== true) {
+      return res.status(422).json({
+        err: checkResult
+      })
+    }
+
+    // Volunteer partner org check
+    const allVolunteerPartnerManifests = config.volunteerPartnerManifests
+    const volunteerPartnerManifest =
+      allVolunteerPartnerManifests[volunteerPartnerOrg]
+
+    if (!volunteerPartnerManifest) {
+      return res.status(422).json({
+        err: 'Invalid volunteer partner organization'
+      })
+    }
+
+    const volunteerPartnerDomains =
+      volunteerPartnerManifest.requiredEmailDomains
+
+    // Confirm email has one of volunteer partner's required domains
+    if (volunteerPartnerDomains && volunteerPartnerDomains.length) {
+      const userEmailDomain = email.split('@')[1]
+      if (volunteerPartnerDomains.indexOf(userEmailDomain) === -1) {
         return res.status(422).json({
-          err: 'Invalid volunteer partner organization'
+          err: 'Invalid email domain for volunteer partner organization'
         })
-      }
-
-      const volunteerPartnerDomains =
-        volunteerPartnerManifest.requiredEmailDomains
-
-      // Confirm email has one of volunteer partner's required domains
-      if (volunteerPartnerDomains && volunteerPartnerDomains.length) {
-        const userEmailDomain = email.split('@')[1]
-        if (volunteerPartnerDomains.indexOf(userEmailDomain) === -1) {
-          return res.status(422).json({
-            err: 'Invalid email domain for volunteer partner organization'
-          })
-        }
       }
     }
 
@@ -275,12 +328,10 @@ module.exports = function(app) {
 
     const volunteerData = {
       email,
+      isApproved: false,
       isVolunteer: true,
-      registrationCode: code,
       volunteerPartnerOrg,
-      college,
       phone,
-      favoriteAcademicSubject,
       firstname: firstName.trim(),
       lastname: lastName.trim(),
       verified: false,
@@ -394,33 +445,6 @@ module.exports = function(app) {
     .get(function(req, res, next) {
       return res.json({
         partnerOrgs: Object.keys(config.studentPartnerManifests)
-      })
-    })
-
-  router.post('/register/check', function(req, res, next) {
-    const code = req.body.code
-
-    if (!code) {
-      res.status(422).json({
-        err: 'No registration code given'
-      })
-      return
-    }
-
-    const isVolunteerCode = Volunteer.checkCode(code)
-
-    res.json({
-      isValid: isVolunteerCode
-    })
-  })
-
-  // List all valid registration codes (admins only)
-  router
-    .route('/register/volunteercodes')
-    .all(authPassport.isAdmin)
-    .get(function(req, res, next) {
-      res.json({
-        volunteerCodes: config.VOLUNTEER_CODES.split(',')
       })
     })
 

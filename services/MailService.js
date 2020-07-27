@@ -1,7 +1,32 @@
 const config = require('../config')
 const sgMail = require('@sendgrid/mail')
+const axios = require('axios')
 
 sgMail.setApiKey(config.sendgrid.apiKey)
+
+const options = {
+  headers: {
+    Authorization: `Bearer ${config.sendgrid.apiKey}`,
+    'content-type': 'application/json'
+  }
+}
+
+const putContact = data =>
+  axios.put('https://api.sendgrid.com/v3/marketing/contacts', data, options)
+
+const SG_CUSTOM_FIELDS = {
+  isBanned: 'e3_T',
+  isTestUser: 'e4_T',
+  isVolunteer: 'e6_T',
+  isAdmin: 'e7_T',
+  isFakeUser: 'e8_T',
+  isDeactivated: 'e9_T',
+  joined: 'e10_D',
+  studentPartnerOrg: 'e11_T',
+  studentPartnerOrgDisplay: 'e12_T',
+  volunteerPartnerOrg: 'e13_T',
+  volunteerPartnerOrgDisplay: 'e14_T'
+}
 
 const sendEmail = (
   toEmail,
@@ -31,7 +56,14 @@ const sendEmail = (
     asm
   }
 
-  sgMail.send(msg, callback)
+  return sgMail.send(msg, callback)
+}
+
+// @todo: use this in other MailService methods
+const buildLink = path => {
+  const { host } = config.client
+  const protocol = config.NODE_ENV === 'production' ? 'https' : 'http'
+  return `${protocol}://${host}/${path}`
 }
 
 module.exports = {
@@ -96,23 +128,24 @@ module.exports = {
     )
   },
 
-  sendVolunteerWelcomeEmail: ({ email, firstName }) => {
-    const { host } = config.client
-    const coachGuideLink = `http://${host}/coach-guide`
-    const scheduleLink = `http://${host}/calendar`
-    const trainingLink = `http://${host}/training`
-
+  sendOpenVolunteerWelcomeEmail: ({ email, volunteerName }) => {
     sendEmail(
       email,
-      config.mail.senders.noreply,
+      config.mail.senders.support,
       'UPchieve',
-      config.sendgrid.volunteerWelcomeTemplate,
-      {
-        firstName,
-        coachGuideLink,
-        scheduleLink,
-        trainingLink
-      },
+      config.sendgrid.openVolunteerWelcomeTemplate,
+      { volunteerName },
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
+  sendPartnerVolunteerWelcomeEmail: ({ email, volunteerName }) => {
+    sendEmail(
+      email,
+      config.mail.senders.support,
+      'UPchieve',
+      config.sendgrid.partnerVolunteerWelcomeTemplate,
+      { volunteerName },
       config.sendgrid.unsubscribeGroup.account
     )
   },
@@ -137,5 +170,89 @@ module.exports = {
       { sessionId, reportedByEmail, reportMessage },
       config.sendgrid.unsubscribeGroup.account
     )
+  },
+
+  sendReferenceForm: ({ reference, volunteer }) => {
+    const emailData = {
+      referenceUrl: buildLink(`reference-form/${reference._id}`),
+      referenceName: reference.firstName,
+      volunteerName: `${volunteer.firstname} ${volunteer.lastname}`
+    }
+
+    return sendEmail(
+      reference.email,
+      config.mail.senders.noreply,
+      'UPchieve',
+      config.sendgrid.referenceFormTemplate,
+      emailData,
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
+  sendApprovedNotOnboardedEmail: volunteer => {
+    return sendEmail(
+      volunteer.email,
+      config.mail.senders.support,
+      'UPchieve',
+      config.sendgrid.approvedNotOnboardedTemplate,
+      { volunteerName: volunteer.firstname },
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
+  sendReadyToCoachEmail: volunteer => {
+    const readyToCoachTemplate = volunteer.volunteerPartnerOrg
+      ? config.sendgrid.partnerReadyToCoachTemplate
+      : config.sendgrid.openReadyToCoachTemplate
+    return sendEmail(
+      volunteer.email,
+      config.mail.senders.support,
+      'UPchieve',
+      readyToCoachTemplate,
+      { volunteerName: volunteer.firstname },
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
+  createContact: async user => {
+    const customFields = {
+      [SG_CUSTOM_FIELDS.isBanned]: String(user.isBanned),
+      [SG_CUSTOM_FIELDS.isTestUser]: String(user.isTestUser),
+      [SG_CUSTOM_FIELDS.isVolunteer]: String(user.isVolunteer),
+      [SG_CUSTOM_FIELDS.isAdmin]: String(user.isAdmin),
+      [SG_CUSTOM_FIELDS.isFakeUser]: String(user.isFakeUser),
+      [SG_CUSTOM_FIELDS.isDeactivated]: String(user.isDeactivated),
+      [SG_CUSTOM_FIELDS.joined]: user.createdAt
+    }
+
+    const contactListId = user.isVolunteer
+      ? config.sendgrid.contactList.volunteers
+      : config.sendgrid.contactList.students
+
+    if (user.volunteerPartnerOrg) {
+      customFields[SG_CUSTOM_FIELDS.volunteerPartnerOrg] =
+        user.volunteerPartnerOrg
+      customFields[SG_CUSTOM_FIELDS.volunteerPartnerOrgDisplay] =
+        config.volunteerPartnerManifests[user.volunteerPartnerOrg].name
+    }
+
+    if (user.studentPartnerOrg) {
+      customFields[SG_CUSTOM_FIELDS.studentPartnerOrg] = user.studentPartnerOrg
+      customFields[SG_CUSTOM_FIELDS.studentPartnerOrgDisplay] =
+        config.studentPartnerManifests[user.studentPartnerOrg].name
+    }
+
+    const data = {
+      list_ids: [contactListId],
+      contacts: [
+        {
+          first_name: user.firstname,
+          last_name: user.lastname,
+          email: user.email,
+          custom_fields: customFields
+        }
+      ]
+    }
+    return putContact(JSON.stringify(data))
   }
 }

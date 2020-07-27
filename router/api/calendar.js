@@ -6,7 +6,8 @@ module.exports = function(router) {
       {
         user: req.user,
         availability: req.body.availability,
-        tz: req.body.tz
+        tz: req.body.tz,
+        ip: req.ip
       },
       function(err) {
         if (err) {
