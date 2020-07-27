@@ -1,4 +1,6 @@
 const UserCtrl = require('../../controllers/UserCtrl')
+const UserService = require('../../services/UserService')
+const AwsService = require('../../services/AwsService')
 const User = require('../../models/User')
 const Volunteer = require('../../models/Volunteer')
 const passport = require('../auth/passport')
@@ -11,7 +13,9 @@ module.exports = function(router) {
         err: 'Client has no authenticated session'
       })
     }
-    return res.json({ user: req.user })
+
+    const parsedUser = UserService.parseUser(req.user)
+    return res.json({ user: parsedUser })
   })
 
   router.route('/user/volunteer-stats').get(async function(req, res, next) {
@@ -32,18 +36,103 @@ module.exports = function(router) {
   // @note: Currently, only volunteers are able to update their profile
   router.put('/user', async (req, res, next) => {
     const { _id } = req.user
-    const { phone, college, favoriteAcademicSubject } = req.body
+    const { phone } = req.body
 
     try {
-      await Volunteer.updateOne(
-        { _id },
-        { phone, college, favoriteAcademicSubject }
-      )
+      await Volunteer.updateOne({ _id }, { phone })
       res.sendStatus(200)
     } catch (err) {
       next(err)
     }
   })
+
+  router.post('/user/volunteer-approval/reference', async (req, res, next) => {
+    const { ip } = req
+    const { _id } = req.user
+    const { referenceFirstName, referenceLastName, referenceEmail } = req.body
+    await UserService.addReference({
+      userId: _id,
+      referenceFirstName,
+      referenceLastName,
+      referenceEmail,
+      ip
+    })
+    res.sendStatus(200)
+  })
+
+  router.post('/user/volunteer-approval/reference/delete', async (req, res) => {
+    const { ip } = req
+    const { _id } = req.user
+    const { referenceEmail } = req.body
+    await UserService.deleteReference({
+      userId: _id,
+      referenceEmail,
+      ip
+    })
+    res.sendStatus(200)
+  })
+
+  router.get('/user/volunteer-approval/photo-url', async (req, res, next) => {
+    const { ip } = req
+    const { _id } = req.user
+    const photoIdS3Key = await UserService.addPhotoId({ userId: _id, ip })
+    const uploadUrl = await AwsService.getPhotoIdUploadUrl({ photoIdS3Key, ip })
+
+    if (uploadUrl) {
+      res.json({
+        success: true,
+        message: 'AWS SDK S3 pre-signed URL generated successfully',
+        uploadUrl
+      })
+    } else {
+      res.json({
+        success: false,
+        message: 'Pre-signed URL error'
+      })
+    }
+  })
+
+  router.post(
+    '/user/volunteer-approval/background-information',
+    async (req, res) => {
+      const { ip } = req
+      const { _id } = req.user
+      const {
+        occupation,
+        experience,
+        company,
+        college,
+        linkedInUrl,
+        languages,
+        country,
+        state,
+        city
+      } = req.body
+
+      const update = {
+        occupation,
+        experience,
+        company,
+        college,
+        linkedInUrl,
+        languages,
+        country,
+        state,
+        city
+      }
+
+      try {
+        await UserService.addBackgroundInfo({
+          volunteerId: _id,
+          ip,
+          update
+        })
+        res.sendStatus(200)
+      } catch (error) {
+        res.sendStatus(500)
+      }
+    }
+  )
 
   router.get('/user/:userId', passport.isAdmin, async function(req, res, next) {
     const { userId } = req.params
@@ -60,6 +149,11 @@ module.exports = function(router) {
         .populate('approvedHighschool')
         .lean()
         .exec()
+
+      if (user.isVolunteer && user.photoIdS3Key)
+        user.photoUrl = await AwsService.getPhotoIdUrl({
+          photoIdS3Key: user.photoIdS3Key
+        })
 
       res.json({ user })
     } catch (err) {

@@ -171,5 +171,5 @@ module.exports = function(app) {
     }
   })
 
-  app.use('/eligibility', router)
+  app.use('/api-public/eligibility', router)
 }

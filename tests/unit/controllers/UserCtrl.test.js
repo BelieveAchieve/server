@@ -12,15 +12,12 @@ const goodUser = new Volunteer({
 
   verified: true,
   verificationToken: 'verificationToken',
-  registrationCode: 'registrationCode',
   passwordResetToken: 'passwordResetToken',
 
   // Profile data
   firstname: 'firstname',
   lastname: 'lastname',
   phone: 5555555555,
-
-  favoriteAcademicSubject: 'favoriteAcademicSubject',
   college: 'college',
 
   availability: {

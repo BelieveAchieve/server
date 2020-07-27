@@ -19,17 +19,27 @@ const config: Static<typeof Config> = {
     verifyTemplate: 'd-02281875a1cf4575bd3568e674faf147',
     resetTemplate: 'd-5005d2beb2ad49a883a10364f3e14b81',
     partnerOrgSignupAlertTemplate: 'd-238200a8df0d4493b12defbf472901b9',
-    volunteerWelcomeTemplate: 'd-58fdc5f84f9e4ecbbda3d3c0cd4aa7fa',
+    openVolunteerWelcomeTemplate: 'd-0e4406696376446da0d580b9c7e9a95a',
+    partnerVolunteerWelcomeTemplate: 'd-eac2fdfaa8d740c8965ba8011102986b',
     studentWelcomeTemplate: 'd-dba390e0c99545d4b18135d869046f50',
     reportedSessionAlertTemplate: 'd-fe338f96339445279c3fa6580fabc286',
+    referenceFormTemplate: 'd-122f9c9953144e62b1f66411b8e85723',
+    approvedNotOnboardedTemplate: 'd-2c7a974fc7084a9eaaa152f3498cc99d',
+    openReadyToCoachTemplate: 'd-09ec01c51be54c108b7fae4481acfd38',
+    partnerReadyToCoachTemplate: 'd-d2ba9920683b4bd4a159f496a2346583',
     unsubscribeGroup: {
       newsletter: 12567,
       account: 12570
+    },
+    contactList: {
+      students: '1111111a-111b-111c-111d-11111111111e',
+      volunteers: '1111111a-111b-111c-111d-11111111111e'
     }
   },
   mail: {
     senders: {
-      noreply: 'noreply@upchieve.org'
+      noreply: 'noreply@upchieve.org',
+      support: 'support@upchieve.org'
     },
     receivers: {
       contact: 'staff@upchieve.org',
@@ -104,13 +114,18 @@ const config: Static<typeof Config> = {
   // voice to use to render speech
   voice: 'man',
 
-  VOLUNTEER_CODES: process.env.UPCHIEVE_VOLUNTEER_CODES || 'CODE123,CODE987',
   workerQueueName: 'main',
   redisConnectionString: 'redis://127.0.0.1:6379',
   firebase: {
     projectId: 123456789012
   },
-  bannedServiceProviders: ['Example']
+  bannedServiceProviders: ['Example'],
+  awsS3: {
+    accessKeyId: 'ACCESSKEY123',
+    secretAccessKey: 'SECRETACCESSKEY789',
+    region: 'us-east-2',
+    photoIdBucket: 'photo-id-bucket'
+  }
 };
 
 module.exports = config;

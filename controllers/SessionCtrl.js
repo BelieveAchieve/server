@@ -61,6 +61,10 @@ module.exports = function(socketService) {
         throw new Error('User not authenticated')
       }
 
+      if (user.isVolunteer && !user.isApproved) {
+        throw new Error('Volunteer not approved')
+      }
+
       const session = await Session.findById(sessionId).exec()
       if (!session) {
         throw new Error('No session found!')
