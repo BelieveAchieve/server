@@ -98,7 +98,8 @@ const availabilitySchema = new mongoose.Schema(
 const referenceSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   email: { type: String, required: true },
-  name: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
   status: {
     type: String,
     required: true,
@@ -165,7 +166,6 @@ const volunteerSchema = new mongoose.Schema(
       trim: true
       // @todo: server-side validation of international phone format
     },
-    favoriteAcademicSubject: String,
     college: String,
     occupation: [String],
     experience: {
@@ -176,7 +176,7 @@ const volunteerSchema = new mongoose.Schema(
     country: String,
     state: String,
     city: String,
-    background: [String],
+    company: String,
     languages: [String],
     linkedInUrl: String,
     availability: {
@@ -186,6 +186,10 @@ const volunteerSchema = new mongoose.Schema(
     timezone: String,
     availabilityLastModifiedAt: { type: Date },
     elapsedAvailability: { type: Number, default: 0 },
+    sentReadyToCoachEmail: {
+      type: Boolean,
+      default: false
+    },
     certifications: {
       prealgebra: {
         passed: {

@@ -45,9 +45,16 @@ module.exports = {
     return photoIdS3Key
   },
 
-  addReference: async ({ userId, referenceName, referenceEmail, ip }) => {
+  addReference: async ({
+    userId,
+    referenceFirstName,
+    referenceLastName,
+    referenceEmail,
+    ip
+  }) => {
     const referenceData = {
-      name: referenceName,
+      firstName: referenceFirstName,
+      lastName: referenceLastName,
       email: referenceEmail
     }
     await Volunteer.updateOne(
@@ -143,7 +150,9 @@ module.exports = {
                 REFERENCE_STATUS.UNSENT,
                 REFERENCE_STATUS.SENT
               ]
-            }
+            },
+            occupation: { $ne: null },
+            country: { $ne: null }
           }
         },
         {
@@ -175,9 +184,8 @@ module.exports = {
     const hasCompletedBackgroundInfo =
       volunteerBeforeUpdate.occupation &&
       volunteerBeforeUpdate.occupation.length > 0 &&
-      volunteerBeforeUpdate.background &&
-      volunteerBeforeUpdate.background.length > 0 &&
       volunteerBeforeUpdate.country
+
     const statuses = [...referencesStatus, photoIdStatus]
     // A volunteer must have the following list items approved before being considered an approved volunteer
     //  1. two references
@@ -193,8 +201,19 @@ module.exports = {
       'references.1.status': referenceTwoStatus
     }
 
-    if (photoIdStatus === PHOTO_ID_STATUS.REJECTED)
+    await Volunteer.update({ _id: volunteerId }, update)
+
+    if (
+      photoIdStatus === PHOTO_ID_STATUS.REJECTED &&
+      volunteerBeforeUpdate.photoIdStatus !== PHOTO_ID_STATUS.REJECTED
+    ) {
       UserActionCtrl.rejectedPhotoId(volunteerId)
+    }
+
+    const isNewlyApproved = isApproved && !volunteerBeforeUpdate.isApproved
+    if (isNewlyApproved) UserActionCtrl.accountApproved(volunteerId)
+    if (isNewlyApproved && !volunteerBeforeUpdate.isOnboarded)
+      MailService.sendApprovedNotOnboardedEmail(volunteerBeforeUpdate)
 
     for (let i = 0; i < referencesStatus.length; i++) {
       if (
@@ -205,30 +224,15 @@ module.exports = {
           referenceEmail: volunteerBeforeUpdate.references[i].email
         })
     }
-
-    // @todo: volunteer-signup - merge with incoming emails pr
-    if (isApproved) UserActionCtrl.accountApproved(volunteerId)
-
-    await Volunteer.update({ _id: volunteerId }, update)
   },
 
   addBackgroundInfo: async function({ volunteerId, update, ip }) {
-    const {
-      volunteerPartnerOrg,
-      references,
-      photoIdStatus,
-      isApproved
-    } = await getVolunteer(volunteerId)
-    let isFinalApprovalStep = false
-
-    if (!isApproved && !volunteerPartnerOrg && references.length === 2) {
-      const referencesStatus = references.map(reference => reference.status)
-      const statuses = [...referencesStatus, photoIdStatus]
-
-      isFinalApprovalStep = statuses.every(status => status === STATUS.APPROVED)
+    const { volunteerPartnerOrg } = await getVolunteer(volunteerId)
+    if (volunteerPartnerOrg) {
+      update.isApproved = true
+      UserActionCtrl.accountApproved(volunteerId)
+      // @todo: if not onboarded, send a partner-specific version of the "approved but not onboarded" email
     }
-
-    if (volunteerPartnerOrg || isFinalApprovalStep) update.isApproved = true
 
     // remove fields with empty strings and empty arrays from the update
     for (const field in update) {
@@ -240,7 +244,6 @@ module.exports = {
     }
 
     UserActionCtrl.completedBackgroundInfo(volunteerId, ip)
-    if (update.isApproved) UserActionCtrl.accountApproved(volunteerId, ip)
     return Volunteer.update({ _id: volunteerId }, update)
   }
 }

@@ -24,18 +24,27 @@ export const Config = Record({
     verifyTemplate: String,
     resetTemplate: String,
     partnerOrgSignupAlertTemplate: String,
-    volunteerWelcomeTemplate: String,
+    openVolunteerWelcomeTemplate: String,
+    partnerVolunteerWelcomeTemplate: String,
     studentWelcomeTemplate: String,
     reportedSessionAlertTemplate: String,
     referenceFormTemplate: String,
+    approvedNotOnboardedTemplate: String,
+    openReadyToCoachTemplate: String,
+    partnerReadyToCoachTemplate: String,
     unsubscribeGroup: Record({
       newsletter: Number,
       account: Number
+    }),
+    contactList: Record({
+      students: String,
+      volunteers: String
     })
   }),
   mail: Record({
     senders: Record({
-      noreply: String
+      noreply: String,
+      support: String
     }),
     receivers: Record({
       contact: String,

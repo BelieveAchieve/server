@@ -63,7 +63,6 @@ export const buildVolunteer = (overrides = {}): Volunteer => {
     zipCode: '11201',
     referredByCode: '',
     college: 'Columbia University',
-    favoriteAcademicSubject: 'Computer Science',
     phone: '+12345678910',
     referralCode: generateReferralCode(_id.toString()),
     isApproved: false,
@@ -100,11 +99,13 @@ export const buildVolunteerRegistrationForm = (
 };
 
 export const buildReference = (overrides = {}): Partial<Reference> => {
-  const referenceName = `${getFirstName()} ${getLastName()}`;
+  const referenceFirstName = getFirstName();
+  const referenceLastName = getLastName();
   const referenceEmail = getEmail();
   const reference = {
     _id: Types.ObjectId(),
-    name: referenceName,
+    firstName: referenceFirstName,
+    lastName: referenceLastName,
     email: referenceEmail,
     ...overrides
   };
@@ -160,7 +161,6 @@ export const buildBackgroundInfo = (overrides = {}): Partial<Volunteer> => {
       mentoring: '1-2 years',
       tutoring: '0-1 years'
     },
-    background: ['Went to a Title 1/low-income high school'],
     languages: ['Spanish'],
     country: 'United States of America',
     state: 'New York',

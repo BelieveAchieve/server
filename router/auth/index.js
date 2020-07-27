@@ -212,9 +212,7 @@ module.exports = function(app) {
     const {
       email,
       password,
-      college,
       phone,
-      favoriteAcademicSubject,
       terms,
       referredByCode,
       firstName,
@@ -247,9 +245,7 @@ module.exports = function(app) {
       email,
       isVolunteer: true,
       isApproved: false,
-      college,
       phone,
-      favoriteAcademicSubject,
       firstname: firstName.trim(),
       lastname: lastName.trim(),
       verified: false,
@@ -276,9 +272,7 @@ module.exports = function(app) {
       email,
       password,
       volunteerPartnerOrg,
-      college,
       phone,
-      favoriteAcademicSubject,
       terms,
       referredByCode,
       firstName,
@@ -336,9 +330,7 @@ module.exports = function(app) {
       isApproved: false,
       isVolunteer: true,
       volunteerPartnerOrg,
-      college,
       phone,
-      favoriteAcademicSubject,
       firstname: firstName.trim(),
       lastname: lastName.trim(),
       verified: false,
@@ -444,6 +436,16 @@ module.exports = function(app) {
 
     return res.json({ studentPartnerKey })
   })
+
+  // List all student partners (admins only)
+  router
+    .route('/partner/student-partners')
+    .all(authPassport.isAdmin)
+    .get(function(req, res, next) {
+      return res.json({
+        partnerOrgs: Object.keys(config.studentPartnerManifests)
+      })
+    })
 
   router.post('/reset/send', function(req, res, next) {
     const email = req.body.email

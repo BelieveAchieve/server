@@ -36,13 +36,10 @@ module.exports = function(router) {
   // @note: Currently, only volunteers are able to update their profile
   router.put('/user', async (req, res, next) => {
     const { _id } = req.user
-    const { phone, college, favoriteAcademicSubject } = req.body
+    const { phone } = req.body
 
     try {
-      await Volunteer.updateOne(
-        { _id },
-        { phone, college, favoriteAcademicSubject }
-      )
+      await Volunteer.updateOne({ _id }, { phone })
       res.sendStatus(200)
     } catch (err) {
       next(err)
@@ -52,10 +49,11 @@ module.exports = function(router) {
   router.post('/user/volunteer-approval/reference', async (req, res, next) => {
     const { ip } = req
     const { _id } = req.user
-    const { referenceName, referenceEmail } = req.body
+    const { referenceFirstName, referenceLastName, referenceEmail } = req.body
     await UserService.addReference({
       userId: _id,
-      referenceName,
+      referenceFirstName,
+      referenceLastName,
       referenceEmail,
       ip
     })
@@ -102,7 +100,8 @@ module.exports = function(router) {
       const {
         occupation,
         experience,
-        background,
+        company,
+        college,
         linkedInUrl,
         languages,
         country,
@@ -113,7 +112,8 @@ module.exports = function(router) {
       const update = {
         occupation,
         experience,
-        background,
+        company,
+        college,
         linkedInUrl,
         languages,
         country,

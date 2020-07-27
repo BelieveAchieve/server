@@ -1,4 +1,5 @@
 const express = require('express')
+const { ObjectId } = require('mongodb')
 const UserService = require('../../services/UserService')
 
 module.exports = function(app) {
@@ -7,11 +8,11 @@ module.exports = function(app) {
   router.post('/:referenceId/submit', async (req, res, next) => {
     const { referenceId } = req.params
     const { body: referenceFormData, ip } = req
-
-    const { references, _id: userId } = await UserService.getUser({
-      'references._id': referenceId
+    const user = await UserService.getUser({
+      'references._id': ObjectId(referenceId)
     })
-
+    if (!user) return res.sendStatus(404)
+    const { references, _id: userId } = user
     let referenceEmail
     for (const reference of references) {
       if (reference._id.toString() === referenceId)

@@ -1,4 +1,4 @@
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export interface User extends Document {
   availabilityLastModifiedAt: Date;
@@ -6,7 +6,9 @@ export interface User extends Document {
 }
 
 export interface Reference extends Document {
-  name: string;
+  _id: Types.ObjectId;
+  firstName: string;
+  lastName: string;
   email: string;
   status: string;
 }

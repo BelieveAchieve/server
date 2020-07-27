@@ -25,7 +25,8 @@ export interface Reference {
   _id: Types.ObjectId;
   status: string;
   email: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   affiliation: string;
   relationshipLength: string;
   patient: number;
@@ -51,7 +52,7 @@ export interface Volunteer extends User {
   isOnboarded: boolean;
   // background information
   occupation?: Array<string>;
-  background?: Array<string>;
+  company?: string;
   experience?: {
     collegeCounseling: string;
     mentoring: string;

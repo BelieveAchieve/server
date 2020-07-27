@@ -18,6 +18,7 @@ import {
   buildBackgroundInfo
 } from '../../utils/generate';
 import { insertVolunteer, resetDb } from '../../utils/db-utils';
+jest.mock('../../../services/MailService');
 
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGO_URL, {
@@ -71,7 +72,8 @@ test('Should add a reference', async () => {
   const reference = buildReference();
   const input = {
     userId,
-    referenceName: reference.name,
+    referenceFirstName: reference.firstName,
+    referenceLastName: reference.lastName,
     referenceEmail: reference.email
   };
 
@@ -89,7 +91,8 @@ test('Should add a reference', async () => {
   });
 
   const expectedReference = {
-    name: input.referenceName,
+    firstName: input.referenceFirstName,
+    lastName: input.referenceLastName,
     email: input.referenceEmail,
     status: REFERENCE_STATUS.UNSENT
   };
@@ -131,12 +134,14 @@ test('Should delete a reference', async () => {
   });
 
   const remainingReference = {
-    name: referenceTwo.name,
+    firstName: referenceTwo.firstName,
+    lastName: referenceTwo.lastName,
     email: referenceTwo.email,
     status: REFERENCE_STATUS.UNSENT
   };
   const removedReference = {
-    name: referenceOne.name,
+    firstName: referenceOne.firstName,
+    lastName: referenceOne.lastName,
     email: referenceOne.email
   };
   const expectedUserAction = {
@@ -296,58 +301,7 @@ test('Pending volunteer should be approved after approval', async () => {
   expect(userAction).toMatchObject(expectedUserAction);
 });
 
-test('Open volunteer is not approved when submitting their background info is not the final approval step', async () => {
-  const volunteer = buildVolunteer({
-    references: [],
-    photoIdStatus: STATUS.APPROVED
-  });
-  await insertVolunteer(volunteer);
-  const update = buildBackgroundInfo();
-  const input = {
-    volunteerId: volunteer._id,
-    update
-  };
-
-  await UserService.addBackgroundInfo(input);
-  const updatedVolunteer = await VolunteerModel.findOne({ _id: volunteer._id })
-    .lean()
-    .select(
-      'isApproved occupation experience background languages country city state'
-    )
-    .exec();
-  const backgroundInfoUserAction = await UserActionModel.findOne({
-    user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
-  });
-  const accountApprovedUserAction = await UserActionModel.findOne({
-    user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.APPROVED
-  });
-
-  const expectedVolunteer = {
-    occupation: update.occupation,
-    languages: update.languages,
-    experience: update.experience,
-    background: update.background,
-    country: update.country,
-    city: update.city,
-    state: update.state,
-    isApproved: false
-  };
-
-  const expectedBackgroundInfoUserAction = {
-    user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
-  };
-
-  expect(updatedVolunteer).toMatchObject(expectedVolunteer);
-  expect(backgroundInfoUserAction).toMatchObject(
-    expectedBackgroundInfoUserAction
-  );
-  expect(accountApprovedUserAction).toBeNull();
-});
-
-test('Open volunteer is approved when submitting their background info is the final approval step', async () => {
+test('Open volunteer is not approved when submitting their background info', async () => {
   const volunteer = buildVolunteer({
     references: [
       buildReference({ status: STATUS.APPROVED }),
@@ -378,27 +332,21 @@ test('Open volunteer is approved when submitting their background info is the fi
   });
 
   const expectedVolunteer = {
-    isApproved: true
+    isApproved: false
   };
   const expectedBackgroundInfoUserAction = {
     user: input.volunteerId,
     action: USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
-  };
-  const expectedAccountApprovedUserAction = {
-    user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.APPROVED
   };
 
   expect(updatedVolunteer).toMatchObject(expectedVolunteer);
   expect(backgroundInfoUserAction).toMatchObject(
     expectedBackgroundInfoUserAction
   );
-  expect(accountApprovedUserAction).toMatchObject(
-    expectedAccountApprovedUserAction
-  );
+  expect(accountApprovedUserAction).toBeNull();
 });
 
-test('Partner Volunteer is approved when submitting background info', async () => {
+test('Partner volunteer is approved when submitting background info', async () => {
   const volunteer = buildVolunteer({
     references: [
       buildReference({ status: STATUS.APPROVED }),
@@ -418,9 +366,7 @@ test('Partner Volunteer is approved when submitting background info', async () =
   await UserService.addBackgroundInfo(input);
   const updatedVolunteer = await VolunteerModel.findOne({ _id: volunteer._id })
     .lean()
-    .select(
-      'isApproved occupation experience background languages country state city'
-    )
+    .select('isApproved occupation experience languages country state city')
     .exec();
   const backgroundInfoUserAction = await UserActionModel.findOne({
     user: input.volunteerId,
@@ -435,7 +381,6 @@ test('Partner Volunteer is approved when submitting background info', async () =
     isApproved: true,
     occupation: update.occupation,
     experience: update.experience,
-    background: update.background,
     country: update.country,
     state: update.state,
     city: update.city,
