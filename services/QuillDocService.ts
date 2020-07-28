@@ -1,4 +1,4 @@
-import Delta = require('quill-delta');
+import Delta from 'quill-delta';
 
 // @todo: store in redis, not in-memory
 const quillDocCache: { [sessionId: string]: Delta } = {};
