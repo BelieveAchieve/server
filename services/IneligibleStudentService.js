@@ -1,6 +1,12 @@
 const IneligibleStudent = require('../models/IneligibleStudent')
 
 module.exports = {
+  getStudent: query => {
+    return IneligibleStudent.findOne(query)
+      .lean()
+      .exec()
+  },
+
   getStudents: async function(page) {
     const PER_PAGE = 15
     const skip = (page - 1) * PER_PAGE
@@ -28,6 +34,7 @@ module.exports = {
         {
           $project: {
             createdAt: 1,
+            email: 1,
             zipCode: '$zipCode.zipCode',
             medianIncome: '$zipCode.medianIncome',
             schoolId: '$school._id',

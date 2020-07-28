@@ -11,8 +11,6 @@ const getVolunteer = async volunteerId => {
 }
 
 module.exports = {
-  getVolunteer,
-
   getUser: query => {
     return User.findOne(query)
       .lean()

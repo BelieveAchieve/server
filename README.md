@@ -45,7 +45,6 @@ UPchieve web server
     - [POST /moderate/message](#post-moderatemessage)
     - [POST /eligibility/check](#post-eligibilitycheck)
     - [GET /eligibility/school/search](#get-eligibilityschoolsearch)
-    - [POST /eligibility/school/approvalnotify](#post-eligibilityschoolapprovalnotify)
     - [GET /eligibility/school/studentusers/:schoolUpchieveId](#get-eligibilityschoolstudentusersschoolupchieveid)
 - [Worker](#worker)
     - [Jobs](#worker-jobs)
@@ -447,7 +446,8 @@ Expects the following request body:
 ```json
 {
   "schoolUpchieveId": "String",
-  "zipCode": "String"
+  "zipCode": "String",
+  "email": "String"
 }
 ```
 
@@ -477,17 +477,6 @@ If there are no errors, the response body contains the list of schools matching 
     },
     // ...
   ]
-}
-```
-
-### POST /eligibility/school/approvalnotify
-
-Expects the following request body:
-
-```json
-{
-  "schoolUpchieveId": "String",
-  "email": "String"
 }
 ```
 
