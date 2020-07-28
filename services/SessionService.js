@@ -1,6 +1,7 @@
 const Session = require('../models/Session')
 const User = require('../models/User')
 const WhiteboardService = require('../services/WhiteboardService')
+const QuillDocService = require('../services/QuillDocService')
 
 const addPastSession = async ({ userId, sessionId }) => {
   await User.update({ _id: userId }, { $addToSet: { pastSessions: sessionId } })
@@ -8,6 +9,8 @@ const addPastSession = async ({ userId, sessionId }) => {
 
 const getSession = async sessionId => {
   return Session.findOne({ _id: sessionId })
+    .lean()
+    .exec()
 }
 
 const isSessionParticipant = (session, user) => {
@@ -41,11 +44,13 @@ module.exports = {
       {
         endedAt: new Date(),
         endedBy,
-        whiteboardDoc: WhiteboardService.getDoc(session._id)
+        whiteboardDoc: WhiteboardService.getDoc(session._id),
+        quillDoc: JSON.stringify(QuillDocService.getDoc(session._id))
       }
     )
 
     WhiteboardService.clearDocFromCache(session._id)
+    QuillDocService.deleteDoc(session._id)
   },
 
   isSessionFulfilled: session => {
