@@ -11,8 +11,9 @@ const MailService = require('../../services/MailService')
 const recordIpAddress = require('../../middleware/record-ip-address')
 const passport = require('../auth/passport')
 const mapMultiWordSubtopic = require('../../utils/map-multi-word-subtopic')
-const { USER_BAN_REASON } = require('../../constants')
+const { USER_BAN_REASON, USER_ACTION } = require('../../constants')
 const NotificationService = require('../../services/NotificationService')
+const UserAction = require('../../models/UserAction')
 
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
@@ -203,6 +204,17 @@ module.exports = function(router, io) {
         .lean()
         .exec()
 
+      const sessionUserAgent = await UserAction.findOne({
+        session: sessionId,
+        action: USER_ACTION.SESSION.REQUESTED
+      })
+        .select(
+          '-_id device browser browserVersion operatingSystem operatingSystemVersion'
+        )
+        .lean()
+        .exec()
+
+      session.userAgent = sessionUserAgent
       session.feedbacks = await Feedback.find({ sessionId })
 
       res.json({ session })
