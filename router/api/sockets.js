@@ -106,6 +106,15 @@ module.exports = function(io, sessionStore) {
       )
     })
 
+    socket.on('transmitQuillSelection', async ({ sessionId, range }) => {
+      socketService.emitToOtherUser(
+        sessionId,
+        socket.request.user._id,
+        'quillPartnerSelection',
+        { range }
+      )
+    })
+
     socket.on('error', function(error) {
       console.log('Socket error: ', error)
       Sentry.captureException(error)
