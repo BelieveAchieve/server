@@ -2,13 +2,19 @@ import faker from 'faker';
 import { Test } from 'supertest';
 import { Types } from 'mongoose';
 import base64url from 'base64url';
+import { merge } from 'lodash';
 import { PHOTO_ID_STATUS, REFERENCE_STATUS } from '../../constants';
 import {
+  User,
   Volunteer,
   Student,
   StudentRegistrationForm,
   VolunteerRegistrationForm,
-  Reference
+  Reference,
+  Availability,
+  DAYS,
+  HOURS,
+  Certifications
 } from './types';
 
 export const getEmail = faker.internet.email;
@@ -165,7 +171,45 @@ export const buildBackgroundInfo = (overrides = {}): Partial<Volunteer> => {
   return data;
 };
 
-export const authLogin = (agent, { email, password }): Test =>
+export const buildAvailability = (overrides = {}): Availability => {
+  const availability = {} as Availability;
+  for (const day in DAYS) {
+    availability[DAYS[day]] = {};
+    for (const hour in HOURS) {
+      availability[DAYS[day]][HOURS[hour]] = false;
+    }
+  }
+
+  const mergedAvailability = merge(availability, overrides);
+
+  return mergedAvailability;
+};
+
+export const buildCertifications = (overrides = {}): Certifications => {
+  const certifications = {
+    prealgebra: { passed: false, tries: 0 },
+    algebra: { passed: false, tries: 0 },
+    geometry: { passed: false, tries: 0 },
+    trigonometry: { passed: false, tries: 0 },
+    precalculus: { passed: false, tries: 0 },
+    calculus: { passed: false, tries: 0 },
+    integratedMathOne: { passed: false, tries: 0 },
+    integratedMathTwo: { passed: false, tries: 0 },
+    integratedMathThree: { passed: false, tries: 0 },
+    integratedMathFour: { passed: false, tries: 0 },
+    applications: { passed: false, tries: 0 },
+    essays: { passed: false, tries: 0 },
+    planning: { passed: false, tries: 0 },
+    biology: { passed: false, tries: 0 },
+    chemistry: { passed: false, tries: 0 },
+    physicsOne: { passed: false, tries: 0 },
+    ...overrides
+  };
+
+  return certifications;
+};
+
+export const authLogin = (agent, { email, password }: Partial<User>): Test =>
   agent
     .post('/auth/login')
     .set('Accept', 'application/json')
