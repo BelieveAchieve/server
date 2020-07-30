@@ -144,13 +144,25 @@ module.exports = {
     )
   },
 
-  sendReportedSessionAlert: ({ sessionId, reportedByEmail, reportMessage }) => {
+  sendReportedSessionAlert: ({
+    sessionId,
+    reportedByEmail,
+    reportReason,
+    reportMessage
+  }) => {
+    const sessionAdminLink = buildLink(`admin/sessions/${sessionId}`)
     return sendEmail(
       config.mail.receivers.staff,
       config.mail.senders.noreply,
       'UPchieve',
       config.sendgrid.reportedSessionAlertTemplate,
-      { sessionId, reportedByEmail, reportMessage }
+      {
+        sessionId,
+        sessionAdminLink,
+        reportedByEmail,
+        reportReason,
+        reportMessage
+      }
     )
   },
 

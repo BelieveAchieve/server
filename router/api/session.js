@@ -156,7 +156,7 @@ module.exports = function(router, io) {
 
   router.post('/session/:sessionId/report', async function(req, res) {
     const { sessionId } = req.params
-    const { reportMessage } = req.body
+    const { reportReason, reportMessage } = req.body
     const { user } = req
     const session = await SessionService.getSession(sessionId)
 
@@ -166,6 +166,7 @@ module.exports = function(router, io) {
     await SessionService.reportSession({
       session,
       reportedBy: user,
+      reportReason,
       reportMessage
     })
 

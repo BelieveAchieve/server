@@ -74,6 +74,11 @@ const sessionSchema = new mongoose.Schema({
     }
   ],
 
+  isReported: {
+    type: Boolean,
+    default: false
+  },
+  reportReason: String,
   reportMessage: String
 })
 

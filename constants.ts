@@ -124,3 +124,7 @@ export const REFERENCE_STATUS = {
   REJECTED: STATUS.REJECTED,
   APPROVED: STATUS.APPROVED
 };
+
+export const SESSION_REPORT_REASON = {
+  STUDENT: 'Student behavior'
+}
