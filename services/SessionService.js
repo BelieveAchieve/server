@@ -1,6 +1,9 @@
 const Session = require('../models/Session')
 const User = require('../models/User')
 const WhiteboardService = require('../services/WhiteboardService')
+const UserService = require('./UserService')
+const MailService = require('./MailService')
+const { USER_BAN_REASON } = require('../constants')
 
 const addPastSession = async ({ userId, sessionId }) => {
   await User.update({ _id: userId }, { $addToSet: { pastSessions: sessionId } })
@@ -18,6 +21,26 @@ const isSessionParticipant = (session, user) => {
 
 module.exports = {
   getSession,
+
+  reportSession: async ({ session, reportedBy, reportMessage }) => {
+    await Session.updateOne(
+      { _id: session._id },
+      { reportMessage }
+    )
+
+    if (reportedBy.isVolunteer) {
+      await UserService.banUser({
+        userId: session.student,
+        banReason: USER_BAN_REASON.SESSION_REPORTED
+      })
+    }
+
+    MailService.sendReportedSessionAlert({
+      sessionId: session._id,
+      reportedByEmail: reportedBy.email,
+      reportMessage: reportMessage || '(no message)'
+    })
+  },
 
   endSession: async ({ sessionId, endedBy = null, isAdmin = false }) => {
     const session = await getSession(sessionId)

@@ -72,7 +72,9 @@ const sessionSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Notification'
     }
-  ]
+  ],
+
+  reportMessage: String
 })
 
 sessionSchema.methods.saveMessage = function(messageObj, cb) {
