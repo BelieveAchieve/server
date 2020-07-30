@@ -1,6 +1,4 @@
 const express = require('express')
-
-const config = require('../../config')
 const MailService = require('../../services/MailService')
 
 module.exports = function(app) {
@@ -9,18 +7,15 @@ module.exports = function(app) {
   router.route('/send').post(function(req, res, next) {
     var responseData = req.body.responseData
 
-    MailService.sendContactForm(
-      { responseData },
-      function(err) {
-        if (err) {
-          next(err)
-        } else {
-          res.json({
-            msg: 'Contact form has been sent'
-          })
-        }
+    MailService.sendContactForm({ responseData }, function(err) {
+      if (err) {
+        next(err)
+      } else {
+        res.json({
+          msg: 'Contact form has been sent'
+        })
       }
-    )
+    })
   })
 
   app.use('/api-public/contact', router)

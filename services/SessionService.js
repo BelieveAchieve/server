@@ -23,10 +23,7 @@ module.exports = {
   getSession,
 
   reportSession: async ({ session, reportedBy, reportMessage }) => {
-    await Session.updateOne(
-      { _id: session._id },
-      { reportMessage }
-    )
+    await Session.updateOne({ _id: session._id }, { reportMessage })
 
     if (reportedBy.isVolunteer) {
       await UserService.banUser({
