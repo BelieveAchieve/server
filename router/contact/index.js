@@ -8,13 +8,9 @@ module.exports = function(app) {
 
   router.route('/send').post(function(req, res, next) {
     var responseData = req.body.responseData
-    var email = config.mail.receivers.contact
 
     MailService.sendContactForm(
-      {
-        email: email,
-        responseData: responseData
-      },
+      { responseData },
       function(err) {
         if (err) {
           next(err)

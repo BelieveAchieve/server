@@ -83,14 +83,13 @@ module.exports = {
     )
   },
 
-  sendContactForm: ({ email, responseData }, callback) => {
+  sendContactForm: ({ responseData }, callback) => {
     sendEmail(
-      email,
+      config.mail.receivers.contact,
       config.mail.senders.noreply,
       'UPchieve',
       config.sendgrid.contactTemplate,
       responseData,
-      config.sendgrid.unsubscribeGroup.account,
       callback
     )
   },
@@ -123,8 +122,7 @@ module.exports = {
         email,
         company,
         upchieveId
-      },
-      config.sendgrid.unsubscribeGroup.account
+      }
     )
   },
 
@@ -167,8 +165,7 @@ module.exports = {
       config.mail.senders.noreply,
       'UPchieve',
       config.sendgrid.reportedSessionAlertTemplate,
-      { sessionId, reportedByEmail, reportMessage },
-      config.sendgrid.unsubscribeGroup.account
+      { sessionId, reportedByEmail, reportMessage }
     )
   },
 
