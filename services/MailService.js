@@ -111,21 +111,6 @@ module.exports = {
     )
   },
 
-  sendPartnerOrgSignupAlert: ({ name, email, company, upchieveId }) => {
-    sendEmail(
-      config.mail.receivers.staff,
-      config.mail.senders.noreply,
-      'UPchieve',
-      config.sendgrid.partnerOrgSignupAlertTemplate,
-      {
-        name,
-        email,
-        company,
-        upchieveId
-      }
-    )
-  },
-
   sendOpenVolunteerWelcomeEmail: ({ email, volunteerName }) => {
     sendEmail(
       email,
