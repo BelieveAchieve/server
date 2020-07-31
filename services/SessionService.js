@@ -33,10 +33,10 @@ module.exports = {
       { isReported: true, reportReason, reportMessage }
     )
 
-    if (
-      reportedBy.isVolunteer &&
-      reportReason === SESSION_REPORT_REASON.STUDENT
-    ) {
+    const isBanReason =
+      reportReason === SESSION_REPORT_REASON.STUDENT_RUDE ||
+      reportReason === SESSION_REPORT_REASON.STUDENT_MISUSE
+    if (isBanReason && reportedBy.isVolunteer) {
       await UserService.banUser({
         userId: session.student,
         banReason: USER_BAN_REASON.SESSION_REPORTED

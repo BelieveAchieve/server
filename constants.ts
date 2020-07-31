@@ -126,5 +126,6 @@ export const REFERENCE_STATUS = {
 };
 
 export const SESSION_REPORT_REASON = {
-  STUDENT: 'Student behavior'
+  STUDENT_RUDE: 'Student was rude',
+  STUDENT_MISUSE: 'Student was misusing platform'
 }
