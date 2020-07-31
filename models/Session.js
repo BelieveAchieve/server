@@ -74,7 +74,14 @@ const sessionSchema = new mongoose.Schema({
     }
   ],
 
-  photos: [String]
+  photos: [String],
+
+  isReported: {
+    type: Boolean,
+    default: false
+  },
+  reportReason: String,
+  reportMessage: String
 })
 
 sessionSchema.methods.saveMessage = function(messageObj, cb) {

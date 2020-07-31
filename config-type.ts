@@ -23,7 +23,6 @@ export const Config = Record({
     contactTemplate: String,
     verifyTemplate: String,
     resetTemplate: String,
-    partnerOrgSignupAlertTemplate: String,
     openVolunteerWelcomeTemplate: String,
     partnerVolunteerWelcomeTemplate: String,
     studentWelcomeTemplate: String,

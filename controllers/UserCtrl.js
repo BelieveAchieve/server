@@ -202,16 +202,6 @@ module.exports = {
       throw new Error(error)
     }
 
-    // Send internal email alert if new volunteer is from a partner org
-    if (volunteer.volunteerPartnerOrg) {
-      MailService.sendPartnerOrgSignupAlert({
-        name: `${volunteer.firstname} ${volunteer.lastname}`,
-        email: volunteer.email,
-        company: volunteer.volunteerPartnerOrg,
-        upchieveId: volunteer._id
-      })
-    }
-
     try {
       await VerificationCtrl.initiateVerification({ user: volunteer })
     } catch (err) {

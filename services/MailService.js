@@ -83,9 +83,9 @@ module.exports = {
     )
   },
 
-  sendContactForm: ({ email, responseData }, callback) => {
+  sendContactForm: ({ responseData }, callback) => {
     sendEmail(
-      email,
+      config.mail.receivers.contact,
       config.mail.senders.noreply,
       'UPchieve',
       config.sendgrid.contactTemplate,
@@ -109,22 +109,6 @@ module.exports = {
       },
       config.sendgrid.unsubscribeGroup.account,
       callback
-    )
-  },
-
-  sendPartnerOrgSignupAlert: ({ name, email, company, upchieveId }) => {
-    sendEmail(
-      config.mail.receivers.staff,
-      config.mail.senders.noreply,
-      'UPchieve',
-      config.sendgrid.partnerOrgSignupAlertTemplate,
-      {
-        name,
-        email,
-        company,
-        upchieveId
-      },
-      config.sendgrid.unsubscribeGroup.account
     )
   },
 
@@ -161,14 +145,26 @@ module.exports = {
     )
   },
 
-  sendReportedSessionAlert: ({ sessionId, reportedByEmail, reportMessage }) => {
+  sendReportedSessionAlert: ({
+    sessionId,
+    reportedByEmail,
+    reportReason,
+    reportMessage
+  }) => {
+    const sessionAdminLink = buildLink(`admin/sessions/${sessionId}`)
     return sendEmail(
       config.mail.receivers.staff,
       config.mail.senders.noreply,
       'UPchieve',
       config.sendgrid.reportedSessionAlertTemplate,
-      { sessionId, reportedByEmail, reportMessage },
-      config.sendgrid.unsubscribeGroup.account
+      {
+        sessionId,
+        sessionAdminLink,
+        reportedByEmail,
+        reportReason,
+        reportMessage
+      },
+      config.sendgrid.unsubscribeGroup.account,
     )
   },
 
