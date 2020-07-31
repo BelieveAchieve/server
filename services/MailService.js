@@ -90,6 +90,7 @@ module.exports = {
       'UPchieve',
       config.sendgrid.contactTemplate,
       responseData,
+      config.sendgrid.unsubscribeGroup.account,
       callback
     )
   },
@@ -162,7 +163,8 @@ module.exports = {
         reportedByEmail,
         reportReason,
         reportMessage
-      }
+      },
+      config.sendgrid.unsubscribeGroup.account,
     )
   },
 
