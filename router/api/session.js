@@ -6,13 +6,12 @@ const SessionCtrl = require('../../controllers/SessionCtrl')
 const UserActionCtrl = require('../../controllers/UserActionCtrl')
 const SocketService = require('../../services/SocketService')
 const SessionService = require('../../services/SessionService')
-const UserService = require('../../services/UserService')
-const MailService = require('../../services/MailService')
 const recordIpAddress = require('../../middleware/record-ip-address')
 const passport = require('../auth/passport')
 const mapMultiWordSubtopic = require('../../utils/map-multi-word-subtopic')
-const { USER_BAN_REASON } = require('../../constants')
+const { USER_ACTION } = require('../../constants')
 const NotificationService = require('../../services/NotificationService')
+const UserAction = require('../../models/UserAction')
 
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
@@ -157,22 +156,18 @@ module.exports = function(router, io) {
 
   router.post('/session/:sessionId/report', async function(req, res) {
     const { sessionId } = req.params
-    const { reportMessage } = req.body
+    const { reportReason, reportMessage } = req.body
     const { user } = req
     const session = await SessionService.getSession(sessionId)
 
     if (!session || !session.volunteer || !session.volunteer === user._id)
       return res.status(401).json({ err: 'Unable to report this session' })
 
-    await UserService.banUser({
-      userId: session.student,
-      banReason: USER_BAN_REASON.SESSION_REPORTED
-    })
-
-    MailService.sendReportedSessionAlert({
-      sessionId,
-      reportedByEmail: user.email,
-      reportMessage: reportMessage || '(no message)'
+    await SessionService.reportSession({
+      session,
+      reportedBy: user,
+      reportReason,
+      reportMessage
     })
 
     return res.json({ msg: 'Success' })
@@ -203,6 +198,17 @@ module.exports = function(router, io) {
         .lean()
         .exec()
 
+      const sessionUserAgent = await UserAction.findOne({
+        session: sessionId,
+        action: USER_ACTION.SESSION.REQUESTED
+      })
+        .select(
+          '-_id device browser browserVersion operatingSystem operatingSystemVersion'
+        )
+        .lean()
+        .exec()
+
+      session.userAgent = sessionUserAgent
       session.feedbacks = await Feedback.find({ sessionId })
 
       res.json({ session })
