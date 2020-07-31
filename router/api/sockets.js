@@ -1,18 +1,14 @@
 /**
  * Processes incoming socket messages
  */
-
 const passportSocketIo = require('passport.socketio')
 const cookieParser = require('cookie-parser')
-
+const Sentry = require('@sentry/node')
 const Session = require('../../models/Session.js')
-
 const config = require('../../config')
 const SessionCtrl = require('../../controllers/SessionCtrl.js')
 const SocketService = require('../../services/SocketService.js')
-const Sentry = require('@sentry/node')
-
-// todo handle errors in try-catch blocks
+const QuillDocService = require('../../services/QuillDocService')
 
 module.exports = function(io, sessionStore) {
   const socketService = SocketService(io)
@@ -90,6 +86,33 @@ module.exports = function(io, sessionStore) {
       if (!data.sessionId) return
 
       await sessionCtrl.message(data)
+    })
+
+    socket.on('requestQuillState', async ({ sessionId }) => {
+      let docState = QuillDocService.getDoc(sessionId)
+      if (!docState) docState = QuillDocService.createDoc(sessionId)
+      socketService.emitToUser(socket.request.user._id, 'quillState', {
+        delta: docState
+      })
+    })
+
+    socket.on('transmitQuillDelta', async ({ sessionId, delta }) => {
+      QuillDocService.appendToDoc(sessionId, delta)
+      socketService.emitToOtherUser(
+        sessionId,
+        socket.request.user._id,
+        'partnerQuillDelta',
+        { delta }
+      )
+    })
+
+    socket.on('transmitQuillSelection', async ({ sessionId, range }) => {
+      socketService.emitToOtherUser(
+        sessionId,
+        socket.request.user._id,
+        'quillPartnerSelection',
+        { range }
+      )
     })
 
     socket.on('error', function(error) {

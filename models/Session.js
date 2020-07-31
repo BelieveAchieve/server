@@ -42,6 +42,12 @@ const sessionSchema = new mongoose.Schema({
     select: false
   },
 
+  quillDoc: {
+    type: String,
+    default: '',
+    select: false
+  },
+
   createdAt: {
     type: Date,
     default: Date.now
