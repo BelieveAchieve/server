@@ -42,6 +42,12 @@ const sessionSchema = new mongoose.Schema({
     select: false
   },
 
+  quillDoc: {
+    type: String,
+    default: '',
+    select: false
+  },
+
   createdAt: {
     type: Date,
     default: Date.now
@@ -74,7 +80,13 @@ const sessionSchema = new mongoose.Schema({
     }
   ],
 
-  photos: [String]
+  photos: [String],
+  isReported: {
+    type: Boolean,
+    default: false
+  },
+  reportReason: String,
+  reportMessage: String
 })
 
 sessionSchema.methods.saveMessage = function(messageObj, cb) {
