@@ -19,7 +19,8 @@ const studentSchema = new mongoose.Schema(
        * if this.isVolunteer is false */
     },
     zipCode: String,
-    studentPartnerOrg: String
+    studentPartnerOrg: String,
+    partnerSite: String
   },
   schemaOptions
 );

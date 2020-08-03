@@ -85,7 +85,9 @@ const config: Static<typeof Config> = {
       highSchoolSignupRequired: true
     },
     example4: {
-      signupCode: 'EX4'
+      name: 'Example - Sites, No School',
+      signupCode: 'EX4',
+      sites: ['Site A', 'Site B', 'Site C']
     }
   },
 

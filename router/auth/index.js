@@ -113,7 +113,8 @@ module.exports = function(app) {
       terms,
       referredByCode,
       firstName,
-      lastName
+      lastName,
+      partnerSite
     } = req.body
 
     if (!terms) {
@@ -186,6 +187,7 @@ module.exports = function(app) {
       zipCode,
       studentPartnerOrg,
       partnerUserId,
+      partnerSite,
       approvedHighschool: school,
       isVolunteer: false,
       verified: true, // Students are automatically verified
