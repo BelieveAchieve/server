@@ -164,7 +164,7 @@ module.exports = {
         reportReason,
         reportMessage
       },
-      config.sendgrid.unsubscribeGroup.account,
+      config.sendgrid.unsubscribeGroup.account
     )
   },
 
