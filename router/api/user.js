@@ -46,6 +46,18 @@ module.exports = function(router) {
     }
   })
 
+  // Admin route to update a user
+  router.put('/user/:userId', passport.isAdmin, async (req, res, next) => {
+    const { userId } = req.params
+
+    try {
+      await UserService.adminUpdateUser({ userId, ...req.body })
+      res.sendStatus(200)
+    } catch (err) {
+      next(err)
+    }
+  })
+
   router.post('/user/volunteer-approval/reference', async (req, res, next) => {
     const { ip } = req
     const { _id } = req.user
@@ -158,6 +170,15 @@ module.exports = function(router) {
       res.json({ user })
     } catch (err) {
       console.log(err)
+      next(err)
+    }
+  })
+
+  router.get('/users', passport.isAdmin, async function(req, res, next) {
+    try {
+      const { users, isLastPage } = await UserService.getUsers(req.query)
+      res.json({ users, isLastPage })
+    } catch (err) {
       next(err)
     }
   })

@@ -2,6 +2,7 @@ const crypto = require('crypto')
 const { omit } = require('lodash')
 const User = require('../models/User')
 const Volunteer = require('../models/Volunteer')
+const Student = require('../models/Student')
 const MailService = require('./MailService')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
 const { PHOTO_ID_STATUS, REFERENCE_STATUS, STATUS } = require('../constants')
@@ -243,5 +244,86 @@ module.exports = {
 
     UserActionCtrl.completedBackgroundInfo(volunteerId, ip)
     return Volunteer.update({ _id: volunteerId }, update)
+  },
+
+  adminUpdateUser: async function({
+    userId,
+    firstName,
+    lastName,
+    email,
+    partnerOrg,
+    partnerSite,
+    isVerified,
+    isBanned,
+    isDeactivated
+  }) {
+    const userBeforeUpdate = await this.getUser({ _id: userId })
+    const { isVolunteer } = userBeforeUpdate
+    const isUpdatedEmail = userBeforeUpdate.email !== email
+
+    // Remove the contact associated with the previous email from SendGrid
+    if (isUpdatedEmail) {
+      const contact = await MailService.searchContact(userBeforeUpdate.email)
+      if (contact) MailService.deleteContact(contact.id)
+    }
+
+    const update = {
+      firstname: firstName,
+      lastname: lastName,
+      email,
+      isVerified,
+      isBanned,
+      isDeactivated,
+      $unset: {}
+    }
+
+    if (isVolunteer) {
+      if (partnerOrg) update.volunteerPartnerOrg = partnerOrg
+      else update.$unset.volunteerPartnerOrg = ''
+    }
+
+    if (!isVolunteer) {
+      if (partnerOrg) update.studentPartnerOrg = partnerOrg
+      else update.$unset.studentPartnerOrg = ''
+
+      if (partnerSite) update.partnerSite = partnerSite
+      else update.$unset.partnerSite = ''
+    }
+
+    // Remove $unset property if it has no properties to remove
+    if (Object.keys(update.$unset).length === 0) delete update.$unset
+
+    const updatedUser = Object.assign(userBeforeUpdate, update)
+    MailService.createContact(updatedUser)
+
+    if (isVolunteer) {
+      return Volunteer.updateOne({ _id: userId }, update)
+    } else {
+      return Student.updateOne({ _id: userId }, update)
+    }
+  },
+
+  getUsers: async function({ firstName, lastName, email, page }) {
+    const query = {}
+    const pageNum = parseInt(page) || 1
+    const PER_PAGE = 15
+    const skip = (pageNum - 1) * PER_PAGE
+
+    if (firstName) query.firstname = { $regex: firstName, $options: 'i' }
+    if (lastName) query.lastname = { $regex: lastName, $options: 'i' }
+    if (email) query.email = { $regex: email, $options: 'i' }
+
+    try {
+      const users = await User.find(query)
+        .lean()
+        .skip(skip)
+        .limit(PER_PAGE)
+        .exec()
+
+      const isLastPage = users.length < PER_PAGE
+      return { users, isLastPage }
+    } catch (error) {
+      throw new Error(error.message)
+    }
   }
 }
