@@ -97,7 +97,7 @@ module.exports = {
     const pageNum = parseInt(page) || 1
     const PER_PAGE = 15
     const skip = (pageNum - 1) * PER_PAGE
-    const query = []
+    const queries = []
 
     if (name) {
       const nameQuery = {
@@ -106,7 +106,7 @@ module.exports = {
           { SCH_NAME: { $regex: name, $options: 'i' } }
         ]
       }
-      query.push(nameQuery)
+      queries.push(nameQuery)
     }
     if (state) {
       const stateQuery = {
@@ -115,7 +115,7 @@ module.exports = {
           { stateStored: { $regex: state, $options: 'i' } }
         ]
       }
-      query.push(stateQuery)
+      queries.push(stateQuery)
     }
     if (city) {
       const cityQuery = {
@@ -125,17 +125,17 @@ module.exports = {
           { LCITY: { $regex: city, $options: 'i' } }
         ]
       }
-      query.push(cityQuery)
+      queries.push(cityQuery)
     }
 
-    let finalQuery = { $and: query }
-    // Search for all schools if the query is empty
-    if (query.length === 0) finalQuery = {}
+    let query = { $and: queries }
+    // Search for all the schools if no queries were provided
+    if (queries.length === 0) query = {}
 
     try {
       const schools = await School.aggregate([
         {
-          $match: finalQuery
+          $match: query
         },
         {
           $project: {
