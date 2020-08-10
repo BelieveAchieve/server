@@ -243,5 +243,29 @@ module.exports = {
 
     UserActionCtrl.completedBackgroundInfo(volunteerId, ip)
     return Volunteer.update({ _id: volunteerId }, update)
+  },
+
+  getUsers: async function({ firstName, lastName, email, page }) {
+    const query = {}
+    const pageNum = parseInt(page) || 1
+    const PER_PAGE = 15
+    const skip = (pageNum - 1) * PER_PAGE
+
+    if (firstName) query.firstname = { $regex: firstName, $options: 'i' }
+    if (lastName) query.lastname = { $regex: lastName, $options: 'i' }
+    if (email) query.email = { $regex: email, $options: 'i' }
+
+    try {
+      const users = await User.find(query)
+        .lean()
+        .skip(skip)
+        .limit(PER_PAGE)
+        .exec()
+
+      const isLastPage = users.length < PER_PAGE
+      return { users, isLastPage }
+    } catch (error) {
+      throw new Error(error.message)
+    }
   }
 }
