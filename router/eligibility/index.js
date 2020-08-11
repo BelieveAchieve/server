@@ -139,6 +139,38 @@ module.exports = function(app) {
       next(err)
     }
   })
+  router.put('/school/:schoolId', passport.isAdmin, async function(
+    req,
+    res,
+    next
+  ) {
+    const { schoolId } = req.params
+
+    try {
+      await SchoolService.adminUpdateSchool({ schoolId, ...req.body })
+      res.sendStatus(200)
+    } catch (err) {
+      next(err)
+    }
+  })
+
+  router.get('/schools', passport.isAdmin, async function(req, res, next) {
+    try {
+      const { schools, isLastPage } = await SchoolService.getSchools(req.query)
+      res.json({ schools, isLastPage })
+    } catch (err) {
+      next(err)
+    }
+  })
+
+  router.post('/school/new', passport.isAdmin, async function(req, res, next) {
+    try {
+      const school = await SchoolService.createSchool(req.body)
+      res.json({ schoolId: school._id })
+    } catch (err) {
+      next(err)
+    }
+  })
 
   router.post('/school/approval', passport.isAdmin, async function(req, res) {
     const { schoolId, isApproved } = req.body
