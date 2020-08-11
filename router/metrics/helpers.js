@@ -1,5 +1,6 @@
 const _ = require('lodash')
 const moment = require('moment')
+const ObjectId = require('mongoose').Types.ObjectId
 
 const Feedback = require('../../models/Feedback')
 const Session = require('../../models/Session')
@@ -32,34 +33,124 @@ function getScaledTimeByTimeScale(timeScale, time) {
   }
 }
 
-function objToDatapoints(obj) {
-  const datapoints = _.map(obj, (count, scaledTime) => {
-    return { count, scaledTime, dimensionSlug: 'all', dimensionValue: 'all' }
+function objToDatapoints(obj, prop = 'count') {
+  return _.map(obj, (scaledTimes, segmentSlug) => {
+    scaledTimes = _.mapValues(scaledTimes, prop)
+    return _.map(scaledTimes, (count, scaledTime) => {
+      return {
+        segmentSlug,
+        count,
+        scaledTime,
+        dimensionSlug: 'all',
+        dimensionValue: 'all'
+      }
+    })
   })
-  return _.orderBy(datapoints, 'scaledTime')
 }
 
 function deepObjToDatapoints(obj, dimensionSlug = 'all') {
-  const datapoints = _.flatten(
-    _.map(obj, (deepObj, scaledTime) => {
-      return _.map(deepObj, (count, dimensionValue) => {
-        return { count, scaledTime, dimensionSlug, dimensionValue }
+  return _.flattenDeep(
+    _.map(obj, (scaledTimes, segmentSlug) => {
+      scaledTimes = _.mapValues(scaledTimes, dimensionSlug)
+      return _.map(scaledTimes, (deepObj, scaledTime) => {
+        return _.map(deepObj, (count, dimensionValue) => {
+          return {
+            segmentSlug,
+            count,
+            scaledTime,
+            dimensionSlug,
+            dimensionValue
+          }
+        })
       })
     })
   )
-  return _.orderBy(datapoints, 'scaledTime')
 }
 
-async function getFeedbackStats({ minTime, maxTime, timeScale = 'day' }) {
+async function getFeedbackStats(userType, options) {
+  const { minTime, maxTime, timeScale = 'day' } = options
   const feedbacks = await Feedback.find({
+    userType,
     createdAt: { $gte: minTime, $lte: maxTime }
   })
-    .select(['createdAt', 'type', 'subTopic', 'responseData'])
+    .select([
+      'createdAt',
+      'type',
+      'subTopic',
+      'responseData',
+      'volunteerId',
+      'studentId'
+    ])
     .lean()
 
+  const allUserIds = _.filter(
+    _.uniq(
+      _.flatten(
+        _.map(feedbacks, ({ volunteerId, studentId }) => [
+          volunteerId,
+          studentId
+        ])
+      )
+    )
+  )
+  const allUsers = await User.find({
+    _id: { $in: allUserIds }
+  })
+    .select([
+      '_id',
+      'studentPartnerOrg',
+      'volunteerPartnerOrg',
+      'studentId',
+      'volunteerId'
+    ])
+    .lean()
+
+  const feedbacksWithExtras = _.map(feedbacks, feedback => {
+    const student = _.find(allUsers, { _id: ObjectId(feedback.studentId) })
+    const volunteer = _.find(allUsers, { _id: ObjectId(feedback.volunteerId) })
+    return _.defaults(
+      {
+        studentPartnerOrg: student && student.studentPartnerOrg,
+        volunteerPartnerOrg: volunteer && volunteer.volunteerPartnerOrg
+      },
+      feedback
+    )
+  })
+
+  const stats = getPerSegment(
+    feedbacksWithExtras,
+    getFeedbackStatsPerSegment,
+    timeScale
+  )
+
+  const toDatapoints = type => {
+    return _.flattenDeep(
+      _.map(stats, (ratings, segmentSlug) => {
+        return _.map(ratings, (dimensions, dimensionSlug) => {
+          return _.map(dimensions, (scaledTimes, dimensionValue) => {
+            const datapoints = _.map(scaledTimes, (values, scaledTime) => {
+              return {
+                segmentSlug,
+                dimensionSlug,
+                dimensionValue,
+                count: type === 'sum' ? _.sumBy(values) : values.length,
+                scaledTime
+              }
+            })
+            return _.orderBy(datapoints, 'scaledTime')
+          })
+        })
+      })
+    )
+  }
+
+  return { sum: toDatapoints('sum'), count: toDatapoints('count') }
+}
+
+function getFeedbackStatsPerSegment(feedbacksWithExtras, timeScale) {
   // bunch of stuff to conform to datapoint format {scaledTime, dimensionSlug, dimensionValue}
-  const ratings = _.reduce(
-    feedbacks,
+  return _.reduce(
+    feedbacksWithExtras,
     (ratings, feedback) => {
       const scaledTime = getScaledTimeByTimeScale(
         timeScale,
@@ -85,27 +176,6 @@ async function getFeedbackStats({ minTime, maxTime, timeScale = 'day' }) {
     },
     { topic: {}, 'sub-topic': {} }
   )
-
-  const toDatapoints = type => {
-    return _.flattenDeep(
-      _.map(ratings, (dimensions, dimensionSlug) => {
-        return _.map(dimensions, (scaledTimes, dimensionValue) => {
-          const datapoints = _.map(scaledTimes, (values, scaledTime) => {
-            // TODO: group by scaled time
-            return {
-              dimensionSlug,
-              dimensionValue,
-              count: type === 'sum' ? _.sumBy(values) : values.length,
-              scaledTime
-            }
-          })
-          return _.orderBy(datapoints, 'scaledTime')
-        })
-      })
-    )
-  }
-
-  return { sum: toDatapoints('sum'), count: toDatapoints('count') }
 }
 
 async function getSessionStats({ minTime, maxTime, timeScale = 'day' }) {
@@ -115,6 +185,8 @@ async function getSessionStats({ minTime, maxTime, timeScale = 'day' }) {
     .select([
       'createdAt',
       'volunteerJoinedAt',
+      'student',
+      'volunteer',
       'endedAt',
       'messages',
       'type',
@@ -122,40 +194,64 @@ async function getSessionStats({ minTime, maxTime, timeScale = 'day' }) {
     ])
     .lean()
 
+  const allUserIds = _.filter(
+    _.uniq(
+      _.flatten(
+        _.map(sessions, ({ volunteer, student }) => [volunteer, student])
+      )
+    )
+  )
+  const allUsers = await User.find({
+    _id: { $in: allUserIds }
+  })
+    .select(['_id', 'studentPartnerOrg', 'volunteerPartnerOrg'])
+    .lean()
+
   const sessionsWithExtras = _.filter(
-    _.map(sessions, session => {
-      const startTime = moment.utc(session.createdAt)
-      const endTime = moment.utc(session.endedAt)
-      const hasVolunteer = Boolean(session.volunteerJoinedAt)
-      let waitSeconds, durationSeconds
-      if (hasVolunteer) {
-        const matchedTime = moment.utc(session.volunteerJoinedAt)
-        waitSeconds = matchedTime.diff(startTime, 'seconds')
-        durationSeconds = endTime.diff(matchedTime, 'seconds')
-      } else {
-        waitSeconds = endTime.diff(startTime, 'seconds')
-        durationSeconds = 0
-      }
+    await Promise.all(
+      _.map(sessions, async session => {
+        const startTime = moment.utc(session.createdAt)
+        const endTime = moment.utc(session.endedAt)
+        const hasVolunteer = Boolean(session.volunteerJoinedAt)
+        let waitSeconds, durationSeconds
+        if (hasVolunteer) {
+          const matchedTime = moment.utc(session.volunteerJoinedAt)
+          waitSeconds = matchedTime.diff(startTime, 'seconds')
+          durationSeconds = endTime.diff(matchedTime, 'seconds')
+        } else {
+          waitSeconds = endTime.diff(startTime, 'seconds')
+          durationSeconds = 0
+        }
 
-      if (
-        waitSeconds > MAX_SESSION_LENGTH_SECONDS ||
-        durationSeconds > MAX_SESSION_LENGTH_SECONDS ||
-        (durationSeconds < MIN_SESSION_LENGTH_SECONDS && !hasVolunteer)
-      ) {
-        return // ignore outliers. TODO: smarter approach (based on chat messages)
-      }
+        if (
+          waitSeconds > MAX_SESSION_LENGTH_SECONDS ||
+          durationSeconds > MAX_SESSION_LENGTH_SECONDS ||
+          (durationSeconds < MIN_SESSION_LENGTH_SECONDS && !hasVolunteer)
+        ) {
+          return // ignore outliers. TODO: smarter approach (based on chat messages)
+        }
 
-      const extras = {
-        waitSeconds,
-        durationSeconds,
-        dayOfWeek: startTime.format('ddd'),
-        hourOfDay: startTime.format('H'),
-        isSuccessful: durationSeconds >= MIN_MINUTES_FOR_SUCCESSFUL_SESSION
-      }
-      return _.defaults(extras, session)
-    })
+        const student = _.find(allUsers, { _id: session.student })
+        const volunteer = _.find(allUsers, { _id: session.volunteer })
+
+        const extras = {
+          waitSeconds,
+          durationSeconds,
+          studentPartnerOrg: student && student.studentPartnerOrg,
+          volunteerPartnerOrg: volunteer && volunteer.volunteerPartnerOrg,
+          dayOfWeek: startTime.format('ddd'),
+          hourOfDay: startTime.format('H'),
+          isSuccessful: durationSeconds >= MIN_MINUTES_FOR_SUCCESSFUL_SESSION
+        }
+        return _.defaults(extras, session)
+      })
+    )
   )
 
+  return getPerSegment(sessionsWithExtras, getSessionStatsPerSegment, timeScale)
+}
+
+function getSessionStatsPerSegment(sessionsWithExtras, segmentSlug, timeScale) {
   const sessionGroups = _.groupBy(sessionsWithExtras, ({ createdAt }) =>
     getScaledTimeByTimeScale(timeScale, moment.utc(createdAt))
   )
@@ -168,12 +264,36 @@ async function getSessionStats({ minTime, maxTime, timeScale = 'day' }) {
       waitSecSum: _.sumBy(sessions, 'waitSeconds'),
       messageSum: _.sumBy(sessions, ({ messages }) => messages.length),
       successfulMatches: successfulSessions.length,
-      requestsByDayOfWeek: _.countBy(sessions, 'dayOfWeek'),
-      requestsByHourOfDay: _.countBy(sessions, 'hourOfDay'),
-      requestsByTopic: _.countBy(sessions, 'type'),
-      requestsBySubTopic: _.countBy(sessions, 'subTopic')
+      'day-of-week': _.countBy(sessions, 'dayOfWeek'),
+      'hour-of-day': _.countBy(sessions, 'hourOfDay'),
+      topic: _.countBy(sessions, 'type'),
+      'sub-topic': _.countBy(sessions, 'subTopic')
     }
   })
+}
+
+function getPerSegment(rowsWithExtras, fn, timeScale, type = 'all') {
+  const studentPartnerGroups = _.groupBy(
+    rowsWithExtras,
+    ({ studentPartnerOrg }) => `student-${studentPartnerOrg || 'none'}`
+  )
+  const volunteerPartnerGroups = _.groupBy(
+    rowsWithExtras,
+    ({ volunteerPartnerOrg }) => `volunteer-${volunteerPartnerOrg || 'none'}`
+  )
+  const studentPartnerStats = _.mapValues(
+    studentPartnerGroups,
+    (sessions, studentPartner) => fn(sessions, studentPartner, timeScale)
+  )
+  const volunteerPartnerStats = _.mapValues(
+    volunteerPartnerGroups,
+    (sessions, studentPartner) => fn(sessions, studentPartner, timeScale)
+  )
+  return _.merge(
+    { '': fn(rowsWithExtras, '') },
+    type === 'all' || type === 'student' ? studentPartnerStats : {},
+    type === 'all' || type === 'volunteer' ? volunteerPartnerStats : {}
+  )
 }
 
 async function getStudents({ minTime, maxTime, timeScale = 'day' }) {
@@ -182,9 +302,23 @@ async function getStudents({ minTime, maxTime, timeScale = 'day' }) {
     isTestUser: false,
     createdAt: { $gte: minTime, $lte: maxTime }
   })
-    .select(['createdAt', 'zipCode'])
+    .select(['createdAt', 'zipCode', 'studentPartnerOrg'])
     .lean()
 
+  const studentPartnerGroups = _.groupBy(
+    students,
+    ({ studentPartnerOrg }) => `student-${studentPartnerOrg || 'none'}`
+  )
+  const allDatapoints = await getStudentsDatapoints(students, '')
+  const studentPartnerDatapoints = await Promise.all(
+    _.map(studentPartnerGroups, (students, studentPartner) =>
+      getStudentsDatapoints(students, studentPartner, timeScale)
+    )
+  )
+  return allDatapoints.concat(_.flatten(studentPartnerDatapoints))
+}
+
+async function getStudentsDatapoints(students, segmentSlug, timeScale) {
   const studentGroups = _.groupBy(students, ({ createdAt }) =>
     getScaledTimeByTimeScale(timeScale, moment.utc(createdAt))
   )
@@ -193,6 +327,7 @@ async function getStudents({ minTime, maxTime, timeScale = 'day' }) {
     _.map(studentGroups, (students, scaledTime) => {
       return [
         {
+          segmentSlug,
           scaledTime,
           dimensionSlug: 'all',
           dimensionValue: 'all',
@@ -204,6 +339,7 @@ async function getStudents({ minTime, maxTime, timeScale = 'day' }) {
             if (zipCode !== 'undefined') {
               return [
                 {
+                  segmentSlug,
                   scaledTime,
                   dimensionSlug: 'zip',
                   dimensionValue: zipCode,
@@ -293,10 +429,15 @@ async function getVolunteerDistributionStats(options) {
 async function getVolunteerStats({ minTime, maxTime, timeScale = 'day' }) {
   const volunteers = await User.find({
     isVolunteer: true,
-    // isTestUser: false, // FIXME
     createdAt: { $gte: minTime, $lte: maxTime }
   })
-    .select(['createdAt', 'certifications', 'isOnboarded', 'availability'])
+    .select([
+      'createdAt',
+      'certifications',
+      'isOnboarded',
+      'availability',
+      'volunteerPartnerOrg'
+    ])
     .lean()
 
   const volunteersWithExtras = _.map(volunteers, volunteer => {
@@ -310,6 +451,15 @@ async function getVolunteerStats({ minTime, maxTime, timeScale = 'day' }) {
     return _.defaults(extras, volunteer)
   })
 
+  return getPerSegment(
+    volunteersWithExtras,
+    getVolunteerStatsPerSegment,
+    timeScale,
+    'volunteer'
+  )
+}
+
+function getVolunteerStatsPerSegment(volunteersWithExtras, timeScale) {
   const volunteerGroups = _.groupBy(volunteersWithExtras, ({ createdAt }) =>
     getScaledTimeByTimeScale(timeScale, moment.utc(createdAt))
   )

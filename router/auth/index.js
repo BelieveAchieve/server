@@ -445,8 +445,37 @@ module.exports = function(app) {
     .route('/partner/student-partners')
     .all(authPassport.isAdmin)
     .get(function(req, res, next) {
+      const partnerOrgs = []
+      for (const [key, value] of Object.entries(
+        config.studentPartnerManifests
+      )) {
+        partnerOrgs.push({
+          key,
+          displayName: value.name,
+          sites: value.sites ? value.sites : null
+        })
+      }
       return res.json({
-        partnerOrgs: Object.keys(config.studentPartnerManifests)
+        partnerOrgs
+      })
+    })
+
+  // List all volunteer partners (admins only)
+  router
+    .route('/partner/volunteer-partners')
+    .all(authPassport.isAdmin)
+    .get(function(req, res, next) {
+      const partnerOrgs = []
+      for (const [key, value] of Object.entries(
+        config.volunteerPartnerManifests
+      )) {
+        partnerOrgs.push({
+          key,
+          displayName: value.name
+        })
+      }
+      return res.json({
+        partnerOrgs
       })
     })
 
