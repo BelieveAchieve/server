@@ -14,6 +14,19 @@ const options = {
 const putContact = data =>
   axios.put('https://api.sendgrid.com/v3/marketing/contacts', data, options)
 
+const getContact = email =>
+  axios.post(
+    'https://api.sendgrid.com/v3/marketing/contacts/search',
+    { query: `email = '${email}'` },
+    options
+  )
+
+const sgDeleteContact = contactId =>
+  axios.delete(
+    `https://api.sendgrid.com/v3/marketing/contacts?ids=${contactId}`,
+    options
+  )
+
 const SG_CUSTOM_FIELDS = {
   isBanned: 'e3_T',
   isTestUser: 'e4_T',
@@ -250,5 +263,18 @@ module.exports = {
       ]
     }
     return putContact(JSON.stringify(data))
+  },
+
+  searchContact: async email => {
+    const response = await getContact(email)
+    const {
+      data: { result }
+    } = response
+    const [contact] = result
+    return contact
+  },
+
+  deleteContact: contactId => {
+    return sgDeleteContact(contactId)
   }
 }

@@ -21,7 +21,8 @@ module.exports = function(app) {
       maxTime = moment.utc(maxTime).endOf('day')
     }
     const options = { minTime, maxTime, timeScale }
-    const feedbackStats = await getFeedbackStats(options)
+    const studentFeedbackStats = await getFeedbackStats('student', options)
+    const volunteerFeedbackStats = await getFeedbackStats('volunteer', options)
     const sessionStats = await getSessionStats(options)
     const volunteerStats = await getVolunteerStats(options)
     const volunteerDistributionStats = await getVolunteerDistributionStats(
@@ -37,36 +38,25 @@ module.exports = function(app) {
       {
         slug: 'sessions',
         name: 'Sessions',
-        datapoints: objToDatapoints(_.mapValues(sessionStats, 'count')).concat(
-          deepObjToDatapoints(
-            _.mapValues(sessionStats, 'requestsByDayOfWeek'),
-            'day-of-week'
-          ),
-          deepObjToDatapoints(
-            _.mapValues(sessionStats, 'requestsByHourOfDay'),
-            'hour-of-day'
-          ),
-          deepObjToDatapoints(
-            _.mapValues(sessionStats, 'requestsByTopic'),
-            'topic'
-          ),
-          deepObjToDatapoints(
-            _.mapValues(sessionStats, 'requestsBySubTopic'),
-            'sub-topic'
-          )
-        )
+        datapoints: _.flattenDeep([
+          objToDatapoints(sessionStats),
+          deepObjToDatapoints(sessionStats, 'day-of-week'),
+          deepObjToDatapoints(sessionStats, 'hour-of-day'),
+          deepObjToDatapoints(sessionStats, 'topic'),
+          deepObjToDatapoints(sessionStats, 'sub-topic')
+        ])
       },
       {
         slug: 'volunteers',
         name: 'Volunteers',
-        datapoints: objToDatapoints(_.mapValues(volunteerStats, 'count'))
+        datapoints: _.flattenDeep(objToDatapoints(volunteerStats))
       },
       {
         slug: 'onboarded-volunteers',
         name: 'Onboarded volunteers',
         // passed a quiz & selected availability
-        datapoints: objToDatapoints(
-          _.mapValues(volunteerStats, 'onboardedCount')
+        datapoints: _.flattenDeep(
+          objToDatapoints(volunteerStats, 'onboardedCount')
         )
       },
       // {
@@ -108,35 +98,47 @@ module.exports = function(app) {
       {
         slug: 'session-duration',
         name: 'Session duration (sec)',
-        datapoints: objToDatapoints(_.mapValues(sessionStats, 'durationSecSum'))
+        datapoints: _.flattenDeep(
+          objToDatapoints(sessionStats, 'durationSecSum')
+        )
       },
       {
         slug: 'session-wait',
         name: 'Session wait (sec)',
-        datapoints: objToDatapoints(_.mapValues(sessionStats, 'waitSecSum'))
+        datapoints: _.flattenDeep(objToDatapoints(sessionStats, 'waitSecSum'))
       },
       {
         slug: 'successful-matches',
         name: 'Successful matches',
         // % of sessions that lasted at least 1 min long were matched with volunteer
-        datapoints: objToDatapoints(
-          _.mapValues(sessionStats, 'successfulMatches')
+        datapoints: _.flattenDeep(
+          objToDatapoints(sessionStats, 'successfulMatches')
         )
       },
       {
         slug: 'chat-messages',
         name: 'Chat messages',
-        datapoints: objToDatapoints(_.mapValues(sessionStats, 'messageSum'))
+        datapoints: _.flattenDeep(objToDatapoints(sessionStats, 'messageSum'))
       },
       {
         slug: 'session-rating',
         name: 'Session rating',
-        datapoints: feedbackStats.sum // objToDatapoints(_.mapValues(feedbackStats, 'ratingAvg'))
+        datapoints: studentFeedbackStats.sum
       },
       {
         slug: 'session-ratings',
         name: 'Session rating count',
-        datapoints: feedbackStats.count // objToDatapoints(_.mapValues(feedbackStats, 'ratingAvg'))
+        datapoints: studentFeedbackStats.count
+      },
+      {
+        slug: 'volunteer-session-rating',
+        name: 'Session rating',
+        datapoints: volunteerFeedbackStats.sum
+      },
+      {
+        slug: 'volunteer-session-ratings',
+        name: 'Session rating count',
+        datapoints: volunteerFeedbackStats.count
       }
       // requestsByDayOfWeek: _.mapValues(sessionStats, 'requestsByDayOfWeek'),
       // requestsByHour: _.mapValues(sessionStats, 'requestsByHourOfDay'),
