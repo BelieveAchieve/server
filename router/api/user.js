@@ -174,6 +174,15 @@ module.exports = function(router) {
     }
   })
 
+  router.get('/users', passport.isAdmin, async function(req, res, next) {
+    try {
+      const { users, isLastPage } = await UserService.getUsers(req.query)
+      res.json({ users, isLastPage })
+    } catch (err) {
+      next(err)
+    }
+  })
+
   /**
    * This is a utility route used by Cypress to clean up after e2e tests
    * Not available for use on production
