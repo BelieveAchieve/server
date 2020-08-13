@@ -2,68 +2,7 @@ const _ = require('lodash')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
 const Question = require('../models/Question')
 const Volunteer = require('../models/Volunteer')
-
-/**
- *
- * Build an update object to add Integrated Math Certifications
- * if requirements are met.
- *
- * Integrated Math Certification Requirements:
- * Integrated Math One    - Algebra and Geometry
- * Integrated Math Two    - Algebra, Geometry, and Trigonometry
- * Integrated Math Three  - Algebra, Geometry, and Precalculus
- * Integrated Math Four   - Algebra, Trigonometry, and Precalculus
- *
- */
-const addIntegratedMathCert = (certifications, newlyPassedCategory) => {
-  const passedCategories = new Set()
-  const prerequisiteCategories = [
-    'algebra',
-    'geometry',
-    'trigonometry',
-    'precalculus'
-  ]
-  const update = {}
-
-  // early exit if the category is not a prequisite for Integrated Math
-  if (!prerequisiteCategories.includes(newlyPassedCategory)) return update
-
-  for (const category in certifications) {
-    if (certifications[category].passed) passedCategories.add(category)
-  }
-  passedCategories.add(newlyPassedCategory)
-
-  if (passedCategories.has('algebra')) {
-    if (
-      passedCategories.has('geometry') &&
-      !passedCategories.has('integratedMathOne')
-    )
-      update['certifications.integratedMathOne.passed'] = true
-
-    if (
-      passedCategories.has('geometry') &&
-      passedCategories.has('trigonometry') &&
-      !passedCategories.has('integratedMathTwo')
-    )
-      update['certifications.integratedMathTwo.passed'] = true
-
-    if (
-      passedCategories.has('geometry') &&
-      passedCategories.has('precalculus') &&
-      !passedCategories.has('integratedMathThree')
-    )
-      update['certifications.integratedMathThree.passed'] = true
-
-    if (
-      passedCategories.has('trigonometry') &&
-      passedCategories.has('precalculus') &&
-      !passedCategories.has('integratedMathFour')
-    )
-      update['certifications.integratedMathFour.passed'] = true
-  }
-
-  return update
-}
+const { CERT_UNLOCKING, COMPUTED_CERTS, SUBJECTS } = require('../constants')
 
 // change depending on how many of each subcategory are wanted
 const numQuestions = {
@@ -127,11 +66,10 @@ module.exports = {
     }
 
     if (passed) {
-      const integratedMathUpdate = addIntegratedMathCert(
-        user.certifications,
-        category
-      )
-      Object.assign(userUpdates, integratedMathUpdate)
+      const unlockedCerts = this.getUnlockedCerts(user.certifications, category)
+      for (const category of unlockedCerts) {
+        userUpdates[`certifications.${category}.passed`] = true
+      }
 
       // an onboarded volunteer must have updated their availability and obtained at least one certification
       if (!user.isOnboarded && user.availabilityLastModifiedAt) {
@@ -153,5 +91,45 @@ module.exports = {
       score,
       idCorrectAnswerMap
     }
+  },
+  // Returns an array of certs that the user should be updated with
+  getUnlockedCerts: function(certifications, category) {
+    // Add all the categories that the user has passed into a Set
+    const currentCerts = new Set(CERT_UNLOCKING[category])
+    for (const category in certifications) {
+      if (certifications[category].passed) currentCerts.add(category)
+    }
+
+    // Check if the user has unlocked a new certification based on the current certifications they have
+    for (const cert in COMPUTED_CERTS) {
+      const prerequisiteCerts = COMPUTED_CERTS[cert]
+      let meetsRequirements = true
+
+      for (let i = 0; i < prerequisiteCerts.length; i++) {
+        // SAT Math can be unlocked from taking Geometry, Trigonometry, and Algebra or
+        // from Calculus AB, Calculus BC, and Precalculus - none of which unlock Geometry
+        if (
+          cert === SUBJECTS.SAT_MATH &&
+          (currentCerts.has(SUBJECTS.CALCULUS_AB) ||
+            currentCerts.has(SUBJECTS.CALCULUS_BC) ||
+            currentCerts.has(SUBJECTS.PRECALCULUS))
+        )
+          break
+
+        if (!currentCerts.has(prerequisiteCerts[i])) {
+          meetsRequirements = false
+          break
+        }
+      }
+
+      if (meetsRequirements) currentCerts.add(cert)
+    }
+
+    // Remove certs from the Set that the user is already certified in
+    for (const category in certifications) {
+      if (certifications[category].passed) currentCerts.delete(category)
+    }
+
+    return Array.from(currentCerts)
   }
 }
