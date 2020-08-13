@@ -221,5 +221,6 @@ export const COMPUTED_CERTS = {
   ],
   integratedMathThree: [SUBJECTS.PRECALCULUS, SUBJECTS.STATISTICS],
   integratedMathFour: [SUBJECTS.PRECALCULUS],
+  // Calculus AB, Calculus BC, or Precalculus can also unlock SAT Math
   satMath: [SUBJECTS.ALGEBRA_ONE, SUBJECTS.TRIGONOMETRY, SUBJECTS.GEOMETRY]
 };
