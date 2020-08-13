@@ -13,6 +13,7 @@ const mapMultiWordSubtopic = require('../../utils/map-multi-word-subtopic')
 const { USER_ACTION } = require('../../constants')
 const NotificationService = require('../../services/NotificationService')
 const UserAction = require('../../models/UserAction')
+const config = require('../../config')
 
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
@@ -164,7 +165,9 @@ module.exports = function(router, io) {
       const uploadUrl = await AwsService.getSessionPhotoUploadUrl(
         sessionPhotoS3Key
       )
-      res.json({ uploadUrl })
+      const bucketName = config.awsS3.sessionPhotoBucket;
+      const imageUrl = `https://${bucketName}.s3.amazonaws.com/${sessionPhotoS3Key}`;
+      res.json({ uploadUrl, imageUrl })
     } catch (error) {
       next(error)
     }
