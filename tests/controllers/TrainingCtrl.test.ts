@@ -81,23 +81,47 @@ describe('Get a list of unlocked certs', () => {
     await expect(result).toEqual(expected);
   });
 
-  test('Pre-algebra should only unlock itself', async () => {
-    const subject = SUBJECTS.PREALGREBA;
-    const certifications = buildCertifications();
+  test('Certs that should only unlock themselves', async () => {
+    const subjects = [
+      [SUBJECTS.PREALGREBA],
+      [SUBJECTS.STATISTICS],
+      [SUBJECTS.GEOMETRY],
+      [SUBJECTS.BIOLOGY],
+      [SUBJECTS.CHEMISTRY],
+      [SUBJECTS.PHYSICS_ONE],
+      [SUBJECTS.PHYSICS_TWO],
+      [SUBJECTS.ENVIRONMENTAL_SCIENCE],
+      [SUBJECTS.PLANNING],
+      [SUBJECTS.APPLICATIONS],
+      [SUBJECTS.ESSAYS],
+      [SUBJECTS.FINANCIAL_AID],
+      [SUBJECTS.SPORTS_RECRUIMENT_PLANNING],
+      [SUBJECTS.SAT_MATH],
+      [SUBJECTS.SAT_READING]
+    ];
 
-    const expected = ['prealgebra'];
-    const result = TrainingCtrl.getUnlockedCerts(certifications, subject);
+    const expected = [
+      [SUBJECTS.PREALGREBA],
+      [SUBJECTS.STATISTICS],
+      [SUBJECTS.GEOMETRY],
+      [SUBJECTS.BIOLOGY],
+      [SUBJECTS.CHEMISTRY],
+      [SUBJECTS.PHYSICS_ONE],
+      [SUBJECTS.PHYSICS_TWO],
+      [SUBJECTS.ENVIRONMENTAL_SCIENCE],
+      [SUBJECTS.PLANNING],
+      [SUBJECTS.APPLICATIONS],
+      [SUBJECTS.ESSAYS],
+      [SUBJECTS.FINANCIAL_AID],
+      [SUBJECTS.SPORTS_RECRUIMENT_PLANNING],
+      [SUBJECTS.SAT_MATH],
+      [SUBJECTS.SAT_READING]
+    ];
 
-    await expect(result).toEqual(expected);
-  });
-
-  test('College planning should only unlock itself', async () => {
-    const subject = SUBJECTS.PLANNING;
-    const certifications = buildCertifications();
-
-    const expected = ['planning'];
-    const result = TrainingCtrl.getUnlockedCerts(certifications, subject);
-
-    await expect(result).toEqual(expected);
+    for (let i = 0; i < subjects.length; i++) {
+      const certifications = buildCertifications();
+      const result = TrainingCtrl.getUnlockedCerts(certifications, subjects[i]);
+      await expect(result).toEqual(expected[i]);
+    }
   });
 });
