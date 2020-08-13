@@ -128,4 +128,98 @@ export const REFERENCE_STATUS = {
 export const SESSION_REPORT_REASON = {
   STUDENT_RUDE: 'Student was rude',
   STUDENT_MISUSE: 'Student was misusing platform'
+};
+
+// todo: remove algebra
+export enum SUBJECTS {
+  PREALGREBA = 'prealgebra',
+  ALGEBRA = 'algebra',
+  ALGEBRA_ONE = 'algebraOne',
+  ALGEBRA_TWO = 'algebraTwo',
+  GEOMETRY = 'geometry',
+  TRIGONOMETRY = 'trigonometry',
+  PRECALCULUS = 'precalculus',
+  CALCULUS = 'calculus',
+  CALCULUS_AB = 'calculusAB',
+  CALCULUS_BC = 'calculusBC',
+  INTEGRATED_MATH_ONE = 'integratedMathOne',
+  INTEGRATED_MATH_TWO = 'integratedMathTwo',
+  INTEGRATED_MATH_THREE = 'integratedMathThree',
+  INTEGRATED_MATH_FOUR = 'integratedMathFour',
+  STATISTICS = 'statistics',
+  BIOLOGY = 'biology',
+  CHEMISTRY = 'chemistry',
+  PHYSICS_ONE = 'physicsOne',
+  PHYSICS_TWO = 'physicsTwo',
+  ENVIRONMENTAL_SCIENCE = 'environmentalScience',
+  PLANNING = 'planning',
+  APPLICATIONS = 'applications',
+  ESSAYS = 'essays',
+  FINANCIAL_AID = 'financialAid',
+  SPORTS_RECRUIMENT_PLANNING = 'sportsRecruitmentPlanning',
+  SAT_MATH = 'satMath',
+  SAT_READING = 'satReading'
 }
+
+export const CERT_UNLOCKING = {
+  calculusBC: [
+    SUBJECTS.CALCULUS_BC,
+    SUBJECTS.CALCULUS_AB,
+    SUBJECTS.PRECALCULUS,
+    SUBJECTS.TRIGONOMETRY,
+    SUBJECTS.ALGEBRA_TWO,
+    SUBJECTS.ALGEBRA_ONE,
+    SUBJECTS.PREALGREBA
+  ],
+  calculusAB: [
+    SUBJECTS.CALCULUS_AB,
+    SUBJECTS.PRECALCULUS,
+    SUBJECTS.TRIGONOMETRY,
+    SUBJECTS.ALGEBRA_TWO,
+    SUBJECTS.ALGEBRA_ONE,
+    SUBJECTS.PREALGREBA
+  ],
+  precalculus: [
+    SUBJECTS.PRECALCULUS,
+    SUBJECTS.TRIGONOMETRY,
+    SUBJECTS.ALGEBRA_TWO,
+    SUBJECTS.ALGEBRA_ONE,
+    SUBJECTS.PREALGREBA
+  ],
+  trigonometry: [SUBJECTS.TRIGONOMETRY],
+  algebraTwo: [SUBJECTS.ALGEBRA_TWO, SUBJECTS.ALGEBRA_ONE, SUBJECTS.PREALGREBA],
+  algebraOne: [SUBJECTS.ALGEBRA_ONE, SUBJECTS.PREALGREBA],
+  prealgebra: [SUBJECTS.PREALGREBA],
+  statistics: [SUBJECTS.STATISTICS],
+  geometry: [SUBJECTS.GEOMETRY],
+  biology: [SUBJECTS.BIOLOGY],
+  chemistry: [SUBJECTS.CHEMISTRY],
+  physicsOne: [SUBJECTS.PHYSICS_ONE],
+  physicsTwo: [SUBJECTS.PHYSICS_TWO],
+  environmentalScience: [SUBJECTS.ENVIRONMENTAL_SCIENCE],
+  planning: [SUBJECTS.PLANNING],
+  applications: [SUBJECTS.APPLICATIONS],
+  essays: [SUBJECTS.ESSAYS],
+  financialAid: [SUBJECTS.FINANCIAL_AID],
+  sportsRecruitmentPlanning: [SUBJECTS.SPORTS_RECRUIMENT_PLANNING],
+  satMath: [SUBJECTS.SAT_MATH],
+  satReading: [SUBJECTS.SAT_READING]
+};
+
+// todo: check if algebra 1 or 2
+export const COMPUTED_CERTS = {
+  integratedMathOne: [
+    SUBJECTS.ALGEBRA_ONE,
+    SUBJECTS.GEOMETRY,
+    SUBJECTS.STATISTICS
+  ],
+  integratedMathTwo: [
+    SUBJECTS.ALGEBRA_ONE,
+    SUBJECTS.GEOMETRY,
+    SUBJECTS.STATISTICS,
+    SUBJECTS.TRIGONOMETRY
+  ],
+  integratedMathThree: [SUBJECTS.PRECALCULUS, SUBJECTS.STATISTICS],
+  integratedMathFour: [SUBJECTS.PRECALCULUS],
+  satMath: [SUBJECTS.ALGEBRA_ONE, SUBJECTS.TRIGONOMETRY, SUBJECTS.GEOMETRY]
+};

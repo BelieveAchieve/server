@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import { SUBJECTS } from '../../constants';
 
 export interface User {
   _id: Types.ObjectId;
@@ -111,25 +112,6 @@ export enum HOURS {
   '11PM' = '11p'
 }
 
-export enum SUBJECTS {
-  PREALGREBA = 'prealgebra',
-  ALGREBA = 'algebra',
-  GEOMETRY = 'geometry',
-  TRIGONOMETRY = 'trigonometry',
-  PRECALCULUS = 'precalculus',
-  CALCULUS = 'calculus',
-  INTEGRATED_MATH_ONE = 'integratedMathOne',
-  INTEGRATED_MATH_TWO = 'integratedMathTwo',
-  INTEGRATED_MATH_THREE = 'integratedMathThree',
-  INTEGRATED_MATH_FOUR = 'integratedMathFour',
-  APPLICATIONS = 'applications',
-  ESSAYS = 'essays',
-  PLANNING = 'planning',
-  BIOLOGY = 'biology',
-  CHEMISTRY = 'chemistry',
-  PHYSICS_ONE = 'physicsOne'
-}
-
 export interface CertificationInfo {
   passed: boolean;
   tries: number;
@@ -138,21 +120,32 @@ export interface CertificationInfo {
 
 export interface Certifications {
   [SUBJECTS.PREALGREBA]: CertificationInfo;
-  [SUBJECTS.ALGREBA]: CertificationInfo;
+  [SUBJECTS.ALGEBRA]: CertificationInfo;
+  [SUBJECTS.ALGEBRA_ONE]: CertificationInfo;
+  [SUBJECTS.ALGEBRA_TWO]: CertificationInfo;
   [SUBJECTS.GEOMETRY]: CertificationInfo;
   [SUBJECTS.TRIGONOMETRY]: CertificationInfo;
   [SUBJECTS.PRECALCULUS]: CertificationInfo;
   [SUBJECTS.CALCULUS]: CertificationInfo;
+  [SUBJECTS.CALCULUS_AB]: CertificationInfo;
+  [SUBJECTS.CALCULUS_BC]: CertificationInfo;
   [SUBJECTS.INTEGRATED_MATH_ONE]: CertificationInfo;
   [SUBJECTS.INTEGRATED_MATH_TWO]: CertificationInfo;
   [SUBJECTS.INTEGRATED_MATH_THREE]: CertificationInfo;
   [SUBJECTS.INTEGRATED_MATH_FOUR]: CertificationInfo;
-  [SUBJECTS.APPLICATIONS]: CertificationInfo;
-  [SUBJECTS.ESSAYS]: CertificationInfo;
-  [SUBJECTS.PLANNING]: CertificationInfo;
+  [SUBJECTS.STATISTICS]: CertificationInfo;
   [SUBJECTS.BIOLOGY]: CertificationInfo;
   [SUBJECTS.CHEMISTRY]: CertificationInfo;
   [SUBJECTS.PHYSICS_ONE]: CertificationInfo;
+  [SUBJECTS.PHYSICS_TWO]: CertificationInfo;
+  [SUBJECTS.ENVIRONMENTAL_SCIENCE]: CertificationInfo;
+  [SUBJECTS.PLANNING]: CertificationInfo;
+  [SUBJECTS.APPLICATIONS]: CertificationInfo;
+  [SUBJECTS.ESSAYS]: CertificationInfo;
+  [SUBJECTS.FINANCIAL_AID]: CertificationInfo;
+  [SUBJECTS.SPORTS_RECRUIMENT_PLANNING]: CertificationInfo;
+  [SUBJECTS.SAT_MATH]: CertificationInfo;
+  [SUBJECTS.SAT_READING]: CertificationInfo;
 }
 
 export type AvailabilityDay = {
