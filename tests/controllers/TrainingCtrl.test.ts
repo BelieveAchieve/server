@@ -34,7 +34,7 @@ describe('Get a list of unlocked certs', () => {
     ];
 
     const result = TrainingCtrl.getUnlockedCerts(certifications, subject);
-    expect(result).toEqual(expected);
+    expect(result).toEqual(expect.arrayContaining(expected));
   });
 
   test('Should unlock proper certs when taking Calculus BC', async () => {
@@ -52,7 +52,7 @@ describe('Get a list of unlocked certs', () => {
     ];
 
     const result = TrainingCtrl.getUnlockedCerts(certifications, subject);
-    expect(result).toEqual(expected);
+    expect(result).toEqual(expect.arrayContaining(expected));
   });
 
   test('Should unlock proper certs when taking Calculus AB', async () => {
@@ -69,7 +69,7 @@ describe('Get a list of unlocked certs', () => {
     ];
 
     const result = TrainingCtrl.getUnlockedCerts(certifications, subject);
-    expect(result).toEqual(expected);
+    expect(result).toEqual(expect.arrayContaining(expected));
   });
 
   test('Should unlock Integrated Math 1 when taking Algebra and is certified in Geometry and Statistics', async () => {
@@ -85,7 +85,7 @@ describe('Get a list of unlocked certs', () => {
     ];
 
     const result = TrainingCtrl.getUnlockedCerts(certifications, subject);
-    expect(result).toEqual(expected);
+    expect(result).toEqual(expect.arrayContaining(expected));
   });
 
   test('Should unlock Integrated Math 2 when taking Trigonometry and is certified in Algebra, Geometry, and Statistics', async () => {
@@ -96,6 +96,7 @@ describe('Get a list of unlocked certs', () => {
       [SUBJECTS.ALGEBRA]: { passed: true, tries: 1 }
     });
     const expected = [
+      SUBJECTS.PREALGREBA,
       SUBJECTS.TRIGONOMETRY,
       SUBJECTS.INTEGRATED_MATH_ONE,
       SUBJECTS.INTEGRATED_MATH_TWO,
@@ -103,7 +104,7 @@ describe('Get a list of unlocked certs', () => {
     ];
 
     const result = TrainingCtrl.getUnlockedCerts(certifications, subject);
-    expect(result).toEqual(expected);
+    expect(result).toEqual(expect.arrayContaining(expected));
   });
 
   test('Should unlock Integrated Math 3 when higher cert unlocks Algebra and is certified in Statistics', async () => {
@@ -122,7 +123,7 @@ describe('Get a list of unlocked certs', () => {
     ];
 
     const result = TrainingCtrl.getUnlockedCerts(certifications, subject);
-    expect(result).toEqual(expected);
+    expect(result).toEqual(expect.arrayContaining(expected));
   });
 
   test('Should unlock all Integrated Math subjects when higher cert unlocks Algebra and is certified in Geometry and Statistics', async () => {
@@ -144,7 +145,7 @@ describe('Get a list of unlocked certs', () => {
     ];
 
     const result = TrainingCtrl.getUnlockedCerts(certifications, subject);
-    expect(result).toEqual(expected);
+    expect(result).toEqual(expect.arrayContaining(expected));
   });
 
   test('Certs that should only unlock themselves', async () => {
