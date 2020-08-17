@@ -2,7 +2,13 @@ const _ = require('lodash')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
 const Question = require('../models/Question')
 const Volunteer = require('../models/Volunteer')
-const { CERT_UNLOCKING, COMPUTED_CERTS, SUBJECTS } = require('../constants')
+const {
+  CERT_UNLOCKING,
+  COMPUTED_CERTS,
+  SUBJECTS,
+  REQUIRED_TRAINING
+} = require('../constants')
+const getSupercategory = require('../utils/getSupercategory')
 
 // change depending on how many of each subcategory are wanted
 const numQuestions = {
@@ -66,11 +72,14 @@ module.exports = {
     }
 
     if (passed) {
-      const unlockedCerts = this.getUnlockedCerts(user.certifications, category)
+      const unlockedCerts = this.getUnlockedCerts(category, user.certifications)
       for (const category of unlockedCerts) {
-        userUpdates[`certifications.${category}.passed`] = true
+        if (CERT_UNLOCKING[category])
+          userUpdates[`certifications.${category}.passed`] = true
       }
-
+      // @todo: Send off user action for the new subjects (ignore duplicates)
+      // @todo: Issue with existing volunteers and onboarding / required training
+      userUpdates.$addToSet = { subjects: unlockedCerts }
       // an onboarded volunteer must have updated their availability and obtained at least one certification
       if (!user.isOnboarded && user.availabilityLastModifiedAt) {
         userUpdates.isOnboarded = true
@@ -93,11 +102,26 @@ module.exports = {
     }
   },
   // Returns an array of certs that the user should be updated with
-  getUnlockedCerts: function(certifications, category) {
-    // Add all the categories that the user has passed into a Set
+  getUnlockedCerts: function(category, certifications) {
+    // Check if the user has completed required training for this category
+    if (!this.completedRequiredTraining(category, certifications)) return []
+
+    // Add all the categories that this category unlocks into a Set
     const currentCerts = new Set(CERT_UNLOCKING[category])
-    for (const category in certifications) {
-      if (certifications[category].passed) currentCerts.add(category)
+
+    // Set passed on the category if the current category is required training
+    if (this.isRequiredTrainingCategory(category))
+      Object.assign(certifications, { [category]: { passed: true } })
+
+    for (const cert in certifications) {
+      // Check that the required training was completed for every certification that a user has
+      // Add all the other subjects that a certification unlocks to the Set
+      if (
+        certifications[cert].passed &&
+        this.completedRequiredTraining(cert, certifications) &&
+        CERT_UNLOCKING[cert]
+      )
+        CERT_UNLOCKING[cert].forEach(subject => currentCerts.add(subject))
     }
 
     // Check if the user has unlocked a new certification based on the current certifications they have
@@ -125,11 +149,36 @@ module.exports = {
       if (meetsRequirements) currentCerts.add(cert)
     }
 
-    // Remove certs from the Set that the user is already certified in
-    for (const category in certifications) {
-      if (certifications[category].passed) currentCerts.delete(category)
-    }
-
     return Array.from(currentCerts)
+  },
+
+  completedRequiredTraining: function(category, certifications) {
+    // Early exit if the category itself is a required training category
+    if (this.isRequiredTrainingCategory(category)) return true
+
+    const supercategory = getSupercategory(category).toLowerCase()
+
+    if (
+      (supercategory === 'math' || supercategory === 'science') &&
+      certifications.tutoringSkills.passed
+    )
+      return true
+
+    if (supercategory === 'college' && certifications.collegeCounseling.passed)
+      return true
+
+    // @todo: check if standardized testing has a training that needs to be required
+    if (supercategory === 'standardized testing') return true
+
+    return false
+  },
+
+  isRequiredTrainingCategory: function(category) {
+    if (
+      category === REQUIRED_TRAINING.TUTORING_SKILLS ||
+      category === REQUIRED_TRAINING.COLLEGE_COUNSELING
+    )
+      return true
+    else return false
   }
 }
