@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
-import { PHOTO_ID_STATUS, REFERENCE_STATUS } from '../constants';
+import { values } from 'lodash';
+import { PHOTO_ID_STATUS, REFERENCE_STATUS, SUBJECTS } from '../constants';
 import User from './User';
 
 const weeksSince = (date): number => {
@@ -257,50 +258,6 @@ const volunteerSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
-      integratedMathOne: {
-        passed: {
-          type: Boolean,
-          default: false
-        },
-        tries: {
-          type: Number,
-          default: 0
-        },
-        lastAttemptedAt: { type: Date }
-      },
-      integratedMathTwo: {
-        passed: {
-          type: Boolean,
-          default: false
-        },
-        tries: {
-          type: Number,
-          default: 0
-        },
-        lastAttemptedAt: { type: Date }
-      },
-      integratedMathThree: {
-        passed: {
-          type: Boolean,
-          default: false
-        },
-        tries: {
-          type: Number,
-          default: 0
-        },
-        lastAttemptedAt: { type: Date }
-      },
-      integratedMathFour: {
-        passed: {
-          type: Boolean,
-          default: false
-        },
-        tries: {
-          type: Number,
-          default: 0
-        },
-        lastAttemptedAt: { type: Date }
-      },
       applications: {
         passed: {
           type: Boolean,
@@ -367,6 +324,10 @@ const volunteerSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       }
+    },
+    subjects: {
+      type: [String],
+      enum: values(SUBJECTS)
     }
   },
   volunteerSchemaOptions
