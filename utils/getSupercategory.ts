@@ -1,32 +1,21 @@
-const getSupercategory = subcategory => {
-  let category = ''
-  switch (subcategory.toLowerCase()) {
-    case 'prealgebra':
-    case 'algebra':
-    case 'precalculus':
-    case 'trigonometry':
-    case 'geometry':
-    case 'calculus':
-    case 'integratedmathone':
-    case 'integratedmathtwo':
-    case 'integratedmaththree':
-    case 'integratedmathfour':
-      category = 'MATH'
-      break
-    case 'planning':
-    case 'essays':
-    case 'applications':
-      category = 'COLLEGE'
-      break
-    case 'biology':
-    case 'chemistry':
-    case 'physicsOne':
-      category = 'SCIENCE'
-      break
-    default:
-      break
-  }
-  return category
-}
+import {
+  MATH_CERTS,
+  SCIENCE_CERTS,
+  COLLEGE_CERTS,
+  STANDARDIZED_TESTING_CERTS
+} from '../constants';
 
-module.exports = getSupercategory
+const getSupercategory = (subcategory): string => {
+  let category = '';
+
+  if (Object.values(MATH_CERTS).includes(subcategory)) category = 'MATH';
+  if (Object.values(SCIENCE_CERTS).includes(subcategory)) category = 'SCIENCE';
+  if (Object.values(COLLEGE_CERTS).includes(subcategory)) category = 'COLLEGE';
+  if (Object.values(STANDARDIZED_TESTING_CERTS).includes(subcategory))
+    category = 'STANDARDIZED TESTING';
+
+  return category;
+};
+
+module.exports = getSupercategory;
+export default getSupercategory;
