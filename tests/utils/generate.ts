@@ -3,7 +3,12 @@ import { Test } from 'supertest';
 import { Types } from 'mongoose';
 import base64url from 'base64url';
 import { merge } from 'lodash';
-import { PHOTO_ID_STATUS, REFERENCE_STATUS } from '../../constants';
+import {
+  PHOTO_ID_STATUS,
+  REFERENCE_STATUS,
+  SUBJECTS,
+  REQUIRED_TRAINING
+} from '../../constants';
 import {
   User,
   Volunteer,
@@ -16,7 +21,6 @@ import {
   HOURS,
   Certifications
 } from './types';
-
 export const getEmail = faker.internet.email;
 export const getFirstName = faker.name.firstName;
 export const getLastName = faker.name.lastName;
@@ -187,22 +191,29 @@ export const buildAvailability = (overrides = {}): Availability => {
 
 export const buildCertifications = (overrides = {}): Certifications => {
   const certifications = {
-    prealgebra: { passed: false, tries: 0 },
-    algebra: { passed: false, tries: 0 },
-    geometry: { passed: false, tries: 0 },
-    trigonometry: { passed: false, tries: 0 },
-    precalculus: { passed: false, tries: 0 },
-    calculus: { passed: false, tries: 0 },
-    integratedMathOne: { passed: false, tries: 0 },
-    integratedMathTwo: { passed: false, tries: 0 },
-    integratedMathThree: { passed: false, tries: 0 },
-    integratedMathFour: { passed: false, tries: 0 },
-    applications: { passed: false, tries: 0 },
-    essays: { passed: false, tries: 0 },
-    planning: { passed: false, tries: 0 },
-    biology: { passed: false, tries: 0 },
-    chemistry: { passed: false, tries: 0 },
-    physicsOne: { passed: false, tries: 0 },
+    [SUBJECTS.PREALGREBA]: { passed: false, tries: 0 },
+    [SUBJECTS.ALGEBRA]: { passed: false, tries: 0 },
+    [SUBJECTS.GEOMETRY]: { passed: false, tries: 0 },
+    [SUBJECTS.TRIGONOMETRY]: { passed: false, tries: 0 },
+    [SUBJECTS.PRECALCULUS]: { passed: false, tries: 0 },
+    [SUBJECTS.CALCULUS_AB]: { passed: false, tries: 0 },
+    [SUBJECTS.CALCULUS_BC]: { passed: false, tries: 0 },
+    [SUBJECTS.STATISTICS]: { passed: false, tries: 0 },
+    [SUBJECTS.BIOLOGY]: { passed: false, tries: 0 },
+    [SUBJECTS.CHEMISTRY]: { passed: false, tries: 0 },
+    [SUBJECTS.PHYSICS_ONE]: { passed: false, tries: 0 },
+    [SUBJECTS.PHYSICS_TWO]: { passed: false, tries: 0 },
+    [SUBJECTS.ENVIRONMENTAL_SCIENCE]: { passed: false, tries: 0 },
+    [SUBJECTS.PLANNING]: { passed: false, tries: 0 },
+    [SUBJECTS.APPLICATIONS]: { passed: false, tries: 0 },
+    [SUBJECTS.ESSAYS]: { passed: false, tries: 0 },
+    [SUBJECTS.FINANCIAL_AID]: { passed: false, tries: 0 },
+    [SUBJECTS.SPORTS_RECRUIMENT_PLANNING]: { passed: false, tries: 0 },
+    [SUBJECTS.SAT_MATH]: { passed: false, tries: 0 },
+    [SUBJECTS.SAT_READING]: { passed: false, tries: 0 },
+    [REQUIRED_TRAINING.TUTORING_SKILLS]: { passed: false, tries: 0 },
+    [REQUIRED_TRAINING.COLLEGE_COUNSELING]: { passed: false, tries: 0 },
+
     ...overrides
   };
 

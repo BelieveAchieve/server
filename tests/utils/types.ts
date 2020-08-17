@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { SUBJECTS } from '../../constants';
+import { SUBJECTS, REQUIRED_TRAINING } from '../../constants';
 
 export interface User {
   _id: Types.ObjectId;
@@ -121,18 +121,11 @@ export interface CertificationInfo {
 export interface Certifications {
   [SUBJECTS.PREALGREBA]: CertificationInfo;
   [SUBJECTS.ALGEBRA]: CertificationInfo;
-  [SUBJECTS.ALGEBRA_ONE]: CertificationInfo;
-  [SUBJECTS.ALGEBRA_TWO]: CertificationInfo;
   [SUBJECTS.GEOMETRY]: CertificationInfo;
   [SUBJECTS.TRIGONOMETRY]: CertificationInfo;
   [SUBJECTS.PRECALCULUS]: CertificationInfo;
-  [SUBJECTS.CALCULUS]: CertificationInfo;
   [SUBJECTS.CALCULUS_AB]: CertificationInfo;
   [SUBJECTS.CALCULUS_BC]: CertificationInfo;
-  [SUBJECTS.INTEGRATED_MATH_ONE]: CertificationInfo;
-  [SUBJECTS.INTEGRATED_MATH_TWO]: CertificationInfo;
-  [SUBJECTS.INTEGRATED_MATH_THREE]: CertificationInfo;
-  [SUBJECTS.INTEGRATED_MATH_FOUR]: CertificationInfo;
   [SUBJECTS.STATISTICS]: CertificationInfo;
   [SUBJECTS.BIOLOGY]: CertificationInfo;
   [SUBJECTS.CHEMISTRY]: CertificationInfo;
@@ -146,6 +139,8 @@ export interface Certifications {
   [SUBJECTS.SPORTS_RECRUIMENT_PLANNING]: CertificationInfo;
   [SUBJECTS.SAT_MATH]: CertificationInfo;
   [SUBJECTS.SAT_READING]: CertificationInfo;
+  [REQUIRED_TRAINING.TUTORING_SKILLS]: CertificationInfo;
+  [REQUIRED_TRAINING.COLLEGE_COUNSELING]: CertificationInfo;
 }
 
 export type AvailabilityDay = {
