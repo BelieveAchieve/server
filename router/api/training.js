@@ -64,4 +64,23 @@ module.exports = function(router) {
 
     res.sendStatus(204)
   })
+
+  router.get('/training/course/:courseKey', function(req, res, next) {
+    const { user } = req
+    const { courseKey } = req.params
+
+    // TODO: put in service
+    const course = getCourse(courseKey)
+    if (!course) return res.sendStatus(404)
+    const courseProgress = user.trainingCourses[courseKey]
+    course.modules.forEach(mod => {
+      mod.materials.forEach(mat => {
+        mat.isCompleted = courseProgress.completedMaterials.includes(
+          mat.materialKey
+        )
+      })
+    })
+
+    res.status(200).json({ course })
+  })
 }
