@@ -9,13 +9,21 @@ async function upgrade(): Promise<void> {
       passed: false,
       tries: 0
     };
+    const trainingCourse = {
+      isComplete: false,
+      progress: 0,
+      completedMaterials: []
+    }
     const result = await Volunteer.updateMany(
       {},
       {
         $set: {
           'certifications.upchieve101': subject,
-          'certifications.trainingSkills': subject,
-          'certifications.collegeSkills': subject
+          'certifications.tutoringSkills': subject,
+          'certifications.collegeSkills': subject,
+          'trainingCourses.upchieve101': trainingCourse,
+          'trainingCourses.tutoringSkills': trainingCourse,
+          'trainingCourses.collegeSkills': trainingCourse
         }
       },
       { strict: false }
@@ -37,8 +45,9 @@ async function downgrade(): Promise<void> {
       {
         $unset: {
           'certifications.upchieve101': '',
-          'certifications.trainingSkills': '',
-          'certifications.collegeSkills': ''
+          'certifications.tutoringSkills': '',
+          'certifications.collegeSkills': '',
+          'trainingCourses': ''
         }
       }
     );
@@ -51,10 +60,10 @@ async function downgrade(): Promise<void> {
 }
 
 // To run migration:
-// npx ts-node dbutils/add-training-certs.ts
+// npx ts-node dbutils/add-training-courses.ts
 
 // To downgrade the migration run:
-// DOWNGRADE=true npx ts-node dbutils/add-training-certs.ts
+// DOWNGRADE=true npx ts-node dbutils/add-training-courses.ts
 if (process.env.DOWNGRADE) {
   downgrade();
 } else {
