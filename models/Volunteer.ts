@@ -125,6 +125,21 @@ const referenceSchema = new mongoose.Schema({
   additionalInfo: String
 });
 
+const trainingCourseSchema = new mongoose.Schema({
+  isComplete: {
+    type: Boolean,
+    default: false
+  },
+  progress: {
+    type: Number,
+    default: 0
+  },
+  completedMaterials: {
+    type: [String],
+    default: []
+  }
+});
+
 const volunteerSchemaOptions = {
   toJSON: {
     virtuals: true
@@ -190,6 +205,20 @@ const volunteerSchema = new mongoose.Schema(
     sentReadyToCoachEmail: {
       type: Boolean,
       default: false
+    },
+    trainingCourses: {
+      upchieve101: {
+        type: trainingCourseSchema,
+        default: trainingCourseSchema
+      },
+      tutoringSkills: {
+        type: trainingCourseSchema,
+        default: trainingCourseSchema
+      },
+      collegeSkills: {
+        type: trainingCourseSchema,
+        default: trainingCourseSchema
+      }
     },
     certifications: {
       prealgebra: {
