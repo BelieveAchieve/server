@@ -6,6 +6,7 @@ const Student = require('../models/Student')
 const MailService = require('./MailService')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
 const { PHOTO_ID_STATUS, REFERENCE_STATUS, STATUS } = require('../constants')
+const config = require('../config')
 
 const getVolunteer = async volunteerId => {
   return Volunteer.findOne({ _id: volunteerId })
@@ -303,7 +304,7 @@ module.exports = {
     }
   },
 
-  getUsers: async function({ firstName, lastName, email, page }) {
+  getUsers: async function({ firstName, lastName, email, partnerOrg, page }) {
     const query = {}
     const pageNum = parseInt(page) || 1
     const PER_PAGE = 15
@@ -312,6 +313,13 @@ module.exports = {
     if (firstName) query.firstname = { $regex: firstName, $options: 'i' }
     if (lastName) query.lastname = { $regex: lastName, $options: 'i' }
     if (email) query.email = { $regex: email, $options: 'i' }
+    if (partnerOrg) {
+      if (config.studentPartnerManifests[partnerOrg])
+        query.studentPartnerOrg = { $regex: partnerOrg, $options: 'i' }
+
+      if (config.volunteerPartnerManifests[partnerOrg])
+        query.volunteerPartnerOrg = { $regex: partnerOrg, $options: 'i' }
+    }
 
     try {
       const users = await User.find(query)
