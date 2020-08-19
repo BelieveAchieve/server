@@ -165,8 +165,8 @@ module.exports = function(router, io) {
       const uploadUrl = await AwsService.getSessionPhotoUploadUrl(
         sessionPhotoS3Key
       )
-      const bucketName = config.awsS3.sessionPhotoBucket;
-      const imageUrl = `https://${bucketName}.s3.amazonaws.com/${sessionPhotoS3Key}`;
+      const bucketName = config.awsS3.sessionPhotoBucket
+      const imageUrl = `https://${bucketName}.s3.amazonaws.com/${sessionPhotoS3Key}`
       res.json({ uploadUrl, imageUrl })
     } catch (error) {
       next(error)
