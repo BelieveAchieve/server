@@ -45,3 +45,9 @@ export const insertStudent = async (
   // Return student with non-hashed password
   return { ...createdStudent.toObject(), password: student.password };
 };
+
+export const getVolunteer = (query): Promise<Partial<Volunteer>> => {
+  return VolunteerModel.findOne(query)
+    .lean()
+    .exec();
+};
