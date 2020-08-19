@@ -83,7 +83,11 @@ module.exports = function(router) {
     const { user } = req
     const { courseKey } = req.params
     const { materialKey } = req.body
-    await TrainingCourseService.recordProgress(user, courseKey, materialKey)
-    res.sendStatus(204)
+    const { progress, isComplete } = await TrainingCourseService.recordProgress(
+      user,
+      courseKey,
+      materialKey
+    )
+    res.status(200).json({ progress, isComplete })
   })
 }

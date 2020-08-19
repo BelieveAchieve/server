@@ -1,5 +1,5 @@
 import Volunteer from '../models/Volunteer';
-const { getCourse } = require('../utils/training-courses');
+const { getCourse, getProgress } = require('../utils/training-courses');
 
 module.exports = {
   getCourse: (volunteer: any, courseKey: string) => {
@@ -17,14 +17,27 @@ module.exports = {
   },
 
   recordProgress: async (volunteer: any, courseKey: string, materialKey: string) => {
-    // Early exit if already saved progress
     const courseProgress = volunteer.trainingCourses[courseKey];
+
+    // Early exit if already saved progress
     if (courseProgress.completedMaterials.includes(materialKey)) return;
 
-    // TODO: update progress percentage & isComplete
-    return Volunteer.updateOne(
+    // Mutate user object's completedMaterials
+    courseProgress.completedMaterials.push(materialKey)
+    const progress = getProgress(courseKey, courseProgress.completedMaterials);
+    const isComplete = progress === 100;
+
+    await Volunteer.updateOne(
       { _id: volunteer._id },
-      { $addToSet: { [`trainingCourses.${courseKey}.completedMaterials`]: materialKey } }
+      {
+        $set: {
+          [`trainingCourses.${courseKey}.isComplete`]: isComplete,
+          [`trainingCourses.${courseKey}.progress`]: progress
+        },
+        $addToSet: { [`trainingCourses.${courseKey}.completedMaterials`]: materialKey }
+      }
     );
+
+    return { progress, isComplete };
   }
 }
