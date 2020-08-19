@@ -1,6 +1,15 @@
 import mongoose from 'mongoose';
 import { values } from 'lodash';
-import { PHOTO_ID_STATUS, REFERENCE_STATUS, SUBJECTS } from '../constants';
+import {
+  PHOTO_ID_STATUS,
+  REFERENCE_STATUS,
+  SUBJECTS,
+  TRAINING,
+  MATH_CERTS,
+  COLLEGE_CERTS,
+  SCIENCE_CERTS,
+  SAT_CERTS
+} from '../constants';
 import User from './User';
 
 const weeksSince = (date): number => {
@@ -192,7 +201,7 @@ const volunteerSchema = new mongoose.Schema(
       default: false
     },
     certifications: {
-      prealgebra: {
+      [MATH_CERTS.PREALGREBA]: {
         passed: {
           type: Boolean,
           default: false
@@ -203,7 +212,7 @@ const volunteerSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
-      algebra: {
+      [MATH_CERTS.ALGEBRA]: {
         passed: {
           type: Boolean,
           default: false
@@ -214,7 +223,7 @@ const volunteerSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
-      geometry: {
+      [MATH_CERTS.GEOMETRY]: {
         passed: {
           type: Boolean,
           default: false
@@ -225,7 +234,7 @@ const volunteerSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
-      trigonometry: {
+      [MATH_CERTS.TRIGONOMETRY]: {
         passed: {
           type: Boolean,
           default: false
@@ -236,7 +245,7 @@ const volunteerSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
-      precalculus: {
+      [MATH_CERTS.PRECALCULUS]: {
         passed: {
           type: Boolean,
           default: false
@@ -247,7 +256,7 @@ const volunteerSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
-      calculus: {
+      [MATH_CERTS.CALCULUS]: {
         passed: {
           type: Boolean,
           default: false
@@ -258,7 +267,7 @@ const volunteerSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
-      applications: {
+      [MATH_CERTS.CALCULUS_AB]: {
         passed: {
           type: Boolean,
           default: false
@@ -269,7 +278,7 @@ const volunteerSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
-      essays: {
+      [MATH_CERTS.CALCULUS_BC]: {
         passed: {
           type: Boolean,
           default: false
@@ -280,7 +289,7 @@ const volunteerSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
-      planning: {
+      [MATH_CERTS.STATISTICS]: {
         passed: {
           type: Boolean,
           default: false
@@ -291,7 +300,7 @@ const volunteerSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
-      biology: {
+      [COLLEGE_CERTS.ESSAYS]: {
         passed: {
           type: Boolean,
           default: false
@@ -302,7 +311,7 @@ const volunteerSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
-      chemistry: {
+      [COLLEGE_CERTS.FINANCIAL_AID]: {
         passed: {
           type: Boolean,
           default: false
@@ -313,7 +322,7 @@ const volunteerSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
-      physicsOne: {
+      [COLLEGE_CERTS.SPORTS_RECRUITMENT_PLANNING]: {
         passed: {
           type: Boolean,
           default: false
@@ -324,7 +333,7 @@ const volunteerSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
-      upchieve101: {
+      [SCIENCE_CERTS.BIOLOGY]: {
         passed: {
           type: Boolean,
           default: false
@@ -335,7 +344,7 @@ const volunteerSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
-      tutoringSkills: {
+      [SCIENCE_CERTS.CHEMISTRY]: {
         passed: {
           type: Boolean,
           default: false
@@ -346,7 +355,106 @@ const volunteerSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
-      collegeSkills: {
+      [SCIENCE_CERTS.PHYSICS_ONE]: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
+      },
+      [SCIENCE_CERTS.PHYSICS_TWO]: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
+      },
+      [SCIENCE_CERTS.ENVIRONMENTAL_SCIENCE]: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
+      },
+      [TRAINING.UPCHIEVE_101]: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
+      },
+      [TRAINING.TUTORING_SKILLS]: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
+      },
+      [TRAINING.COLLEGE_COUNSELING]: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
+      },
+      [TRAINING.COLLEGE_SKILLS]: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
+      },
+      [TRAINING.SAT_STRATEGIES]: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
+      },
+      [SAT_CERTS.SAT_MATH]: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
+      },
+      [SAT_CERTS.SAT_READING]: {
         passed: {
           type: Boolean,
           default: false
