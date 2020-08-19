@@ -6,6 +6,8 @@ module.exports = {
     const course = getCourse(courseKey);
     if (!course) return;
     const courseProgress = volunteer.trainingCourses[courseKey]
+    course.isComplete = courseProgress.isComplete
+    course.progress = courseProgress.progress
     course.modules.forEach(mod => {
       mod.materials.forEach(mat => {
         mat.isCompleted = courseProgress.completedMaterials.includes(
