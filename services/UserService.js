@@ -304,7 +304,14 @@ module.exports = {
     }
   },
 
-  getUsers: async function({ firstName, lastName, email, partnerOrg, page }) {
+  getUsers: async function({
+    firstName,
+    lastName,
+    email,
+    partnerOrg,
+    highSchool,
+    page
+  }) {
     const query = {}
     const pageNum = parseInt(page) || 1
     const PER_PAGE = 15
@@ -321,9 +328,33 @@ module.exports = {
         query.volunteerPartnerOrg = { $regex: partnerOrg, $options: 'i' }
     }
 
+    let highSchoolQuery = [
+      {
+        $lookup: {
+          from: 'schools',
+          localField: 'approvedHighschool',
+          foreignField: '_id',
+          as: 'highSchool'
+        }
+      },
+      {
+        $unwind: '$highSchool'
+      },
+      {
+        $match: {
+          $or: [
+            { 'highSchool.nameStored': { $regex: highSchool, $options: 'i' } },
+            { 'highSchool.SCH_NAME': { $regex: highSchool, $options: 'i' } }
+          ]
+        }
+      }
+    ]
+
+    const aggregateQuery = [{ $match: query }]
+    if (highSchool) aggregateQuery.push(...highSchoolQuery)
+
     try {
-      const users = await User.find(query)
-        .lean()
+      const users = await User.aggregate(aggregateQuery)
         .skip(skip)
         .limit(PER_PAGE)
         .exec()
