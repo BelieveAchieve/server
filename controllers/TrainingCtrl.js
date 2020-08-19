@@ -5,10 +5,13 @@ const Volunteer = require('../models/Volunteer')
 const {
   CERT_UNLOCKING,
   COMPUTED_CERTS,
-  SUBJECTS,
-  REQUIRED_TRAINING
+  TRAINING,
+  MATH_CERTS,
+  SCIENCE_CERTS,
+  SAT_CERTS,
+  SUBJECT_TYPES
 } = require('../constants')
-const getSupercategory = require('../utils/getSupercategory')
+const getSubjectType = require('../utils/getSubjectType')
 
 // change depending on how many of each subcategory are wanted
 const numQuestions = {
@@ -26,6 +29,16 @@ const numQuestions = {
   physicsOne: 1
 }
 const PASS_THRESHOLD = 0.8
+
+// Check if a user is certified in a given group of subject certs
+const isCertifiedIn = (subjectCerts, certifications) => {
+  for (let cert in subjectCerts) {
+    const subject = subjectCerts[cert]
+    if (certifications[subject].passed) return true
+  }
+
+  return false
+}
 
 module.exports = {
   getQuestions: async function(options) {
@@ -52,7 +65,7 @@ module.exports = {
     )
   },
 
-  getQuizScore: async function({ user, idAnswerMap, category, ip }) {
+  getQuizScore: async function({ user, idAnswerMap, category: cert, ip }) {
     const objIDs = Object.keys(idAnswerMap)
     const questions = await Question.find({ _id: { $in: objIDs } }).exec()
 
@@ -63,31 +76,44 @@ module.exports = {
     const percent = score / questions.length
     const passed = percent >= PASS_THRESHOLD
 
-    const tries = user.certifications[category]['tries'] + 1
+    const tries = user.certifications[cert]['tries'] + 1
 
     const userUpdates = {
-      [`certifications.${category}.passed`]: passed,
-      [`certifications.${category}.tries`]: tries,
-      [`certifications.${category}.lastAttemptedAt`]: new Date()
+      [`certifications.${cert}.passed`]: passed,
+      [`certifications.${cert}.tries`]: tries,
+      [`certifications.${cert}.lastAttemptedAt`]: new Date()
     }
 
     if (passed) {
-      const unlockedCerts = this.getUnlockedCerts(category, user.certifications)
-      for (const category of unlockedCerts) {
-        if (CERT_UNLOCKING[category])
-          userUpdates[`certifications.${category}.passed`] = true
+      const unlockedSubjects = this.getUnlockedSubjects(
+        cert,
+        user.certifications
+      )
+
+      // Create a user action for every subject unlocked
+      for (const subject of unlockedSubjects) {
+        // @note: user.certifications is modified in this.getUnlockedSubjects
+        const hasPassedQuizUserAction =
+          user.certifications[subject] && user.certifications[subject].passed
+        if (!user.subjects.includes(subject) && !hasPassedQuizUserAction)
+          UserActionCtrl.unlockedSubject(user._id, subject, ip)
       }
-      // @todo: Send off user action for the new subjects (ignore duplicates)
-      // @todo: Issue with existing volunteers and onboarding / required training
-      userUpdates.$addToSet = { subjects: unlockedCerts }
-      // an onboarded volunteer must have updated their availability and obtained at least one certification
-      if (!user.isOnboarded && user.availabilityLastModifiedAt) {
+
+      userUpdates.$addToSet = { subjects: unlockedSubjects }
+
+      if (
+        !user.isOnboarded &&
+        user.availabilityLastModifiedAt &&
+        unlockedSubjects.length > 0
+      ) {
         userUpdates.isOnboarded = true
         UserActionCtrl.accountOnboarded(user._id, ip)
       }
     }
 
-    await Volunteer.updateOne({ _id: user._id }, userUpdates)
+    await Volunteer.updateOne({ _id: user._id }, userUpdates, {
+      runValidators: true
+    })
 
     const idCorrectAnswerMap = questions.reduce((correctAnswers, question) => {
       correctAnswers[question._id] = question.correctAnswer
@@ -101,24 +127,39 @@ module.exports = {
       idCorrectAnswerMap
     }
   },
-  // Returns an array of certs that the user should be updated with
-  getUnlockedCerts: function(category, certifications) {
-    // Check if the user has completed required training for this category
-    if (!this.completedRequiredTraining(category, certifications)) return []
 
-    // Add all the categories that this category unlocks into a Set
-    const currentCerts = new Set(CERT_UNLOCKING[category])
+  getUnlockedSubjects: function(cert, userCertifications) {
+    // update certifications to have the current cert completed set to passed
+    Object.assign(userCertifications, { [cert]: { passed: true } })
 
-    // Set passed on the category if the current category is required training
-    if (this.isRequiredTrainingCategory(category))
-      Object.assign(certifications, { [category]: { passed: true } })
+    // UPchieve 101 must be completed before a volunteer can be onboarded
+    if (!userCertifications[TRAINING.UPCHIEVE_101].passed) return []
 
-    for (const cert in certifications) {
+    const certType = getSubjectType(cert)
+
+    // Check if the user has a certification for the required training
+    if (
+      certType === SUBJECT_TYPES.TRAINING &&
+      !this.hasCertForRequiredTraining(cert, userCertifications)
+    )
+      return []
+
+    // Check if the user has completed required training for this cert
+    if (
+      certType !== SUBJECT_TYPES.TRAINING &&
+      !this.hasRequiredTraining(cert, userCertifications)
+    )
+      return []
+
+    // Add all the certifications that this completed cert unlocks into a Set
+    const currentCerts = new Set(CERT_UNLOCKING[cert])
+
+    for (const cert in userCertifications) {
       // Check that the required training was completed for every certification that a user has
       // Add all the other subjects that a certification unlocks to the Set
       if (
-        certifications[cert].passed &&
-        this.completedRequiredTraining(cert, certifications) &&
+        userCertifications[cert].passed &&
+        this.hasRequiredTraining(cert, userCertifications) &&
         CERT_UNLOCKING[cert]
       )
         CERT_UNLOCKING[cert].forEach(subject => currentCerts.add(subject))
@@ -133,10 +174,10 @@ module.exports = {
         // SAT Math can be unlocked from taking Geometry, Trigonometry, and Algebra or
         // from Calculus AB, Calculus BC, and Precalculus - none of which unlock Geometry
         if (
-          cert === SUBJECTS.SAT_MATH &&
-          (currentCerts.has(SUBJECTS.CALCULUS_AB) ||
-            currentCerts.has(SUBJECTS.CALCULUS_BC) ||
-            currentCerts.has(SUBJECTS.PRECALCULUS))
+          cert === SAT_CERTS.SAT_MATH &&
+          (currentCerts.has(MATH_CERTS.CALCULUS_AB) ||
+            currentCerts.has(MATH_CERTS.CALCULUS_BC) ||
+            currentCerts.has(MATH_CERTS.PRECALCULUS))
         )
           break
 
@@ -149,36 +190,61 @@ module.exports = {
       if (meetsRequirements) currentCerts.add(cert)
     }
 
+    // SAT Math is a special case, it can be unlocked by multiple math certs, but must have SAT Strategies completed
+    if (
+      currentCerts.has(SAT_CERTS.SAT_MATH) &&
+      !userCertifications[TRAINING.SAT_STRATEGIES].passed
+    )
+      currentCerts.delete(SAT_CERTS.SAT_MATH)
+
     return Array.from(currentCerts)
   },
 
-  completedRequiredTraining: function(category, certifications) {
-    // Early exit if the category itself is a required training category
-    if (this.isRequiredTrainingCategory(category)) return true
-
-    const supercategory = getSupercategory(category).toLowerCase()
+  // Check if a given cert has the required training completed
+  hasRequiredTraining: function(cert, userCertifications) {
+    const certType = getSubjectType(cert).toLowerCase()
 
     if (
-      (supercategory === 'math' || supercategory === 'science') &&
-      certifications.tutoringSkills.passed
+      (certType === SUBJECT_TYPES.MATH || certType === SUBJECT_TYPES.SCIENCE) &&
+      userCertifications[TRAINING.TUTORING_SKILLS].passed
     )
       return true
 
-    if (supercategory === 'college' && certifications.collegeCounseling.passed)
+    if (
+      certType === SUBJECT_TYPES.COLLEGE &&
+      userCertifications[TRAINING.COLLEGE_COUNSELING].passed
+    )
       return true
 
-    // @todo: check if standardized testing has a training that needs to be required
-    if (supercategory === 'standardized testing') return true
+    if (
+      certType === SUBJECT_TYPES.SAT &&
+      userCertifications[TRAINING.SAT_STRATEGIES].passed
+    )
+      return true
 
     return false
   },
 
-  isRequiredTrainingCategory: function(category) {
+  // Check if a required training cert has any associated passed certifications for it
+  hasCertForRequiredTraining: function(cert, userCertifications) {
+    // UPchieve 101 doesn't need any associated certs
+    if (cert === TRAINING.UPCHIEVE_101) return true
+
+    // College counseling unlocks Planning and Essays by default, meaning no requirements are needed to unlock the college related certifications besides completing the required training
+    if (cert === TRAINING.COLLEGE_COUNSELING) return true
+
     if (
-      category === REQUIRED_TRAINING.TUTORING_SKILLS ||
-      category === REQUIRED_TRAINING.COLLEGE_COUNSELING
+      cert === TRAINING.TUTORING_SKILLS &&
+      isCertifiedIn({ ...MATH_CERTS, ...SCIENCE_CERTS }, userCertifications)
     )
       return true
-    else return false
+
+    if (
+      cert === TRAINING.SAT_STRATEGIES &&
+      isCertifiedIn(SAT_CERTS, userCertifications)
+    )
+      return true
+
+    return false
   }
 }
