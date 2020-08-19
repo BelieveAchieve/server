@@ -6,6 +6,7 @@ const Student = require('../models/Student')
 const MailService = require('./MailService')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
 const { PHOTO_ID_STATUS, REFERENCE_STATUS, STATUS } = require('../constants')
+const config = require('../config')
 
 const getVolunteer = async volunteerId => {
   return Volunteer.findOne({ _id: volunteerId })
@@ -303,7 +304,14 @@ module.exports = {
     }
   },
 
-  getUsers: async function({ firstName, lastName, email, page }) {
+  getUsers: async function({
+    firstName,
+    lastName,
+    email,
+    partnerOrg,
+    highSchool,
+    page
+  }) {
     const query = {}
     const pageNum = parseInt(page) || 1
     const PER_PAGE = 15
@@ -312,10 +320,41 @@ module.exports = {
     if (firstName) query.firstname = { $regex: firstName, $options: 'i' }
     if (lastName) query.lastname = { $regex: lastName, $options: 'i' }
     if (email) query.email = { $regex: email, $options: 'i' }
+    if (partnerOrg) {
+      if (config.studentPartnerManifests[partnerOrg])
+        query.studentPartnerOrg = { $regex: partnerOrg, $options: 'i' }
+
+      if (config.volunteerPartnerManifests[partnerOrg])
+        query.volunteerPartnerOrg = { $regex: partnerOrg, $options: 'i' }
+    }
+
+    let highSchoolQuery = [
+      {
+        $lookup: {
+          from: 'schools',
+          localField: 'approvedHighschool',
+          foreignField: '_id',
+          as: 'highSchool'
+        }
+      },
+      {
+        $unwind: '$highSchool'
+      },
+      {
+        $match: {
+          $or: [
+            { 'highSchool.nameStored': { $regex: highSchool, $options: 'i' } },
+            { 'highSchool.SCH_NAME': { $regex: highSchool, $options: 'i' } }
+          ]
+        }
+      }
+    ]
+
+    const aggregateQuery = [{ $match: query }]
+    if (highSchool) aggregateQuery.push(...highSchoolQuery)
 
     try {
-      const users = await User.find(query)
-        .lean()
+      const users = await User.aggregate(aggregateQuery)
         .skip(skip)
         .limit(PER_PAGE)
         .exec()

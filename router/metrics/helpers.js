@@ -147,7 +147,11 @@ async function getFeedbackStats(userType, options) {
   return { sum: toDatapoints('sum'), count: toDatapoints('count') }
 }
 
-function getFeedbackStatsPerSegment(feedbacksWithExtras, timeScale) {
+function getFeedbackStatsPerSegment(
+  feedbacksWithExtras,
+  segmentSlug,
+  timeScale
+) {
   // bunch of stuff to conform to datapoint format {scaledTime, dimensionSlug, dimensionValue}
   return _.reduce(
     feedbacksWithExtras,
@@ -290,7 +294,7 @@ function getPerSegment(rowsWithExtras, fn, timeScale, type = 'all') {
     (sessions, studentPartner) => fn(sessions, studentPartner, timeScale)
   )
   return _.merge(
-    { '': fn(rowsWithExtras, '') },
+    { '': fn(rowsWithExtras, '', timeScale) },
     type === 'all' || type === 'student' ? studentPartnerStats : {},
     type === 'all' || type === 'volunteer' ? volunteerPartnerStats : {}
   )
@@ -309,7 +313,7 @@ async function getStudents({ minTime, maxTime, timeScale = 'day' }) {
     students,
     ({ studentPartnerOrg }) => `student-${studentPartnerOrg || 'none'}`
   )
-  const allDatapoints = await getStudentsDatapoints(students, '')
+  const allDatapoints = await getStudentsDatapoints(students, '', timeScale)
   const studentPartnerDatapoints = await Promise.all(
     _.map(studentPartnerGroups, (students, studentPartner) =>
       getStudentsDatapoints(students, studentPartner, timeScale)
@@ -459,7 +463,11 @@ async function getVolunteerStats({ minTime, maxTime, timeScale = 'day' }) {
   )
 }
 
-function getVolunteerStatsPerSegment(volunteersWithExtras, timeScale) {
+function getVolunteerStatsPerSegment(
+  volunteersWithExtras,
+  segmentSlug,
+  timeScale
+) {
   const volunteerGroups = _.groupBy(volunteersWithExtras, ({ createdAt }) =>
     getScaledTimeByTimeScale(timeScale, moment.utc(createdAt))
   )
