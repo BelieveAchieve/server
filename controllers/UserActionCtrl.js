@@ -1,6 +1,6 @@
 const UserAction = require('../models/UserAction')
 const { USER_ACTION } = require('../constants')
-const getSupercategory = require('../utils/getSupercategory')
+const getSubjectType = require('../utils/getSubjectType')
 const getDeviceFromUserAgent = require('../utils/getDeviceFromUserAgent')
 const userAgentParser = require('ua-parser-js')
 
@@ -35,7 +35,7 @@ const createQuizAction = async (
     action,
     user: userId,
     quizSubcategory: quizSubcategory.toUpperCase(),
-    quizCategory: getSupercategory(quizSubcategory),
+    quizCategory: getSubjectType(quizSubcategory).toUpperCase(),
     ipAddress
   })
 
@@ -112,6 +112,15 @@ const viewedMaterials = (userId, quizCategory, ipAddress) => {
     quizCategory,
     ipAddress,
     USER_ACTION.QUIZ.VIEWED_MATERIALS
+  )
+}
+
+const unlockedSubject = (userId, subject, ipAddress) => {
+  return createQuizAction(
+    userId,
+    subject,
+    ipAddress,
+    USER_ACTION.QUIZ.UNLOCKED_SUBJECT
   )
 }
 
@@ -241,6 +250,7 @@ module.exports = {
   passedQuiz,
   failedQuiz,
   viewedMaterials,
+  unlockedSubject,
   requestedSession,
   joinedSession,
   rejoinedSession,
