@@ -131,7 +131,8 @@ questionSchema.statics.getSubcategories = function(category) {
       'waves and sound',
       'refraction and reflection',
       'gravity/gen relativity'
-    ]
+    ],
+    upchieve101: ['ethics', 'students']
   }
 
   if (typeof category !== 'string') {

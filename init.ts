@@ -51,7 +51,8 @@ db.once('open', function() {
         'calculus',
         'planning',
         'essays',
-        'applications'
+        'applications',
+        'upchieve101'
       ]
     }
   ];

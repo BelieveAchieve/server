@@ -1,4 +1,4 @@
-import { find } from "lodash";
+import { find, chain } from "lodash";
 
 interface TrainingCourse {
   name: string;
@@ -38,6 +38,24 @@ interface TrainingMaterialLink {
 
 export const getCourse = (courseKey: string): TrainingCourse => {
   return find(courses, { courseKey });
+}
+
+const getRequiredMaterials = (courseKey: string): string[] => {
+  const course: TrainingCourse = getCourse(courseKey);
+  return chain(course.modules)
+    .map('materials')
+    .flatten()
+    .filter('isRequired')
+    .map('materialKey')
+    .value();
+}
+
+export const getProgress = (courseKey: string, userCompleted: string[]): number => {
+  const course = getCourse(courseKey);
+  const requiredMaterials = getRequiredMaterials(courseKey);
+  const completedMaterials = requiredMaterials.filter(mat => userCompleted.includes(mat));
+  const fraction = completedMaterials.length / requiredMaterials.length;
+  return Math.floor(fraction * 100);
 }
 
 export const courses: TrainingCourse[] = [
