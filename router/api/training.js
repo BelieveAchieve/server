@@ -1,6 +1,8 @@
+const Sentry = require('@sentry/node')
 const TrainingCtrl = require('../../controllers/TrainingCtrl')
 const UserActionCtrl = require('../../controllers/UserActionCtrl')
-const Sentry = require('@sentry/node')
+const TrainingCourseService = require('../../services/TrainingCourseService')
+const { getCourse } = require('../../utils/training-courses')
 
 module.exports = function(router) {
   router.post('/training/questions', async function(req, res, next) {
@@ -16,6 +18,7 @@ module.exports = function(router) {
       next(err)
     }
   })
+
   router.post('/training/score', async function(req, res, next) {
     try {
       const { user, ip } = req
@@ -61,6 +64,39 @@ module.exports = function(router) {
     UserActionCtrl.viewedMaterials(_id, category, ipAddress).catch(error =>
       Sentry.captureException(error)
     )
+
+    res.sendStatus(204)
+  })
+
+  router.get('/training/course/:courseKey', function(req, res, next) {
+    const { user } = req
+    const { courseKey } = req.params
+
+    // TODO: put in service
+    const course = getCourse(courseKey)
+    if (!course) return res.sendStatus(404)
+    const courseProgress = user.trainingCourses[courseKey]
+    course.modules.forEach(mod => {
+      mod.materials.forEach(mat => {
+        mat.isCompleted = courseProgress.completedMaterials.includes(
+          mat.materialKey
+        )
+      })
+    })
+
+    res.status(200).json({ course })
+  })
+
+  router.post('/training/course/:courseKey/progress', async function(
+    req,
+    res,
+    next
+  ) {
+    const { user } = req
+    const { courseKey } = req.params
+    const { materialKey } = req.body
+
+    await TrainingCourseService.recordProgress(user, courseKey, materialKey)
 
     res.sendStatus(204)
   })
