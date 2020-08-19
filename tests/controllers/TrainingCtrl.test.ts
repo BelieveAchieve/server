@@ -85,14 +85,15 @@ describe('getQuizScore', () => {
 
     // Volunteer completes a quiz in Statistics
     const idAnswerMap = await generateIdAnswerMapHelper();
+    // @todo: figure out how to set a type for quizScoreInput
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let certInput: any = {
+    let quizScoreInput: any = {
       user: volunteer,
       category: MATH_CERTS.STATISTICS,
       idAnswerMap
     };
 
-    let result = await TrainingCtrl.getQuizScore(certInput);
+    let result = await TrainingCtrl.getQuizScore(quizScoreInput);
     let updatedVolunteer = await getVolunteer({ _id: volunteer._id });
     let expectedResult = {
       tries: 1,
@@ -105,13 +106,13 @@ describe('getQuizScore', () => {
     ).toBeTruthy();
 
     // Volunteer then completes UPchieve 101
-    certInput = {
+    quizScoreInput = {
       user: updatedVolunteer,
       category: TRAINING.UPCHIEVE_101,
       idAnswerMap
     };
 
-    result = await TrainingCtrl.getQuizScore(certInput);
+    result = await TrainingCtrl.getQuizScore(quizScoreInput);
     updatedVolunteer = await getVolunteer({ _id: volunteer._id });
     expectedResult = {
       tries: 1,
@@ -125,13 +126,13 @@ describe('getQuizScore', () => {
     ).toBeTruthy();
 
     // Volunteer then completes required training for math, Tutoring Skills, to become onboarded
-    certInput = {
+    quizScoreInput = {
       user: updatedVolunteer,
       category: TRAINING.TUTORING_SKILLS,
       idAnswerMap
     };
 
-    result = await TrainingCtrl.getQuizScore(certInput);
+    result = await TrainingCtrl.getQuizScore(quizScoreInput);
     updatedVolunteer = await getVolunteer({ _id: volunteer._id });
     expectedResult = {
       tries: 1,
@@ -151,13 +152,13 @@ describe('getQuizScore', () => {
     // Volunteer first completes required training for Math and Science - Tutoring Skills
     const idAnswerMap = await generateIdAnswerMapHelper();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let certInput: any = {
+    let quizScoreInput: any = {
       user: volunteer,
       category: TRAINING.TUTORING_SKILLS,
       idAnswerMap
     };
 
-    let result = await TrainingCtrl.getQuizScore(certInput);
+    let result = await TrainingCtrl.getQuizScore(quizScoreInput);
     let updatedVolunteer = await getVolunteer({ _id: volunteer._id });
     let expectedResult = {
       tries: 1,
@@ -170,14 +171,14 @@ describe('getQuizScore', () => {
     ).toBeTruthy();
 
     // Volunteer completes a second course
-    certInput = {
+    quizScoreInput = {
       user: updatedVolunteer,
 
       category: SCIENCE_CERTS.PHYSICS_TWO,
       idAnswerMap
     };
 
-    result = await TrainingCtrl.getQuizScore(certInput);
+    result = await TrainingCtrl.getQuizScore(quizScoreInput);
     updatedVolunteer = await getVolunteer({ _id: volunteer._id });
 
     expectedResult = {
@@ -191,13 +192,13 @@ describe('getQuizScore', () => {
     ).toBeTruthy();
 
     // Volunteer then completes UPchieve 101
-    certInput = {
+    quizScoreInput = {
       user: updatedVolunteer,
       category: TRAINING.UPCHIEVE_101,
       idAnswerMap
     };
 
-    result = await TrainingCtrl.getQuizScore(certInput);
+    result = await TrainingCtrl.getQuizScore(quizScoreInput);
     updatedVolunteer = await getVolunteer({ _id: volunteer._id });
 
     expectedResult = {
@@ -218,13 +219,13 @@ describe('getQuizScore', () => {
     // Volunteer completes UPchieve 101
     const idAnswerMap = await generateIdAnswerMapHelper();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let certInput: any = {
+    let quizScoreInput: any = {
       user: volunteer,
       category: TRAINING.UPCHIEVE_101,
       idAnswerMap
     };
 
-    let result = await TrainingCtrl.getQuizScore(certInput);
+    let result = await TrainingCtrl.getQuizScore(quizScoreInput);
     let updatedVolunteer = await getVolunteer({ _id: volunteer._id });
     let expectedResult = {
       tries: 1,
@@ -237,13 +238,13 @@ describe('getQuizScore', () => {
     ).toBeTruthy();
 
     // Volunteer completes Tutoring Skills
-    certInput = {
+    quizScoreInput = {
       user: updatedVolunteer,
       category: TRAINING.TUTORING_SKILLS,
       idAnswerMap
     };
 
-    result = await TrainingCtrl.getQuizScore(certInput);
+    result = await TrainingCtrl.getQuizScore(quizScoreInput);
     updatedVolunteer = await getVolunteer({ _id: volunteer._id });
 
     expectedResult = {
@@ -257,13 +258,13 @@ describe('getQuizScore', () => {
     ).toBeTruthy();
 
     // Volunteer completes Precalculus
-    certInput = {
+    quizScoreInput = {
       user: updatedVolunteer,
       category: MATH_CERTS.PRECALCULUS,
       idAnswerMap
     };
 
-    result = await TrainingCtrl.getQuizScore(certInput);
+    result = await TrainingCtrl.getQuizScore(quizScoreInput);
     updatedVolunteer = await getVolunteer({ _id: volunteer._id });
 
     expectedResult = {
@@ -286,13 +287,13 @@ describe('getQuizScore', () => {
     );
 
     const idAnswerMap = await generateIdAnswerMapHelper();
-    const certInput = {
+    const quizScoreInput = {
       user: volunteer,
       category: TRAINING.TUTORING_SKILLS,
       idAnswerMap
     };
 
-    await TrainingCtrl.getQuizScore(certInput);
+    await TrainingCtrl.getQuizScore(quizScoreInput);
     const userActions = await UserActionModel.find({
       action: USER_ACTION.QUIZ.UNLOCKED_SUBJECT
     })
@@ -317,13 +318,13 @@ describe('getQuizScore', () => {
     );
 
     const idAnswerMap = await generateIdAnswerMapHelper(5);
-    const certInput = {
+    const quizScoreInput = {
       user: volunteer,
       category: TRAINING.UPCHIEVE_101,
       idAnswerMap
     };
 
-    const result = await TrainingCtrl.getQuizScore(certInput);
+    const result = await TrainingCtrl.getQuizScore(quizScoreInput);
     const updatedVolunteer = await getVolunteer({ _id: volunteer._id });
 
     const expectedResult = {
@@ -335,6 +336,41 @@ describe('getQuizScore', () => {
     expect(
       updatedVolunteer.certifications[TRAINING.UPCHIEVE_101].passed
     ).toBeFalsy();
+  });
+
+  test('Grace period volunteer (an existing volunteer) should have the same subjects when completing required training', async () => {
+    const certifications = buildCertifications({
+      [MATH_CERTS.ALGEBRA]: { passed: true, tries: 1 }
+    });
+    const subjects = [SUBJECTS.PREALGREBA, SUBJECTS.ALGEBRA];
+    const volunteer = await insertVolunteer(
+      buildVolunteer({
+        availabilityLastModifiedAt: new Date(),
+        subjects,
+        certifications,
+        isOnboarded: true
+      })
+    );
+
+    const idAnswerMap = await generateIdAnswerMapHelper();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let quizScoreInput: any = {
+      user: volunteer,
+      category: TRAINING.TUTORING_SKILLS,
+      idAnswerMap
+    };
+    await TrainingCtrl.getQuizScore(quizScoreInput);
+    let updatedVolunteer = await getVolunteer({ _id: volunteer._id });
+    expect(updatedVolunteer.subjects).toEqual(subjects);
+
+    quizScoreInput = {
+      user: updatedVolunteer,
+      category: TRAINING.UPCHIEVE_101,
+      idAnswerMap
+    };
+    await TrainingCtrl.getQuizScore(quizScoreInput);
+    updatedVolunteer = await getVolunteer({ _id: volunteer._id });
+    expect(updatedVolunteer.subjects).toEqual(subjects);
   });
 
   test.todo(
