@@ -51,7 +51,7 @@ export const buildCertifications = (overrides = {}): Certifications => {
     [SCIENCE_CERTS.ENVIRONMENTAL_SCIENCE]: { passed: false, tries: 0 },
     [COLLEGE_CERTS.ESSAYS]: { passed: false, tries: 0 },
     [COLLEGE_CERTS.FINANCIAL_AID]: { passed: false, tries: 0 },
-    [COLLEGE_CERTS.SPORTS_RECRUIMENT_PLANNING]: { passed: false, tries: 0 },
+    [COLLEGE_CERTS.SPORTS_RECRUITMENT_PLANNING]: { passed: false, tries: 0 },
     [SAT_CERTS.SAT_MATH]: { passed: false, tries: 0 },
     [SAT_CERTS.SAT_READING]: { passed: false, tries: 0 },
     [TRAINING.UPCHIEVE_101]: { passed: false, tries: 0 },

@@ -142,7 +142,7 @@ export interface Certifications {
   [SCIENCE_CERTS.ENVIRONMENTAL_SCIENCE]: CertificationInfo;
   [COLLEGE_CERTS.ESSAYS]: CertificationInfo;
   [COLLEGE_CERTS.FINANCIAL_AID]: CertificationInfo;
-  [COLLEGE_CERTS.SPORTS_RECRUIMENT_PLANNING]: CertificationInfo;
+  [COLLEGE_CERTS.SPORTS_RECRUITMENT_PLANNING]: CertificationInfo;
   [SAT_CERTS.SAT_MATH]: CertificationInfo;
   [SAT_CERTS.SAT_READING]: CertificationInfo;
   [TRAINING.UPCHIEVE_101]: CertificationInfo;
