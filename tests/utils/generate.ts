@@ -6,8 +6,11 @@ import { merge } from 'lodash';
 import {
   PHOTO_ID_STATUS,
   REFERENCE_STATUS,
-  SUBJECTS,
-  REQUIRED_TRAINING
+  TRAINING,
+  MATH_CERTS,
+  SCIENCE_CERTS,
+  COLLEGE_CERTS,
+  SAT_CERTS
 } from '../../constants';
 import {
   User,
@@ -28,6 +31,53 @@ export const getId = faker.random.uuid;
 
 const generateReferralCode = (userId): string =>
   base64url(Buffer.from(userId, 'hex'));
+
+// @todo: Figure out how to use with MATH_CERTS, SCIENCE_CERTS
+export const buildCertifications = (overrides = {}): Certifications => {
+  const certifications = {
+    [MATH_CERTS.PREALGREBA]: { passed: false, tries: 0 },
+    [MATH_CERTS.ALGEBRA]: { passed: false, tries: 0 },
+    [MATH_CERTS.GEOMETRY]: { passed: false, tries: 0 },
+    [MATH_CERTS.TRIGONOMETRY]: { passed: false, tries: 0 },
+    [MATH_CERTS.PRECALCULUS]: { passed: false, tries: 0 },
+    [MATH_CERTS.CALCULUS]: { passed: false, tries: 0 },
+    [MATH_CERTS.CALCULUS_AB]: { passed: false, tries: 0 },
+    [MATH_CERTS.CALCULUS_BC]: { passed: false, tries: 0 },
+    [MATH_CERTS.STATISTICS]: { passed: false, tries: 0 },
+    [SCIENCE_CERTS.BIOLOGY]: { passed: false, tries: 0 },
+    [SCIENCE_CERTS.CHEMISTRY]: { passed: false, tries: 0 },
+    [SCIENCE_CERTS.PHYSICS_ONE]: { passed: false, tries: 0 },
+    [SCIENCE_CERTS.PHYSICS_TWO]: { passed: false, tries: 0 },
+    [SCIENCE_CERTS.ENVIRONMENTAL_SCIENCE]: { passed: false, tries: 0 },
+    [COLLEGE_CERTS.ESSAYS]: { passed: false, tries: 0 },
+    [COLLEGE_CERTS.FINANCIAL_AID]: { passed: false, tries: 0 },
+    [COLLEGE_CERTS.SPORTS_RECRUIMENT_PLANNING]: { passed: false, tries: 0 },
+    [SAT_CERTS.SAT_MATH]: { passed: false, tries: 0 },
+    [SAT_CERTS.SAT_READING]: { passed: false, tries: 0 },
+    [TRAINING.UPCHIEVE_101]: { passed: false, tries: 0 },
+    [TRAINING.TUTORING_SKILLS]: { passed: false, tries: 0 },
+    [TRAINING.COLLEGE_COUNSELING]: { passed: false, tries: 0 },
+    [TRAINING.COLLEGE_SKILLS]: { passed: false, tries: 0 },
+    [TRAINING.SAT_STRATEGIES]: { passed: false, tries: 0 },
+    ...overrides
+  };
+
+  return certifications;
+};
+
+export const buildAvailability = (overrides = {}): Availability => {
+  const availability = {} as Availability;
+  for (const day in DAYS) {
+    availability[DAYS[day]] = {};
+    for (const hour in HOURS) {
+      availability[DAYS[day]][HOURS[hour]] = false;
+    }
+  }
+
+  const mergedAvailability = merge(availability, overrides);
+
+  return mergedAvailability;
+};
 
 export const buildStudent = (overrides = {}): Student => {
   const firstName = getFirstName();
@@ -70,6 +120,10 @@ export const buildVolunteer = (overrides = {}): Volunteer => {
     phone: '+12345678910',
     referralCode: generateReferralCode(_id.toString()),
     isApproved: false,
+    isOnboarded: false,
+    certifications: buildCertifications(),
+    availability: buildAvailability(),
+    subjects: [],
     ...overrides
   };
 
@@ -173,51 +227,6 @@ export const buildBackgroundInfo = (overrides = {}): Partial<Volunteer> => {
   };
 
   return data;
-};
-
-export const buildAvailability = (overrides = {}): Availability => {
-  const availability = {} as Availability;
-  for (const day in DAYS) {
-    availability[DAYS[day]] = {};
-    for (const hour in HOURS) {
-      availability[DAYS[day]][HOURS[hour]] = false;
-    }
-  }
-
-  const mergedAvailability = merge(availability, overrides);
-
-  return mergedAvailability;
-};
-
-export const buildCertifications = (overrides = {}): Certifications => {
-  const certifications = {
-    [SUBJECTS.PREALGREBA]: { passed: false, tries: 0 },
-    [SUBJECTS.ALGEBRA]: { passed: false, tries: 0 },
-    [SUBJECTS.GEOMETRY]: { passed: false, tries: 0 },
-    [SUBJECTS.TRIGONOMETRY]: { passed: false, tries: 0 },
-    [SUBJECTS.PRECALCULUS]: { passed: false, tries: 0 },
-    [SUBJECTS.CALCULUS_AB]: { passed: false, tries: 0 },
-    [SUBJECTS.CALCULUS_BC]: { passed: false, tries: 0 },
-    [SUBJECTS.STATISTICS]: { passed: false, tries: 0 },
-    [SUBJECTS.BIOLOGY]: { passed: false, tries: 0 },
-    [SUBJECTS.CHEMISTRY]: { passed: false, tries: 0 },
-    [SUBJECTS.PHYSICS_ONE]: { passed: false, tries: 0 },
-    [SUBJECTS.PHYSICS_TWO]: { passed: false, tries: 0 },
-    [SUBJECTS.ENVIRONMENTAL_SCIENCE]: { passed: false, tries: 0 },
-    [SUBJECTS.PLANNING]: { passed: false, tries: 0 },
-    [SUBJECTS.APPLICATIONS]: { passed: false, tries: 0 },
-    [SUBJECTS.ESSAYS]: { passed: false, tries: 0 },
-    [SUBJECTS.FINANCIAL_AID]: { passed: false, tries: 0 },
-    [SUBJECTS.SPORTS_RECRUIMENT_PLANNING]: { passed: false, tries: 0 },
-    [SUBJECTS.SAT_MATH]: { passed: false, tries: 0 },
-    [SUBJECTS.SAT_READING]: { passed: false, tries: 0 },
-    [REQUIRED_TRAINING.TUTORING_SKILLS]: { passed: false, tries: 0 },
-    [REQUIRED_TRAINING.COLLEGE_COUNSELING]: { passed: false, tries: 0 },
-
-    ...overrides
-  };
-
-  return certifications;
 };
 
 export const authLogin = (agent, { email, password }: Partial<User>): Test =>

@@ -1,5 +1,11 @@
 import { Types } from 'mongoose';
-import { SUBJECTS, REQUIRED_TRAINING } from '../../constants';
+import {
+  TRAINING,
+  MATH_CERTS,
+  SCIENCE_CERTS,
+  COLLEGE_CERTS,
+  SAT_CERTS
+} from '../../constants';
 
 export interface User {
   _id: Types.ObjectId;
@@ -44,7 +50,7 @@ export interface Volunteer extends User {
   zipCode: string;
   college: string;
   volunteerPartnerOrg?: string;
-  favoriteAcademicSubject: string;
+  favoriteAcademicSubject?: string;
   phone: string;
   references?: Array<Reference>;
   photoIdS3Key?: string;
@@ -65,6 +71,7 @@ export interface Volunteer extends User {
   city?: string;
   certifications: Certifications;
   availability: Availability;
+  subjects: Array<string>;
 }
 
 export interface StudentRegistrationForm extends Student {
@@ -119,28 +126,30 @@ export interface CertificationInfo {
 }
 
 export interface Certifications {
-  [SUBJECTS.PREALGREBA]: CertificationInfo;
-  [SUBJECTS.ALGEBRA]: CertificationInfo;
-  [SUBJECTS.GEOMETRY]: CertificationInfo;
-  [SUBJECTS.TRIGONOMETRY]: CertificationInfo;
-  [SUBJECTS.PRECALCULUS]: CertificationInfo;
-  [SUBJECTS.CALCULUS_AB]: CertificationInfo;
-  [SUBJECTS.CALCULUS_BC]: CertificationInfo;
-  [SUBJECTS.STATISTICS]: CertificationInfo;
-  [SUBJECTS.BIOLOGY]: CertificationInfo;
-  [SUBJECTS.CHEMISTRY]: CertificationInfo;
-  [SUBJECTS.PHYSICS_ONE]: CertificationInfo;
-  [SUBJECTS.PHYSICS_TWO]: CertificationInfo;
-  [SUBJECTS.ENVIRONMENTAL_SCIENCE]: CertificationInfo;
-  [SUBJECTS.PLANNING]: CertificationInfo;
-  [SUBJECTS.APPLICATIONS]: CertificationInfo;
-  [SUBJECTS.ESSAYS]: CertificationInfo;
-  [SUBJECTS.FINANCIAL_AID]: CertificationInfo;
-  [SUBJECTS.SPORTS_RECRUIMENT_PLANNING]: CertificationInfo;
-  [SUBJECTS.SAT_MATH]: CertificationInfo;
-  [SUBJECTS.SAT_READING]: CertificationInfo;
-  [REQUIRED_TRAINING.TUTORING_SKILLS]: CertificationInfo;
-  [REQUIRED_TRAINING.COLLEGE_COUNSELING]: CertificationInfo;
+  [MATH_CERTS.PREALGREBA]: CertificationInfo;
+  [MATH_CERTS.ALGEBRA]: CertificationInfo;
+  [MATH_CERTS.GEOMETRY]: CertificationInfo;
+  [MATH_CERTS.TRIGONOMETRY]: CertificationInfo;
+  [MATH_CERTS.PRECALCULUS]: CertificationInfo;
+  [MATH_CERTS.CALCULUS]: CertificationInfo;
+  [MATH_CERTS.CALCULUS_AB]: CertificationInfo;
+  [MATH_CERTS.CALCULUS_BC]: CertificationInfo;
+  [MATH_CERTS.STATISTICS]: CertificationInfo;
+  [SCIENCE_CERTS.BIOLOGY]: CertificationInfo;
+  [SCIENCE_CERTS.CHEMISTRY]: CertificationInfo;
+  [SCIENCE_CERTS.PHYSICS_ONE]: CertificationInfo;
+  [SCIENCE_CERTS.PHYSICS_TWO]: CertificationInfo;
+  [SCIENCE_CERTS.ENVIRONMENTAL_SCIENCE]: CertificationInfo;
+  [COLLEGE_CERTS.ESSAYS]: CertificationInfo;
+  [COLLEGE_CERTS.FINANCIAL_AID]: CertificationInfo;
+  [COLLEGE_CERTS.SPORTS_RECRUIMENT_PLANNING]: CertificationInfo;
+  [SAT_CERTS.SAT_MATH]: CertificationInfo;
+  [SAT_CERTS.SAT_READING]: CertificationInfo;
+  [TRAINING.UPCHIEVE_101]: CertificationInfo;
+  [TRAINING.TUTORING_SKILLS]: CertificationInfo;
+  [TRAINING.COLLEGE_COUNSELING]: CertificationInfo;
+  [TRAINING.COLLEGE_SKILLS]: CertificationInfo;
+  [TRAINING.SAT_STRATEGIES]: CertificationInfo;
 }
 
 export type AvailabilityDay = {
