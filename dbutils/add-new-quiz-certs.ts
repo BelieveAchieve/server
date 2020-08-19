@@ -41,10 +41,7 @@ async function upgrade(): Promise<void> {
               'certifications.satStrategies': defaultCert,
 
               /*** quiz related certs ***/
-              // @todo: check if user passed calculus does it set both calc BC and calc AB passed to true
-              'certifications.calculusBC': passedCalculus
-                ? passedCert
-                : defaultCert,
+              'certifications.calculusBC': defaultCert,
               'certifications.calculusAB': passedCalculus
                 ? passedCert
                 : defaultCert,
@@ -118,7 +115,7 @@ async function downgrade(): Promise<void> {
               'certifications.satReading': ''
             },
             $set: {
-              'certifications.calculus': isCertifiedIn(MATH_SUBJECTS.CALCULUS_BC, subjects)
+              'certifications.calculus': isCertifiedIn(MATH_SUBJECTS.CALCULUS_AB, subjects)
                 ? passedCert
                 : defaultCert,
               'certifications.integratedMathOne': isCertifiedIn(MATH_SUBJECTS.INTEGRATED_MATH_ONE, subjects)
