@@ -86,7 +86,7 @@ export const courses: TrainingCourse[] = [
             type: MaterialType.DOCUMENT,
             isRequired: true,
             resourceId:
-              "2PACX-1vQz0Ce3oPq1Aoi6CXfH-PEU7Q6MOHuqTvNqy7ROeMoihD-2Chwt8UaihtUddNor6LFfSiCxG1D0r-no"
+              "1lFye8o9zM2b3desil8EUaACAxxfqzBBlYqPmPy_Ro24"
           },
           {
             name: "How to complete a session on UPchieve",
@@ -95,7 +95,7 @@ export const courses: TrainingCourse[] = [
             type: MaterialType.DOCUMENT,
             isRequired: true,
             resourceId:
-              "2PACX-1vQz0Ce3oPq1Aoi6CXfH-PEU7Q6MOHuqTvNqy7ROeMoihD-2Chwt8UaihtUddNor6LFfSiCxG1D0r-no"
+              "1lFye8o9zM2b3desil8EUaACAxxfqzBBlYqPmPy_Ro24"
           },
           {
             name: "About our students",
@@ -151,7 +151,7 @@ export const courses: TrainingCourse[] = [
             type: MaterialType.DOCUMENT,
             isRequired: true,
             resourceId:
-              "2PACX-1vQz0Ce3oPq1Aoi6CXfH-PEU7Q6MOHuqTvNqy7ROeMoihD-2Chwt8UaihtUddNor6LFfSiCxG1D0r-no"
+              "1lFye8o9zM2b3desil8EUaACAxxfqzBBlYqPmPy_Ro24"
           },
           {
             name: "How to complete a session on UPchieve",
@@ -159,7 +159,7 @@ export const courses: TrainingCourse[] = [
             type: MaterialType.DOCUMENT,
             isRequired: true,
             resourceId:
-              "2PACX-1vQz0Ce3oPq1Aoi6CXfH-PEU7Q6MOHuqTvNqy7ROeMoihD-2Chwt8UaihtUddNor6LFfSiCxG1D0r-no"
+              "1lFye8o9zM2b3desil8EUaACAxxfqzBBlYqPmPy_Ro24"
           },
           {
             name: "About our students",
