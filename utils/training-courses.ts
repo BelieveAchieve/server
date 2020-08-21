@@ -74,11 +74,11 @@ export const courses: TrainingCourse[] = [
         materials: [
           {
             name: "Intro Video",
-            description: "Material description",
+            description: "Here's a video about editing your phone number",
             materialKey: "31rgp3",
             type: MaterialType.VIDEO,
             isRequired: true,
-            resourceId: "12345"
+            resourceId: "450241431"
           },
           {
             name: "Coach Guide",
@@ -142,7 +142,7 @@ export const courses: TrainingCourse[] = [
             materialKey: "412g45",
             type: MaterialType.VIDEO,
             isRequired: true,
-            resourceId: "12345"
+            resourceId: "450241431"
           },
           {
             name: "Coach Guide",
