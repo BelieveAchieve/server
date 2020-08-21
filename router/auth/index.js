@@ -451,7 +451,7 @@ module.exports = function(app) {
       )) {
         partnerOrgs.push({
           key,
-          displayName: value.name,
+          displayName: value.name ? value.name : key,
           sites: value.sites ? value.sites : null
         })
       }
@@ -471,7 +471,7 @@ module.exports = function(app) {
       )) {
         partnerOrgs.push({
           key,
-          displayName: value.name
+          displayName: value.name ? value.name : key
         })
       }
       return res.json({
