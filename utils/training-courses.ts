@@ -28,7 +28,8 @@ interface TrainingMaterial {
   materialKey: string;
   isRequired: boolean;
   type: MaterialType;
-  resourceUrl?: string;
+  resourceId?: string;
+  linkUrl?: string;
   links?: TrainingMaterialLink[];
 }
 
@@ -77,15 +78,15 @@ export const courses: TrainingCourse[] = [
             materialKey: "31rgp3",
             type: MaterialType.VIDEO,
             isRequired: true,
-            resourceUrl: "https://www.youtube.com/watch?v=VjZzfgqno2A"
+            resourceId: "12345"
           },
           {
             name: "Coach Guide",
             materialKey: "1s3654",
             type: MaterialType.DOCUMENT,
             isRequired: true,
-            resourceUrl:
-              "https://app.upchieve.org/cc4c54987cdaeac2653be81033aa95ff.pdf"
+            resourceId:
+              "2PACX-1vQz0Ce3oPq1Aoi6CXfH-PEU7Q6MOHuqTvNqy7ROeMoihD-2Chwt8UaihtUddNor6LFfSiCxG1D0r-no"
           },
           {
             name: "How to complete a session on UPchieve",
@@ -93,8 +94,8 @@ export const courses: TrainingCourse[] = [
             materialKey: "42j392",
             type: MaterialType.DOCUMENT,
             isRequired: true,
-            resourceUrl:
-              "https://app.upchieve.org/cc4c54987cdaeac2653be81033aa95ff.pdf"
+            resourceId:
+              "2PACX-1vQz0Ce3oPq1Aoi6CXfH-PEU7Q6MOHuqTvNqy7ROeMoihD-2Chwt8UaihtUddNor6LFfSiCxG1D0r-no"
           },
           {
             name: "About our students",
@@ -102,8 +103,8 @@ export const courses: TrainingCourse[] = [
             materialKey: "413g67",
             type: MaterialType.SLIDESHOW,
             isRequired: false,
-            resourceUrl:
-              "https://app.upchieve.org/cc4c54987cdaeac2653be81033aa95ff.pdf"
+            resourceId:
+              "2PACX-1vR9dTPucpNYnYWBTi0bGBaJKt4YBuKkO5LSpZpc-JjLqg0SIAw6os4XHWFyCAXrOnQfCGIEw925DRGr"
           },
           {
             name: "Donate to UPchieve",
@@ -111,8 +112,7 @@ export const courses: TrainingCourse[] = [
             materialKey: "6a3231",
             type: MaterialType.LINK,
             isRequired: true,
-            resourceUrl:
-              "https://upchieve.org/donate"
+            linkUrl: "https://upchieve.org/donate"
           },
           {
             name: "More resources",
@@ -142,7 +142,7 @@ export const courses: TrainingCourse[] = [
             materialKey: "412g45",
             type: MaterialType.VIDEO,
             isRequired: true,
-            resourceUrl: "https://www.youtube.com/watch?v=VjZzfgqno2A"
+            resourceId: "12345"
           },
           {
             name: "Coach Guide",
@@ -150,16 +150,16 @@ export const courses: TrainingCourse[] = [
             materialKey: "vrwv5g",
             type: MaterialType.DOCUMENT,
             isRequired: true,
-            resourceUrl:
-              "https://app.upchieve.org/cc4c54987cdaeac2653be81033aa95ff.pdf"
+            resourceId:
+              "2PACX-1vQz0Ce3oPq1Aoi6CXfH-PEU7Q6MOHuqTvNqy7ROeMoihD-2Chwt8UaihtUddNor6LFfSiCxG1D0r-no"
           },
           {
             name: "How to complete a session on UPchieve",
             materialKey: "5ggwf3",
             type: MaterialType.DOCUMENT,
             isRequired: true,
-            resourceUrl:
-              "https://app.upchieve.org/cc4c54987cdaeac2653be81033aa95ff.pdf"
+            resourceId:
+              "2PACX-1vQz0Ce3oPq1Aoi6CXfH-PEU7Q6MOHuqTvNqy7ROeMoihD-2Chwt8UaihtUddNor6LFfSiCxG1D0r-no"
           },
           {
             name: "About our students",
@@ -167,8 +167,7 @@ export const courses: TrainingCourse[] = [
             materialKey: "jtyeh3",
             type: MaterialType.SLIDESHOW,
             isRequired: false,
-            resourceUrl:
-              "https://app.upchieve.org/cc4c54987cdaeac2653be81033aa95ff.pdf"
+            resourceId: "2PACX-1vR9dTPucpNYnYWBTi0bGBaJKt4YBuKkO5LSpZpc-JjLqg0SIAw6os4XHWFyCAXrOnQfCGIEw925DRGr"
           }
         ]
       }
