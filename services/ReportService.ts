@@ -273,7 +273,8 @@ export const usageReport = async ({
         lastName: '$lastname',
         createdAt: 1,
         totalSessions: { $size: '$pastSessions' },
-        partnerSite: 1
+        partnerSite: 1,
+        approvedHighschool: 1
       }
     },
     {
@@ -397,7 +398,8 @@ export const usageReport = async ({
             $cond: [{ $ifNull: ['$isWithinDateRange', false] }, 1, 0]
           }
         },
-        partnerSite: { $first: '$partnerSite' }
+        partnerSite: { $first: '$partnerSite' },
+        approvedHighschool: { $max: '$approvedHighschool' }
       }
     },
     {
@@ -416,6 +418,7 @@ export const usageReport = async ({
         },
         feedback: 1,
         partnerSite: 1,
+        approvedHighschool: 1,
         _id: 0
       }
     },
@@ -447,6 +450,11 @@ export const usageReport = async ({
       dataFormat['Partner site'] = student.partnerSite
         ? student.partnerSite
         : '-';
+
+    if (studentPartnerOrg) {
+      if (student.approvedHighschool) dataFormat['HS/College'] = 'High school';
+      else dataFormat['HS/College'] = 'College';
+    }
 
     return dataFormat;
   });
