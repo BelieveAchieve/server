@@ -130,7 +130,12 @@ module.exports = {
 
   getUnlockedSubjects: function(cert, userCertifications) {
     // update certifications to have the current cert completed set to passed
-    Object.assign(userCertifications, { [cert]: { passed: true } })
+    Object.assign(userCertifications, {
+      [cert]: { passed: true },
+      // @note: temporarily bypass training requirements until these training courses are added
+      [TRAINING.TUTORING_SKILLS]: { passed: true },
+      [TRAINING.COLLEGE_COUNSELING]: { passed: true }
+    })
 
     // UPchieve 101 must be completed before a volunteer can be onboarded
     if (!userCertifications[TRAINING.UPCHIEVE_101].passed) return []
