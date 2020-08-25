@@ -22,7 +22,8 @@ import {
   Availability,
   DAYS,
   HOURS,
-  Certifications
+  Certifications,
+  TrainingCourses
 } from './types';
 export const getEmail = faker.internet.email;
 export const getFirstName = faker.name.firstName;
@@ -63,6 +64,38 @@ export const buildCertifications = (overrides = {}): Certifications => {
   };
 
   return certifications;
+};
+
+export const buildTrainingCourses = (overrides = {}): TrainingCourses => {
+  const trainingCourses = {
+    [TRAINING.UPCHIEVE_101]: {
+      isComplete: false,
+      progress: 0,
+      completedMaterials: []
+    },
+    [TRAINING.TUTORING_SKILLS]: {
+      isComplete: false,
+      progress: 0,
+      completedMaterials: []
+    },
+    [TRAINING.COLLEGE_COUNSELING]: {
+      isComplete: false,
+      progress: 0,
+      completedMaterials: []
+    },
+    [TRAINING.COLLEGE_SKILLS]: {
+      isComplete: false,
+      progress: 0,
+      completedMaterials: []
+    },
+    [TRAINING.SAT_STRATEGIES]: {
+      isComplete: false,
+      progress: 0,
+      completedMaterials: []
+    },
+    ...overrides
+  };
+  return trainingCourses;
 };
 
 export const buildAvailability = (overrides = {}): Availability => {
@@ -124,6 +157,7 @@ export const buildVolunteer = (overrides = {}): Volunteer => {
     certifications: buildCertifications(),
     availability: buildAvailability(),
     subjects: [],
+    trainingCourses: buildTrainingCourses(),
     ...overrides
   };
 

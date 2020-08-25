@@ -72,6 +72,7 @@ export interface Volunteer extends User {
   certifications: Certifications;
   availability: Availability;
   subjects: Array<string>;
+  trainingCourses: TrainingCourses;
 }
 
 export interface StudentRegistrationForm extends Student {
@@ -159,3 +160,17 @@ export type AvailabilityDay = {
 export type Availability = {
   [day in DAYS]: AvailabilityDay;
 };
+
+interface TrainingCourseData {
+  isComplete: boolean;
+  progress: number;
+  completedMaterials: Array<string>;
+}
+
+export interface TrainingCourses {
+  [TRAINING.UPCHIEVE_101]: TrainingCourseData;
+  [TRAINING.TUTORING_SKILLS]: TrainingCourseData;
+  [TRAINING.COLLEGE_COUNSELING]: TrainingCourseData;
+  [TRAINING.COLLEGE_SKILLS]: TrainingCourseData;
+  [TRAINING.SAT_STRATEGIES]: TrainingCourseData;
+}
