@@ -9,7 +9,7 @@ import {
 import VolunteerModel from '../../models/Volunteer';
 import UserActionModel from '../../models/UserAction';
 import { Volunteer } from '../utils/types';
-import { USER_ACTION } from '../../constants';
+import { USER_ACTION, SUBJECTS } from '../../constants';
 
 // db connection
 beforeAll(async () => {
@@ -87,7 +87,12 @@ describe('Save availability and time zone', () => {
     const certifications = buildCertifications({
       algebra: { passed: true, tries: 1 }
     });
-    const volunteer = await insertVolunteer(buildVolunteer({ certifications }));
+    const volunteer = await insertVolunteer(
+      buildVolunteer({
+        certifications,
+        subjects: [SUBJECTS.ALGEBRA, SUBJECTS.PREALGREBA]
+      })
+    );
     const availability = buildAvailability({
       Saturday: { '1p': true, '2p': true }
     });

@@ -48,8 +48,8 @@ module.exports = {
     userUpdates.elapsedAvailability =
       user.elapsedAvailability + newElapsedAvailability
 
-    // an onboarded volunteer must have updated their availability and obtained at least one certification
-    if (!user.isOnboarded && UserCtrl.isCertified(user.certifications)) {
+    // an onboarded volunteer must have updated their availability, completed required training, and unlocked a subject
+    if (!user.isOnboarded && user.subjects.length > 0) {
       userUpdates.isOnboarded = true
       UserActionCtrl.accountOnboarded(user._id, ip)
     }
