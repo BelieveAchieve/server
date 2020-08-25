@@ -120,30 +120,31 @@ describe('getQuizScore', () => {
     };
 
     expect(result).toMatchObject(expectedResult);
-    expect(updatedVolunteer.isOnboarded).toBeFalsy();
+    expect(updatedVolunteer.isOnboarded).toBeTruthy();
     expect(
       updatedVolunteer.certifications[TRAINING.UPCHIEVE_101].passed
     ).toBeTruthy();
 
     // Volunteer then completes required training for math, Tutoring Skills, to become onboarded
-    quizScoreInput = {
-      user: updatedVolunteer,
-      category: TRAINING.TUTORING_SKILLS,
-      idAnswerMap
-    };
+    // @note: Leave commented out until Tutoring Skills course is added
+    // quizScoreInput = {
+    //   user: updatedVolunteer,
+    //   category: TRAINING.TUTORING_SKILLS,
+    //   idAnswerMap
+    // };
 
-    result = await TrainingCtrl.getQuizScore(quizScoreInput);
-    updatedVolunteer = await getVolunteer({ _id: volunteer._id });
-    expectedResult = {
-      tries: 1,
-      passed: true
-    };
+    // result = await TrainingCtrl.getQuizScore(quizScoreInput);
+    // updatedVolunteer = await getVolunteer({ _id: volunteer._id });
+    // expectedResult = {
+    //   tries: 1,
+    //   passed: true
+    // };
 
-    expect(result).toMatchObject(expectedResult);
-    expect(updatedVolunteer.isOnboarded).toBeTruthy();
-    expect(
-      updatedVolunteer.certifications[TRAINING.TUTORING_SKILLS].passed
-    ).toBeTruthy();
+    // expect(result).toMatchObject(expectedResult);
+    // expect(updatedVolunteer.isOnboarded).toBeTruthy();
+    // expect(
+    //   updatedVolunteer.certifications[TRAINING.TUTORING_SKILLS].passed
+    // ).toBeTruthy();
   });
   test('Should onboard a user after completing Tutoring Skills, then a math certification, and then UPchieve 101', async () => {
     const volunteer = await insertVolunteer(
@@ -570,8 +571,6 @@ describe('getUnlockedSubjects', () => {
     test('Completing SAT Math should unlock SAT Math when certified in SAT Strategies', async () => {
       const subject = SAT_CERTS.SAT_MATH;
       const certifications = buildCertificationsWithUpchieve101({
-        [MATH_CERTS.GEOMETRY]: { passed: true, tries: 1 },
-        [MATH_CERTS.STATISTICS]: { passed: true, tries: 1 },
         [TRAINING.SAT_STRATEGIES]: { passed: true, tries: 1 }
       });
       const expected = [SAT_CERTS.SAT_MATH];
