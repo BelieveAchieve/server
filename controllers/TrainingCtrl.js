@@ -92,10 +92,7 @@ module.exports = {
 
       // Create a user action for every subject unlocked
       for (const subject of unlockedSubjects) {
-        // @note: user.certifications is modified in this.getUnlockedSubjects
-        const hasPassedQuizUserAction =
-          user.certifications[subject] && user.certifications[subject].passed
-        if (!user.subjects.includes(subject) && !hasPassedQuizUserAction)
+        if (!user.subjects.includes(subject))
           UserActionCtrl.unlockedSubject(user._id, subject, ip)
       }
 
