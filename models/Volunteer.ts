@@ -216,15 +216,23 @@ const volunteerSchema = new mongoose.Schema(
       default: false
     },
     trainingCourses: {
-      upchieve101: {
+      [TRAINING.UPCHIEVE_101]: {
         type: trainingCourseSchema,
         default: trainingCourseSchema
       },
-      tutoringSkills: {
+      [TRAINING.TUTORING_SKILLS]: {
         type: trainingCourseSchema,
         default: trainingCourseSchema
       },
-      collegeSkills: {
+      [TRAINING.COLLEGE_COUNSELING]: {
+        type: trainingCourseSchema,
+        default: trainingCourseSchema
+      },
+      [TRAINING.COLLEGE_SKILLS]: {
+        type: trainingCourseSchema,
+        default: trainingCourseSchema
+      },
+      [TRAINING.SAT_STRATEGIES]: {
         type: trainingCourseSchema,
         default: trainingCourseSchema
       }
