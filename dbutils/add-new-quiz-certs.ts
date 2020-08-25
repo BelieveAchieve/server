@@ -31,7 +31,7 @@ async function upgrade(): Promise<void> {
           { _id: volunteer._id },
           {
             $set: {
-              /*** training related certs ***/
+              /*** training related quiz certs ***/
               // @note: handled in add-training-courses.ts
               // 'certifications.upchieve101': defaultCert,
               // 'certifications.trainingSkills': defaultCert,
@@ -40,7 +40,7 @@ async function upgrade(): Promise<void> {
               'certifications.collegeCounseling': defaultCert,
               'certifications.satStrategies': defaultCert,
 
-              /*** quiz related certs ***/
+              /*** subject quiz related certs ***/
               'certifications.calculusBC': defaultCert,
               'certifications.calculusAB': passedCalculus
                 ? passedCert
@@ -58,10 +58,7 @@ async function upgrade(): Promise<void> {
               'certifications.integratedMathTwo': '',
               'certifications.integratedMathThree': '',
               'certifications.integratedMathFour': '',
-              // @todo: check if calc AB and calc BC is replacing Calculus
               'certifications.calculus': '',
-              'certifications.planning': '',
-              'certifications.applications': ''
             }
           },
           { strict: false }
@@ -130,12 +127,6 @@ async function downgrade(): Promise<void> {
               'certifications.integratedMathFour': isCertifiedIn(MATH_SUBJECTS.INTEGRATED_MATH_FOUR, subjects)
                 ? passedCert
                 : defaultCert,
-              'certifications.planning': isCertifiedIn(COLLEGE_SUBJECTS.PLANNING, subjects)
-                ? passedCert
-                : defaultCert,
-              'certifications.applications': isCertifiedIn(COLLEGE_SUBJECTS.APPLICATIONS, subjects)
-                ? passedCert
-                : defaultCert
             }
           },
           { strict: false }
