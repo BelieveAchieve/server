@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import Volunteer from '../models/Volunteer';
 import dbconnect from './dbconnect';
-import { MATH_SUBJECTS, COLLEGE_SUBJECTS } from '../constants';
+import { MATH_SUBJECTS } from '../constants';
 
 const passedCert = {
   passed: true,
@@ -13,6 +13,10 @@ const defaultCert = {
 };
 
 const isCertifiedIn = (subject, subjects) => subjects.includes(subject)
+
+// 1. add-training-courses
+// 2. add-new-quiz-certs
+// 3. add-subjects
 
 async function upgrade(): Promise<void> {
   try {
@@ -33,10 +37,10 @@ async function upgrade(): Promise<void> {
             $set: {
               /*** training related quiz certs ***/
               // @note: handled in add-training-courses.ts
-              // 'certifications.upchieve101': defaultCert,
-              // 'certifications.trainingSkills': defaultCert,
-              // 'certifications.collegeSkills': defaultCert,
-              // 'certifications.tutoringSkills': defaultCert,
+                // 'certifications.upchieve101': defaultCert,
+                // 'certifications.trainingSkills': defaultCert,
+                // 'certifications.collegeSkills': defaultCert,
+                // 'certifications.tutoringSkills': defaultCert,
               'certifications.collegeCounseling': defaultCert,
               'certifications.satStrategies': defaultCert,
 
@@ -93,10 +97,10 @@ async function downgrade(): Promise<void> {
             $unset: {
               /*** training related certs certs ***/
               // @note: handled in add-training-courses.ts
-              // 'certifications.upchieve101': '',
-              // 'certifications.trainingSkills': '',
-              // 'certifications.collegeSkills': '',
-              // 'certifications.tutoringSkills': '',
+                // 'certifications.upchieve101': '',
+                // 'certifications.trainingSkills': '',
+                // 'certifications.collegeSkills': '',
+                // 'certifications.tutoringSkills': '',
               'certifications.collegeCounseling': '',
               'certifications.satStrategies': '',
 
