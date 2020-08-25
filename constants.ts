@@ -273,3 +273,13 @@ export enum SUBJECT_TYPES {
   SAT = 'sat',
   TRAINING = 'training'
 }
+
+export const CALCULUS_MAPPING = {
+  calculusbc: MATH_CERTS.CALCULUS_BC,
+  calculusab: MATH_CERTS.CALCULUS_AB
+};
+
+export const FORMAT_CALCULUS = {
+  [MATH_CERTS.CALCULUS_BC]: 'Calculus BC',
+  [MATH_CERTS.CALCULUS_AB]: 'Calculus AB'
+};
