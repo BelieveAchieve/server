@@ -132,7 +132,6 @@ export interface Certifications {
   [MATH_CERTS.GEOMETRY]: CertificationInfo;
   [MATH_CERTS.TRIGONOMETRY]: CertificationInfo;
   [MATH_CERTS.PRECALCULUS]: CertificationInfo;
-  [MATH_CERTS.CALCULUS]: CertificationInfo;
   [MATH_CERTS.CALCULUS_AB]: CertificationInfo;
   [MATH_CERTS.CALCULUS_BC]: CertificationInfo;
   [MATH_CERTS.STATISTICS]: CertificationInfo;

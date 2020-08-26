@@ -136,7 +136,6 @@ export enum TRAINING {
   TUTORING_SKILLS = 'tutoringSkills',
   COLLEGE_COUNSELING = 'collegeCounseling',
   SAT_STRATEGIES = 'satStrategies',
-  TRAINING_SKILLS = 'trainingSkills',
   COLLEGE_SKILLS = 'collegeSkills'
 }
 
@@ -146,7 +145,6 @@ export enum MATH_CERTS {
   GEOMETRY = 'geometry',
   TRIGONOMETRY = 'trigonometry',
   PRECALCULUS = 'precalculus',
-  CALCULUS = 'calculus',
   CALCULUS_AB = 'calculusAB',
   CALCULUS_BC = 'calculusBC',
   STATISTICS = 'statistics'

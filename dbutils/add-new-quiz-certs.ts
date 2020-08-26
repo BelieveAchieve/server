@@ -38,7 +38,6 @@ async function upgrade(): Promise<void> {
               /*** training related quiz certs ***/
               // @note: handled in add-training-courses.ts
                 // 'certifications.upchieve101': defaultCert,
-                // 'certifications.trainingSkills': defaultCert,
                 // 'certifications.collegeSkills': defaultCert,
                 // 'certifications.tutoringSkills': defaultCert,
               'certifications.collegeCounseling': defaultCert,
@@ -98,7 +97,6 @@ async function downgrade(): Promise<void> {
               /*** training related certs certs ***/
               // @note: handled in add-training-courses.ts
                 // 'certifications.upchieve101': '',
-                // 'certifications.trainingSkills': '',
                 // 'certifications.collegeSkills': '',
                 // 'certifications.tutoringSkills': '',
               'certifications.collegeCounseling': '',

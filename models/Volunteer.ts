@@ -293,17 +293,6 @@ const volunteerSchema = new mongoose.Schema(
         },
         lastAttemptedAt: { type: Date }
       },
-      [MATH_CERTS.CALCULUS]: {
-        passed: {
-          type: Boolean,
-          default: false
-        },
-        tries: {
-          type: Number,
-          default: 0
-        },
-        lastAttemptedAt: { type: Date }
-      },
       [MATH_CERTS.CALCULUS_AB]: {
         passed: {
           type: Boolean,

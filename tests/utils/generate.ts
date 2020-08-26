@@ -41,7 +41,6 @@ export const buildCertifications = (overrides = {}): Certifications => {
     [MATH_CERTS.GEOMETRY]: { passed: false, tries: 0 },
     [MATH_CERTS.TRIGONOMETRY]: { passed: false, tries: 0 },
     [MATH_CERTS.PRECALCULUS]: { passed: false, tries: 0 },
-    [MATH_CERTS.CALCULUS]: { passed: false, tries: 0 },
     [MATH_CERTS.CALCULUS_AB]: { passed: false, tries: 0 },
     [MATH_CERTS.CALCULUS_BC]: { passed: false, tries: 0 },
     [MATH_CERTS.STATISTICS]: { passed: false, tries: 0 },
