@@ -7,6 +7,7 @@ const {
   COMPUTED_CERTS,
   TRAINING,
   MATH_CERTS,
+  MATH_SUBJECTS,
   SCIENCE_CERTS,
   SAT_CERTS,
   SUBJECT_TYPES
@@ -154,7 +155,7 @@ module.exports = {
       return []
 
     // Add all the certifications that this completed cert unlocks into a Set
-    const currentCerts = new Set(CERT_UNLOCKING[cert])
+    const currentSubjects = new Set(CERT_UNLOCKING[cert])
 
     for (const cert in userCertifications) {
       // Check that the required training was completed for every certification that a user has
@@ -164,7 +165,7 @@ module.exports = {
         this.hasRequiredTraining(cert, userCertifications) &&
         CERT_UNLOCKING[cert]
       )
-        CERT_UNLOCKING[cert].forEach(subject => currentCerts.add(subject))
+        CERT_UNLOCKING[cert].forEach(subject => currentSubjects.add(subject))
     }
 
     // Check if the user has unlocked a new certification based on the current certifications they have
@@ -173,33 +174,43 @@ module.exports = {
       let meetsRequirements = true
 
       for (let i = 0; i < prerequisiteCerts.length; i++) {
+        const prereqCert = prerequisiteCerts[i]
+
         // SAT Math can be unlocked from taking Geometry, Trigonometry, and Algebra or
         // from Calculus AB, Calculus BC, and Precalculus - none of which unlock Geometry
         if (
           cert === SAT_CERTS.SAT_MATH &&
-          (currentCerts.has(MATH_CERTS.CALCULUS_AB) ||
-            currentCerts.has(MATH_CERTS.CALCULUS_BC) ||
-            currentCerts.has(MATH_CERTS.PRECALCULUS))
+          (currentSubjects.has(MATH_CERTS.CALCULUS_AB) ||
+            currentSubjects.has(MATH_CERTS.CALCULUS_BC) ||
+            currentSubjects.has(MATH_CERTS.PRECALCULUS))
         )
           break
 
-        if (!currentCerts.has(prerequisiteCerts[i])) {
-          meetsRequirements = false
-          break
+        if (!currentSubjects.has(prereqCert)) {
+          if (
+            prereqCert === MATH_CERTS.ALGEBRA &&
+            (currentSubjects.has(MATH_SUBJECTS.ALGEBRA_ONE) ||
+              currentSubjects.has(MATH_SUBJECTS.ALGEBRA_TWO))
+          ) {
+            meetsRequirements = true
+          } else {
+            meetsRequirements = false
+            break
+          }
         }
       }
 
-      if (meetsRequirements) currentCerts.add(cert)
+      if (meetsRequirements) currentSubjects.add(cert)
     }
 
     // SAT Math is a special case, it can be unlocked by multiple math certs, but must have SAT Strategies completed
     if (
-      currentCerts.has(SAT_CERTS.SAT_MATH) &&
+      currentSubjects.has(SAT_CERTS.SAT_MATH) &&
       !userCertifications[TRAINING.SAT_STRATEGIES].passed
     )
-      currentCerts.delete(SAT_CERTS.SAT_MATH)
+      currentSubjects.delete(SAT_CERTS.SAT_MATH)
 
-    return Array.from(currentCerts)
+    return Array.from(currentSubjects)
   },
 
   // Check if a given cert has the required training completed
