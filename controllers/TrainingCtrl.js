@@ -7,7 +7,6 @@ const {
   COMPUTED_CERTS,
   TRAINING,
   MATH_CERTS,
-  MATH_SUBJECTS,
   SCIENCE_CERTS,
   SAT_CERTS,
   SUBJECT_TYPES
@@ -180,23 +179,13 @@ module.exports = {
         // from Calculus AB, Calculus BC, and Precalculus - none of which unlock Geometry
         if (
           cert === SAT_CERTS.SAT_MATH &&
-          (currentSubjects.has(MATH_CERTS.CALCULUS_AB) ||
-            currentSubjects.has(MATH_CERTS.CALCULUS_BC) ||
-            currentSubjects.has(MATH_CERTS.PRECALCULUS))
+          currentSubjects.has(MATH_CERTS.PRECALCULUS)
         )
           break
 
         if (!currentSubjects.has(prereqCert)) {
-          if (
-            prereqCert === MATH_CERTS.ALGEBRA &&
-            (currentSubjects.has(MATH_SUBJECTS.ALGEBRA_ONE) ||
-              currentSubjects.has(MATH_SUBJECTS.ALGEBRA_TWO))
-          ) {
-            meetsRequirements = true
-          } else {
-            meetsRequirements = false
-            break
-          }
+          meetsRequirements = false
+          break
         }
       }
 
