@@ -69,76 +69,40 @@ export const courses: TrainingCourse[] = [
     quizKey: "upchieve101",
     modules: [
       {
-        name: "Module 1",
+        name: "Intro to UPchieve",
         moduleKey: "4k90tg",
         materials: [
           {
-            name: "Intro Video",
-            description: "Here's a video about editing your phone number",
+            name: "Welcome to UPchieve!",
             materialKey: "31rgp3",
             type: MaterialType.VIDEO,
             isRequired: true,
             resourceId: "450241431"
           },
           {
-            name: "Coach Guide",
+            name: "Join our Slack community",
             materialKey: "1s3654",
-            type: MaterialType.DOCUMENT,
-            isRequired: true,
-            resourceId:
-              "1lFye8o9zM2b3desil8EUaACAxxfqzBBlYqPmPy_Ro24"
-          },
-          {
-            name: "How to complete a session on UPchieve",
-            description: "Material description",
-            materialKey: "42j392",
-            type: MaterialType.DOCUMENT,
-            isRequired: true,
-            resourceId:
-              "1lFye8o9zM2b3desil8EUaACAxxfqzBBlYqPmPy_Ro24"
-          },
-          {
-            name: "About our students",
-            description: "Material description",
-            materialKey: "413g67",
-            type: MaterialType.SLIDESHOW,
-            isRequired: false,
-            resourceId:
-              "2PACX-1vR9dTPucpNYnYWBTi0bGBaJKt4YBuKkO5LSpZpc-JjLqg0SIAw6os4XHWFyCAXrOnQfCGIEw925DRGr"
-          },
-          {
-            name: "Donate to UPchieve",
-            description: "Click this link to donate",
-            materialKey: "6a3231",
             type: MaterialType.LINK,
-            isRequired: true,
-            linkUrl: "https://upchieve.org/donate"
+            isRequired: false,
+            linkUrl:
+              "https://join.slack.com/t/upchieveaccommunity/shared_invite/zt-8amwqpm9-fbCn~uRoOHOe27mkx7Ae1w"
           },
           {
-            name: "More resources",
-            description: "Here are more resources",
-            materialKey: "90d731",
-            type: MaterialType.RESOURCES,
+            name: "Register for UPchieve's Monthly Coach Meetings",
+            materialKey: "42j392",
+            type: MaterialType.LINK,
             isRequired: false,
-            links: [
-              {
-                displayName: "Differential equation introduction",
-                url: "https://www.youtube.com/watch?v=6o7b9yyhH7k"
-              },
-              {
-                displayName: "Implicit Bias",
-                url: "https://www.youtube.com/watch?v=kKHSJHkPeLY"
-              }
-            ]
+            linkUrl:
+              "https://us02web.zoom.us/meeting/register/uZUsduiqrzgiO4_zJG9YvVJcx8vBxt4snA"
           }
         ]
       },
       {
-        name: "Module 2",
+        name: "Becoming an Active Coach",
         moduleKey: "gfw567",
         materials: [
           {
-            name: "Intro Video",
+            name: "Introduction to our platform",
             materialKey: "412g45",
             type: MaterialType.VIDEO,
             isRequired: true,
@@ -168,6 +132,23 @@ export const courses: TrainingCourse[] = [
             type: MaterialType.SLIDESHOW,
             isRequired: false,
             resourceId: "2PACX-1vR9dTPucpNYnYWBTi0bGBaJKt4YBuKkO5LSpZpc-JjLqg0SIAw6os4XHWFyCAXrOnQfCGIEw925DRGr"
+          },
+          {
+            name: "More resources",
+            description: "Here are more resources",
+            materialKey: "90d731",
+            type: MaterialType.RESOURCES,
+            isRequired: false,
+            links: [
+              {
+                displayName: "Differential equation introduction",
+                url: "https://www.youtube.com/watch?v=6o7b9yyhH7k"
+              },
+              {
+                displayName: "Implicit Bias",
+                url: "https://www.youtube.com/watch?v=kKHSJHkPeLY"
+              }
+            ]
           }
         ]
       }
