@@ -210,23 +210,24 @@ module.exports = {
   },
 
   // Check if a given cert has the required training completed
-  hasRequiredTraining: function(cert, userCertifications) {
-    const certType = getSubjectType(cert).toLowerCase()
+  hasRequiredTraining: function(subjectCert, userCertifications) {
+    const subjectCertType = getSubjectType(subjectCert).toLowerCase()
 
     if (
-      (certType === SUBJECT_TYPES.MATH || certType === SUBJECT_TYPES.SCIENCE) &&
+      (subjectCertType === SUBJECT_TYPES.MATH ||
+        subjectCertType === SUBJECT_TYPES.SCIENCE) &&
       userCertifications[TRAINING.TUTORING_SKILLS].passed
     )
       return true
 
     if (
-      certType === SUBJECT_TYPES.COLLEGE &&
+      subjectCertType === SUBJECT_TYPES.COLLEGE &&
       userCertifications[TRAINING.COLLEGE_COUNSELING].passed
     )
       return true
 
     if (
-      certType === SUBJECT_TYPES.SAT &&
+      subjectCertType === SUBJECT_TYPES.SAT &&
       userCertifications[TRAINING.SAT_STRATEGIES].passed
     )
       return true
@@ -235,21 +236,21 @@ module.exports = {
   },
 
   // Check if a required training cert has any associated passed certifications for it
-  hasCertForRequiredTraining: function(cert, userCertifications) {
+  hasCertForRequiredTraining: function(trainingCert, userCertifications) {
     // UPchieve 101 doesn't need any associated certs
-    if (cert === TRAINING.UPCHIEVE_101) return true
+    if (trainingCert === TRAINING.UPCHIEVE_101) return true
 
     // College counseling unlocks Planning and Essays by default, meaning no requirements are needed to unlock the college related certifications besides completing the required training
-    if (cert === TRAINING.COLLEGE_COUNSELING) return true
+    if (trainingCert === TRAINING.COLLEGE_COUNSELING) return true
 
     if (
-      cert === TRAINING.TUTORING_SKILLS &&
+      trainingCert === TRAINING.TUTORING_SKILLS &&
       isCertifiedIn({ ...MATH_CERTS, ...SCIENCE_CERTS }, userCertifications)
     )
       return true
 
     if (
-      cert === TRAINING.SAT_STRATEGIES &&
+      trainingCert === TRAINING.SAT_STRATEGIES &&
       isCertifiedIn(SAT_CERTS, userCertifications)
     )
       return true
