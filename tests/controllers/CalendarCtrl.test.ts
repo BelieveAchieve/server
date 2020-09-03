@@ -90,7 +90,11 @@ describe('Save availability and time zone', () => {
     const volunteer = await insertVolunteer(
       buildVolunteer({
         certifications,
-        subjects: [SUBJECTS.ALGEBRA, SUBJECTS.PREALGREBA]
+        subjects: [
+          SUBJECTS.ALGEBRA_TWO,
+          SUBJECTS.ALGEBRA_ONE,
+          SUBJECTS.PREALGREBA
+        ]
       })
     );
     const availability = buildAvailability({
