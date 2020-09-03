@@ -9,24 +9,31 @@ const {
   MATH_CERTS,
   SCIENCE_CERTS,
   SAT_CERTS,
-  SUBJECT_TYPES
+  SUBJECT_TYPES,
+  COLLEGE_CERTS,
+  COLLEGE_SUBJECTS
 } = require('../constants')
 const getSubjectType = require('../utils/getSubjectType')
 
 // change depending on how many of each subcategory are wanted
 const numQuestions = {
-  prealgebra: 2,
-  algebra: 2,
-  geometry: 2,
-  trigonometry: 2,
-  precalculus: 2,
-  calculus: 3,
-  planning: 4,
-  essays: 3,
-  applications: 2,
-  biology: 1,
-  chemistry: 1,
-  physicsOne: 1
+  [MATH_CERTS.PREALGREBA]: 2,
+  [MATH_CERTS.ALGEBRA]: 2,
+  [MATH_CERTS.GEOMETRY]: 2,
+  [MATH_CERTS.TRIGONOMETRY]: 2,
+  [MATH_CERTS.STATISTICS]: 1,
+  [MATH_CERTS.PRECALCULUS]: 2,
+  [MATH_CERTS.CALCULUS_AB]: 1,
+  [MATH_CERTS.CALCULUS_BC]: 1,
+  [COLLEGE_CERTS.ESSAYS]: 3,
+  // @note: Once College Counseling is implemented Planning and Applications will be phased to subjects that are unlocked instead of certs
+  [COLLEGE_SUBJECTS.PLANNING]: 4,
+  [COLLEGE_SUBJECTS.APPLICATIONS]: 2,
+  [SCIENCE_CERTS.BIOLOGY]: 1,
+  [SCIENCE_CERTS.CHEMISTRY]: 1,
+  [SCIENCE_CERTS.PHYSICS_ONE]: 1,
+  // @todo: Add Phsyics 2
+  [SCIENCE_CERTS.ENVIRONMENTAL_SCIENCE]: 1
 }
 const PASS_THRESHOLD = 0.8
 
