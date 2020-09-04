@@ -61,6 +61,7 @@ const baseUserSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Last name is required.']
     },
+    college: String,
 
     // User type (volunteer or student)
     isVolunteer: {
