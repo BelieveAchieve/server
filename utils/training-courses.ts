@@ -115,7 +115,7 @@ export const courses: TrainingCourse[] = [
             type: MaterialType.DOCUMENT,
             isRequired: true,
             resourceId:
-              "1lFye8o9zM2b3desil8EUaACAxxfqzBBlYqPmPy_Ro24"
+              "1dSaCLvippSBOMU69lYp_9Y4X4pUTrG5ANXlO_6kbfcw"
           },
           {
             name: "How to complete a session on UPchieve",
@@ -123,7 +123,7 @@ export const courses: TrainingCourse[] = [
             type: MaterialType.DOCUMENT,
             isRequired: true,
             resourceId:
-              "1lFye8o9zM2b3desil8EUaACAxxfqzBBlYqPmPy_Ro24"
+              "1dSaCLvippSBOMU69lYp_9Y4X4pUTrG5ANXlO_6kbfcw"
           },
           {
             name: "About our students",
