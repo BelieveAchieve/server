@@ -114,16 +114,14 @@ export const courses: TrainingCourse[] = [
             materialKey: "vrwv5g",
             type: MaterialType.DOCUMENT,
             isRequired: true,
-            resourceId:
-              "1dSaCLvippSBOMU69lYp_9Y4X4pUTrG5ANXlO_6kbfcw"
+            resourceId: "upc101-test-1"
           },
           {
             name: "How to complete a session on UPchieve",
             materialKey: "5ggwf3",
             type: MaterialType.DOCUMENT,
             isRequired: true,
-            resourceId:
-              "1dSaCLvippSBOMU69lYp_9Y4X4pUTrG5ANXlO_6kbfcw"
+            resourceId: "upc101-test-1"
           },
           {
             name: "About our students",
