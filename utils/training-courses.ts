@@ -16,7 +16,6 @@ interface TrainingModule {
 
 enum MaterialType {
   VIDEO = 'video',
-  SLIDESHOW = 'slideshow',
   DOCUMENT = 'document',
   LINK = 'link',
   RESOURCES = 'resources'
@@ -122,14 +121,6 @@ export const courses: TrainingCourse[] = [
             type: MaterialType.DOCUMENT,
             isRequired: true,
             resourceId: "upc101-test-1"
-          },
-          {
-            name: "About our students",
-            description: "Material description",
-            materialKey: "jtyeh3",
-            type: MaterialType.SLIDESHOW,
-            isRequired: false,
-            resourceId: "2PACX-1vR9dTPucpNYnYWBTi0bGBaJKt4YBuKkO5LSpZpc-JjLqg0SIAw6os4XHWFyCAXrOnQfCGIEw925DRGr"
           },
           {
             name: "More resources",
