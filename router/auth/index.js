@@ -114,6 +114,7 @@ module.exports = function(app) {
       referredByCode,
       firstName,
       lastName,
+      college,
       partnerSite
     } = req.body
 
@@ -189,6 +190,7 @@ module.exports = function(app) {
       partnerUserId,
       partnerSite,
       approvedHighschool: school,
+      college,
       isVolunteer: false,
       verified: true, // Students are automatically verified
       referredBy,
