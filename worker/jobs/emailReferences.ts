@@ -1,5 +1,4 @@
 import { flatten } from 'lodash';
-import dbconnect from '../../dbutils/dbconnect';
 import { log } from '../logger';
 import VolunteerModel from '../../models/Volunteer';
 import { Volunteer, Reference } from '../../models/types';
@@ -12,8 +11,6 @@ interface UnsentReference {
 }
 
 export default async (): Promise<void> => {
-  await dbconnect();
-
   const volunteers = (await VolunteerModel.find({
     'references.status': REFERENCE_STATUS.UNSENT
   })
