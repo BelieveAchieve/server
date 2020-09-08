@@ -12,7 +12,6 @@ interface NotifyTutorsJobData {
 
 export default async (job: Job<NotifyTutorsJobData>): Promise<void> => {
   const { sessionId, notificationSchedule } = job.data;
-
   const session = await Session.findById(sessionId);
   if (!session) return log(`session ${sessionId} not found`);
   const fulfilled = SessionService.isSessionFulfilled(session);
