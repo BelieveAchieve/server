@@ -14,7 +14,8 @@ import {
   Availability,
   DAYS,
   HOURS,
-  Certifications
+  Certifications,
+  Session
 } from './types';
 
 export const getEmail = faker.internet.email;
@@ -66,6 +67,7 @@ export const buildVolunteer = (overrides = {}): Volunteer => {
     phone: '+12345678910',
     referralCode: generateReferralCode(_id.toString()),
     isApproved: false,
+    sentReadyToCoachEmail: false,
     ...overrides
   };
 
@@ -207,6 +209,29 @@ export const buildCertifications = (overrides = {}): Certifications => {
   };
 
   return certifications;
+};
+
+export const buildSession = (overrides = {}): Partial<Session> => {
+  const session = {
+    student: null,
+    volunteer: null,
+    type: 'math',
+    subTopic: 'algebra',
+    messages: [],
+    whiteboardDoc: '',
+    quillDoc: '',
+    createdAt: new Date(),
+    volunteerJoinedAt: null,
+    failedJoins: [],
+    notifications: [],
+    photos: [],
+    isReported: false,
+    reportReason: null,
+    reportMessage: null,
+    ...overrides
+  };
+
+  return session;
 };
 
 export const authLogin = (agent, { email, password }: Partial<User>): Test =>
