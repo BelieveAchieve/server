@@ -62,7 +62,7 @@
     "express-session": "^1.14.2",
     "firebase-admin": "^8.10.0",
     "jszip": "^3.2.2",
-    "kerberos": "0.0.24",
+    "kerberos": "1.0.0",
     "lodash": "^4.17.19",
     "moment-timezone": "^0.5.23",
     "mongodb-extended-json": "^1.11.0",

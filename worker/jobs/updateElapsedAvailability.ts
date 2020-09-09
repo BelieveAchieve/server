@@ -1,12 +1,10 @@
 import { map, size } from 'lodash';
 import VolunteerModel from '../../models/Volunteer';
 import { User } from '../../models/types';
-import dbconnect from '../../dbutils/dbconnect';
 import { log } from '../logger';
 import UserCtrl from '../../controllers/UserCtrl';
 
 export default async (): Promise<void> => {
-  await dbconnect();
   // Fetch volunteers
   const volunteers = (await VolunteerModel.find()
     .lean()

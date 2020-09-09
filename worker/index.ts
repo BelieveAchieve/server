@@ -1,10 +1,12 @@
 import Queue from 'bull';
 import config from '../config';
+import dbconnect from '../dbutils/dbconnect';
 import { log } from './logger';
 import { addJobProcessors } from './jobs';
 
 const main = async (): Promise<void> => {
   try {
+    await dbconnect();
     log('Starting queue');
     const queue = new Queue(
       config.workerQueueName,
