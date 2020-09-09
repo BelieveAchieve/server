@@ -64,6 +64,7 @@ export interface Volunteer extends User {
   city?: string;
   certifications: Certifications;
   availability: Availability;
+  sentReadyToCoachEmail: boolean;
 }
 
 export interface StudentRegistrationForm extends Student {
@@ -162,3 +163,51 @@ export type AvailabilityDay = {
 export type Availability = {
   [day in DAYS]: AvailabilityDay;
 };
+
+export interface Message {
+  user: User;
+  contents: string;
+  createdAt: Date;
+}
+
+// @todo: clean up
+enum NotificationType {
+  REGULAR = 'REGULAR',
+  FAILSAFE = 'FAILSAFE'
+}
+
+enum NotificationMethod {
+  SMS = 'SMS',
+  VOICE = 'VOICE',
+  EMAIL = 'EMAIL'
+}
+
+export interface Notification {
+  _id: Types.ObjectId;
+  volunteer: Types.ObjectId | Volunteer;
+  sentAt: Date;
+  type: NotificationType;
+  method: NotificationMethod;
+  wasSuccessful: boolean;
+  messageId: string;
+}
+
+export interface Session {
+  student: Student;
+  volunteer: Volunteer;
+  type: string;
+  subTopic: string;
+  messages: Message[];
+  whiteboardDoc: string;
+  quillDoc: string;
+  createdAt: Date;
+  volunteerJoinedAt: Date;
+  failedJoins: User[];
+  endedAt: Date;
+  endedBy: User;
+  notifications: Notification[];
+  photos: string[];
+  isReported: boolean;
+  reportReason: string;
+  reportMessage: string;
+}
