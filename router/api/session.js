@@ -214,7 +214,7 @@ module.exports = function(router, io) {
     try {
       const session = await Session.findOne({ _id: sessionId })
         .populate('student volunteer')
-        .select('+quillDoc +whiteboardDoc')
+        .select('+quillDoc')
         .lean()
         .exec()
 

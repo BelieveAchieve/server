@@ -260,6 +260,26 @@ const whiteboardRouter = function(app): void {
     next();
   });
 
+  router.ws('/admin/:sessionId', function(wsClient, req, next) {
+    const sessionId = req.params.sessionId;
+
+    wsClient.on('message', async rawMessage => {
+      const message = decode(rawMessage as Uint8Array);
+
+      if (message.messageType === MessageType.INIT) {
+        const document = await WhiteboardService.getFinalDocState(sessionId);
+        return wsClient.send(
+          encode({
+            messageType: MessageType.APPEND,
+            offset: 0,
+            data: document,
+            more: 0
+          })
+        );
+      }
+    });
+  });
+
   app.use('/whiteboard', router);
 };
 
