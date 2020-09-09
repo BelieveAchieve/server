@@ -3,9 +3,10 @@ import UserModel from '../../models/User';
 import VolunteerModel from '../../models/Volunteer';
 import StudentModel from '../../models/Student';
 import UserActionModel from '../../models/UserAction';
+import SessionModel from '../../models/Session';
 import config from '../../config';
-import { Volunteer, Student } from './types';
-import { buildVolunteer, buildStudent } from './generate';
+import { Volunteer, Student, Session } from './types';
+import { buildVolunteer, buildStudent, buildSession } from './generate';
 
 const hashPassword = async function(password): Promise<Error | string> {
   try {
@@ -44,4 +45,21 @@ export const insertStudent = async (
   });
   // Return student with non-hashed password
   return { ...createdStudent.toObject(), password: student.password };
+};
+
+// @todo: make the student configurable
+export const insertSession = async (
+  overrides = {}
+): Promise<{
+  session: Session;
+  student: Student;
+}> => {
+  const student = await insertStudent();
+  const session = buildSession({
+    student: student._id,
+    ...overrides
+  });
+  const createdSession = await SessionModel.create(session);
+  // Return the session and the student
+  return { session: createdSession.toObject(), student };
 };
