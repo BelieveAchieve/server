@@ -40,6 +40,6 @@ module.exports = {
       .lean()
       .exec()
 
-    return whiteboardDoc;
+    return whiteboardDoc
   }
 }
