@@ -63,3 +63,24 @@ export const insertSession = async (
   // Return the session and the student
   return { session: createdSession.toObject(), student };
 };
+
+// @todo: make the student configurable
+export const insertSessionWithVolunteer = async (
+  overrides = {}
+): Promise<{
+  session: Session;
+  student: Student;
+  volunteer: Volunteer;
+}> => {
+  const student = await insertStudent();
+  const volunteer = await insertVolunteer();
+  const session = buildSession({
+    student: student._id,
+    volunteer: volunteer._id,
+    volunteerJoinedAt: new Date(),
+    ...overrides
+  });
+  const createdSession = await SessionModel.create(session);
+  // Return the session and the student
+  return { session: createdSession.toObject(), student, volunteer };
+};
