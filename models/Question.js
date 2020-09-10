@@ -191,8 +191,21 @@ questionSchema.statics.getSubcategories = function(category) {
       'refraction and reflection',
       'gravity/gen relativity'
     ],
-    // @todo: add physics 2
-    [SCIENCE_CERTS.PHYSICS_TWO]: [],
+    [SCIENCE_CERTS.PHYSICS_TWO]: [
+      'Fluids - density and pressure',
+      'Fluids - dynamics',
+      'THD - Ideal Gases',
+      'thermodynamics',
+      'Electric Field',
+      'Electric Potential',
+      'Magnetic Fields',
+      'Magnetic Induction',
+      'Electromagnetic Waves',
+      'Optics - refraction and reflection',
+      'Quantum & Atomic Physics',
+      'dynamics 2',
+      'Electric Circuits'
+    ],
     [SCIENCE_CERTS.ENVIRONMENTAL_SCIENCE]: [
       'earth systems and resources',
       'ecology',
