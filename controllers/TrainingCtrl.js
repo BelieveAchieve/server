@@ -35,7 +35,8 @@ const numQuestions = {
   [SCIENCE_CERTS.PHYSICS_TWO]: 1,
   [SCIENCE_CERTS.ENVIRONMENTAL_SCIENCE]: 1
 }
-const PASS_THRESHOLD = 0.8
+const SUBJECT_THRESHOLD = 0.8
+const TRAINING_THRESHOLD = 1.0
 
 // Check if a user is certified in a given group of subject certs
 const isCertifiedIn = (subjectCerts, certifications) => {
@@ -81,7 +82,10 @@ module.exports = {
     ).length
 
     const percent = score / questions.length
-    const passed = percent >= PASS_THRESHOLD
+    const threshold = Object.values(TRAINING).includes(cert)
+      ? TRAINING_THRESHOLD
+      : SUBJECT_THRESHOLD
+    const passed = percent >= threshold
 
     const tries = user.certifications[cert]['tries'] + 1
 
