@@ -8,7 +8,8 @@ import {
   MATH_CERTS,
   COLLEGE_CERTS,
   SCIENCE_CERTS,
-  SAT_CERTS
+  SAT_CERTS,
+  COLLEGE_SUBJECTS
 } from '../constants';
 import User from './User';
 
@@ -327,6 +328,30 @@ const volunteerSchema = new mongoose.Schema(
         lastAttemptedAt: { type: Date }
       },
       [COLLEGE_CERTS.ESSAYS]: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
+      },
+      // @todo: remove once college counseling required training is created
+      [COLLEGE_SUBJECTS.PLANNING]: {
+        passed: {
+          type: Boolean,
+          default: false
+        },
+        tries: {
+          type: Number,
+          default: 0
+        },
+        lastAttemptedAt: { type: Date }
+      },
+      // @todo: remove once college counseling required training is created
+      [SUBJECTS.APPLICATIONS]: {
         passed: {
           type: Boolean,
           default: false
