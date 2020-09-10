@@ -212,7 +212,9 @@ export const buildCertifications = (overrides = {}): Certifications => {
 };
 
 export const buildSession = (overrides = {}): Partial<Session> => {
+  const _id = Types.ObjectId();
   const session = {
+    _id,
     student: null,
     volunteer: null,
     type: 'math',

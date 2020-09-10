@@ -193,6 +193,7 @@ export interface Notification {
 }
 
 export interface Session {
+  _id: Types.ObjectId;
   student: Student;
   volunteer: Volunteer;
   type: string;
