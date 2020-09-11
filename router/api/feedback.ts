@@ -1,26 +1,48 @@
-var Feedback = require('../../models/Feedback')
+import * as FeedbackService from '../../services/FeedbackService';
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 module.exports = function(router) {
-  router.post('/feedback', function(req, res, next) {
-    var body = req.body
-    var feedback = new Feedback({
-      sessionId: body['sessionId'],
-      type: body['topic'],
-      subTopic: body['subTopic'],
-      responseData: body['responseData'],
-      userType: body['userType'],
-      studentId: body['studentId'],
-      volunteerId: body['volunteerId']
-    })
-    console.log(feedback)
-    feedback.save(function(err, session) {
-      if (err) {
-        next(err)
-      } else {
-        res.json({
-          sessionId: session._id
-        })
-      }
-    })
-  })
-}
+  router.post('/feedback', async (req, res, next) => {
+    const {
+      sessionId,
+      topic,
+      subTopic,
+      responseData,
+      userType,
+      studentId,
+      volunteerId
+    } = req.body;
+    try {
+      const feedback = await FeedbackService.saveFeedback({
+        sessionId,
+        type: topic,
+        subTopic,
+        responseData,
+        userType,
+        studentId,
+        volunteerId
+      });
+      res.json({
+        feedback: feedback._id
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.get('/feedback', async (req, res, next) => {
+    const { sessionId, userType } = req.query;
+    try {
+      const feedback = await FeedbackService.getFeedback({
+        sessionId,
+        userType
+      });
+
+      res.json({
+        feedback: feedback ? feedback._id : null
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+};
