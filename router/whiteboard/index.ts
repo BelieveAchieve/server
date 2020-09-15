@@ -239,8 +239,8 @@ const whiteboardRouter = function(app): void {
     }, 30 * 1000);
 
     wsClient.on('message', rawMessage => {
-      console.log('message:', rawMessage);
       if (rawMessage === "p1ng") {
+        // Respond to ping and exit early
         wsClient.send("p0ng");
         return;
       }
