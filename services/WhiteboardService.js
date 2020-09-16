@@ -1,40 +1,34 @@
-const Sentry = require('@sentry/node')
 const Session = require('../models/Session')
+const { redisGet, redisSet, redisDel, redisAppend } = require('./RedisService')
 
-// @todo: store in redis or mongodb, not in-memory
-const whiteboardDocCache = {}
+const sessionIdToKey = id => `zwibbler-${id}`
 
 module.exports = {
-  createDoc: function(sessionId) {
-    whiteboardDocCache[sessionId] = ''
-    return whiteboardDocCache[sessionId]
+  createDoc: async sessionId => {
+    const newDoc = ''
+    await redisSet(sessionIdToKey(sessionId), newDoc)
+    return newDoc
   },
 
-  getDoc: function(sessionId) {
-    return whiteboardDocCache[sessionId]
+  getDoc: async sessionId => {
+    return redisGet(sessionIdToKey(sessionId))
   },
 
-  getDocLength: function(sessionId) {
-    const document = this.getDoc(sessionId)
+  getDocLength: async sessionId => {
+    const document = await redisGet(sessionIdToKey(sessionId))
     if (document === undefined) return 0
     return Buffer.byteLength(document, 'utf8')
   },
 
-  appendToDoc: function(sessionId, docAddition) {
-    const currentDoc = this.getDoc(sessionId)
-    if (currentDoc === undefined) {
-      return Sentry.captureMessage(
-        `document does not exist for session ${sessionId}`
-      )
-    }
-    whiteboardDocCache[sessionId] = currentDoc + docAddition
+  appendToDoc: async (sessionId, docAddition) => {
+    return redisAppend(sessionIdToKey(sessionId), docAddition)
   },
 
-  clearDocFromCache(sessionId) {
-    delete whiteboardDocCache[sessionId]
+  deleteDoc: async sessionId => {
+    return redisDel(sessionIdToKey(sessionId))
   },
 
-  async getFinalDocState(sessionId) {
+  getFinalDocState: async sessionId => {
     const { whiteboardDoc } = await Session.findOne({ _id: sessionId })
       .select('whiteboardDoc')
       .lean()

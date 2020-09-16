@@ -66,6 +66,7 @@ module.exports = {
       userId: session.student,
       sessionId: session._id
     })
+
     if (session.volunteer)
       await addPastSession({
         userId: session.volunteer,
@@ -73,18 +74,19 @@ module.exports = {
       })
 
     const quillDoc = await QuillDocService.getDoc(session._id.toString())
+    const whiteboardDoc = await WhiteboardService.getDoc(session._id.toString())
 
     await Session.updateOne(
       { _id: session._id },
       {
         endedAt: new Date(),
         endedBy,
-        whiteboardDoc: WhiteboardService.getDoc(session._id),
-        quillDoc: JSON.stringify(quillDoc)
+        whiteboardDoc: whiteboardDoc || undefined,
+        quillDoc: quillDoc ? JSON.stringify(quillDoc) : undefined
       }
     )
 
-    WhiteboardService.clearDocFromCache(session._id)
+    WhiteboardService.deleteDoc(session._id.toString())
     QuillDocService.deleteDoc(session._id.toString())
   },
 
