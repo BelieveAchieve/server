@@ -72,18 +72,20 @@ module.exports = {
         sessionId: session._id
       })
 
+    const quillDoc = await QuillDocService.getDoc(session._id.toString())
+
     await Session.updateOne(
       { _id: session._id },
       {
         endedAt: new Date(),
         endedBy,
         whiteboardDoc: WhiteboardService.getDoc(session._id),
-        quillDoc: JSON.stringify(QuillDocService.getDoc(session._id))
+        quillDoc: JSON.stringify(quillDoc)
       }
     )
 
     WhiteboardService.clearDocFromCache(session._id)
-    QuillDocService.deleteDoc(session._id)
+    QuillDocService.deleteDoc(session._id.toString())
   },
 
   isSessionFulfilled: session => {
