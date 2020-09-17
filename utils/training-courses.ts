@@ -125,7 +125,7 @@ export const courses: TrainingCourse[] = [
             materialKey: "412g45",
             type: MaterialType.VIDEO,
             isRequired: true,
-            resourceId: "459021055"
+            resourceId: "458744762"
           },
           {
             name: "Guide to choosing your references",
@@ -217,7 +217,7 @@ export const courses: TrainingCourse[] = [
             materialKey: "jgu55k",
             type: MaterialType.VIDEO,
             isRequired: true,
-            resourceId: "458744863"
+            resourceId: "459021109"
           },
           {
             name: "UPchieve Academic Integrity Policy",
