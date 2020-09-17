@@ -4,4 +4,4 @@ jest.mock('redis', () => {
     __esModule: true,
     default: redisMock
   }
-});
+})
