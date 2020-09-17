@@ -95,7 +95,7 @@ export const courses: TrainingCourse[] = [
               "https://us02web.zoom.us/meeting/register/uZUsduiqrzgiO4_zJG9YvVJcx8vBxt4snA"
           },
           {
-            name: "Additional Resources",
+            name: "Additional resources",
             materialKey: "90d731",
             type: MaterialType.RESOURCES,
             isRequired: false,
@@ -135,7 +135,7 @@ export const courses: TrainingCourse[] = [
             resourceId: "choosing-references"
           },
           {
-            name: "Additional Resources",
+            name: "Additional resources",
             materialKey: "1hh701",
             type: MaterialType.RESOURCES,
             isRequired: false,
@@ -164,7 +164,7 @@ export const courses: TrainingCourse[] = [
             resourceId: "458744827"
           },
           {
-            name: "Additional Resources",
+            name: "Additional resources",
             materialKey: "g0g710",
             type: MaterialType.RESOURCES,
             isRequired: false,
@@ -180,7 +180,117 @@ export const courses: TrainingCourse[] = [
             ]
           }
         ]
-      }
+      },
+      {
+        name: "Student Safety",
+        moduleKey: "hf7ek9",
+        materials: [
+          {
+            name: "Keeping students safe",
+            materialKey: "839fi9",
+            type: MaterialType.VIDEO,
+            isRequired: true,
+            resourceId: "458744863"
+          },
+          {
+            name: "UPchieve Student Safety Policy",
+            materialKey: "ps87f9",
+            type: MaterialType.DOCUMENT,
+            isRequired: true,
+            resourceId: "student-safety-policy"
+          },
+          {
+            name: "Guide to personal questions",
+            materialKey: "c8cjre",
+            type: MaterialType.DOCUMENT,
+            isRequired: true,
+            resourceId: "personal-questions"
+          }
+        ]
+      },
+      {
+        name: "Academic Integrity",
+        moduleKey: "g7sk9f",
+        materials: [
+          {
+            name: "Maintaining academic integrity",
+            materialKey: "jgu55k",
+            type: MaterialType.VIDEO,
+            isRequired: true,
+            resourceId: "458744863"
+          },
+          {
+            name: "UPchieve Academic Integrity Policy",
+            materialKey: "3gh7dh",
+            type: MaterialType.DOCUMENT,
+            isRequired: true,
+            resourceId: "academic-integrity"
+          },
+          {
+            name: "Examples of cheating",
+            materialKey: "1w5fp0",
+            type: MaterialType.DOCUMENT,
+            isRequired: true,
+            resourceId: "cheating-examples"
+          }
+        ]
+      },
+      {
+        name: "Diversity, Equity, and Inclusion",
+        moduleKey: "fj6ku9",
+        materials: [
+          {
+            name: "Incorporating DEI into your coaching",
+            materialKey: "chduq3",
+            type: MaterialType.VIDEO,
+            isRequired: true,
+            resourceId: "459021056"
+          },
+          {
+            name: "UPchieve DEI Policy",
+            materialKey: "fj8tzq",
+            type: MaterialType.DOCUMENT,
+            isRequired: true,
+            resourceId: "dei-policy"
+          },
+          {
+            name: "Complete implicit bias training",
+            materialKey: "k3k37t",
+            type: MaterialType.LINK,
+            isRequired: true,
+            linkUrl:
+              "http://kirwaninstitute.osu.edu/implicit-bias-training/"
+          },
+          {
+            name: "Take the race IAT",
+            materialKey: "sk8lyf",
+            type: MaterialType.LINK,
+            isRequired: true,
+            linkUrl:
+              "https://implicit.harvard.edu/implicit/selectatest.html"
+          },
+          {
+            name: "Additional resources",
+            materialKey: "g34kfx",
+            type: MaterialType.RESOURCES,
+            isRequired: false,
+            links: [
+              {
+                displayName: "Examples of microaggressions",
+                url: "https://sph.umn.edu/site/docs/hewg/microaggressions.pdf"
+              },
+              {
+                displayName: "Examples of how implicit bias can influence educators' behavior",
+                url: "https://poorvucenter.yale.edu/ImplicitBiasAwareness"
+              },
+              {
+                displayName: "Podcast on desegregation",
+                url: "https://www.thisamericanlife.org/562/the-problem-we-all-live-with-part-one"
+              }
+            ]
+          }
+        ]
+      },
     ]
   }
 ];
