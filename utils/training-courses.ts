@@ -76,10 +76,10 @@ export const courses: TrainingCourse[] = [
             materialKey: "31rgp3",
             type: MaterialType.VIDEO,
             isRequired: true,
-            resourceId: "450241431"
+            resourceId: "459021055"
           },
           {
-            name: "Join our Slack community",
+            name: "Join the UPchieve Slack community",
             materialKey: "1s3654",
             type: MaterialType.LINK,
             isRequired: false,
@@ -93,49 +93,89 @@ export const courses: TrainingCourse[] = [
             isRequired: false,
             linkUrl:
               "https://us02web.zoom.us/meeting/register/uZUsduiqrzgiO4_zJG9YvVJcx8vBxt4snA"
-          }
-        ]
-      },
-      {
-        name: "Becoming an Active Coach",
-        moduleKey: "gfw567",
-        materials: [
-          {
-            name: "Introduction to our platform",
-            materialKey: "412g45",
-            type: MaterialType.VIDEO,
-            isRequired: true,
-            resourceId: "450241431"
           },
           {
-            name: "Coach Guide",
-            description: "Material description",
-            materialKey: "vrwv5g",
-            type: MaterialType.DOCUMENT,
-            isRequired: true,
-            resourceId: "upc101-test-1"
-          },
-          {
-            name: "How to complete a session on UPchieve",
-            materialKey: "5ggwf3",
-            type: MaterialType.DOCUMENT,
-            isRequired: true,
-            resourceId: "upc101-test-1"
-          },
-          {
-            name: "More resources",
-            description: "Here are more resources",
+            name: "Additional Resources",
             materialKey: "90d731",
             type: MaterialType.RESOURCES,
             isRequired: false,
             links: [
               {
-                displayName: "Differential equation introduction",
-                url: "https://www.youtube.com/watch?v=6o7b9yyhH7k"
+                displayName: "UPchieve student testimonials and feedback",
+                url: "https://upc-training-materials.s3.us-east-2.amazonaws.com/student-testimonials-and-feedback.pdf"
               },
               {
-                displayName: "Implicit Bias",
-                url: "https://www.youtube.com/watch?v=kKHSJHkPeLY"
+                displayName: "Overview of inequity in higher education",
+                url: "http://pellinstitute.org/downloads/publications-Indicators_of_Higher_Education_Equity_in_the_US_2018_Historical_Trend_Report.pdf"
+              },
+              {
+                displayName: "Overview of COVID-19's impact on education",
+                url: "https://www.mckinsey.com/industries/public-and-social-sector/our-insights/covid-19-and-student-learning-in-the-united-states-the-hurt-could-last-a-lifetime"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        name: "Becoming an Active Coach",
+        moduleKey: "7fj5ck",
+        materials: [
+          {
+            name: "Getting approved and onboarded",
+            materialKey: "412g45",
+            type: MaterialType.VIDEO,
+            isRequired: true,
+            resourceId: "459021055"
+          },
+          {
+            name: "Guide to choosing your references",
+            materialKey: "vrwv5g",
+            type: MaterialType.DOCUMENT,
+            isRequired: true,
+            resourceId: "choosing-references"
+          },
+          {
+            name: "Additional Resources",
+            materialKey: "1hh701",
+            type: MaterialType.RESOURCES,
+            isRequired: false,
+            links: [
+              {
+                displayName: "Approval process demo",
+                url: "https://vimeo.com/451872809"
+              },
+              {
+                displayName: "Onboarding process demo",
+                url: "https://vimeo.com/451872896"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        name: "Helping Your First Student",
+        moduleKey: "7fj5ck",
+        materials: [
+          {
+            name: "Fulfilling student requests",
+            materialKey: "212h45",
+            type: MaterialType.VIDEO,
+            isRequired: true,
+            resourceId: "458744827"
+          },
+          {
+            name: "Additional Resources",
+            materialKey: "g0g710",
+            type: MaterialType.RESOURCES,
+            isRequired: false,
+            links: [
+              {
+                displayName: "Tutoring session demo",
+                url: "https://vimeo.com/457909355"
+              },
+              {
+                displayName: "College counseling session demo",
+                url: "https://vimeo.com/457909309"
               }
             ]
           }
