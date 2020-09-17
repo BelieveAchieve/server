@@ -291,6 +291,26 @@ export const courses: TrainingCourse[] = [
           }
         ]
       },
+      {
+        name: "Worst Case Scenarios",
+        moduleKey: "j694uj",
+        materials: [
+          {
+            name: "Handling worst case scenarios",
+            materialKey: "xgvd64",
+            type: MaterialType.VIDEO,
+            isRequired: true,
+            resourceId: "458744858"
+          },
+          {
+            name: "More tips on handling challenging scenarios",
+            materialKey: "jkkm20",
+            type: MaterialType.DOCUMENT,
+            isRequired: true,
+            resourceId: "challenging-scenarios"
+          }
+        ]
+      }
     ]
   }
 ];
