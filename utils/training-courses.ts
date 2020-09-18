@@ -156,7 +156,7 @@ export const courses: TrainingCourse[] = [
       },
       {
         name: "Helping Your First Student",
-        moduleKey: "7fj5ck",
+        moduleKey: "8fh5ck",
         materials: [
           {
             name: "Fulfilling student requests",
