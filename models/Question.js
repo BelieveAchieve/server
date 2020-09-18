@@ -220,7 +220,7 @@ questionSchema.statics.getSubcategories = function(category) {
       'populations',
       'the atmosphere'
     ],
-    [TRAINING.UPCHIEVE_101]: ['ethics', 'students']
+    [TRAINING.UPCHIEVE_101]: ['upchieve']
   }
 
   if (typeof category !== 'string') {
