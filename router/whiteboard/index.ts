@@ -31,11 +31,11 @@ const messageHandlers: {
     route: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }) => void;
 } = {
-  [MessageType.INIT]: ({ message, sessionId, wsClient }) => {
-    const document = WhiteboardService.getDoc(sessionId);
+  [MessageType.INIT]: async ({ message, sessionId, wsClient }) => {
+    const document = await WhiteboardService.getDoc(sessionId);
     if (
       message.creationMode === CreationMode.NEVER_CREATE &&
-      document === undefined
+      !document
     ) {
       return wsClient.send(
         encode({
@@ -48,7 +48,7 @@ const messageHandlers: {
     }
     if (
       message.creationMode === CreationMode.ALWAYS_CREATE &&
-      document !== undefined
+      !document
     ) {
       return wsClient.send(
         encode({
@@ -62,14 +62,15 @@ const messageHandlers: {
     if (
       (message.creationMode === CreationMode.ALWAYS_CREATE ||
         message.creationMode === CreationMode.POSSIBLY_CREATE) &&
-      document === undefined
+      !document
     ) {
-      WhiteboardService.createDoc(sessionId);
-      if (message.data) WhiteboardService.appendToDoc(sessionId, message.data);
+      await WhiteboardService.createDoc(sessionId);
+      if (message.data) await WhiteboardService.appendToDoc(sessionId, message.data);
+      const docLength = await WhiteboardService.getDocLength(sessionId);
       return wsClient.send(
         encode({
           messageType: MessageType.APPEND,
-          offset: WhiteboardService.getDocLength(sessionId),
+          offset: docLength,
           data: '',
           more: 0
         })
@@ -79,13 +80,13 @@ const messageHandlers: {
       encode({
         messageType: MessageType.APPEND,
         offset: 0,
-        data: WhiteboardService.getDoc(sessionId),
+        data: document,
         more: 0
       })
     );
   },
-  [MessageType.APPEND]: ({ message, sessionId, wsClient, route }) => {
-    const documentLength = WhiteboardService.getDocLength(sessionId);
+  [MessageType.APPEND]: async ({ message, sessionId, wsClient, route }) => {
+    const documentLength = await WhiteboardService.getDocLength(sessionId);
     if (message.offset !== documentLength) {
       return wsClient.send(
         encode({
@@ -96,7 +97,8 @@ const messageHandlers: {
         })
       );
     }
-    WhiteboardService.appendToDoc(sessionId, message.data);
+    await WhiteboardService.appendToDoc(sessionId, message.data);
+    const newDocLength = await WhiteboardService.getDocLength(sessionId);
 
     // Ack unless this is the beginning of a continuation
     if (!message.more) {
@@ -104,7 +106,7 @@ const messageHandlers: {
         encode({
           messageType: MessageType.ACK_NACK,
           ack: 1,
-          offset: WhiteboardService.getDocLength(sessionId),
+          offset: newDocLength,
           more: 0
         })
       );
@@ -185,8 +187,9 @@ const messageHandlers: {
       })
     );
   },
-  [MessageType.CONTINUATION]: ({ message, wsClient, sessionId, route }) => {
-    WhiteboardService.appendToDoc(sessionId, message.data);
+  [MessageType.CONTINUATION]: async ({ message, wsClient, sessionId, route }) => {
+    await WhiteboardService.appendToDoc(sessionId, message.data);
+    const newDocLength = await WhiteboardService.getDocLength(sessionId);
     const broadcastMessage = encode({
       messageType: MessageType.CONTINUATION,
       data: message.data,
@@ -200,7 +203,7 @@ const messageHandlers: {
         encode({
           messageType: MessageType.ACK_NACK,
           ack: 1,
-          offset: WhiteboardService.getDocLength(sessionId),
+          offset: newDocLength,
           more: 0
         })
       );
@@ -239,6 +242,11 @@ const whiteboardRouter = function(app): void {
     }, 30 * 1000);
 
     wsClient.on('message', rawMessage => {
+      if (rawMessage === "p1ng") {
+        // Respond to ping and exit early
+        wsClient.send("p0ng");
+        return;
+      }
       let message = decode(rawMessage as Uint8Array);
       if (!message || !message.messageType) {
         console.log(`unsupported zwibbler client in session ${sessionId}`);
@@ -258,6 +266,26 @@ const whiteboardRouter = function(app): void {
     });
 
     next();
+  });
+
+  router.ws('/admin/:sessionId', function(wsClient, req, next) {
+    const sessionId = req.params.sessionId;
+
+    wsClient.on('message', async rawMessage => {
+      const message = decode(rawMessage as Uint8Array);
+
+      if (message.messageType === MessageType.INIT) {
+        const document = await WhiteboardService.getFinalDocState(sessionId);
+        return wsClient.send(
+          encode({
+            messageType: MessageType.APPEND,
+            offset: 0,
+            data: document,
+            more: 0
+          })
+        );
+      }
+    });
   });
 
   app.use('/whiteboard', router);

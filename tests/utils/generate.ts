@@ -23,7 +23,8 @@ import {
   DAYS,
   HOURS,
   Certifications,
-  TrainingCourses
+  TrainingCourses,
+  Session
 } from './types';
 export const getEmail = faker.internet.email;
 export const getFirstName = faker.name.firstName;
@@ -157,6 +158,7 @@ export const buildVolunteer = (overrides = {}): Volunteer => {
     availability: buildAvailability(),
     subjects: [],
     trainingCourses: buildTrainingCourses(),
+    sentReadyToCoachEmail: false,
     ...overrides
   };
 
@@ -260,6 +262,31 @@ export const buildBackgroundInfo = (overrides = {}): Partial<Volunteer> => {
   };
 
   return data;
+};
+
+export const buildSession = (overrides = {}): Partial<Session> => {
+  const _id = Types.ObjectId();
+  const session = {
+    _id,
+    student: null,
+    volunteer: null,
+    type: 'math',
+    subTopic: 'algebra',
+    messages: [],
+    whiteboardDoc: '',
+    quillDoc: '',
+    createdAt: new Date(),
+    volunteerJoinedAt: null,
+    failedJoins: [],
+    notifications: [],
+    photos: [],
+    isReported: false,
+    reportReason: null,
+    reportMessage: null,
+    ...overrides
+  };
+
+  return session;
 };
 
 export const authLogin = (agent, { email, password }: Partial<User>): Test =>

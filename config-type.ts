@@ -70,7 +70,8 @@ export const Config = Record({
       name: String,
       signupCode: String,
       highSchoolSignup: Boolean,
-      highSchoolSignupRequired: Boolean,
+      collegeSignup: Boolean,
+      schoolSignupRequired: Boolean,
       sites: Array(String)
     })
   ),

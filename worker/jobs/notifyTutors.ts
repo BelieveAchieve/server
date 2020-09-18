@@ -2,7 +2,6 @@ import { Job } from 'bull';
 import Session from '../../models/Session';
 import SessionService from '../../services/SessionService';
 import TwilioService from '../../services/twilio';
-import dbconnect from '../../dbutils/dbconnect';
 import { log } from '../logger';
 import { Jobs } from '.';
 
@@ -13,7 +12,6 @@ interface NotifyTutorsJobData {
 
 export default async (job: Job<NotifyTutorsJobData>): Promise<void> => {
   const { sessionId, notificationSchedule } = job.data;
-  await dbconnect();
   const session = await Session.findById(sessionId);
   if (!session) return log(`session ${sessionId} not found`);
   const fulfilled = SessionService.isSessionFulfilled(session);

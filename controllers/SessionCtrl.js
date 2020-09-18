@@ -8,10 +8,11 @@ const PushToken = require('../models/PushToken')
 module.exports = function(socketService) {
   return {
     create: async function(options) {
-      var user = options.user || {}
-      var userId = user._id
-      var type = options.type
-      var subTopic = options.subTopic
+      const user = options.user || {}
+      const userId = user._id
+      const type = options.type
+      const subTopic = options.subTopic
+      const currentSession = await Session.current(userId)
 
       if (!userId) {
         throw new Error('Cannot create a session without a user id')
@@ -19,9 +20,11 @@ module.exports = function(socketService) {
         throw new Error('Volunteers cannot create new sessions')
       } else if (!type) {
         throw new Error('Must provide a type for a new session')
+      } else if (currentSession) {
+        throw new Error('Student already has an active session')
       }
 
-      var session = new Session({
+      const session = new Session({
         student: userId,
         type: type,
         subTopic: subTopic

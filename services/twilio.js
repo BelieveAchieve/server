@@ -48,6 +48,7 @@ const getNextVolunteer = async ({ subtopic, priorityFilter = {} }) => {
   const availabilityPath = getCurrentAvailabilityPath()
 
   const filter = {
+    isApproved: true,
     [availabilityPath]: true,
     subjects: subtopic,
     phone: { $exists: true },

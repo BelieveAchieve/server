@@ -1,24 +1,30 @@
 import Delta from 'quill-delta';
+import { redisGet, redisSet, redisDel } from './RedisService';
 
-// @todo: store in redis, not in-memory
-const quillDocCache: { [sessionId: string]: Delta } = {};
+const sessionIdToKey = (id: string): string => `quill-${id}`;
 
 module.exports = {
-  createDoc: (sessionId: string): Delta => {
-    quillDocCache[sessionId] = new Delta();
-    return quillDocCache[sessionId];
+  createDoc: async (sessionId: string): Promise<Delta> => {
+    const newDoc = new Delta();
+    await redisSet(sessionIdToKey(sessionId), JSON.stringify(newDoc));
+    return newDoc;
   },
 
-  getDoc: (sessionId: string): Delta | undefined => {
-    return quillDocCache[sessionId];
+  getDoc: async (sessionId: string): Promise<Delta | undefined> => {
+    const docString = await redisGet(sessionIdToKey(sessionId));
+    if (!docString) return;
+    return new Delta(JSON.parse(docString));
   },
 
-  appendToDoc: (sessionId: string, delta: Delta): void => {
-    if (!quillDocCache[sessionId]) return;
-    quillDocCache[sessionId] = quillDocCache[sessionId].compose(delta);
+  appendToDoc: async (sessionId: string, delta: Delta): Promise<void> => {
+    const redisKey = sessionIdToKey(sessionId);
+    const docString = await redisGet(redisKey);
+    if (!docString) return;
+    const updatedDoc = new Delta(JSON.parse(docString)).compose(delta);
+    await redisSet(redisKey, JSON.stringify(updatedDoc));
   },
 
-  deleteDoc: (sessionId: string): void => {
-    delete quillDocCache[sessionId]
+  deleteDoc: async (sessionId: string): Promise<void> => {
+    await redisDel(sessionIdToKey(sessionId));
   }
 };

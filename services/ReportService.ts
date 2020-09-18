@@ -429,7 +429,9 @@ export const usageReport = async ({
     }
   ]);
 
-  const partnerSites = config.studentPartnerManifests[studentPartnerOrg].sites;
+  const partnerSites =
+    config.studentPartnerManifests[studentPartnerOrg] &&
+    config.studentPartnerManifests[studentPartnerOrg].sites;
 
   const studentUsage = students.map(student => {
     const feedback = Array.from(student.feedback);

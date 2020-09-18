@@ -256,7 +256,8 @@ module.exports = {
     partnerSite,
     isVerified,
     isBanned,
-    isDeactivated
+    isDeactivated,
+    isApproved
   }) {
     const userBeforeUpdate = await this.getUser({ _id: userId })
     const { isVolunteer } = userBeforeUpdate
@@ -275,6 +276,7 @@ module.exports = {
       verified: isVerified,
       isBanned,
       isDeactivated,
+      isApproved,
       $unset: {}
     }
 

@@ -1,6 +1,7 @@
-import { Document, model, Schema } from 'mongoose';
+import { Document, model, Schema, Types } from 'mongoose';
 
 export interface Feedback {
+  _id: Types.ObjectId;
   sessionId: string;
   type: string;
   subTopic: string;
