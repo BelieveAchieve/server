@@ -5,6 +5,7 @@ interface TrainingCourse {
   courseKey: string;
   description: string;
   quizKey: string;
+  quizName: string;
   modules: TrainingModule[];
 }
 
@@ -66,6 +67,7 @@ export const courses: TrainingCourse[] = [
     description:
       "UPchieve101 is a required training in order to be an Academic Coach. Please complete each Module before completeing the quiz at the bottom.",
     quizKey: "upchieve101",
+    quizName: "UPchieve 101 Quiz",
     modules: [
       {
         name: "Intro to UPchieve",
