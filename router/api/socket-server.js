@@ -38,6 +38,8 @@ module.exports = function(app) {
   console.log('Sockets.io listening on port ' + port)
 
   const io = socket(server)
+  if (process.env.NODE_ENV === 'test') return io
+
   const redisUrl = new URL(config.redisConnectionString)
   io.adapter(redisAdapter({ host: redisUrl.hostname, port: redisUrl.port }))
   return io
