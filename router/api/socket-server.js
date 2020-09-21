@@ -6,7 +6,7 @@ const fs = require('fs')
 const http = require('http')
 const https = require('https')
 const socket = require('socket.io')
-
+const redisAdapter = require('socket.io-redis')
 const config = require('../../config')
 
 // Create an HTTPS server if in production, otherwise use HTTP.
@@ -37,5 +37,8 @@ module.exports = function(app) {
 
   console.log('Sockets.io listening on port ' + port)
 
-  return socket(server)
+  const io = socket(server)
+  const redisUrl = new URL(config.redisConnectionString)
+  io.adapter(redisAdapter({ host: redisUrl.hostname, port: redisUrl.port }))
+  return io
 }
