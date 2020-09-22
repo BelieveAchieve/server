@@ -4,6 +4,7 @@ const User = require('../models/User')
 const Volunteer = require('../models/Volunteer')
 const Student = require('../models/Student')
 const MailService = require('./MailService')
+const IpAddressService = require('./IpAddressService')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
 const { PHOTO_ID_STATUS, REFERENCE_STATUS, STATUS } = require('../constants')
 const config = require('../config')
@@ -268,6 +269,10 @@ module.exports = {
       const contact = await MailService.searchContact(userBeforeUpdate.email)
       if (contact) MailService.deleteContact(contact.id)
     }
+
+    // if unbanning student, also unban their IP addresses
+    if (!isVolunteer && userBeforeUpdate.isBanned && !isBanned)
+      await IpAddressService.unbanUserIps(userBeforeUpdate)
 
     const update = {
       firstname: firstName,
