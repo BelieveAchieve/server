@@ -36,10 +36,10 @@ module.exports = function(router) {
   // @note: Currently, only volunteers are able to update their profile
   router.put('/user', async (req, res, next) => {
     const { _id } = req.user
-    const { phone } = req.body
+    const { phone, isDeactivated } = req.body
 
     try {
-      await Volunteer.updateOne({ _id }, { phone })
+      await Volunteer.updateOne({ _id }, { phone, isDeactivated })
       res.sendStatus(200)
     } catch (err) {
       next(err)
