@@ -4,6 +4,7 @@ const TwilioService = require('../services/twilio')
 const Sentry = require('@sentry/node')
 const PushTokenService = require('../services/PushTokenService')
 const PushToken = require('../models/PushToken')
+const { USER_ACTION } = require('../constants')
 
 module.exports = function(socketService) {
   return {
@@ -220,7 +221,7 @@ module.exports = function(socketService) {
       if (isReported) sessionQueryFilter.isReported = true
 
       const userQueryFilter = {
-        'student.isBanned': showBannedUsers ? { $in: [true, false] } : false,
+        showSession: true,
         'student.isTestUser': showTestUsers ? { $in: [true, false] } : false
       }
 
@@ -337,6 +338,58 @@ module.exports = function(socketService) {
             $unwind: {
               path: '$volunteer',
               preserveNullAndEmptyArrays: true
+            }
+          },
+          {
+            $lookup: {
+              from: 'useractions',
+              let: { userId: '$student._id' },
+              pipeline: [
+                // Get user actions with 'BANNED' per session
+                {
+                  $match: {
+                    $expr: {
+                      $and: [
+                        { $eq: ['$user', '$$userId'] },
+                        { $eq: ['$action', USER_ACTION.ACCOUNT.BANNED] }
+                      ]
+                    }
+                  }
+                }
+              ],
+              as: 'bannedUserAction'
+            }
+          },
+          {
+            $addFields: {
+              // Retrieve the most recent 'BANNED' user action
+              lastBannedAt: { $max: '$bannedUserAction.createdAt' }
+            }
+          },
+          {
+            // Show sessions that were created before a user has been banned
+            // If showBannedUsers is true, show all sessions up to chosen date
+            $addFields: {
+              showSession: {
+                $cond: {
+                  if: { $eq: ['$lastBannedAt', undefined] },
+                  then: true,
+                  else: {
+                    $cond: [
+                      {
+                        $lte: [
+                          '$createdAtEstTime',
+                          showBannedUsers
+                            ? new Date(inclusiveSessionActivityTo)
+                            : '$lastBannedAt'
+                        ]
+                      },
+                      true,
+                      false
+                    ]
+                  }
+                }
+              }
             }
           },
           {
