@@ -275,7 +275,11 @@ const whiteboardRouter = function(app): void {
       const message = decode(rawMessage as Uint8Array);
 
       if (message.messageType === MessageType.INIT) {
-        const document = await WhiteboardService.getFinalDocState(sessionId);
+        // Active session's document
+        let document = await WhiteboardService.getDoc(sessionId);
+        // Completed session's document
+        if (!document)
+          document = await WhiteboardService.getFinalDocState(sessionId);
         return wsClient.send(
           encode({
             messageType: MessageType.APPEND,
