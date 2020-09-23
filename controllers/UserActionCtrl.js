@@ -226,6 +226,12 @@ const accountApproved = (userId, ipAddress) =>
 const accountOnboarded = (userId, ipAddress) =>
   createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.ONBOARDED)
 
+const accountBanned = (userId, sessionId, banReason) =>
+  createAccountAction(userId, '', USER_ACTION.ACCOUNT.BANNED, {
+    session: sessionId,
+    banReason
+  })
+
 const submittedReferenceForm = (userId, ipAddress, options) =>
   createAccountAction(
     userId,
@@ -265,6 +271,7 @@ module.exports = {
   deletedReference,
   accountApproved,
   accountOnboarded,
+  accountBanned,
   submittedReferenceForm,
   rejectedPhotoId,
   rejectedReference

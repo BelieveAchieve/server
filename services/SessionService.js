@@ -6,6 +6,7 @@ const QuillDocService = require('../services/QuillDocService')
 const UserService = require('./UserService')
 const MailService = require('./MailService')
 const { USER_BAN_REASON, SESSION_REPORT_REASON } = require('../constants')
+const UserActionCtrl = require('../controllers/UserActionCtrl')
 
 const addPastSession = async ({ userId, sessionId }) => {
   await User.update({ _id: userId }, { $addToSet: { pastSessions: sessionId } })
@@ -45,6 +46,11 @@ module.exports = {
         userId: session.student,
         banReason: USER_BAN_REASON.SESSION_REPORTED
       })
+      UserActionCtrl.accountBanned(
+        session.student,
+        session._id,
+        USER_BAN_REASON.SESSION_REPORTED
+      )
     }
 
     MailService.sendReportedSessionAlert({

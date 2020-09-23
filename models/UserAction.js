@@ -53,7 +53,8 @@ const userActionSchema = new mongoose.Schema({
       USER_ACTION.ACCOUNT.DELETED_REFERENCE,
       USER_ACTION.ACCOUNT.SUBMITTED_REFERENCE_FORM,
       USER_ACTION.ACCOUNT.REJECTED_PHOTO_ID,
-      USER_ACTION.ACCOUNT.REJECTED_REFERENCE
+      USER_ACTION.ACCOUNT.REJECTED_REFERENCE,
+      USER_ACTION.ACCOUNT.BANNED
     ]
   },
   quizCategory: String,
@@ -64,7 +65,8 @@ const userActionSchema = new mongoose.Schema({
   operatingSystem: String,
   operatingSystemVersion: String,
   ipAddress: String,
-  referenceEmail: String
+  referenceEmail: String,
+  banReason: String
 })
 
 module.exports = mongoose.model('UserAction', userActionSchema)
