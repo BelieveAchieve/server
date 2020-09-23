@@ -372,7 +372,12 @@ module.exports = function(socketService) {
             $addFields: {
               showSession: {
                 $cond: {
-                  if: { $eq: ['$lastBannedAt', undefined] },
+                  if: {
+                    $or: [
+                      { $eq: ['$lastBannedAt', undefined] },
+                      { $eq: ['$student.isBanned', false] }
+                    ]
+                  },
                   then: true,
                   else: {
                     $cond: [
