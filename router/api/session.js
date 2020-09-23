@@ -7,6 +7,7 @@ const UserActionCtrl = require('../../controllers/UserActionCtrl')
 const SocketService = require('../../services/SocketService')
 const SessionService = require('../../services/SessionService')
 const AwsService = require('../../services/AwsService')
+const QuillDocService = require('../../services/QuillDocService')
 const recordIpAddress = require('../../middleware/record-ip-address')
 const passport = require('../auth/passport')
 const mapMultiWordSubtopic = require('../../utils/map-multi-word-subtopic')
@@ -217,6 +218,11 @@ module.exports = function(router, io) {
         .select('+quillDoc')
         .lean()
         .exec()
+
+      if (session.type === 'college' && !session.endedAt) {
+        const quillDoc = await QuillDocService.getDoc(session._id.toString())
+        session.quillDoc = JSON.stringify(quillDoc)
+      }
 
       const sessionUserAgent = await UserAction.findOne({
         session: sessionId,
