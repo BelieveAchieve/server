@@ -323,3 +323,8 @@ export const FORMAT_ALGEBRA = {
   [MATH_SUBJECTS.ALGEBRA_ONE]: 'Algebra 1',
   [MATH_SUBJECTS.ALGEBRA_TWO]: 'Algebra 2'
 };
+
+export enum SURVEY_TYPES {
+  STUDENT_PRESESSION = 'student pre-session',
+  STUDENT_POSTSESSION = 'student post-session'
+}
