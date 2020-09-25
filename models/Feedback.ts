@@ -46,6 +46,29 @@ const feedbackSchema = new Schema({
    *    coach-friendly: number,
    *    coach-help-again: number
    * }
+   * session-experience: {
+   *    easy-to-answer-questions: number,
+   *    feel-like-helped-student: number,
+   *    feel-more-fulfilled: number,
+   *    good-use-of-time: number,
+   *    plan-on-volunteering-again: number
+   * }
+   * rate-upchieve: {
+   *    achieve-goal: number,
+   *    easy-to-use: number,
+   *    get-help-faster: number,
+   *    use-next-time: number,
+   * }
+   * rate-coach: {
+   *    achieve-goal: number,
+   *    find-help: number,
+   *    knowledgeable: number,
+   *    nice: number,
+   *    want-him/her-again: number,
+   * }
+   * technical-difficulties,
+   * asked-unprepared-questions: string,
+   * app-features-needed: string
    *
    */
   responseData: {
