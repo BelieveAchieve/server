@@ -36,12 +36,11 @@ const feedbackSchema = new Schema({
    * session-goal: number | string (legacy)
    * subject-understanding: number
    * coach-rating: number
-   * coach-ratings - (legacy)
    * favorite-coach: boolean
-   * other-feedback
-   * coach-feedback
+   * other-feedback: string
+   * coach-feedback: string
    * session-rating: { rating: number }
-   * coach-ratings: {
+   * coach-ratings: (legacy) {
    *    coach-knowedgable: number,
    *    coach-friendly: number,
    *    coach-help-again: number
@@ -66,7 +65,7 @@ const feedbackSchema = new Schema({
    *    nice: number,
    *    want-him/her-again: number,
    * }
-   * technical-difficulties,
+   * technical-difficulties: string,
    * asked-unprepared-questions: string,
    * app-features-needed: string
    *
