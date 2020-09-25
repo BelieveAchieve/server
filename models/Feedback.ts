@@ -30,6 +30,19 @@ const feedbackSchema = new Schema({
     default: ''
   },
 
+  /**
+   * Keys found in responseData
+   *
+   * session-goal: number
+   * subject-understanding: number
+   * coach-rating: number
+   * coach-ratings - (legacy)
+   * favorite-coach: boolean
+   * other-feedback
+   * coach-feedback
+   * session-rating: { rating: number }
+   *
+   */
   responseData: {
     type: Object,
     default: ''
