@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import SurveyModel, { Survey, SurveyDocument } from '../models/Survey';
 import { User } from '../models/types';
 import { SURVEY_TYPES } from '../constants';
@@ -14,4 +15,14 @@ export const savePresessionSurvey = async (data: {
     responseData: data.responseData
   });
   return survey.save();
+};
+
+export const getPresessionSurvey = async (query: {
+  session?: Types.ObjectId;
+  user?: Types.ObjectId;
+  suveryType?: string;
+}): Promise<Survey> => {
+  return SurveyModel.findOne(query)
+    .lean()
+    .exec();
 };
