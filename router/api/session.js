@@ -205,7 +205,7 @@ module.exports = function(router, io) {
     }
   })
 
-  router.get('/session/:sessionId', passport.isAdmin, async function(
+  router.get('/session/:sessionId/admin', passport.isAdmin, async function(
     req,
     res,
     next
@@ -240,6 +240,53 @@ module.exports = function(router, io) {
         bucket: 'sessionPhotoBucket',
         s3Keys: session.photos
       })
+
+      res.json({ session })
+    } catch (err) {
+      console.log(err)
+      next(err)
+    }
+  })
+
+  router.get('/session/:sessionId', async function(req, res, next) {
+    const { sessionId } = req.params
+
+    try {
+      const [session] = await Session.aggregate([
+        { $match: { _id: ObjectId(sessionId) } },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'student',
+            foreignField: '_id',
+            as: 'student'
+          }
+        },
+        {
+          $unwind: '$student'
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'volunteer',
+            foreignField: '_id',
+            as: 'volunteer'
+          }
+        },
+        {
+          $unwind: '$volunteer'
+        },
+        {
+          $project: {
+            student: '$student.firstname',
+            volunteer: '$volunteer.firstname',
+            type: 1,
+            subTopic: 1,
+            createdAt: 1,
+            endedAt: 1
+          }
+        }
+      ])
 
       res.json({ session })
     } catch (err) {
