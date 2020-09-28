@@ -294,7 +294,7 @@ export const usageReport = async ({
     {
       $lookup: {
         from: 'feedbacks',
-        let: { studentId: { $toString: '$_id' } },
+        let: { studentId: '$_id' },
         pipeline: [
           {
             $match: {
