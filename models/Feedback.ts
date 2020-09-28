@@ -33,14 +33,13 @@ const feedbackSchema = new Schema({
    * Keys found in responseData
    *
    * session-goal: number
-   * session-goal: string (legacy)
+   * session-goal: string (legacy. only in college sessions currently)
    * subject-understanding: number
    * coach-rating: number
-   * favorite-coach: boolean
    * other-feedback: string
    * coach-feedback: string
    * session-rating: { rating: number }
-   * coach-ratings: (legacy) {
+   * coach-ratings: (legacy. only in college session currently) {
    *    coach-knowedgable: number,
    *    coach-friendly: number,
    *    coach-help-again: number
