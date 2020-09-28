@@ -2,13 +2,13 @@ import { Document, model, Schema, Types } from 'mongoose';
 
 export interface Feedback {
   _id: Types.ObjectId;
-  sessionId: string;
+  sessionId: Types.ObjectId;
   type: string;
   subTopic: string;
   responseData: { [key: string]: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
   userType: string;
-  studentId: string;
-  volunteerId: string;
+  studentId: Types.ObjectId;
+  volunteerId: Types.ObjectId;
   createdAt: Date;
 }
 
@@ -16,8 +16,7 @@ export type FeedbackDocument = Feedback & Document;
 
 const feedbackSchema = new Schema({
   sessionId: {
-    type: String,
-    default: ''
+    type: Types.ObjectId
   },
 
   type: {
@@ -33,7 +32,8 @@ const feedbackSchema = new Schema({
   /**
    * Keys found in responseData
    *
-   * session-goal: number | string (legacy)
+   * session-goal: number
+   * session-goal: string (legacy)
    * subject-understanding: number
    * coach-rating: number
    * favorite-coach: boolean
@@ -59,7 +59,7 @@ const feedbackSchema = new Schema({
    *    use-next-time: number,
    * }
    * rate-coach: {
-   *    achieve-goal: number,
+   *    achieve-goal: number
    *    find-help: number,
    *    knowledgeable: number,
    *    nice: number,
@@ -81,13 +81,11 @@ const feedbackSchema = new Schema({
   },
 
   studentId: {
-    type: String,
-    default: ''
+    type: Types.ObjectId
   },
 
   volunteerId: {
-    type: String,
-    default: ''
+    type: Types.ObjectId
   },
 
   createdAt: {
