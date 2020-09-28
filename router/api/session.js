@@ -252,42 +252,7 @@ module.exports = function(router, io) {
     const { sessionId } = req.params
 
     try {
-      const [session] = await Session.aggregate([
-        { $match: { _id: ObjectId(sessionId) } },
-        {
-          $lookup: {
-            from: 'users',
-            localField: 'student',
-            foreignField: '_id',
-            as: 'student'
-          }
-        },
-        {
-          $unwind: '$student'
-        },
-        {
-          $lookup: {
-            from: 'users',
-            localField: 'volunteer',
-            foreignField: '_id',
-            as: 'volunteer'
-          }
-        },
-        {
-          $unwind: '$volunteer'
-        },
-        {
-          $project: {
-            student: '$student.firstname',
-            volunteer: '$volunteer.firstname',
-            type: 1,
-            subTopic: 1,
-            createdAt: 1,
-            endedAt: 1
-          }
-        }
-      ])
-
+      const [session] = await SessionService.getPublicSession(sessionId)
       res.json({ session })
     } catch (err) {
       console.log(err)
