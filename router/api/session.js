@@ -205,7 +205,7 @@ module.exports = function(router, io) {
     }
   })
 
-  router.get('/session/:sessionId', passport.isAdmin, async function(
+  router.get('/session/:sessionId/admin', passport.isAdmin, async function(
     req,
     res,
     next
@@ -241,6 +241,18 @@ module.exports = function(router, io) {
         s3Keys: session.photos
       })
 
+      res.json({ session })
+    } catch (err) {
+      console.log(err)
+      next(err)
+    }
+  })
+
+  router.get('/session/:sessionId', async function(req, res, next) {
+    const { sessionId } = req.params
+
+    try {
+      const [session] = await SessionService.getPublicSession(sessionId)
       res.json({ session })
     } catch (err) {
       console.log(err)

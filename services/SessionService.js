@@ -7,6 +7,7 @@ const UserService = require('./UserService')
 const MailService = require('./MailService')
 const { USER_BAN_REASON, SESSION_REPORT_REASON } = require('../constants')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
+const ObjectId = require('mongodb').ObjectId
 
 const addPastSession = async ({ userId, sessionId }) => {
   await User.update({ _id: userId }, { $addToSet: { pastSessions: sessionId } })
@@ -128,5 +129,43 @@ module.exports = {
       { $push: { photos: sessionPhotoS3Key } }
     )
     return sessionPhotoS3Key
+  },
+
+  getPublicSession: async sessionId => {
+    return Session.aggregate([
+      { $match: { _id: ObjectId(sessionId) } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'student',
+          foreignField: '_id',
+          as: 'student'
+        }
+      },
+      {
+        $unwind: '$student'
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'volunteer',
+          foreignField: '_id',
+          as: 'volunteer'
+        }
+      },
+      {
+        $unwind: '$volunteer'
+      },
+      {
+        $project: {
+          student: '$student.firstname',
+          volunteer: '$volunteer.firstname',
+          type: 1,
+          subTopic: 1,
+          createdAt: 1,
+          endedAt: 1
+        }
+      }
+    ])
   }
 }

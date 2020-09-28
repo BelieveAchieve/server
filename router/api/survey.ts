@@ -16,4 +16,19 @@ module.exports = function(router) {
       next(error);
     }
   });
+
+  router.get('/survey/presession/:sessionId', async (req, res, next) => {
+    const { user } = req;
+    const { sessionId } = req.params;
+
+    try {
+      const survey = await SurveyService.getPresessionSurvey({
+        user,
+        session: sessionId
+      });
+      res.json({ survey });
+    } catch (error) {
+      next(error);
+    }
+  });
 };

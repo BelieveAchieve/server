@@ -251,14 +251,13 @@ module.exports = function(socketService) {
               },
               createdAtEstTime: {
                 $subtract: ['$createdAt', estTimeOffset]
-              },
-              stringSessionId: { $toString: '$_id' }
+              }
             }
           },
           {
             $lookup: {
               from: 'feedbacks',
-              localField: 'stringSessionId',
+              localField: '_id',
               foreignField: 'sessionId',
               as: 'feedbacks'
             }
