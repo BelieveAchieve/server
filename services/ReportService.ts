@@ -122,13 +122,13 @@ export const sessionReport = async ({
     },
     {
       $addFields: {
-        stringSessionId: { $toString: '$session._id' }
+        sessionId: '$session._id'
       }
     },
     {
       $lookup: {
         from: 'feedbacks',
-        localField: 'stringSessionId',
+        localField: 'sessionId',
         foreignField: 'sessionId',
         as: 'feedbacks'
       }
