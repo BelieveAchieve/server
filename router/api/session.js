@@ -119,18 +119,29 @@ module.exports = function(router, io) {
     const data = req.body || {}
     const userId = ObjectId(data.user_id)
 
-    try {
-      const currentSession = await Session.current(userId)
-      if (!currentSession) {
-        res.status(404).json({ err: 'No current session' })
-      } else {
-        res.json({
-          sessionId: currentSession._id,
-          data: currentSession
-        })
-      }
-    } catch (err) {
-      next(err)
+    const currentSessionFilter = {
+      $and: [
+        { endedAt: { $exists: false } },
+        {
+          $or: [{ student: userId }, { volunteer: userId }]
+        }
+      ]
+    }
+
+    const currentSession = await Session.findOne(currentSessionFilter)
+      .sort({ createdAt: -1 })
+      .populate({ path: 'volunteer', select: 'firstname isVolunteer' })
+      .populate({ path: 'student', select: 'firstname isVolunteer' })
+      .lean()
+      .exec()
+
+    if (!currentSession) {
+      res.status(404).json({ err: 'No current session' })
+    } else {
+      res.json({
+        sessionId: currentSession._id,
+        data: currentSession
+      })
     }
   })
 

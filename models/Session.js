@@ -169,28 +169,6 @@ sessionSchema.methods.addNotifications = function(notificationsToAdd, cb) {
     .exec(cb)
 }
 
-sessionSchema.statics.findLatest = function(attrs, cb) {
-  return this.find(attrs)
-    .sort({ createdAt: -1 })
-    .limit(1)
-    .findOne()
-    .populate({ path: 'volunteer', select: 'firstname isVolunteer' })
-    .populate({ path: 'student', select: 'firstname isVolunteer' })
-    .exec(cb)
-}
-
-// user's current session
-sessionSchema.statics.current = function(userId, cb) {
-  return this.findLatest({
-    $and: [
-      { endedAt: { $exists: false } },
-      {
-        $or: [{ student: userId }, { volunteer: userId }]
-      }
-    ]
-  })
-}
-
 // sessions that have not yet been fulfilled by a volunteer
 sessionSchema.statics.getUnfulfilledSessions = async function() {
   const queryAttrs = {
