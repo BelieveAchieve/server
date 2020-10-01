@@ -47,6 +47,11 @@ module.exports = {
         userId: session.student,
         banReason: USER_BAN_REASON.SESSION_REPORTED
       })
+      MailService.sendBannedUserAlert({
+        userId: session.student,
+        banReason: USER_BAN_REASON.SESSION_REPORTED,
+        sessionId: session._id
+      })
       UserActionCtrl.accountBanned(
         session.student,
         session._id,

@@ -223,6 +223,25 @@ module.exports = {
     )
   },
 
+  sendBannedUserAlert: ({ userId, banReason, sessionId }) => {
+    const userAdminLink = buildLink(`admin/users/${userId}`)
+    const sessionAdminLink = buildLink(`admin/sessions/${sessionId}`)
+    return sendEmail(
+      config.mail.receivers.staff,
+      config.mail.senders.noreply,
+      'UPchieve',
+      config.sendgrid.bannedUserAlertTemplate,
+      {
+        userId,
+        banReason,
+        sessionId,
+        userAdminLink,
+        sessionAdminLink
+      },
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
   createContact: async user => {
     const customFields = {
       [SG_CUSTOM_FIELDS.isBanned]: String(user.isBanned),

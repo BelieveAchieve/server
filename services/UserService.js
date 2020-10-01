@@ -6,7 +6,7 @@ const Student = require('../models/Student')
 const MailService = require('./MailService')
 const IpAddressService = require('./IpAddressService')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
-const { PHOTO_ID_STATUS, REFERENCE_STATUS, STATUS } = require('../constants')
+const { PHOTO_ID_STATUS, REFERENCE_STATUS, STATUS, USER_BAN_REASON } = require('../constants')
 const config = require('../config')
 
 const getVolunteer = async volunteerId => {
@@ -274,6 +274,12 @@ module.exports = {
     if (!isVolunteer && userBeforeUpdate.isBanned && !isBanned)
       await IpAddressService.unbanUserIps(userBeforeUpdate)
 
+    if (!isVolunteer && !userBeforeUpdate.isBanned && isBanned)
+      MailService.sendBannedUserAlert({
+        userId,
+        banReason: USER_BAN_REASON.ADMIN
+      })
+
     const update = {
       firstname: firstName,
       lastname: lastName,
@@ -297,6 +303,8 @@ module.exports = {
       if (partnerSite) update.partnerSite = partnerSite
       else update.$unset.partnerSite = ''
     }
+
+    if (isBanned) update.banReason = USER_BAN_REASON.ADMIN
 
     // Remove $unset property if it has no properties to remove
     if (Object.keys(update.$unset).length === 0) delete update.$unset
