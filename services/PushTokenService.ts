@@ -1,7 +1,29 @@
-const admin = require('firebase-admin')
+import { messaging } from 'firebase-admin'
+import { Types } from 'mongoose'
 
-const sendToUser = ({ title, text, data, tokens }) => {
-  return admin.messaging().sendMulticast({
+// This interface feels cleaner than inlining it in the
+// sendToUser definition
+interface sendToUserData {
+  title: string
+  text: string
+  data: {
+    path: string
+  }
+  tokens: string[]
+}
+
+// Until the Session model is converted to TS,
+// we need to represent the parts of it used in
+// sendToVolunteer() here. When that model conversion
+// is done, this can be refactored to use that model directly.
+interface Session {
+  type: string
+  subTopic: string
+  _id: Types.ObjectId
+}
+
+const sendToUser = ({ title, text, data, tokens }: sendToUserData) => {
+  return messaging().sendMulticast({
     tokens, // can also send to a topic (group of people)
     // ios and android process data a little differently, so setup separate objects for each
     apns: {
@@ -21,7 +43,10 @@ const sendToUser = ({ title, text, data, tokens }) => {
       )
     },
     android: {
-      priority: 1,
+      // TS says this needs to be a string,
+      // of 'high' | 'normal'
+      // Guessing that 1 is equivalent with 'high'
+      priority: 'high',
       data: {
         title: title,
         body: text,
@@ -37,8 +62,8 @@ const sendToUser = ({ title, text, data, tokens }) => {
   })
 }
 
-module.exports = {
-  sendVolunteerJoined: async function(session, tokens) {
+export default {
+  sendVolunteerJoined: async function(session: Session, tokens: string[]) {
     const { type, subTopic, _id } = session
     const data = {
       title: 'We found a volunteer!',
