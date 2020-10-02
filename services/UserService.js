@@ -274,7 +274,7 @@ module.exports = {
     if (!isVolunteer && userBeforeUpdate.isBanned && !isBanned)
       await IpAddressService.unbanUserIps(userBeforeUpdate)
 
-    if (!isVolunteer && !userBeforeUpdate.isBanned && isBanned)
+    if (!userBeforeUpdate.isBanned && isBanned)
       MailService.sendBannedUserAlert({
         userId,
         banReason: USER_BAN_REASON.ADMIN
