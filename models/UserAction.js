@@ -25,7 +25,8 @@ const userActionSchema = new mongoose.Schema({
     enum: [
       USER_ACTION.TYPE.QUIZ,
       USER_ACTION.TYPE.SESSION,
-      USER_ACTION.TYPE.ACCOUNT
+      USER_ACTION.TYPE.ACCOUNT,
+      USER_ACTION.TYPE.ADMIN
     ]
   },
   // Specific action

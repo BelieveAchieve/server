@@ -79,6 +79,16 @@ const createAccountAction = async (
   return userActionDoc.save()
 }
 
+const createAdminAction = async (userId, action, options = {}) => {
+  const userActionDoc = new UserAction({
+    user: userId,
+    actionType: USER_ACTION.TYPE.ADMIN,
+    action,
+    ...options
+  })
+  return userActionDoc.save()
+}
+
 const startedQuiz = (userId, quizCategory, ipAddress) => {
   return createQuizAction(
     userId,
@@ -254,6 +264,9 @@ const rejectedReference = (userId, options) =>
     options
   )
 
+const adminDeactivatedAccount = userId =>
+  createAdminAction(userId, USER_ACTION.ACCOUNT.DEACTIVATED)
+
 module.exports = {
   startedQuiz,
   passedQuiz,
@@ -278,5 +291,6 @@ module.exports = {
   accountDeactivated,
   submittedReferenceForm,
   rejectedPhotoId,
-  rejectedReference
+  rejectedReference,
+  adminDeactivatedAccount
 }

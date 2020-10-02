@@ -39,7 +39,8 @@ export const USER_ACTION = {
   TYPE: {
     QUIZ: 'QUIZ',
     SESSION: 'SESSION',
-    ACCOUNT: 'ACCOUNT'
+    ACCOUNT: 'ACCOUNT',
+    ADMIN: 'ADMIN'
   },
   QUIZ: {
     STARTED: 'STARTED QUIZ',
