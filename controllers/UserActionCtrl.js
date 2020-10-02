@@ -232,6 +232,9 @@ const accountBanned = (userId, sessionId, banReason) =>
     banReason
   })
 
+const accountDeactivated = (userId, ipAddress) =>
+  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.DEACTIVATED)
+
 const submittedReferenceForm = (userId, ipAddress, options) =>
   createAccountAction(
     userId,
@@ -272,6 +275,7 @@ module.exports = {
   accountApproved,
   accountOnboarded,
   accountBanned,
+  accountDeactivated,
   submittedReferenceForm,
   rejectedPhotoId,
   rejectedReference

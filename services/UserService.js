@@ -298,6 +298,9 @@ module.exports = {
       else update.$unset.partnerSite = ''
     }
 
+    if (isDeactivated && !userBeforeUpdate.isDeactivated)
+      UserActionCtrl.accountDeactivated(userId)
+
     // Remove $unset property if it has no properties to remove
     if (Object.keys(update.$unset).length === 0) delete update.$unset
 
