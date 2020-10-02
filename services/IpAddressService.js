@@ -75,6 +75,9 @@ module.exports = {
     // Ban user if IP banned
     if (ipAddress.status === IP_ADDRESS_STATUS.BANNED && !user.isBanned) {
       didBanUser = true
+      const updatedUser = Object.assign(user, { isBanned: true })
+      // Update user in the SendGrid contact list with banned status
+      MailService.createContact(updatedUser)
       MailService.sendBannedUserAlert({
         userId: user._id,
         banReason: USER_BAN_REASON.BANNED_IP

@@ -57,6 +57,9 @@ module.exports = {
         session._id,
         USER_BAN_REASON.SESSION_REPORTED
       )
+      const student = await UserService.getUser({ _id: session.student })
+      // Update user in the SendGrid contact list with banned status
+      MailService.createContact(student)
     }
 
     MailService.sendReportedSessionAlert({
