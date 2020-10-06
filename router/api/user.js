@@ -19,21 +19,6 @@ module.exports = function(router) {
     return res.json({ user: parsedUser })
   })
 
-  router.route('/user/volunteer-stats').get(async function(req, res, next) {
-    if (!req.user) {
-      return res.status(401).json({
-        err: 'Client has no authenticated session'
-      })
-    }
-
-    try {
-      const volunteerStats = await UserCtrl.getVolunteerStats(req.user)
-      res.json({ volunteerStats })
-    } catch (error) {
-      return next(error)
-    }
-  })
-
   // @note: Currently, only volunteers are able to update their profile
   router.put('/user', async (req, res, next) => {
     const { _id } = req.user
