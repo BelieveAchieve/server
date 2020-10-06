@@ -22,9 +22,7 @@ const calculateHoursTutored = async session => {
   const { volunteerJoinedAt, endedAt, messages, volunteer } = session
   if (!volunteer) return 0
   if (!(volunteerJoinedAt && endedAt)) return 0
-  // console.log('message sent?')
   // skip if no messages are sent
-  // console.log('the sesison bro', session)
   if (messages.length === 0) return 0
 
   const volunteerJoinDate = new Date(volunteerJoinedAt)
@@ -78,8 +76,10 @@ module.exports = {
 
   parseUser: user => {
     // Approved volunteer
-    if (user.isVolunteer && user.isApproved)
+    if (user.isVolunteer && user.isApproved) {
+      user.hoursTutored = user.hoursTutored.toString()
       return omit(user, ['references', 'photoIdS3Key', 'photoIdStatus'])
+    }
 
     // Student or unapproved volunteer
     return user
