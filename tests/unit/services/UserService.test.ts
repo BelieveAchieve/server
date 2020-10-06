@@ -526,8 +526,8 @@ describe('updateHoursTutored', () => {
       { _id: volunteer._id },
       { hoursTutored: 1 }
     );
-    const expectedHoursTutored = 2.08;
-    expect(hoursTutored).toEqual(expectedHoursTutored);
+    const expectedHoursTutored = '2.08';
+    expect(hoursTutored.toString()).toEqual(expectedHoursTutored);
   });
 
   // When sessions are greater than 3 hours, use the last messages that were sent
@@ -564,7 +564,7 @@ describe('updateHoursTutored', () => {
       { _id: volunteer._id },
       { hoursTutored: 1 }
     );
-    const expectedHoursTutored = 3.98;
-    expect(hoursTutored).toEqual(expectedHoursTutored);
+    const expectedHoursTutored = '3.98';
+    expect(hoursTutored.toString()).toEqual(expectedHoursTutored);
   });
 });
