@@ -15,6 +15,7 @@ const { USER_ACTION } = require('../../constants')
 const NotificationService = require('../../services/NotificationService')
 const UserAction = require('../../models/UserAction')
 const config = require('../../config')
+const UserService = require('../../services/UserService')
 
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
@@ -67,6 +68,7 @@ module.exports = function(router, io) {
         sessionId,
         endedBy: user
       })
+      await UserService.updateHoursTutored(sessionId)
       socketService.emitSessionChange(sessionId)
       UserActionCtrl.endedSession(
         user._id,
