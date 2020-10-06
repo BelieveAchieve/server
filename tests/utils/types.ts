@@ -74,6 +74,7 @@ export interface Volunteer extends User {
   subjects: Array<string>;
   trainingCourses: TrainingCourses;
   sentReadyToCoachEmail: boolean;
+  hoursTutored: number;
 }
 
 export interface StudentRegistrationForm extends Student {

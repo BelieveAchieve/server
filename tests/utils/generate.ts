@@ -12,6 +12,7 @@ import {
   COLLEGE_CERTS,
   SAT_CERTS
 } from '../../constants';
+import { Message } from '../../models/Message';
 import {
   User,
   Volunteer,
@@ -159,6 +160,7 @@ export const buildVolunteer = (overrides = {}): Volunteer => {
     subjects: [],
     trainingCourses: buildTrainingCourses(),
     sentReadyToCoachEmail: false,
+    hoursTutored: 0,
     ...overrides
   };
 
@@ -287,6 +289,19 @@ export const buildSession = (overrides = {}): Partial<Session> => {
   };
 
   return session;
+};
+
+export const buildMessage = (overrides = {}): Partial<Message> => {
+  const _id = Types.ObjectId();
+  const message = {
+    _id,
+    user: null,
+    contents: faker.lorem.sentence(),
+    createdAt: new Date(),
+    ...overrides
+  };
+
+  return message;
 };
 
 export const authLogin = (agent, { email, password }: Partial<User>): Test =>
