@@ -209,7 +209,7 @@ const volunteerSchema = new mongoose.Schema(
       default: availabilitySchema
     },
     timezone: String,
-    hoursTutored: { type: Number, default: 0 },
+    hoursTutored: { type: mongoose.Types.Decimal128, default: 0 },
     availabilityLastModifiedAt: { type: Date },
     elapsedAvailability: { type: Number, default: 0 },
     sentReadyToCoachEmail: {
