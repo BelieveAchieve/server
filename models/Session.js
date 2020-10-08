@@ -196,7 +196,7 @@ sessionSchema.statics.getUnfulfilledSessions = async function() {
   const queryAttrs = {
     volunteerJoinedAt: { $exists: false },
     endedAt: { $exists: false },
-    createdAt: { $gt: new Date(Date.now() - 24*60*60 * 1000) }
+    createdAt: { $gt: new Date(Date.now() - 24 * 60 * 60 * 1000) }
   }
 
   const sessions = await this.find(queryAttrs)
