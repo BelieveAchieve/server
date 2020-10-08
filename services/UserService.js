@@ -305,6 +305,8 @@ module.exports = {
     }
 
     if (isBanned) update.banReason = USER_BAN_REASON.ADMIN
+    if (isDeactivated && !userBeforeUpdate.isDeactivated)
+      UserActionCtrl.adminDeactivatedAccount(userId)
 
     // Remove $unset property if it has no properties to remove
     if (Object.keys(update.$unset).length === 0) delete update.$unset
