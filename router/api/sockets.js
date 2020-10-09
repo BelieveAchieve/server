@@ -119,5 +119,13 @@ module.exports = function(io, sessionStore) {
       console.log('Socket error: ', error)
       Sentry.captureException(error)
     })
+
+    socket.on('resetWhiteboard', async ({ sessionId }) => {
+      socketService.emitToOtherUser(
+        sessionId,
+        socket.request.user._id,
+        'resetWhiteboard'
+      )
+    })
   })
 }

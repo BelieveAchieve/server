@@ -1,10 +1,12 @@
 const UserCtrl = require('../../controllers/UserCtrl')
 const UserService = require('../../services/UserService')
+const MailService = require('../../services/MailService')
 const AwsService = require('../../services/AwsService')
 const User = require('../../models/User')
 const Volunteer = require('../../models/Volunteer')
 const passport = require('../auth/passport')
 const config = require('../../config')
+const UserActionCtrl = require('../../controllers/UserActionCtrl')
 
 module.exports = function(router) {
   router.route('/user').get(function(req, res) {
@@ -35,11 +37,19 @@ module.exports = function(router) {
 
   // @note: Currently, only volunteers are able to update their profile
   router.put('/user', async (req, res, next) => {
+    const { ip } = req
     const { _id } = req.user
-    const { phone } = req.body
+    const { phone, isDeactivated } = req.body
+
+    if (isDeactivated !== req.user.isDeactivated) {
+      const updatedUser = Object.assign(req.user, { isDeactivated })
+      MailService.createContact(updatedUser)
+
+      if (isDeactivated) UserActionCtrl.accountDeactivated(_id, ip)
+    }
 
     try {
-      await Volunteer.updateOne({ _id }, { phone })
+      await Volunteer.updateOne({ _id }, { phone, isDeactivated })
       res.sendStatus(200)
     } catch (err) {
       next(err)

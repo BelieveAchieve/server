@@ -21,6 +21,7 @@ module.exports = function(app, sessionStore) {
   require('./moderate')(router)
   require('./push-token')(router)
   require('./reports')(router)
+  require('./survey')(router)
 
   app.use(addLastActivity)
   app.use(addUserAction)

@@ -98,6 +98,7 @@ export const courses: TrainingCourse[] = [
           },
           {
             name: "Additional resources",
+            description: "This is a set of articles we recommend reading that can help deepen your understanding of why a platform like UPchieve is so important to low-income students.",
             materialKey: "90d731",
             type: MaterialType.RESOURCES,
             isRequired: false,
@@ -257,6 +258,7 @@ export const courses: TrainingCourse[] = [
           },
           {
             name: "Complete implicit bias training",
+            description: "The Kirwan Institute for the Study of Ethnicity and Race at The Ohio State University has a 4-part module series about implicit bias and its impact on students. Please complete at least Modules 1 and 2 for this training.",
             materialKey: "k3k37t",
             type: MaterialType.LINK,
             isRequired: true,
@@ -273,6 +275,7 @@ export const courses: TrainingCourse[] = [
           },
           {
             name: "Additional resources",
+            description: "The following resources are all optional, but we highly encourage you to go through them and learn as much as you can. These are important considerations to have during our day-to-day interactions, not just during a tutoring session!",
             materialKey: "g34kfx",
             type: MaterialType.RESOURCES,
             isRequired: false,

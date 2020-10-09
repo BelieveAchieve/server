@@ -54,6 +54,7 @@ const getNextVolunteer = async ({ subtopic, priorityFilter = {} }) => {
     phone: { $exists: true },
     isTestUser: false,
     isFakeUser: false,
+    isDeactivated: false,
     isFailsafeVolunteer: false,
     ...priorityFilter
   }

@@ -31,6 +31,7 @@ export const Config = Record({
     approvedNotOnboardedTemplate: String,
     openReadyToCoachTemplate: String,
     partnerReadyToCoachTemplate: String,
+    bannedUserAlertTemplate: String,
     unsubscribeGroup: Record({
       newsletter: Number,
       account: Number

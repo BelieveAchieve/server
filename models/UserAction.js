@@ -25,7 +25,8 @@ const userActionSchema = new mongoose.Schema({
     enum: [
       USER_ACTION.TYPE.QUIZ,
       USER_ACTION.TYPE.SESSION,
-      USER_ACTION.TYPE.ACCOUNT
+      USER_ACTION.TYPE.ACCOUNT,
+      USER_ACTION.TYPE.ADMIN
     ]
   },
   // Specific action
@@ -53,7 +54,9 @@ const userActionSchema = new mongoose.Schema({
       USER_ACTION.ACCOUNT.DELETED_REFERENCE,
       USER_ACTION.ACCOUNT.SUBMITTED_REFERENCE_FORM,
       USER_ACTION.ACCOUNT.REJECTED_PHOTO_ID,
-      USER_ACTION.ACCOUNT.REJECTED_REFERENCE
+      USER_ACTION.ACCOUNT.REJECTED_REFERENCE,
+      USER_ACTION.ACCOUNT.BANNED,
+      USER_ACTION.ACCOUNT.DEACTIVATED
     ]
   },
   quizCategory: String,
@@ -64,7 +67,8 @@ const userActionSchema = new mongoose.Schema({
   operatingSystem: String,
   operatingSystemVersion: String,
   ipAddress: String,
-  referenceEmail: String
+  referenceEmail: String,
+  banReason: String
 })
 
 module.exports = mongoose.model('UserAction', userActionSchema)

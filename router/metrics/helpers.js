@@ -1,6 +1,5 @@
 const _ = require('lodash')
 const moment = require('moment')
-const ObjectId = require('mongoose').Types.ObjectId
 
 const Feedback = require('../../models/Feedback')
 const Session = require('../../models/Session')
@@ -106,8 +105,8 @@ async function getFeedbackStats(userType, options) {
     .lean()
 
   const feedbacksWithExtras = _.map(feedbacks, feedback => {
-    const student = _.find(allUsers, { _id: ObjectId(feedback.studentId) })
-    const volunteer = _.find(allUsers, { _id: ObjectId(feedback.volunteerId) })
+    const student = _.find(allUsers, { _id: feedback.studentId })
+    const volunteer = _.find(allUsers, { _id: feedback.volunteerId })
     return _.defaults(
       {
         studentPartnerOrg: student && student.studentPartnerOrg,

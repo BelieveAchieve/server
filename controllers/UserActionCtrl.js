@@ -79,6 +79,16 @@ const createAccountAction = async (
   return userActionDoc.save()
 }
 
+const createAdminAction = async (userId, action, options = {}) => {
+  const userActionDoc = new UserAction({
+    user: userId,
+    actionType: USER_ACTION.TYPE.ADMIN,
+    action,
+    ...options
+  })
+  return userActionDoc.save()
+}
+
 const startedQuiz = (userId, quizCategory, ipAddress) => {
   return createQuizAction(
     userId,
@@ -226,6 +236,15 @@ const accountApproved = (userId, ipAddress) =>
 const accountOnboarded = (userId, ipAddress) =>
   createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.ONBOARDED)
 
+const accountBanned = (userId, sessionId, banReason) =>
+  createAccountAction(userId, '', USER_ACTION.ACCOUNT.BANNED, {
+    session: sessionId,
+    banReason
+  })
+
+const accountDeactivated = (userId, ipAddress) =>
+  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.DEACTIVATED)
+
 const submittedReferenceForm = (userId, ipAddress, options) =>
   createAccountAction(
     userId,
@@ -244,6 +263,9 @@ const rejectedReference = (userId, options) =>
     USER_ACTION.ACCOUNT.REJECTED_REFERENCE,
     options
   )
+
+const adminDeactivatedAccount = userId =>
+  createAdminAction(userId, USER_ACTION.ACCOUNT.DEACTIVATED)
 
 module.exports = {
   startedQuiz,
@@ -265,7 +287,10 @@ module.exports = {
   deletedReference,
   accountApproved,
   accountOnboarded,
+  accountBanned,
+  accountDeactivated,
   submittedReferenceForm,
   rejectedPhotoId,
-  rejectedReference
+  rejectedReference,
+  adminDeactivatedAccount
 }

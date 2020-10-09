@@ -26,6 +26,7 @@ const config: Static<typeof Config> = {
     approvedNotOnboardedTemplate: 'd-2c7a974fc7084a9eaaa152f3498cc99d',
     openReadyToCoachTemplate: 'd-09ec01c51be54c108b7fae4481acfd38',
     partnerReadyToCoachTemplate: 'd-d2ba9920683b4bd4a159f496a2346583',
+    bannedUserAlertTemplate: 'd-7be8a21a59664f99a1f540e43c79b793',
     unsubscribeGroup: {
       newsletter: 12567,
       account: 12570

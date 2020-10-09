@@ -7,6 +7,7 @@ const UserActionCtrl = require('../../controllers/UserActionCtrl')
 const SocketService = require('../../services/SocketService')
 const SessionService = require('../../services/SessionService')
 const AwsService = require('../../services/AwsService')
+const QuillDocService = require('../../services/QuillDocService')
 const recordIpAddress = require('../../middleware/record-ip-address')
 const passport = require('../auth/passport')
 const mapMultiWordSubtopic = require('../../utils/map-multi-word-subtopic')
@@ -204,7 +205,7 @@ module.exports = function(router, io) {
     }
   })
 
-  router.get('/session/:sessionId', passport.isAdmin, async function(
+  router.get('/session/:sessionId/admin', passport.isAdmin, async function(
     req,
     res,
     next
@@ -217,6 +218,11 @@ module.exports = function(router, io) {
         .select('+quillDoc')
         .lean()
         .exec()
+
+      if (session.type === 'college' && !session.endedAt) {
+        const quillDoc = await QuillDocService.getDoc(session._id.toString())
+        session.quillDoc = JSON.stringify(quillDoc)
+      }
 
       const sessionUserAgent = await UserAction.findOne({
         session: sessionId,
@@ -235,6 +241,18 @@ module.exports = function(router, io) {
         s3Keys: session.photos
       })
 
+      res.json({ session })
+    } catch (err) {
+      console.log(err)
+      next(err)
+    }
+  })
+
+  router.get('/session/:sessionId', async function(req, res, next) {
+    const { sessionId } = req.params
+
+    try {
+      const [session] = await SessionService.getPublicSession(sessionId)
       res.json({ session })
     } catch (err) {
       console.log(err)
