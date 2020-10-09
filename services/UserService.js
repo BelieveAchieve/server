@@ -6,8 +6,14 @@ const Student = require('../models/Student')
 const MailService = require('./MailService')
 const IpAddressService = require('./IpAddressService')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
-const { PHOTO_ID_STATUS, REFERENCE_STATUS, STATUS, USER_BAN_REASON } = require('../constants')
+const {
+  PHOTO_ID_STATUS,
+  REFERENCE_STATUS,
+  STATUS,
+  USER_BAN_REASON
+} = require('../constants')
 const config = require('../config')
+const ObjectId = require('mongodb').ObjectId
 
 const getVolunteer = async volunteerId => {
   return Volunteer.findOne({ _id: volunteerId })
@@ -381,5 +387,115 @@ module.exports = {
     } catch (error) {
       throw new Error(error.message)
     }
+  },
+
+  adminGetUser: async function(userId) {
+    const [user] = await User.aggregate([
+      {
+        $match: {
+          _id: ObjectId(userId)
+        }
+      },
+      {
+        $project: {
+          firstname: 1,
+          lastname: 1,
+          email: 1,
+          createdAt: 1,
+          studentPartnerOrg: 1,
+          volunteerPartnerOrg: 1,
+          approvedHighschool: 1,
+          pastSessions: { $slice: ['$pastSessions', -10, 10] }
+        }
+      },
+      {
+        $lookup: {
+          from: 'schools',
+          localField: 'approvedHighschool',
+          foreignField: '_id',
+          as: 'approvedHighschool'
+        }
+      },
+      {
+        $unwind: {
+          path: '$approvedHighschool',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: '$pastSessions',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: 'sessions',
+          let: {
+            sessionId: '$pastSessions'
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ['$_id', '$$sessionId']
+                }
+              }
+            },
+            {
+              $project: {
+                type: 1,
+                subTopic: 1,
+                numMessages: {
+                  $size: '$messages'
+                },
+                volunteer: 1,
+                student: 1,
+                volunteerJoinedAt: 1,
+                createdAt: 1,
+                endedAt: 1
+              }
+            }
+          ],
+          as: 'pastSessions'
+        }
+      },
+      {
+        $unwind: {
+          path: '$pastSessions',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $sort: {
+          'pastSessions.createdAt': -1
+        }
+      },
+      {
+        $group: {
+          _id: '$_id',
+          root: {
+            $mergeObjects: '$$ROOT'
+          },
+          pastSessions: {
+            $push: '$pastSessions'
+          }
+        }
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: ['$root', '$$ROOT']
+          }
+        }
+      },
+      {
+        $project: {
+          root: 0
+        }
+      }
+    ])
+
+    return user
   }
 }

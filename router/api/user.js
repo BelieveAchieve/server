@@ -160,17 +160,7 @@ module.exports = function(router) {
     const { userId } = req.params
 
     try {
-      const user = await User.findOne({ _id: userId })
-        .populate({
-          path: 'pastSessions',
-          options: {
-            sort: { createdAt: -1 },
-            limit: 50
-          }
-        })
-        .populate('approvedHighschool')
-        .lean()
-        .exec()
+      const user = await UserService.adminGetUser(userId)
 
       if (user.isVolunteer && user.photoIdS3Key)
         user.photoUrl = await AwsService.getPhotoIdUrl({
