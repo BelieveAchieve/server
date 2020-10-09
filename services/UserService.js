@@ -426,7 +426,7 @@ module.exports = {
               }
             }
           ],
-          sessions: [
+          pastSessions: [
             {
               $unwind: {
                 path: '$pastSessions'
@@ -470,28 +470,8 @@ module.exports = {
               }
             },
             {
-              $group: {
-                _id: '$_id',
-                root: {
-                  // $$ROOT - References the root document, i.e. the top-level document,
-                  // currently being processed in the aggregation pipeline stage.
-                  $mergeObjects: '$$ROOT'
-                },
-                pastSessions: {
-                  $push: '$pastSessions'
-                }
-              }
-            },
-            {
               $replaceRoot: {
-                newRoot: {
-                  $mergeObjects: ['$root', '$$ROOT']
-                }
-              }
-            },
-            {
-              $project: {
-                root: 0
+                newRoot: '$pastSessions'
               }
             }
           ]
@@ -501,7 +481,7 @@ module.exports = {
 
     const user = {
       ...results.user[0],
-      pastSessions: results.sessions[0] ? results.sessions[0].pastSessions : []
+      pastSessions: results.pastSessions
     }
 
     return user
