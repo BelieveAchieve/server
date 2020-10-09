@@ -419,6 +419,11 @@ module.exports = {
           volunteerPartnerOrg: 1,
           approvedHighschool: 1,
           photoIdS3Key: 1,
+          photoIdStatus: 1,
+          references: 1,
+          occupation: 1,
+          country: 1,
+          verified: 1,
           numPastSessions: { $size: '$pastSessions' },
           pastSessions: { $slice: ['$pastSessions', -10 * page, 10] }
         }
