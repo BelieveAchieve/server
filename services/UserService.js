@@ -390,7 +390,7 @@ module.exports = {
   },
 
   adminGetUser: async function(userId) {
-    const [user] = await User.aggregate([
+    const [results] = await User.aggregate([
       {
         $match: {
           _id: ObjectId(userId)
@@ -409,92 +409,100 @@ module.exports = {
         }
       },
       {
-        $lookup: {
-          from: 'schools',
-          localField: 'approvedHighschool',
-          foreignField: '_id',
-          as: 'approvedHighschool'
-        }
-      },
-      {
-        $unwind: {
-          path: '$approvedHighschool',
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $unwind: {
-          path: '$pastSessions',
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $lookup: {
-          from: 'sessions',
-          let: {
-            sessionId: '$pastSessions'
-          },
-          pipeline: [
+        $facet: {
+          user: [
             {
-              $match: {
-                $expr: {
-                  $eq: ['$_id', '$$sessionId']
+              $lookup: {
+                from: 'schools',
+                localField: 'approvedHighschool',
+                foreignField: '_id',
+                as: 'approvedHighschool'
+              }
+            },
+            {
+              $unwind: {
+                path: '$approvedHighschool',
+                preserveNullAndEmptyArrays: true
+              }
+            }
+          ],
+          sessions: [
+            {
+              $unwind: {
+                path: '$pastSessions'
+              }
+            },
+            {
+              $lookup: {
+                from: 'sessions',
+                let: {
+                  sessionId: '$pastSessions'
+                },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: {
+                        $eq: ['$_id', '$$sessionId']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      type: 1,
+                      subTopic: 1,
+                      numMessages: {
+                        $size: '$messages'
+                      },
+                      volunteer: 1,
+                      student: 1,
+                      volunteerJoinedAt: 1,
+                      createdAt: 1,
+                      endedAt: 1
+                    }
+                  }
+                ],
+                as: 'pastSessions'
+              }
+            },
+            {
+              $unwind: {
+                path: '$pastSessions'
+              }
+            },
+            {
+              $group: {
+                _id: '$_id',
+                root: {
+                  // $$ROOT - References the root document, i.e. the top-level document,
+                  // currently being processed in the aggregation pipeline stage.
+                  $mergeObjects: '$$ROOT'
+                },
+                pastSessions: {
+                  $push: '$pastSessions'
+                }
+              }
+            },
+            {
+              $replaceRoot: {
+                newRoot: {
+                  $mergeObjects: ['$root', '$$ROOT']
                 }
               }
             },
             {
               $project: {
-                type: 1,
-                subTopic: 1,
-                numMessages: {
-                  $size: '$messages'
-                },
-                volunteer: 1,
-                student: 1,
-                volunteerJoinedAt: 1,
-                createdAt: 1,
-                endedAt: 1
+                root: 0
               }
             }
-          ],
-          as: 'pastSessions'
-        }
-      },
-      {
-        $unwind: {
-          path: '$pastSessions',
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $sort: {
-          'pastSessions.createdAt': -1
-        }
-      },
-      {
-        $group: {
-          _id: '$_id',
-          root: {
-            $mergeObjects: '$$ROOT'
-          },
-          pastSessions: {
-            $push: '$pastSessions'
-          }
-        }
-      },
-      {
-        $replaceRoot: {
-          newRoot: {
-            $mergeObjects: ['$root', '$$ROOT']
-          }
-        }
-      },
-      {
-        $project: {
-          root: 0
+          ]
         }
       }
     ])
+
+    const user = {
+      ...results.user[0],
+      pastSessions: results.sessions[0] ? results.sessions[0].pastSessions : []
+    }
 
     return user
   }
