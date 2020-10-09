@@ -389,7 +389,10 @@ module.exports = {
     }
   },
 
-  adminGetUser: async function(userId) {
+  // @note: this query is making a request for user data on every page transition
+  //        for new pastSessions to display. May be better served as a separate
+  //        service method for getting the user's past sessions
+  adminGetUser: async function(userId, page) {
     const [results] = await User.aggregate([
       {
         $match: {
@@ -415,7 +418,9 @@ module.exports = {
           studentPartnerOrg: 1,
           volunteerPartnerOrg: 1,
           approvedHighschool: 1,
-          pastSessions: { $slice: ['$pastSessions', -10, 10] }
+          photoIdS3Key: 1,
+          numPastSessions: { $size: '$pastSessions' },
+          pastSessions: { $slice: ['$pastSessions', -10 * page, 10] }
         }
       },
       {
