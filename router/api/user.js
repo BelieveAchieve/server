@@ -157,9 +157,10 @@ module.exports = function(router) {
 
   router.get('/user/:userId', passport.isAdmin, async function(req, res, next) {
     const { userId } = req.params
+    const { page } = req.query
 
     try {
-      const user = await UserService.adminGetUser(userId)
+      const user = await UserService.adminGetUser(userId, parseInt(page))
 
       if (user.isVolunteer && user.photoIdS3Key)
         user.photoUrl = await AwsService.getPhotoIdUrl({
