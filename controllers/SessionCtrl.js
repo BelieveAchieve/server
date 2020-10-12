@@ -198,46 +198,68 @@ module.exports = function(socketService) {
 
       // Add a day to the sessionActivityTo to make it inclusive for the activity range: [sessionActivityFrom, sessionActivityTo]
       const inclusiveSessionActivityTo =
-        new Date(sessionActivityTo).getTime() + oneDayInMS
+        new Date(sessionActivityTo).getTime() + oneDayInMS + estTimeOffset
+      const offsetSessionActivityFrom =
+        new Date(sessionActivityFrom).getTime() + estTimeOffset
 
       const sessionQueryFilter = {
         // Filter by the length of a session
-        sessionLength: { $gte: parseInt(minSessionLength) * 60000 }, // convert mins to milliseconds
-        // Filter by a specific date range the sessions took place
-        createdAtEstTime: {
-          $gte: new Date(sessionActivityFrom),
-          $lte: new Date(inclusiveSessionActivityTo)
-        },
-        // Filter a session by the amount of messages sent
-        $expr: {
-          $gte: [{ $size: '$messages' }, parseInt(minMessagesSent)]
-        }
+        sessionLength: { $gte: parseInt(minSessionLength) * 60000 }
       }
-
-      if (Number(studentRating))
-        sessionQueryFilter.studentRating = Number(studentRating)
-      if (Number(volunteerRating))
-        sessionQueryFilter.volunteerRating = Number(volunteerRating)
       if (isReported) sessionQueryFilter.isReported = true
 
+      const ratingQueryFilter = {}
+      if (Number(studentRating))
+        ratingQueryFilter.studentRating = Number(studentRating)
+      if (Number(volunteerRating))
+        ratingQueryFilter.volunteerRating = Number(volunteerRating)
+
       const userQueryFilter = {
-        showSession: true,
         'student.isTestUser': showTestUsers ? { $in: [true, false] } : false
       }
-
       if (firstTimeStudent && firstTimeVolunteer) {
         userQueryFilter.$or = [
-          { 'student.pastSessions': { $size: 1 } },
-          { 'volunteer.pastSessions': { $size: 1 } }
+          { 'student.totalPastSessions': 1 },
+          { 'volunteer.totalPastSessions': 1 }
         ]
       } else if (firstTimeStudent) {
-        userQueryFilter['student.pastSessions'] = { $size: 1 }
+        userQueryFilter['student.totalPastSessions'] = 1
       } else if (firstTimeVolunteer) {
-        userQueryFilter['volunteer.pastSessions'] = { $size: 1 }
+        userQueryFilter['volunteer.totalPastSessions'] = 1
       }
 
       try {
         const sessions = await Session.aggregate([
+          {
+            $sort: {
+              createdAt: -1
+            }
+          },
+          {
+            $match: {
+              // Filter by a specific date range the sessions took place
+              createdAt: {
+                $gte: new Date(offsetSessionActivityFrom),
+                $lte: new Date(inclusiveSessionActivityTo)
+              },
+              // Filter a session by the amount of messages sent
+              $expr: {
+                $gte: [{ $size: '$messages' }, parseInt(minMessagesSent)]
+              }
+            }
+          },
+          {
+            $project: {
+              createdAt: 1,
+              endedAt: 1,
+              volunteer: { $ifNull: ['$volunteer', null] },
+              totalMessages: { $size: '$messages' },
+              type: 1,
+              subTopic: 1,
+              student: 1,
+              isReported: 1
+            }
+          },
           {
             $addFields: {
               // Add the length of a session on the session documents
@@ -249,10 +271,17 @@ module.exports = function(socketService) {
                   else: { $subtract: ['$$NOW', '$createdAt'] }
                 }
               },
-              createdAtEstTime: {
-                $subtract: ['$createdAt', estTimeOffset]
+              volunteer: {
+                $cond: {
+                  if: { $ifNull: ['$volunteer', undefined] },
+                  then: '$volunteer',
+                  else: null
+                }
               }
             }
+          },
+          {
+            $match: sessionQueryFilter
           },
           {
             $lookup: {
@@ -312,13 +341,31 @@ module.exports = function(socketService) {
             }
           },
           {
-            $match: sessionQueryFilter
+            $match: ratingQueryFilter
           },
           {
             $lookup: {
               from: 'users',
-              localField: 'student',
-              foreignField: '_id',
+              let: {
+                studentId: '$student'
+              },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $eq: ['$_id', '$$studentId']
+                    }
+                  }
+                },
+                {
+                  $project: {
+                    firstname: 1,
+                    isBanned: 1,
+                    isTestUser: 1,
+                    totalPastSessions: { $size: '$pastSessions' }
+                  }
+                }
+              ],
               as: 'student'
             }
           },
@@ -328,8 +375,24 @@ module.exports = function(socketService) {
           {
             $lookup: {
               from: 'users',
-              localField: 'volunteer',
-              foreignField: '_id',
+              let: {
+                volunteerId: '$volunteer'
+              },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $eq: ['$_id', '$$volunteerId']
+                    }
+                  }
+                },
+                {
+                  $project: {
+                    firstname: 1,
+                    totalPastSessions: { $size: '$pastSessions' }
+                  }
+                }
+              ],
               as: 'volunteer'
             }
           },
@@ -338,6 +401,9 @@ module.exports = function(socketService) {
               path: '$volunteer',
               preserveNullAndEmptyArrays: true
             }
+          },
+          {
+            $match: userQueryFilter
           },
           {
             $lookup: {
@@ -397,26 +463,30 @@ module.exports = function(socketService) {
             }
           },
           {
-            $match: userQueryFilter
+            $match: {
+              showSession: true
+            }
+          },
+          {
+            $skip: skip
+          },
+          {
+            $limit: PER_PAGE
           },
           {
             $project: {
               createdAt: 1,
               endedAt: 1,
               volunteer: 1,
-              messages: 1,
-              notifications: 1,
+              totalMessages: 1,
               type: 1,
               subTopic: 1,
+              student: 1,
               studentFirstName: '$student.firstname',
               studentRating: 1
             }
           }
         ])
-          .sort({ createdAt: -1 })
-          .skip(skip)
-          .limit(PER_PAGE)
-          .exec()
 
         const isLastPage = sessions.length < PER_PAGE
 
