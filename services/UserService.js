@@ -470,7 +470,7 @@ module.exports = {
                     $project: {
                       type: 1,
                       subTopic: 1,
-                      numMessages: {
+                      totalMessages: {
                         $size: '$messages'
                       },
                       volunteer: 1,
