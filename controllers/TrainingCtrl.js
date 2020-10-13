@@ -103,7 +103,7 @@ module.exports = {
         user.certifications
       )
 
-      // add passedUpchieve101 to sendgrid custom field
+      // set custom field passedUpchieve101 in SendGrid
       if (cert === TRAINING.UPCHIEVE_101) MailService.createContact(user)
 
       // Create a user action for every subject unlocked
