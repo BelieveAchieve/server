@@ -6,8 +6,14 @@ const Student = require('../models/Student')
 const MailService = require('./MailService')
 const IpAddressService = require('./IpAddressService')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
-const { PHOTO_ID_STATUS, REFERENCE_STATUS, STATUS, USER_BAN_REASON } = require('../constants')
+const {
+  PHOTO_ID_STATUS,
+  REFERENCE_STATUS,
+  STATUS,
+  USER_BAN_REASON
+} = require('../constants')
 const config = require('../config')
+const ObjectId = require('mongodb').ObjectId
 
 const getVolunteer = async volunteerId => {
   return Volunteer.findOne({ _id: volunteerId })
@@ -381,5 +387,123 @@ module.exports = {
     } catch (error) {
       throw new Error(error.message)
     }
+  },
+
+  // @note: this query is making a request for user data on every page transition
+  //        for new pastSessions to display. May be better served as a separate
+  //        service method for getting the user's past sessions
+  adminGetUser: async function(userId, page) {
+    const [results] = await User.aggregate([
+      {
+        $match: {
+          _id: ObjectId(userId)
+        }
+      },
+      {
+        $project: {
+          firstname: 1,
+          lastname: 1,
+          email: 1,
+          createdAt: 1,
+          isVolunteer: 1,
+          isApproved: 1,
+          isAdmin: 1,
+          isBanned: 1,
+          isDeactivated: 1,
+          isTestUser: 1,
+          isFakeUser: 1,
+          partnerSite: 1,
+          zipCode: 1,
+          background: 1,
+          studentPartnerOrg: 1,
+          volunteerPartnerOrg: 1,
+          approvedHighschool: 1,
+          photoIdS3Key: 1,
+          photoIdStatus: 1,
+          references: 1,
+          occupation: 1,
+          country: 1,
+          verified: 1,
+          numPastSessions: { $size: '$pastSessions' },
+          pastSessions: { $slice: ['$pastSessions', -10 * page, 10] }
+        }
+      },
+      {
+        $facet: {
+          user: [
+            {
+              $lookup: {
+                from: 'schools',
+                localField: 'approvedHighschool',
+                foreignField: '_id',
+                as: 'approvedHighschool'
+              }
+            },
+            {
+              $unwind: {
+                path: '$approvedHighschool',
+                preserveNullAndEmptyArrays: true
+              }
+            }
+          ],
+          pastSessions: [
+            {
+              $unwind: {
+                path: '$pastSessions'
+              }
+            },
+            {
+              $lookup: {
+                from: 'sessions',
+                let: {
+                  sessionId: '$pastSessions'
+                },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: {
+                        $eq: ['$_id', '$$sessionId']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      type: 1,
+                      subTopic: 1,
+                      totalMessages: {
+                        $size: '$messages'
+                      },
+                      volunteer: 1,
+                      student: 1,
+                      volunteerJoinedAt: 1,
+                      createdAt: 1,
+                      endedAt: 1
+                    }
+                  }
+                ],
+                as: 'pastSessions'
+              }
+            },
+            {
+              $unwind: {
+                path: '$pastSessions'
+              }
+            },
+            {
+              $replaceRoot: {
+                newRoot: '$pastSessions'
+              }
+            }
+          ]
+        }
+      }
+    ])
+
+    const user = {
+      ...results.user[0],
+      pastSessions: results.pastSessions
+    }
+
+    return user
   }
 }
