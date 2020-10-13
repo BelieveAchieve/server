@@ -4,7 +4,6 @@ const TwilioService = require('../services/twilio')
 const Sentry = require('@sentry/node')
 const PushTokenService = require('../services/PushTokenService')
 const PushToken = require('../models/PushToken')
-const { USER_ACTION } = require('../constants')
 
 module.exports = function(socketService) {
   return {
