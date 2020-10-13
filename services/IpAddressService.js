@@ -3,6 +3,7 @@ const Sentry = require('@sentry/node')
 const IpAddress = require('../models/IpAddress')
 const User = require('../models/User')
 const { IP_ADDRESS_STATUS, USER_BAN_REASON } = require('../constants')
+const MailService = require('./MailService')
 
 const cleanIpString = rawIpString => {
   // Remove ipv6 prefix if present
@@ -74,6 +75,13 @@ module.exports = {
     // Ban user if IP banned
     if (ipAddress.status === IP_ADDRESS_STATUS.BANNED && !user.isBanned) {
       didBanUser = true
+      const updatedUser = Object.assign(user, { isBanned: true })
+      // Update user in the SendGrid contact list with banned status
+      MailService.createContact(updatedUser)
+      MailService.sendBannedUserAlert({
+        userId: user._id,
+        banReason: USER_BAN_REASON.BANNED_IP
+      })
       await User.updateOne(
         { _id: user._id },
         { $set: { isBanned: true, banReason: USER_BAN_REASON.BANNED_IP } }

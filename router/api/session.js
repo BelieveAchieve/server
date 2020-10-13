@@ -197,7 +197,7 @@ module.exports = function(router, io) {
 
   router.get('/sessions', passport.isAdmin, async function(req, res, next) {
     try {
-      const { sessions, isLastPage } = await sessionCtrl.getFilteredSessions(
+      const { sessions, isLastPage } = await SessionService.getFilteredSessions(
         req.query
       )
       res.json({ sessions, isLastPage })

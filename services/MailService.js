@@ -38,7 +38,8 @@ const SG_CUSTOM_FIELDS = {
   studentPartnerOrg: 'e11_T',
   studentPartnerOrgDisplay: 'e12_T',
   volunteerPartnerOrg: 'e13_T',
-  volunteerPartnerOrgDisplay: 'e14_T'
+  volunteerPartnerOrgDisplay: 'e14_T',
+  passedUpchieve101: 'e17_T'
 }
 
 const sendEmail = (
@@ -223,6 +224,25 @@ module.exports = {
     )
   },
 
+  sendBannedUserAlert: ({ userId, banReason, sessionId }) => {
+    const userAdminLink = buildLink(`admin/users/${userId}`)
+    const sessionAdminLink = buildLink(`admin/sessions/${sessionId}`)
+    return sendEmail(
+      config.mail.receivers.staff,
+      config.mail.senders.noreply,
+      'UPchieve',
+      config.sendgrid.bannedUserAlertTemplate,
+      {
+        userId,
+        banReason,
+        sessionId,
+        userAdminLink,
+        sessionAdminLink
+      },
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
   createContact: async user => {
     const customFields = {
       [SG_CUSTOM_FIELDS.isBanned]: String(user.isBanned),
@@ -237,6 +257,11 @@ module.exports = {
     const contactListId = user.isVolunteer
       ? config.sendgrid.contactList.volunteers
       : config.sendgrid.contactList.students
+
+    if (user.isVolunteer)
+      customFields[SG_CUSTOM_FIELDS.passedUpchieve101] = String(
+        user.certifications.upchieve101.passed
+      )
 
     if (user.volunteerPartnerOrg) {
       customFields[SG_CUSTOM_FIELDS.volunteerPartnerOrg] =

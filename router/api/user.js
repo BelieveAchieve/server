@@ -2,10 +2,10 @@ const UserCtrl = require('../../controllers/UserCtrl')
 const UserService = require('../../services/UserService')
 const MailService = require('../../services/MailService')
 const AwsService = require('../../services/AwsService')
-const User = require('../../models/User')
 const Volunteer = require('../../models/Volunteer')
 const passport = require('../auth/passport')
 const config = require('../../config')
+const UserActionCtrl = require('../../controllers/UserActionCtrl')
 
 module.exports = function(router) {
   router.route('/user').get(function(req, res) {
@@ -21,12 +21,15 @@ module.exports = function(router) {
 
   // @note: Currently, only volunteers are able to update their profile
   router.put('/user', async (req, res, next) => {
+    const { ip } = req
     const { _id } = req.user
     const { phone, isDeactivated } = req.body
 
     if (isDeactivated !== req.user.isDeactivated) {
       const updatedUser = Object.assign(req.user, { isDeactivated })
       MailService.createContact(updatedUser)
+
+      if (isDeactivated) UserActionCtrl.accountDeactivated(_id, ip)
     }
 
     try {
@@ -139,19 +142,10 @@ module.exports = function(router) {
 
   router.get('/user/:userId', passport.isAdmin, async function(req, res, next) {
     const { userId } = req.params
+    const { page } = req.query
 
     try {
-      const user = await User.findOne({ _id: userId })
-        .populate({
-          path: 'pastSessions',
-          options: {
-            sort: { createdAt: -1 },
-            limit: 50
-          }
-        })
-        .populate('approvedHighschool')
-        .lean()
-        .exec()
+      const user = await UserService.adminGetUser(userId, parseInt(page))
 
       if (user.isVolunteer && user.photoIdS3Key)
         user.photoUrl = await AwsService.getPhotoIdUrl({

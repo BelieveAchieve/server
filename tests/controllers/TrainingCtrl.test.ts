@@ -17,6 +17,7 @@ import Question from '../../models/Question';
 import algebraQuestions from '../../seeds/questions/algebra.json';
 import { Certifications } from '../utils/types';
 import UserActionModel from '../../models/UserAction';
+jest.mock('../../services/MailService');
 
 const buildCertificationsWithUpchieve101 = (options = {}): Certifications => {
   return buildCertifications({
@@ -346,7 +347,11 @@ describe('getQuizScore', () => {
     const certifications = buildCertifications({
       [MATH_CERTS.ALGEBRA]: { passed: true, tries: 1 }
     });
-    const subjects = [SUBJECTS.PREALGREBA, SUBJECTS.ALGEBRA_ONE, SUBJECTS.ALGEBRA_TWO];
+    const subjects = [
+      SUBJECTS.PREALGREBA,
+      SUBJECTS.ALGEBRA_ONE,
+      SUBJECTS.ALGEBRA_TWO
+    ];
     const volunteer = await insertVolunteer(
       buildVolunteer({
         availabilityLastModifiedAt: new Date(),
@@ -797,10 +802,7 @@ describe('getUnlockedSubjects', () => {
         const certifications = buildCertificationsWithUpchieve101({
           [passedCerts[i]]: { passed: true, tries: 1 }
         });
-        const result = TrainingCtrl.getUnlockedSubjects(
-          cert,
-          certifications
-        );
+        const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
         await expect(result).toEqual(expected[i]);
       }
     });

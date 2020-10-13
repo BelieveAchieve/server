@@ -3,7 +3,7 @@ UPchieve web server
 
 > Web server providing endpoints for the UPchieve web client
 
-[![CircleCI](https://circleci.com/gh/UPchieve/server.svg?style=svg)](https://circleci.com/gh/UPchieve/server)
+[![CircleCI](https://circleci.com/gh/UPchieve/server.svg?style=svg)](https://circleci.com/gh/UPchieve/server) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](code_of_conduct.md)
 
 **Table of Contents**
 
@@ -55,7 +55,7 @@ Local Development
 Docker provides an alternative for local development. A docker-compose file exists, tied to Mongo. Here's how to work in docker-compose.
 
 1. Navigate to this directory and run `mkdir mongo-volume` to create a directory for the MongoDB volume.
-1. Run `cp config.example.ts config.ts` to copy the default config as your own config. 
+1. Run `cp config.example.ts config.ts` to copy the default config as your own config.
 1. Run `docker-compose up` to launch the server.
 1. After any change: Run `docker-compose down --rmi all` to destry images and containers. Then run `docker-compose up` to see your changes.
 
@@ -480,7 +480,7 @@ If there are no errors, the response body contains the list of schools matching 
 }
 ```
 
-Adds an email address to the list of email addresses to notify when the school is approved by UPchieve. 
+Adds an email address to the list of email addresses to notify when the school is approved by UPchieve.
 
 If no error occurred, the response body looks like:
 
