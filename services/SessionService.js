@@ -33,7 +33,6 @@ const calculateHoursTutored = session => {
 
   const { volunteerJoinedAt, endedAt, messages, volunteer } = session
   if (!volunteer) return 0
-  if (!(volunteerJoinedAt && endedAt)) return 0
   // skip if no messages are sent
   if (messages.length === 0) return 0
 
@@ -136,8 +135,10 @@ module.exports = {
       sessionId: session._id
     })
 
+    const endedAt = new Date()
+
     if (session.volunteer) {
-      const hoursTutored = calculateHoursTutored(session)
+      const hoursTutored = calculateHoursTutored({ ...session, endedAt })
       await VolunteerModel.updateOne(
         { _id: session.volunteer },
         { $addToSet: { pastSessions: session._id }, $inc: { hoursTutored } }
@@ -150,7 +151,7 @@ module.exports = {
     await Session.updateOne(
       { _id: session._id },
       {
-        endedAt: new Date(),
+        endedAt,
         endedBy,
         whiteboardDoc: whiteboardDoc || undefined,
         quillDoc: quillDoc ? JSON.stringify(quillDoc) : undefined
