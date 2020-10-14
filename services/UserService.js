@@ -13,64 +13,10 @@ const {
   USER_BAN_REASON
 } = require('../constants')
 const config = require('../config')
-const Session = require('../models/Session')
-const Sentry = require('@sentry/node')
 const ObjectId = require('mongodb').ObjectId
 
 const getVolunteer = async volunteerId => {
   return Volunteer.findOne({ _id: volunteerId })
-}
-
-const calculateHoursTutored = async session => {
-  const threeHoursMs = 1000 * 60 * 60 * 3
-  const fifteenMinsMs = 1000 * 60 * 15
-
-  const { volunteerJoinedAt, endedAt, messages, volunteer } = session
-  if (!volunteer) return 0
-  if (!(volunteerJoinedAt && endedAt)) return 0
-  // skip if no messages are sent
-  if (messages.length === 0) return 0
-
-  const volunteerJoinDate = new Date(volunteerJoinedAt)
-  const sessionEndDate = new Date(endedAt)
-  let sessionLengthMs = sessionEndDate - volunteerJoinDate
-
-  // skip if volunteer joined after the session ended
-  if (sessionLengthMs < 0) return 0
-
-  let latestMessageIndex = messages.length - 1
-  let wasMessageSentAfterSessionEnded =
-    messages[latestMessageIndex].createdAt > sessionEndDate
-
-  // get the latest message that was sent within a 15 minute window of the message prior.
-  // Sometimes sessions are not ended by either participant and one of the participants may send
-  // a message to see if the other participant is still active before ending the session.
-  // Exclude these messages when getting the total session end time
-  if (sessionLengthMs > threeHoursMs || wasMessageSentAfterSessionEnded) {
-    while (
-      latestMessageIndex > 0 &&
-      (wasMessageSentAfterSessionEnded ||
-        messages[latestMessageIndex].createdAt -
-          messages[latestMessageIndex - 1].createdAt >
-          fifteenMinsMs)
-    ) {
-      latestMessageIndex--
-      wasMessageSentAfterSessionEnded =
-        messages[latestMessageIndex].createdAt > sessionEndDate
-    }
-  }
-
-  const latestMessageDate = new Date(messages[latestMessageIndex].createdAt)
-
-  // skip if the latest message was sent before a volunteer joined
-  // or skip if the only messages that were sent were after a session has ended
-  if (latestMessageDate <= volunteerJoinDate || wasMessageSentAfterSessionEnded)
-    return 0
-
-  sessionLengthMs = latestMessageDate - volunteerJoinDate
-
-  // milliseconds in an hour = (60,000 * 60) = 3,600,000
-  return Number((sessionLengthMs / 3600000).toFixed(2))
 }
 
 module.exports = {
@@ -442,26 +388,6 @@ module.exports = {
       return { users, isLastPage }
     } catch (error) {
       throw new Error(error.message)
-    }
-  },
-
-  calculateHoursTutored,
-
-  updateHoursTutored: async sessionId => {
-    const session = await Session.findOne({ _id: sessionId })
-      .select('volunteerJoinedAt endedAt messages volunteer')
-      .lean()
-      .exec()
-
-    try {
-      const hoursTutored = await calculateHoursTutored(session)
-      if (!hoursTutored) return
-      await Volunteer.updateOne(
-        { _id: session.volunteer },
-        { $inc: { hoursTutored } }
-      )
-    } catch (error) {
-      Sentry.captureException(error)
     }
   },
 
