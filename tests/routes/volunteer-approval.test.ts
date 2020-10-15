@@ -1,12 +1,8 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import app from '../../../app';
-import { insertVolunteer, resetDb } from '../../utils/db-utils';
-import {
-  buildVolunteer,
-  buildReference,
-  authLogin
-} from '../../utils/generate';
+import app from '../../app';
+import { insertVolunteer, resetDb } from '../db-utils';
+import { buildVolunteer, buildReference, authLogin } from '../generate';
 
 // agent stores the session when making an auth request
 const agent = request.agent(app);

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { resetDb, insertSession } from '../utils/db-utils';
+import { resetDb, insertSession } from '../db-utils';
 import SessionModel from '../../models/Session';
 import endStaleSessions from '../../worker/jobs/endStaleSessions';
 

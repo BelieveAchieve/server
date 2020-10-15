@@ -1,5 +1,5 @@
 /* eslint-disable handle-callback-err */
-const ModerationCtrl = require('../../../controllers/ModerationCtrl')
+const ModerationCtrl = require('../../controllers/ModerationCtrl')
 
 test('Check incorrect email succeeds', done => {
   const email = { content: 'j.@serve1.proseware.com' }
