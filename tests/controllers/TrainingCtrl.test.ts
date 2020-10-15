@@ -15,7 +15,7 @@ import {
 } from '../../constants';
 import Question from '../../models/Question';
 import algebraQuestions from '../../seeds/questions/algebra.json';
-import { Certifications } from '../utils/types';
+import { Certifications } from '../../models/Volunteer';
 import UserActionModel from '../../models/UserAction';
 jest.mock('../../services/MailService');
 
@@ -299,7 +299,7 @@ describe('getQuizScore', () => {
 
     await TrainingCtrl.getQuizScore(quizScoreInput);
     const userActions = await UserActionModel.find({
-      action: USER_ACTION.QUIZ.UNLOCKED_SUBJECT
+      action: USER_ACTION.QUIZ_UNLOCKED_SUBJECT
     })
       .select('quizSubcategory -_id')
       .lean()

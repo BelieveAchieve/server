@@ -3,11 +3,11 @@ import emailReadyToCoach from '../../worker/jobs/emailReadyToCoach';
 import { insertVolunteer, resetDb } from '../utils/db-utils';
 import { buildVolunteer } from '../utils/generate';
 import VolunteerModel from '../../models/Volunteer';
+import { Volunteer } from '../../models/Volunteer'
 import MailService from '../../services/MailService';
-import { Volunteer } from '../utils/types';
 jest.mock('../../services/MailService');
 
-const buildReadyToSendVolunteer = (): Volunteer => {
+const buildReadyToSendVolunteer = (): Partial<Volunteer> => {
   return buildVolunteer({
     isOnboarded: true,
     isApproved: true,

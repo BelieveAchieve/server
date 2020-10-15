@@ -8,8 +8,7 @@ import {
 } from '../utils/generate';
 import VolunteerModel from '../../models/Volunteer';
 import UserActionModel from '../../models/UserAction';
-import { Volunteer } from '../utils/types';
-import { USER_ACTION, SUBJECTS } from '../../constants';
+import { USER_ACTION_TYPE, USER_ACTION, SUBJECTS } from '../../constants';
 
 // db connection
 beforeAll(async () => {
@@ -67,15 +66,15 @@ describe('Save availability and time zone', () => {
     const {
       availability: updatedAvailability,
       isOnboarded
-    } = (await VolunteerModel.findOne({
+    } = await VolunteerModel.findOne({
       _id: volunteer._id
     })
       .lean()
       .select('availability isOnboarded')
-      .exec()) as Volunteer;
+      .exec();
     const expectedUserAction = await UserActionModel.findOne({
       user: volunteer._id,
-      action: USER_ACTION.ACCOUNT.ONBOARDED
+      action: USER_ACTION.ACCOUNT_ONBOARDED
     });
 
     expect(updatedAvailability).toMatchObject(availability);
@@ -110,21 +109,21 @@ describe('Save availability and time zone', () => {
     const {
       availability: updatedAvailability,
       isOnboarded
-    } = (await VolunteerModel.findOne({
+    } = await VolunteerModel.findOne({
       _id: volunteer._id
     })
       .lean()
       .select('availability isOnboarded')
-      .exec()) as Volunteer;
+      .exec();
     const userAction = await UserActionModel.findOne({
       user: volunteer._id,
-      action: USER_ACTION.ACCOUNT.ONBOARDED
+      action: USER_ACTION.ACCOUNT_ONBOARDED
     });
 
     const expectedUserAction = {
       user: volunteer._id,
-      actionType: USER_ACTION.TYPE.ACCOUNT,
-      action: USER_ACTION.ACCOUNT.ONBOARDED
+      actionType: USER_ACTION_TYPE.ACCOUNT,
+      action: USER_ACTION.ACCOUNT_ONBOARDED
     };
 
     expect(updatedAvailability).toMatchObject(availability);
@@ -149,14 +148,12 @@ describe('Clear schedule', () => {
     await CalendarCtrl.clearSchedule(volunteer, timeZone);
 
     const emptyAvailability = buildAvailability();
-    const { availability: updatedAvailability } = (await VolunteerModel.findOne(
-      {
-        _id: volunteer._id
-      }
-    )
+    const { availability: updatedAvailability } = await VolunteerModel.findOne({
+      _id: volunteer._id
+    })
       .lean()
       .select('availability')
-      .exec()) as Volunteer;
+      .exec();
 
     expect(updatedAvailability).toMatchObject(emptyAvailability);
   });

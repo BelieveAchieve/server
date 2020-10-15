@@ -8,7 +8,6 @@ import {
   STATUS,
   USER_ACTION
 } from '../../../constants';
-import { Volunteer } from '../../utils/types';
 import {
   buildVolunteer,
   buildReference,
@@ -43,10 +42,10 @@ test('Successfully adds photoIdS3Key and photoIdStatus', async () => {
   //        fail if the test completes before the user action is stored
   const userAction = await UserActionModel.findOne({
     user: userId,
-    action: USER_ACTION.ACCOUNT.ADDED_PHOTO_ID
+    action: USER_ACTION.ACCOUNT_ADDED_PHOTO_ID
   });
 
-  const updatedVolunteer: Partial<Volunteer> = await VolunteerModel.findOne({
+  const updatedVolunteer = await VolunteerModel.findOne({
     _id: userId
   })
     .select('photoIdS3Key photoIdStatus')
@@ -55,7 +54,7 @@ test('Successfully adds photoIdS3Key and photoIdStatus', async () => {
 
   const expectedUserAction = {
     user: userId,
-    action: USER_ACTION.ACCOUNT.ADDED_PHOTO_ID
+    action: USER_ACTION.ACCOUNT_ADDED_PHOTO_ID
   };
 
   expect(newPhotoIdS3Key).toMatch(/^[a-f0-9]{64}$/);
@@ -79,7 +78,7 @@ test('Should add a reference', async () => {
 
   await UserService.addReference(input);
 
-  const updatedVolunteer: Partial<Volunteer> = await VolunteerModel.findOne({
+  const updatedVolunteer = await VolunteerModel.findOne({
     _id: userId
   })
     .select('references')
@@ -87,7 +86,7 @@ test('Should add a reference', async () => {
     .exec();
   const userAction = await UserActionModel.findOne({
     user: volunteer._id,
-    action: USER_ACTION.ACCOUNT.ADDED_REFERENCE
+    action: USER_ACTION.ACCOUNT_ADDED_REFERENCE
   });
 
   const expectedReference = {
@@ -98,7 +97,7 @@ test('Should add a reference', async () => {
   };
   const expectedUserAction = {
     user: volunteer._id,
-    action: USER_ACTION.ACCOUNT.ADDED_REFERENCE,
+    action: USER_ACTION.ACCOUNT_ADDED_REFERENCE,
     referenceEmail: input.referenceEmail
   };
 
@@ -122,7 +121,7 @@ test('Should delete a reference', async () => {
 
   await UserService.deleteReference(input);
 
-  const updatedVolunteer: Partial<Volunteer> = await VolunteerModel.findOne({
+  const updatedVolunteer = await VolunteerModel.findOne({
     _id: userId
   })
     .select('references')
@@ -130,7 +129,7 @@ test('Should delete a reference', async () => {
     .exec();
   const userAction = await UserActionModel.findOne({
     user: userId,
-    action: USER_ACTION.ACCOUNT.DELETED_REFERENCE
+    action: USER_ACTION.ACCOUNT_DELETED_REFERENCE
   });
 
   const remainingReference = {
@@ -146,7 +145,7 @@ test('Should delete a reference', async () => {
   };
   const expectedUserAction = {
     user: userId,
-    action: USER_ACTION.ACCOUNT.DELETED_REFERENCE,
+    action: USER_ACTION.ACCOUNT_DELETED_REFERENCE,
     referenceEmail: input.referenceEmail
   };
 
@@ -174,9 +173,7 @@ test('Should save reference form data', async () => {
 
   await UserService.saveReferenceForm(referenceFormInput);
 
-  const {
-    references: updatedReferences
-  }: Partial<Volunteer> = await VolunteerModel.findOne({
+  const { references: updatedReferences } = await VolunteerModel.findOne({
     _id: userId
   })
     .select('references')
@@ -184,13 +181,13 @@ test('Should save reference form data', async () => {
     .exec();
   const userAction = await UserActionModel.findOne({
     user: userId,
-    action: USER_ACTION.ACCOUNT.SUBMITTED_REFERENCE_FORM
+    action: USER_ACTION.ACCOUNT_SUBMITTED_REFERENCE_FORM
   });
 
   const [updatedReference] = updatedReferences;
   const expectedUserAction = {
     user: userId,
-    action: USER_ACTION.ACCOUNT.SUBMITTED_REFERENCE_FORM,
+    action: USER_ACTION.ACCOUNT_SUBMITTED_REFERENCE_FORM,
     referenceEmail: referenceFormInput.referenceEmail
   };
 
@@ -221,15 +218,15 @@ test('Pending volunteer should not be approved after being rejected', async () =
     .exec();
   const accountApprovedUserAction = await UserActionModel.findOne({
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.APPROVED
+    action: USER_ACTION.ACCOUNT_APPROVED
   });
   const rejectedReferenceUserAction = await UserActionModel.findOne({
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.REJECTED_REFERENCE
+    action: USER_ACTION.ACCOUNT_REJECTED_REFERENCE
   });
   const rejectedPhotoIdUserAction = await UserActionModel.findOne({
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.REJECTED_PHOTO_ID
+    action: USER_ACTION.ACCOUNT_REJECTED_PHOTO_ID
   });
 
   const expectedVolunteer = {
@@ -242,12 +239,12 @@ test('Pending volunteer should not be approved after being rejected', async () =
   };
   const expectedRejectedReferenceUserAction = {
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.REJECTED_REFERENCE,
+    action: USER_ACTION.ACCOUNT_REJECTED_REFERENCE,
     referenceEmail: references[1].email
   };
   const expectedRejectedPhotoIdUserAction = {
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.REJECTED_PHOTO_ID
+    action: USER_ACTION.ACCOUNT_REJECTED_PHOTO_ID
   };
 
   expect(updatedVolunteer).toMatchObject(expectedVolunteer);
@@ -281,7 +278,7 @@ test('Pending volunteer should be approved after approval', async () => {
     .exec();
   const userAction = await UserActionModel.findOne({
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.APPROVED
+    action: USER_ACTION.ACCOUNT_APPROVED
   });
 
   const expectedVolunteer = {
@@ -294,7 +291,7 @@ test('Pending volunteer should be approved after approval', async () => {
   };
   const expectedUserAction = {
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.APPROVED
+    action: USER_ACTION.ACCOUNT_APPROVED
   };
 
   expect(updatedVolunteer).toMatchObject(expectedVolunteer);
@@ -324,11 +321,11 @@ test('Open volunteer is not approved when submitting their background info', asy
     .exec();
   const backgroundInfoUserAction = await UserActionModel.findOne({
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
+    action: USER_ACTION.ACCOUNT_COMPLETED_BACKGROUND_INFO
   });
   const accountApprovedUserAction = await UserActionModel.findOne({
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.APPROVED
+    action: USER_ACTION.ACCOUNT_APPROVED
   });
 
   const expectedVolunteer = {
@@ -336,7 +333,7 @@ test('Open volunteer is not approved when submitting their background info', asy
   };
   const expectedBackgroundInfoUserAction = {
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
+    action: USER_ACTION.ACCOUNT_COMPLETED_BACKGROUND_INFO
   };
 
   expect(updatedVolunteer).toMatchObject(expectedVolunteer);
@@ -370,11 +367,11 @@ test('Partner volunteer is approved when submitting background info', async () =
     .exec();
   const backgroundInfoUserAction = await UserActionModel.findOne({
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
+    action: USER_ACTION.ACCOUNT_COMPLETED_BACKGROUND_INFO
   });
   const accountApprovedUserAction = await UserActionModel.findOne({
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.APPROVED
+    action: USER_ACTION.ACCOUNT_APPROVED
   });
 
   const expectedVolunteer = {
@@ -390,11 +387,11 @@ test('Partner volunteer is approved when submitting background info', async () =
   };
   const expectedBackgroundInfoUserAction = {
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
+    action: USER_ACTION.ACCOUNT_COMPLETED_BACKGROUND_INFO
   };
   const expectedAccountApprovedUserAction = {
     user: input.volunteerId,
-    action: USER_ACTION.ACCOUNT.APPROVED
+    action: USER_ACTION.ACCOUNT_APPROVED
   };
 
   expect(updatedVolunteer).toMatchObject(expectedVolunteer);

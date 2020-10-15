@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 import SurveyModel, { Survey, SurveyDocument } from '../models/Survey';
-import { User } from '../models/types';
+import { User } from '../models/User';
 import { SURVEY_TYPES } from '../constants';
 
 export const savePresessionSurvey = async (data: {

@@ -1,3 +1,5 @@
+import { Student } from '../../models/Student';
+import { Volunteer } from '../../models/Volunteer';
 import { Types } from 'mongoose';
 import {
   TRAINING,
@@ -20,13 +22,6 @@ export interface User {
   referralCode: string;
 }
 
-// @todo: clean up - use the Student interface from Student.ts when available
-export interface Student extends User {
-  highSchoolId: string;
-  zipCode: string;
-  studentPartnerOrg: string;
-}
-
 // @todo: clean up - use the Reference interface from Volunteer.ts when available
 export interface Reference {
   _id: Types.ObjectId;
@@ -43,38 +38,6 @@ export interface Reference {
   trustworthyWithChildren: number;
   rejectionReason: string;
   additionalInfo: string;
-}
-
-// @todo: clean up - use the Volunteer interface from Volunteer.ts when available
-export interface Volunteer extends User {
-  zipCode: string;
-  college: string;
-  volunteerPartnerOrg?: string;
-  favoriteAcademicSubject?: string;
-  phone: string;
-  references?: Array<Reference>;
-  photoIdS3Key?: string;
-  photoIdStatus?: string;
-  isApproved: boolean;
-  isOnboarded: boolean;
-  // background information
-  occupation?: Array<string>;
-  company?: string;
-  experience?: {
-    collegeCounseling: string;
-    mentoring: string;
-    tutoring: string;
-  };
-  languages?: Array<string>;
-  country?: string;
-  state?: string;
-  city?: string;
-  certifications: Certifications;
-  availability: Availability;
-  subjects: Array<string>;
-  trainingCourses: TrainingCourses;
-  sentReadyToCoachEmail: boolean;
-  hoursTutored: Types.Decimal128;
 }
 
 export interface StudentRegistrationForm extends Student {
@@ -120,107 +83,4 @@ export enum HOURS {
   '9PM' = '9p',
   '10PM' = '10p',
   '11PM' = '11p'
-}
-
-export interface CertificationInfo {
-  passed: boolean;
-  tries: number;
-  lastAttemptedAt?: Date;
-}
-
-export interface Certifications {
-  [MATH_CERTS.PREALGREBA]: CertificationInfo;
-  [MATH_CERTS.ALGEBRA]: CertificationInfo;
-  [MATH_CERTS.GEOMETRY]: CertificationInfo;
-  [MATH_CERTS.TRIGONOMETRY]: CertificationInfo;
-  [MATH_CERTS.PRECALCULUS]: CertificationInfo;
-  [MATH_CERTS.CALCULUS_AB]: CertificationInfo;
-  [MATH_CERTS.CALCULUS_BC]: CertificationInfo;
-  [MATH_CERTS.STATISTICS]: CertificationInfo;
-  [SCIENCE_CERTS.BIOLOGY]: CertificationInfo;
-  [SCIENCE_CERTS.CHEMISTRY]: CertificationInfo;
-  [SCIENCE_CERTS.PHYSICS_ONE]: CertificationInfo;
-  [SCIENCE_CERTS.PHYSICS_TWO]: CertificationInfo;
-  [SCIENCE_CERTS.ENVIRONMENTAL_SCIENCE]: CertificationInfo;
-  [COLLEGE_CERTS.ESSAYS]: CertificationInfo;
-  [COLLEGE_CERTS.FINANCIAL_AID]: CertificationInfo;
-  [COLLEGE_CERTS.SPORTS_RECRUITMENT_PLANNING]: CertificationInfo;
-  [SAT_CERTS.SAT_MATH]: CertificationInfo;
-  [SAT_CERTS.SAT_READING]: CertificationInfo;
-  [TRAINING.UPCHIEVE_101]: CertificationInfo;
-  [TRAINING.TUTORING_SKILLS]: CertificationInfo;
-  [TRAINING.COLLEGE_COUNSELING]: CertificationInfo;
-  [TRAINING.COLLEGE_SKILLS]: CertificationInfo;
-  [TRAINING.SAT_STRATEGIES]: CertificationInfo;
-}
-
-export type AvailabilityDay = {
-  [hour in HOURS]: boolean;
-};
-
-export type Availability = {
-  [day in DAYS]: AvailabilityDay;
-};
-
-interface TrainingCourseData {
-  isComplete: boolean;
-  progress: number;
-  completedMaterials: Array<string>;
-}
-
-export interface TrainingCourses {
-  [TRAINING.UPCHIEVE_101]: TrainingCourseData;
-  [TRAINING.TUTORING_SKILLS]: TrainingCourseData;
-  [TRAINING.COLLEGE_COUNSELING]: TrainingCourseData;
-  [TRAINING.COLLEGE_SKILLS]: TrainingCourseData;
-  [TRAINING.SAT_STRATEGIES]: TrainingCourseData;
-}
-
-export interface Message {
-  user: User;
-  contents: string;
-  createdAt: Date;
-}
-
-// @todo: clean up
-enum NotificationType {
-  REGULAR = 'REGULAR',
-  FAILSAFE = 'FAILSAFE'
-}
-
-enum NotificationMethod {
-  SMS = 'SMS',
-  VOICE = 'VOICE',
-  EMAIL = 'EMAIL'
-}
-
-export interface Notification {
-  _id: Types.ObjectId;
-  volunteer: Types.ObjectId | Volunteer;
-  sentAt: Date;
-  type: NotificationType;
-  method: NotificationMethod;
-  wasSuccessful: boolean;
-  messageId: string;
-}
-
-export interface Session {
-  _id: Types.ObjectId;
-  student: Student;
-  volunteer: Volunteer;
-  type: string;
-  subTopic: string;
-  messages: Message[];
-  whiteboardDoc: string;
-  quillDoc: string;
-  createdAt: Date;
-  volunteerJoinedAt: Date;
-  failedJoins: User[];
-  endedAt: Date;
-  endedBy: User;
-  notifications: Notification[];
-  photos: string[];
-  isReported: boolean;
-  reportReason: string;
-  reportMessage: string;
 }

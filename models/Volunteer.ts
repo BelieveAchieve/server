@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import { Document, Schema, Types } from 'mongoose';
 import { values } from 'lodash';
 import {
   PHOTO_ID_STATUS,
@@ -11,7 +11,149 @@ import {
   SAT_CERTS,
   COLLEGE_SUBJECTS
 } from '../constants';
-import User from './User';
+import UserModel, { User } from './User';
+
+export enum DAYS {
+  SUNDAY = 'Sunday',
+  MONDAY = 'Monday',
+  TUESDAY = 'Tuesday',
+  WEDNESDAY = 'Wednesday',
+  THURSDAY = 'Thursday',
+  FRIDAY = 'Friday',
+  SATURDAY = 'Saturday'
+}
+
+export enum HOURS {
+  '12AM' = '12a',
+  '1AM' = '1a',
+  '2AM' = '2a',
+  '3AM' = '3a',
+  '4AM' = '4a',
+  '5AM' = '5a',
+  '6AM' = '6a',
+  '7AM' = '7a',
+  '8AM' = '8a',
+  '9AM' = '9a',
+  '10AM' = '10a',
+  '11AM' = '11a',
+  '12PM' = '12p',
+  '1PM' = '1p',
+  '2PM' = '2p',
+  '3PM' = '3p',
+  '4PM' = '4p',
+  '5PM' = '5p',
+  '6PM' = '6p',
+  '7PM' = '7p',
+  '8PM' = '8p',
+  '9PM' = '9p',
+  '10PM' = '10p',
+  '11PM' = '11p'
+}
+
+export type AvailabilityDay = {
+  [hour in HOURS]: boolean;
+};
+
+export type Availability = {
+  [day in DAYS]: AvailabilityDay;
+};
+
+export interface Reference extends Document {
+  _id: Types.ObjectId;
+  firstName: string;
+  lastName: string;
+  email: string;
+  status: string;
+  sentAt: Date;
+  affiliation: string;
+  relationshipLength: string;
+  patient: number;
+  positiveRoleModel: number;
+  agreeableAndApproachable: number;
+  communicatesEffectively: number;
+  trustworthyWithChildren: number;
+  rejectionReason: string;
+  additionalInfo: string;
+}
+
+export interface CertificationInfo {
+  passed: boolean;
+  tries: number;
+  lastAttemptedAt?: Date;
+}
+
+export interface Certifications {
+  [MATH_CERTS.PREALGREBA]: CertificationInfo;
+  [MATH_CERTS.ALGEBRA]: CertificationInfo;
+  [MATH_CERTS.GEOMETRY]: CertificationInfo;
+  [MATH_CERTS.TRIGONOMETRY]: CertificationInfo;
+  [MATH_CERTS.PRECALCULUS]: CertificationInfo;
+  [MATH_CERTS.CALCULUS_AB]: CertificationInfo;
+  [MATH_CERTS.CALCULUS_BC]: CertificationInfo;
+  [MATH_CERTS.STATISTICS]: CertificationInfo;
+  [SCIENCE_CERTS.BIOLOGY]: CertificationInfo;
+  [SCIENCE_CERTS.CHEMISTRY]: CertificationInfo;
+  [SCIENCE_CERTS.PHYSICS_ONE]: CertificationInfo;
+  [SCIENCE_CERTS.PHYSICS_TWO]: CertificationInfo;
+  [SCIENCE_CERTS.ENVIRONMENTAL_SCIENCE]: CertificationInfo;
+  [COLLEGE_CERTS.ESSAYS]: CertificationInfo;
+  [COLLEGE_CERTS.FINANCIAL_AID]: CertificationInfo;
+  [COLLEGE_CERTS.SPORTS_RECRUITMENT_PLANNING]: CertificationInfo;
+  [SAT_CERTS.SAT_MATH]: CertificationInfo;
+  [SAT_CERTS.SAT_READING]: CertificationInfo;
+  [TRAINING.UPCHIEVE_101]: CertificationInfo;
+  [TRAINING.TUTORING_SKILLS]: CertificationInfo;
+  [TRAINING.COLLEGE_COUNSELING]: CertificationInfo;
+  [TRAINING.COLLEGE_SKILLS]: CertificationInfo;
+  [TRAINING.SAT_STRATEGIES]: CertificationInfo;
+}
+
+interface TrainingCourseData {
+  isComplete: boolean;
+  progress: number;
+  completedMaterials: string[];
+}
+
+export interface TrainingCourses {
+  [TRAINING.UPCHIEVE_101]: TrainingCourseData;
+  [TRAINING.TUTORING_SKILLS]: TrainingCourseData;
+  [TRAINING.COLLEGE_COUNSELING]: TrainingCourseData;
+  [TRAINING.COLLEGE_SKILLS]: TrainingCourseData;
+  [TRAINING.SAT_STRATEGIES]: TrainingCourseData;
+}
+
+export interface Volunteer extends User {
+  volunteerPartnerOrg: string;
+  isFailsafeVolunteer: boolean;
+  phone: string;
+  favoriteAcademicSubject: string;
+  availability: Availability;
+  timezone: string;
+  availabilityLastModifiedAt: Date;
+  elapsedAvailability: number;
+  certifications: Certifications;
+  isApproved: boolean;
+  isOnboarded: boolean;
+  photoIdS3Key: string;
+  photoIdStatus: string;
+  references: Reference[];
+  occupation: string[];
+  company: string;
+  experience: {
+    collegeCounseling: string;
+    mentoring: string;
+    tutoring: string;
+  };
+  languages: string[];
+  country: string;
+  state: string;
+  city: string;
+  sentReadyToCoachEmail: boolean;
+  subjects: string[];
+  trainingCourses: TrainingCourses;
+}
+
+export type VolunteerDocument = Volunteer & Document;
 
 const weeksSince = (date): number => {
   // 604800000 = milliseconds in a week
@@ -63,50 +205,71 @@ const tallyVolunteerPoints = (volunteer): number => {
 };
 
 // subdocument schema for each availability day
-const availabilityDaySchema = new mongoose.Schema(
+const availabilityDaySchema = new Schema(
   {
-    '12a': { type: Boolean, default: false },
-    '1a': { type: Boolean, default: false },
-    '2a': { type: Boolean, default: false },
-    '3a': { type: Boolean, default: false },
-    '4a': { type: Boolean, default: false },
-    '5a': { type: Boolean, default: false },
-    '6a': { type: Boolean, default: false },
-    '7a': { type: Boolean, default: false },
-    '8a': { type: Boolean, default: false },
-    '9a': { type: Boolean, default: false },
-    '10a': { type: Boolean, default: false },
-    '11a': { type: Boolean, default: false },
-    '12p': { type: Boolean, default: false },
-    '1p': { type: Boolean, default: false },
-    '2p': { type: Boolean, default: false },
-    '3p': { type: Boolean, default: false },
-    '4p': { type: Boolean, default: false },
-    '5p': { type: Boolean, default: false },
-    '6p': { type: Boolean, default: false },
-    '7p': { type: Boolean, default: false },
-    '8p': { type: Boolean, default: false },
-    '9p': { type: Boolean, default: false },
-    '10p': { type: Boolean, default: false },
-    '11p': { type: Boolean, default: false }
+    [HOURS['12AM']]: { type: Boolean, default: false },
+    [HOURS['1AM']]: { type: Boolean, default: false },
+    [HOURS['2AM']]: { type: Boolean, default: false },
+    [HOURS['3AM']]: { type: Boolean, default: false },
+    [HOURS['4AM']]: { type: Boolean, default: false },
+    [HOURS['5AM']]: { type: Boolean, default: false },
+    [HOURS['6AM']]: { type: Boolean, default: false },
+    [HOURS['7AM']]: { type: Boolean, default: false },
+    [HOURS['8AM']]: { type: Boolean, default: false },
+    [HOURS['9AM']]: { type: Boolean, default: false },
+    [HOURS['10AM']]: { type: Boolean, default: false },
+    [HOURS['11AM']]: { type: Boolean, default: false },
+    [HOURS['12PM']]: { type: Boolean, default: false },
+    [HOURS['1PM']]: { type: Boolean, default: false },
+    [HOURS['2PM']]: { type: Boolean, default: false },
+    [HOURS['3PM']]: { type: Boolean, default: false },
+    [HOURS['4PM']]: { type: Boolean, default: false },
+    [HOURS['5PM']]: { type: Boolean, default: false },
+    [HOURS['6PM']]: { type: Boolean, default: false },
+    [HOURS['7PM']]: { type: Boolean, default: false },
+    [HOURS['8PM']]: { type: Boolean, default: false },
+    [HOURS['9PM']]: { type: Boolean, default: false },
+    [HOURS['10PM']]: { type: Boolean, default: false },
+    [HOURS['11PM']]: { type: Boolean, default: false }
   },
   { _id: false }
 );
 
-const availabilitySchema = new mongoose.Schema(
+const availabilitySchema = new Schema(
   {
-    Sunday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Monday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Tuesday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Wednesday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Thursday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Friday: { type: availabilityDaySchema, default: availabilityDaySchema },
-    Saturday: { type: availabilityDaySchema, default: availabilityDaySchema }
+    [DAYS.SUNDAY]: {
+      type: availabilityDaySchema,
+      default: availabilityDaySchema
+    },
+    [DAYS.MONDAY]: {
+      type: availabilityDaySchema,
+      default: availabilityDaySchema
+    },
+    [DAYS.TUESDAY]: {
+      type: availabilityDaySchema,
+      default: availabilityDaySchema
+    },
+    [DAYS.WEDNESDAY]: {
+      type: availabilityDaySchema,
+      default: availabilityDaySchema
+    },
+    [DAYS.THURSDAY]: {
+      type: availabilityDaySchema,
+      default: availabilityDaySchema
+    },
+    [DAYS.FRIDAY]: {
+      type: availabilityDaySchema,
+      default: availabilityDaySchema
+    },
+    [DAYS.SATURDAY]: {
+      type: availabilityDaySchema,
+      default: availabilityDaySchema
+    }
   },
   { _id: false }
 );
 
-const referenceSchema = new mongoose.Schema({
+const referenceSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
   email: { type: String, required: true },
   firstName: { type: String, required: true },
@@ -114,13 +277,7 @@ const referenceSchema = new mongoose.Schema({
   status: {
     type: String,
     required: true,
-    enum: [
-      REFERENCE_STATUS.UNSENT,
-      REFERENCE_STATUS.SENT,
-      REFERENCE_STATUS.SUBMITTED,
-      REFERENCE_STATUS.APPROVED,
-      REFERENCE_STATUS.REJECTED
-    ],
+    enum: values(REFERENCE_STATUS),
     default: REFERENCE_STATUS.UNSENT
   },
   sentAt: Date,
@@ -135,7 +292,7 @@ const referenceSchema = new mongoose.Schema({
   additionalInfo: String
 });
 
-const trainingCourseSchema = new mongoose.Schema({
+const trainingCourseSchema = new Schema({
   isComplete: {
     type: Boolean,
     default: false
@@ -159,7 +316,7 @@ const volunteerSchemaOptions = {
   }
 };
 
-const volunteerSchema = new mongoose.Schema(
+const volunteerSchema = new Schema(
   {
     isApproved: {
       type: Boolean,
@@ -168,12 +325,7 @@ const volunteerSchema = new mongoose.Schema(
     photoIdS3Key: String,
     photoIdStatus: {
       type: String,
-      enum: [
-        PHOTO_ID_STATUS.EMPTY,
-        PHOTO_ID_STATUS.SUBMITTED,
-        PHOTO_ID_STATUS.REJECTED,
-        PHOTO_ID_STATUS.APPROVED
-      ],
+      enum: values(PHOTO_ID_STATUS),
       default: PHOTO_ID_STATUS.EMPTY
     },
     references: [referenceSchema],
@@ -209,7 +361,7 @@ const volunteerSchema = new mongoose.Schema(
       default: availabilitySchema
     },
     timezone: String,
-    hoursTutored: { type: mongoose.Types.Decimal128, default: 0 },
+    hoursTutored: { type: Types.Decimal128, default: 0 },
     availabilityLastModifiedAt: { type: Date },
     elapsedAvailability: { type: Number, default: 0 },
     sentReadyToCoachEmail: {
@@ -555,7 +707,10 @@ volunteerSchema.virtual('volunteerLastNotification', {
 });
 
 // Use the user schema as the base schema for Volunteer
-const Volunteer = User.discriminator('Volunteer', volunteerSchema);
+const VolunteerModel = UserModel.discriminator<VolunteerDocument>(
+  'Volunteer',
+  volunteerSchema
+);
 
-module.exports = Volunteer;
-export default Volunteer;
+module.exports = VolunteerModel;
+export default VolunteerModel;

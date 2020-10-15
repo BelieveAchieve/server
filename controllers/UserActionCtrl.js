@@ -1,5 +1,5 @@
 const UserAction = require('../models/UserAction')
-const { USER_ACTION } = require('../constants')
+const { USER_ACTION, USER_ACTION_TYPE } = require('../constants')
 const getSubjectType = require('../utils/getSubjectType')
 const getDeviceFromUserAgent = require('../utils/getDeviceFromUserAgent')
 const userAgentParser = require('ua-parser-js')
@@ -31,7 +31,7 @@ const createQuizAction = async (
   action
 ) => {
   const userActionDoc = new UserAction({
-    actionType: USER_ACTION.TYPE.QUIZ,
+    actionType: USER_ACTION_TYPE.QUIZ,
     action,
     user: userId,
     quizSubcategory: quizSubcategory.toUpperCase(),
@@ -53,7 +53,7 @@ const createSessionAction = async (
   const userActionDoc = new UserAction({
     user: userId,
     session: sessionId,
-    actionType: USER_ACTION.TYPE.SESSION,
+    actionType: USER_ACTION_TYPE.SESSION,
     action,
     ipAddress,
     ...userAgentResult
@@ -71,7 +71,7 @@ const createAccountAction = async (
 ) => {
   const userActionDoc = new UserAction({
     user: userId,
-    actionType: USER_ACTION.TYPE.ACCOUNT,
+    actionType: USER_ACTION_TYPE.ACCOUNT,
     ipAddress,
     action,
     ...options
@@ -82,7 +82,7 @@ const createAccountAction = async (
 const createAdminAction = async (userId, action, options = {}) => {
   const userActionDoc = new UserAction({
     user: userId,
-    actionType: USER_ACTION.TYPE.ADMIN,
+    actionType: USER_ACTION_TYPE.ADMIN,
     action,
     ...options
   })
@@ -94,7 +94,7 @@ const startedQuiz = (userId, quizCategory, ipAddress) => {
     userId,
     quizCategory,
     ipAddress,
-    USER_ACTION.QUIZ.STARTED
+    USER_ACTION.QUIZ_STARTED
   )
 }
 
@@ -103,7 +103,7 @@ const passedQuiz = (userId, quizCategory, ipAddress) => {
     userId,
     quizCategory,
     ipAddress,
-    USER_ACTION.QUIZ.PASSED
+    USER_ACTION.QUIZ_PASSED
   )
 }
 
@@ -112,7 +112,7 @@ const failedQuiz = (userId, quizCategory, ipAddress) => {
     userId,
     quizCategory,
     ipAddress,
-    USER_ACTION.QUIZ.FAILED
+    USER_ACTION.QUIZ_FAILED
   )
 }
 
@@ -121,7 +121,7 @@ const viewedMaterials = (userId, quizCategory, ipAddress) => {
     userId,
     quizCategory,
     ipAddress,
-    USER_ACTION.QUIZ.VIEWED_MATERIALS
+    USER_ACTION.QUIZ_VIEWED_MATERIALS
   )
 }
 
@@ -130,7 +130,7 @@ const unlockedSubject = (userId, subject, ipAddress) => {
     userId,
     subject,
     ipAddress,
-    USER_ACTION.QUIZ.UNLOCKED_SUBJECT
+    USER_ACTION.QUIZ_UNLOCKED_SUBJECT
   )
 }
 
@@ -140,7 +140,7 @@ const requestedSession = (userId, sessionId, userAgent, ipAddress) => {
     sessionId,
     userAgent,
     ipAddress,
-    USER_ACTION.SESSION.REQUESTED
+    USER_ACTION.SESSION_REQUESTED
   )
 }
 
@@ -150,7 +150,7 @@ const repliedYesToSession = (userId, sessionId, userAgent, ipAddress) => {
     sessionId,
     userAgent,
     ipAddress,
-    USER_ACTION.SESSION.REPLIED_YES
+    USER_ACTION.SESSION_REPLIED_YES
   )
 }
 
@@ -160,7 +160,7 @@ const joinedSession = (userId, sessionId, userAgent, ipAddress) => {
     sessionId,
     userAgent,
     ipAddress,
-    USER_ACTION.SESSION.JOINED
+    USER_ACTION.SESSION_JOINED
   )
 }
 
@@ -170,7 +170,7 @@ const rejoinedSession = (userId, sessionId, userAgent, ipAddress) => {
     sessionId,
     userAgent,
     ipAddress,
-    USER_ACTION.SESSION.REJOINED
+    USER_ACTION.SESSION_REJOINED
   )
 }
 
@@ -180,7 +180,7 @@ const endedSession = (userId, sessionId, userAgent, ipAddress) => {
     sessionId,
     userAgent,
     ipAddress,
-    USER_ACTION.SESSION.ENDED
+    USER_ACTION.SESSION_ENDED
   )
 }
 
@@ -188,7 +188,7 @@ const updatedProfile = (userId, ipAddress) => {
   return createAccountAction(
     userId,
     ipAddress,
-    USER_ACTION.ACCOUNT.UPDATED_PROFILE
+    USER_ACTION.ACCOUNT_UPDATED_PROFILE
   )
 }
 
@@ -196,22 +196,22 @@ const updatedAvailability = (userId, ipAddress) => {
   return createAccountAction(
     userId,
     ipAddress,
-    USER_ACTION.ACCOUNT.UPDATED_AVAILABILITY
+    USER_ACTION.ACCOUNT_UPDATED_AVAILABILITY
   )
 }
 
 const createdAccount = (userId, ipAddress) => {
-  return createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.CREATED)
+  return createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT_CREATED)
 }
 
 const addedPhotoId = (userId, ipAddress) =>
-  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.ADDED_PHOTO_ID)
+  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT_ADDED_PHOTO_ID)
 
 const addedReference = (userId, ipAddress, options) =>
   createAccountAction(
     userId,
     ipAddress,
-    USER_ACTION.ACCOUNT.ADDED_REFERENCE,
+    USER_ACTION.ACCOUNT_ADDED_REFERENCE,
     options
   )
 
@@ -219,53 +219,53 @@ const completedBackgroundInfo = (userId, ipAddress) =>
   createAccountAction(
     userId,
     ipAddress,
-    USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
+    USER_ACTION.ACCOUNT_COMPLETED_BACKGROUND_INFO
   )
 
 const deletedReference = (userId, ipAddress, options) =>
   createAccountAction(
     userId,
     ipAddress,
-    USER_ACTION.ACCOUNT.DELETED_REFERENCE,
+    USER_ACTION.ACCOUNT_DELETED_REFERENCE,
     options
   )
 
 const accountApproved = (userId, ipAddress) =>
-  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.APPROVED)
+  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT_APPROVED)
 
 const accountOnboarded = (userId, ipAddress) =>
-  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.ONBOARDED)
+  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT_ONBOARDED)
 
 const accountBanned = (userId, sessionId, banReason) =>
-  createAccountAction(userId, '', USER_ACTION.ACCOUNT.BANNED, {
+  createAccountAction(userId, '', USER_ACTION.ACCOUNT_BANNED, {
     session: sessionId,
     banReason
   })
 
 const accountDeactivated = (userId, ipAddress) =>
-  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.DEACTIVATED)
+  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT_DEACTIVATED)
 
 const submittedReferenceForm = (userId, ipAddress, options) =>
   createAccountAction(
     userId,
     ipAddress,
-    USER_ACTION.ACCOUNT.SUBMITTED_REFERENCE_FORM,
+    USER_ACTION.ACCOUNT_SUBMITTED_REFERENCE_FORM,
     options
   )
 
 const rejectedPhotoId = userId =>
-  createAccountAction(userId, '', USER_ACTION.ACCOUNT.REJECTED_PHOTO_ID)
+  createAccountAction(userId, '', USER_ACTION.ACCOUNT_REJECTED_PHOTO_ID)
 
 const rejectedReference = (userId, options) =>
   createAccountAction(
     userId,
     '',
-    USER_ACTION.ACCOUNT.REJECTED_REFERENCE,
+    USER_ACTION.ACCOUNT_REJECTED_REFERENCE,
     options
   )
 
 const adminDeactivatedAccount = userId =>
-  createAdminAction(userId, USER_ACTION.ACCOUNT.DEACTIVATED)
+  createAdminAction(userId, USER_ACTION.ACCOUNT_DEACTIVATED)
 
 module.exports = {
   startedQuiz,

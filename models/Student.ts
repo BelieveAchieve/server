@@ -1,5 +1,15 @@
-import mongoose from 'mongoose';
-import User from './User';
+import { Document, Schema, Types } from 'mongoose';
+import UserModel, { User } from './User';
+import { School } from './School';
+
+export interface Student extends User {
+  approvedHighschool: School;
+  zipCode: string;
+  studentPartnerOrg: string;
+  partnerSite: string;
+}
+
+export type StudentDocument = Student & Document;
 
 const schemaOptions = {
   toJSON: {
@@ -10,10 +20,10 @@ const schemaOptions = {
   }
 };
 
-const studentSchema = new mongoose.Schema(
+const studentSchema = new Schema(
   {
     approvedHighschool: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Types.ObjectId,
       ref: 'School'
       /* TODO validate approvedHighschool.isApproved: true
        * if this.isVolunteer is false */
@@ -26,7 +36,10 @@ const studentSchema = new mongoose.Schema(
 );
 
 // Use the user schema as the base schema for Student
-const Student = User.discriminator('Student', studentSchema);
+const StudentModel = UserModel.discriminator<StudentDocument>(
+  'Student',
+  studentSchema
+);
 
-module.exports = Student;
-export default Student;
+module.exports = StudentModel;
+export default StudentModel;

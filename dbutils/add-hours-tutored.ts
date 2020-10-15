@@ -40,8 +40,8 @@ const calculateHoursTutored = async userId => {
       while (
         latestMessageIndex > 0 &&
         (wasMessageSentAfterSessionEnded ||
-          messages[latestMessageIndex].createdAt -
-            messages[latestMessageIndex - 1].createdAt >
+          messages[latestMessageIndex].createdAt.getTime() -
+            messages[latestMessageIndex - 1].createdAt.getTime() >
             fifteenMinsMs)
       ) {
         latestMessageIndex--;

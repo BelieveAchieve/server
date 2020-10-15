@@ -11,7 +11,8 @@
     "lint": "eslint . --fix",
     "lint:prod": "eslint . --fix --max-warnings 0",
     "worker": "ts-node worker",
-    "worker:dev": "ts-node-dev worker"
+    "worker:dev": "ts-node-dev worker",
+    "transpile": "tsc"
   },
   "nyc": {
     "check-coverage": true,
@@ -32,6 +33,7 @@
     "@sendgrid/mail": "^6.4.0",
     "@sentry/node": "^5.8.0",
     "@small-tech/express-ws": "^1.0.1",
+    "@types/moment-timezone": "^0.5.13",
     "@types/express-ws": "^3.0.0",
     "async": "^1.5.0",
     "aws-sdk": "^2.695.0",

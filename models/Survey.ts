@@ -1,6 +1,6 @@
 import { values } from 'lodash';
 import { Document, model, Schema, Types } from 'mongoose';
-import { User } from './types';
+import { User } from './User';
 import { SURVEY_TYPES } from '../constants';
 
 export interface Survey {

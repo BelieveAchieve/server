@@ -5,7 +5,7 @@
  */
 import { values } from 'lodash';
 import { Document, model, Schema, Types } from 'mongoose';
-import { User } from './types';
+import { Volunteer } from './Volunteer';
 
 enum NotificationType {
   REGULAR = 'REGULAR',
@@ -19,7 +19,8 @@ enum NotificationMethod {
 }
 
 export interface Notification {
-  volunteer: Types.ObjectId | User;
+  _id: Types.ObjectId;
+  volunteer: Types.ObjectId | Volunteer;
   sentAt: Date;
   type: NotificationType;
   method: NotificationMethod;

@@ -1,11 +1,10 @@
 import bcrypt from 'bcrypt';
 import UserModel from '../../models/User';
-import VolunteerModel from '../../models/Volunteer';
-import StudentModel from '../../models/Student';
+import VolunteerModel, { Volunteer } from '../../models/Volunteer';
+import StudentModel, { Student } from '../../models/Student';
 import UserActionModel from '../../models/UserAction';
-import SessionModel from '../../models/Session';
+import SessionModel, { Session } from '../../models/Session';
 import config from '../../config';
-import { Volunteer, Student, Session } from './types';
 import { buildVolunteer, buildStudent, buildSession } from './generate';
 
 const hashPassword = async function(password): Promise<Error | string> {

@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import UserAction from '../models/UserAction';
 import Session from '../models/Session';
 import dbconnect from './dbconnect';
-import { SESSION_REPORT_REASON, USER_ACTION, USER_BAN_REASON} from '../constants'
+import { SESSION_REPORT_REASON, USER_ACTION_TYPE, USER_ACTION, USER_BAN_REASON} from '../constants'
 
 async function upgrade(): Promise<void> {
   try {
@@ -17,9 +17,9 @@ async function upgrade(): Promise<void> {
     for(const session of sessions){
       const userAction = new UserAction({
         user: session.student,
-        actionType: USER_ACTION.TYPE.ACCOUNT,
+        actionType: USER_ACTION_TYPE.ACCOUNT,
         ipAddress: '',
-        action: USER_ACTION.ACCOUNT.BANNED,
+        action: USER_ACTION.ACCOUNT_BANNED,
         session: session._id,
         banReason: USER_BAN_REASON.SESSION_REPORTED,
         createdAt: session.createdAt,
@@ -42,7 +42,7 @@ async function downgrade(): Promise<void> {
   try {
     await dbconnect();
     const results = await UserAction.deleteMany(
-      { action: USER_ACTION.ACCOUNT.BANNED },
+      { action: USER_ACTION.ACCOUNT_BANNED },
     );
     console.log(results);
   } catch (error) {

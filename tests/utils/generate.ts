@@ -3,6 +3,24 @@ import { Test } from 'supertest';
 import { Types } from 'mongoose';
 import base64url from 'base64url';
 import { merge } from 'lodash';
+import { User } from '../../models/User';
+import { Student } from '../../models/Student';
+import { Session } from '../../models/Session';
+import { Message } from '../../models/Message'
+import {
+  Volunteer,
+  Certifications,
+  TrainingCourses,
+  Reference,
+  Availability
+} from '../../models/Volunteer';
+import {
+  // @todo: figure out how to import from Volunteer.ts without DAYS and HOURS resolving to undefined
+  DAYS,
+  HOURS,
+  StudentRegistrationForm,
+  VolunteerRegistrationForm
+} from '../utils/types';
 import {
   PHOTO_ID_STATUS,
   REFERENCE_STATUS,
@@ -12,21 +30,6 @@ import {
   COLLEGE_CERTS,
   SAT_CERTS
 } from '../../constants';
-import { Message } from '../../models/Message';
-import {
-  User,
-  Volunteer,
-  Student,
-  StudentRegistrationForm,
-  VolunteerRegistrationForm,
-  Reference,
-  Availability,
-  DAYS,
-  HOURS,
-  Certifications,
-  TrainingCourses,
-  Session
-} from './types';
 export const getEmail = faker.internet.email;
 export const getFirstName = faker.name.firstName;
 export const getLastName = faker.name.lastName;
@@ -113,7 +116,7 @@ export const buildAvailability = (overrides = {}): Availability => {
   return mergedAvailability;
 };
 
-export const buildStudent = (overrides = {}): Student => {
+export const buildStudent = (overrides = {}): Partial<Student> => {
   const firstName = getFirstName();
   const lastName = getLastName();
   const _id = Types.ObjectId();
@@ -136,7 +139,7 @@ export const buildStudent = (overrides = {}): Student => {
   return student;
 };
 
-export const buildVolunteer = (overrides = {}): Volunteer => {
+export const buildVolunteer = (overrides = {}): Partial<Volunteer> => {
   const firstName = getFirstName();
   const lastName = getLastName();
   const _id = Types.ObjectId();
@@ -169,7 +172,7 @@ export const buildVolunteer = (overrides = {}): Volunteer => {
 
 export const buildStudentRegistrationForm = (
   overrides = {}
-): StudentRegistrationForm => {
+): Partial<StudentRegistrationForm> => {
   const student = buildStudent();
   const form = {
     terms: true,
@@ -182,7 +185,7 @@ export const buildStudentRegistrationForm = (
 
 export const buildVolunteerRegistrationForm = (
   overrides = {}
-): VolunteerRegistrationForm => {
+): Partial<VolunteerRegistrationForm> => {
   const volunteer = buildVolunteer();
   const form = {
     terms: true,

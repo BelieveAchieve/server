@@ -17,21 +17,21 @@ jest.mock('../../../services/MailService');
 
 const US_IP_ADDRESS = '161.185.160.93';
 
-const registerStudent = (form: StudentRegistrationForm): Test =>
+const registerStudent = (form: Partial<StudentRegistrationForm>): Test =>
   request(app)
     .post('/auth/register/student')
     .set('X-Forwarded-For', US_IP_ADDRESS)
     .set('Accept', 'application/json')
     .send(form);
 
-const registerOpenVolunteer = (form: VolunteerRegistrationForm): Test =>
+const registerOpenVolunteer = (form: Partial<VolunteerRegistrationForm>): Test =>
   request(app)
     .post('/auth/register/volunteer/open')
     .set('X-Forwarded-For', US_IP_ADDRESS)
     .set('Accept', 'application/json')
     .send(form);
 
-const registerPartnerVolunteer = (form: VolunteerRegistrationForm): Test =>
+const registerPartnerVolunteer = (form: Partial<VolunteerRegistrationForm>): Test =>
   request(app)
     .post('/auth/register/volunteer/partner')
     .set('X-Forwarded-For', US_IP_ADDRESS)
@@ -298,7 +298,7 @@ describe('Open volunteer registration', () => {
         body: { user }
       } = response;
 
-      const expectedFirstName = newVolunteer.firstName;
+      const expectedFirstName = newVolunteer.firstname;
       const expectedEmail = newVolunteer.email;
 
       expect(user.firstname).toEqual(expectedFirstName);
@@ -417,7 +417,7 @@ describe('Partner volunteer registration', () => {
         body: { user }
       } = response;
 
-      const expectedFirstName = newVolunteer.firstName;
+      const expectedFirstName = newVolunteer.firstname;
       const expectedEmail = newVolunteer.email;
 
       expect(user.firstname).toEqual(expectedFirstName);

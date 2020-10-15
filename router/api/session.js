@@ -228,7 +228,7 @@ module.exports = function(router, io) {
 
       const sessionUserAgent = await UserAction.findOne({
         session: sessionId,
-        action: USER_ACTION.SESSION.REQUESTED
+        action: USER_ACTION.SESSION_REQUESTED
       })
         .select(
           '-_id device browser browserVersion operatingSystem operatingSystemVersion'

@@ -4,12 +4,11 @@ import { insertVolunteer, resetDb } from '../utils/db-utils';
 import { buildVolunteer, buildReference } from '../utils/generate';
 import VolunteerModel from '../../models/Volunteer';
 import MailService from '../../services/MailService';
-import { Volunteer } from '../utils/types';
+import { Volunteer, Reference } from '../../models/Volunteer';
 import { REFERENCE_STATUS } from '../../constants';
-import { Reference } from '../../models/types';
 jest.mock('../../services/MailService');
 
-const buildVolunteerWithReferences = (): Volunteer => {
+const buildVolunteerWithReferences = (): Partial<Volunteer> => {
   return buildVolunteer({
     references: [
       buildReference({
