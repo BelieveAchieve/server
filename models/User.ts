@@ -3,6 +3,35 @@ import bcrypt from 'bcrypt';
 import validator from 'validator';
 import config from '../config';
 import { USER_BAN_REASON } from '../constants';
+import { IpAddress } from './IpAddress'
+import { Session } from './Session'
+
+export interface User {
+  _id: mongoose.Types.ObjectId;
+  createdAt: Date;
+  email: string;
+  password: string;
+  verified: boolean;
+  verificationToken: string;
+  passwordResetToken: string;
+  firstname: string;
+  lastname: string;
+  college: string;
+  isVolunteer: boolean;
+  isAdmin: boolean;
+  isBanned: boolean;
+  banReason: USER_BAN_REASON;
+  isTestUser: boolean;
+  isFakeUser: boolean;
+  isDeactivated: boolean;
+  pastSessions: Session[];
+  partnerUserId: string;
+  lastActivityAt: Date;
+  referralCode: string;
+  referredBy: User;
+  ipAddresses: IpAddress[];
+  type: string;
+}
 
 const schemaOptions = {
   /**
@@ -172,7 +201,7 @@ baseUserSchema.statics.verifyPassword = (
   });
 };
 
-const User = mongoose.model('User', baseUserSchema);
+const UserModel = mongoose.model('User', baseUserSchema);
 
-module.exports = User;
-export default User;
+module.exports = UserModel;
+export default UserModel;
