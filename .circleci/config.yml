@@ -22,5 +22,6 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
       - run: cp config.example.ts config.ts
+      - run: npm run-script transpile
       - run: npm test
       - run: npm run lint:prod
