@@ -5,7 +5,7 @@ import {
   SCIENCE_CERTS,
   COLLEGE_CERTS,
   SAT_CERTS
-} from '../../constants';
+} from '../constants';
 
 export interface User {
   _id: Types.ObjectId;
