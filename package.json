@@ -11,7 +11,8 @@
     "lint": "eslint . --fix",
     "lint:prod": "eslint . --fix --max-warnings 0",
     "worker": "ts-node worker",
-    "worker:dev": "ts-node-dev worker"
+    "worker:dev": "ts-node-dev worker",
+    "transpile": "tsc"
   },
   "nyc": {
     "check-coverage": true,
