@@ -76,6 +76,11 @@ beforeEach(async () => {
   await resetDb();
 });
 
+test.todo('getQuestions tests');
+test.todo('getQuizScore tests');
+test.todo('hasRequiredTraining tests');
+test.todo('hasCertForRequiredTraining tests');
+
 describe('getQuizScore', () => {
   beforeAll(async () => {
     await Question.insertMany(algebraQuestions);
