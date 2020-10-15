@@ -3,5 +3,6 @@
       "esModuleInterop": true,
       "allowUmdGlobalAccess": true,
       "outDir": "build",
+      "resolveJsonModule": true,
   },
 }
