@@ -160,7 +160,7 @@ export const buildVolunteer = (overrides = {}): Volunteer => {
     subjects: [],
     trainingCourses: buildTrainingCourses(),
     sentReadyToCoachEmail: false,
-    hoursTutored: 0,
+    hoursTutored: Types.Decimal128.fromString('0'),
     ...overrides
   };
 
