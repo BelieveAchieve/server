@@ -245,7 +245,7 @@ module.exports = {
   },
 
   sendReferenceFollowup: ({ reference, volunteer }) => {
-    const volunteerFirstName = capitalize(volunteer.firstname)
+    const volunteerFirstName = capitalize(volunteer.firstName)
     const volunteerLastName = capitalize(volunteer.lastName)
     const emailData = {
       referenceUrl: buildLink(`reference-form/${reference._id}`),
