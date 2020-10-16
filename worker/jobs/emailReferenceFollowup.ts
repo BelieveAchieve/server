@@ -2,7 +2,7 @@ import { log } from '../logger';
 import VolunteerModel from '../../models/Volunteer';
 import { Reference } from '../../models/types';
 import { REFERENCE_STATUS } from '../../constants';
-import { MailService } from '../../services/MailService';
+import MailService from '../../services/MailService';
 
 // @note: uses firstName instead of firstname because of the $project aggregation stage
 // @todo: clean up Volunteer model to use firstName instead of firstname
