@@ -27,6 +27,7 @@ const config: Static<typeof Config> = {
     openReadyToCoachTemplate: 'd-09ec01c51be54c108b7fae4481acfd38',
     partnerReadyToCoachTemplate: 'd-d2ba9920683b4bd4a159f496a2346583',
     bannedUserAlertTemplate: 'd-7be8a21a59664f99a1f540e43c79b793',
+    referenceFollowupTemplate: 'd-6b0d96c0cf15469db7a5e6ec655cf37a',
     unsubscribeGroup: {
       newsletter: 12567,
       account: 12570
@@ -39,12 +40,14 @@ const config: Static<typeof Config> = {
   mail: {
     senders: {
       noreply: 'noreply@upchieve.org',
-      support: 'support@upchieve.org'
+      support: 'support@upchieve.org',
+      recruitment: 'recruitment@upchieve.org'
     },
     receivers: {
       contact: 'staff@upchieve.org',
       staff: 'staff@upchieve.org',
-      support: 'support@upchieve.org'
+      support: 'support@upchieve.org',
+      recruitment: 'recruitment@upchieve.org'
     }
   },
   client: {

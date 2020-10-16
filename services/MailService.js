@@ -1,6 +1,7 @@
 const config = require('../config')
 const sgMail = require('@sendgrid/mail')
 const axios = require('axios')
+const { capitalize } = require('lodash')
 
 sgMail.setApiKey(config.sendgrid.apiKey)
 
@@ -239,6 +240,27 @@ module.exports = {
         userAdminLink,
         sessionAdminLink
       },
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
+  sendReferenceFollowup: ({ reference, volunteer }) => {
+    const volunteerFirstName = capitalize(volunteer.firstname)
+    const volunteerLastName = capitalize(volunteer.lastName)
+    const emailData = {
+      referenceUrl: buildLink(`reference-form/${reference._id}`),
+      referenceName: reference.firstName,
+      volunteerName: `${volunteerFirstName} ${volunteerLastName}`,
+      volunteerFirstName
+    }
+
+    return sendEmail(
+      reference.email,
+      config.mail.senders.recruitment,
+      'Mark at UPchieve',
+      config.sendgrid.referenceFollowupTemplate,
+      emailData,
+      // @note: Change to unsubscribeGroup recruitment?
       config.sendgrid.unsubscribeGroup.account
     )
   },
