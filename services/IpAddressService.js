@@ -65,8 +65,12 @@ module.exports = {
   ban: async ({ user, ipAddress }) => {
     let didBanUser = false
 
-    // Ban IP if user banned
-    if (user.isBanned && ipAddress.status === IP_ADDRESS_STATUS.OK)
+    // Ban IP if it has only one user listed and user is banned
+    if (
+      user.isBanned &&
+      ipAddress.status === IP_ADDRESS_STATUS.OK &&
+      ipAddress.users.length === 1
+    )
       await IpAddress.updateOne(
         { _id: ipAddress._id },
         { $set: { status: IP_ADDRESS_STATUS.BANNED } }
