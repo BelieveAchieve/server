@@ -195,7 +195,8 @@ const notifyVolunteer = async session => {
   const highLevelSubjects = ['calculusAB', 'chemistry']
   const isHighLevelSubject = highLevelSubjects.includes(subtopic)
   let subjectsFilter = {
-    $and: [{ subjects: { $nin: highLevelSubjects } }, { subjects: subtopic }]
+    $nin: highLevelSubjects,
+    $eq: subtopic
   }
   if (isHighLevelSubject) subjectsFilter = subtopic
 
