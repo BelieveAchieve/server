@@ -44,15 +44,12 @@ function getCurrentAvailabilityPath() {
   return `availability.${days[day]}.${hour}`
 }
 
-const getNextVolunteer = async ({ subtopic, priorityFilter = {} }) => {
+const getNextVolunteer = async ({ priorityFilter = {} }) => {
   const availabilityPath = getCurrentAvailabilityPath()
 
   const filter = {
     isApproved: true,
     [availabilityPath]: true,
-    // @note: subjects gets overwritten by priorityFilter when searching
-    //        for volunteers that do not have a high-level subject
-    subjects: subtopic,
     phone: { $exists: true },
     isTestUser: false,
     isFakeUser: false,
@@ -194,11 +191,8 @@ const notifyVolunteer = async session => {
   // lack of volunteers when high-level subjects are requested
   const highLevelSubjects = ['calculusAB', 'chemistry']
   const isHighLevelSubject = highLevelSubjects.includes(subtopic)
-  let subjectsFilter = {
-    $nin: highLevelSubjects,
-    $eq: subtopic
-  }
-  if (isHighLevelSubject) subjectsFilter = subtopic
+  const subjectsFilter = { $eq: subtopic }
+  if (!isHighLevelSubject) subjectsFilter['$nin'] = highLevelSubjects
 
   /**
    * 1. Partner volunteers - not notified in last 7 days AND they don’t have “high level subjects”
@@ -226,6 +220,7 @@ const notifyVolunteer = async session => {
         volunteerPartnerOrg: {
           $exists: true
         },
+        subjects: subtopic,
         _id: { $nin: activeSessionVolunteers.concat(notifiedLastSevenDays) }
       }
     },
@@ -242,6 +237,7 @@ const notifyVolunteer = async session => {
       groupName: 'Partner volunteers - not notified in last 3 days',
       filter: {
         volunteerPartnerOrg: { $exists: true },
+        subjects: subtopic,
         _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
       }
     },
@@ -257,6 +253,7 @@ const notifyVolunteer = async session => {
     {
       groupName: 'All volunteers - not notified in last 15 mins',
       filter: {
+        subjects: subtopic,
         _id: { $nin: activeSessionVolunteers.concat(notifiedLastFifteenMins) }
       }
     }
@@ -266,7 +263,6 @@ const notifyVolunteer = async session => {
 
   for (const priorityFilter of volunteerPriority) {
     volunteer = await getNextVolunteer({
-      subtopic,
       priorityFilter: priorityFilter.filter
     })
 
