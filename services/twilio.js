@@ -177,9 +177,6 @@ const getVolunteersNotifiedSince = async sinceDate => {
 const notifyVolunteer = async session => {
   let subtopic = session.subTopic
   const activeSessionVolunteers = await getActiveSessionVolunteers()
-  const notifiedLastFiveMins = await getVolunteersNotifiedSince(
-    relativeDate(5 * 60 * 1000)
-  )
   const notifiedLastFifteenMins = await getVolunteersNotifiedSince(
     relativeDate(15 * 60 * 1000)
   )
@@ -204,7 +201,7 @@ const notifyVolunteer = async session => {
    * 4. Regular volunteers - not notified in the last 3 days AND they don’t have "high level subjects"
    * 5. Partner volunteers - not notified in the last 3 days
    * 6. All volunteers - not notified in the last 15 mins who don't have "high level subjects"
-   * 7. All volunteers - not notified in the last 5 mins
+   * 7. All volunteers - not notified in the last 15 mins
    */
   const volunteerPriority = [
     {
@@ -262,10 +259,10 @@ const notifyVolunteer = async session => {
       }
     },
     {
-      groupName: 'All volunteers - not notified in the last 5 mins',
+      groupName: 'All volunteers - not notified in the last 15 mins',
       filter: {
         subjects: subtopic,
-        _id: { $nin: activeSessionVolunteers.concat(notifiedLastFiveMins) }
+        _id: { $nin: activeSessionVolunteers.concat(notifiedLastFifteenMins) }
       }
     }
   ]
