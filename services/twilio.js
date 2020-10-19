@@ -50,7 +50,7 @@ const getNextVolunteer = async ({ subtopic, priorityFilter = {} }) => {
   const filter = {
     isApproved: true,
     [availabilityPath]: true,
-    // @note: subjects gets overriden by priorityFilter when searching
+    // @note: subjects gets overwritten by priorityFilter when searching
     //        for volunteers that do not have a high-level subject
     subjects: subtopic,
     phone: { $exists: true },
