@@ -58,16 +58,19 @@ export default async (): Promise<void> => {
     ]
   );
 
+  let totalEmailed = 0;
+
   if (referencesToEmail.length === 0)
     return log('No references to email for a follow-up');
 
   for (const ref of referencesToEmail) {
     try {
       await MailService.sendReferenceFollowup(ref);
+      totalEmailed++;
     } catch (error) {
       log(`Error notifying reference ${ref.reference._id}: ${error}`);
     }
   }
 
-  return log(`Emailed ${referencesToEmail.length} references a follow-up`);
+  return log(`Emailed ${totalEmailed} references a follow-up`);
 };
