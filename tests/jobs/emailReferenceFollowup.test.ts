@@ -27,7 +27,7 @@ beforeEach(async () => {
   await resetDb();
 });
 
-describe('Follow up email to references', () => {
+describe('Follow-up email to references', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -74,5 +74,37 @@ describe('Follow up email to references', () => {
     expect(MailService.sendReferenceFollowup.mock.calls.length).toBe(
       expectedEmailsSent
     );
+  });
+
+  test('Should catch error when a problem with sending the email occurs', async () => {
+    const referenceOne = buildReference({
+      status: REFERENCE_STATUS.SENT,
+      sentAt: new Date(Date.now() - threeDays - oneHour * 3)
+    });
+    const references = [
+      referenceOne,
+      buildReference({
+        status: REFERENCE_STATUS.SENT,
+        sentAt: new Date(Date.now() - oneDay)
+      })
+    ];
+
+    const customErrorMessage = 'Unable to send';
+
+    MailService.sendReferenceFollowup = jest.fn(() => {
+      throw new Error(customErrorMessage);
+    });
+
+    await Promise.all([insertVolunteer(buildVolunteer({ references }))]);
+    await emailReferenceFollowup();
+
+    const expectedEmailsSent = 0;
+    expect((log as jest.Mock).mock.calls[0][0]).toBe(
+      `Error notifying reference ${referenceOne._id}: Error: ${customErrorMessage}`
+    );
+    expect((log as jest.Mock).mock.calls[1][0]).toBe(
+      `Emailed ${expectedEmailsSent} references a follow-up`
+    );
+    expect(log).toHaveBeenCalledTimes(2);
   });
 });
