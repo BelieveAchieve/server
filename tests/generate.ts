@@ -11,8 +11,8 @@ import {
   SCIENCE_CERTS,
   COLLEGE_CERTS,
   SAT_CERTS
-} from '../../constants';
-import { Message } from '../../models/Message';
+} from '../constants';
+import { Message } from '../models/Message';
 import {
   User,
   Volunteer,

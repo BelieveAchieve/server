@@ -1,19 +1,16 @@
 import mongoose from 'mongoose';
 import request, { Test } from 'supertest';
-import {
-  StudentRegistrationForm,
-  VolunteerRegistrationForm
-} from '../../utils/types';
-import app from '../../../app';
-import School from '../../../models/School';
-import testHighSchools from '../../../seeds/schools/test_high_schools.json';
+import { StudentRegistrationForm, VolunteerRegistrationForm } from '../types';
+import app from '../../app';
+import School from '../../models/School';
+import testHighSchools from '../../seeds/schools/test_high_schools.json';
 import {
   buildStudentRegistrationForm,
   buildVolunteerRegistrationForm,
   buildStudent
-} from '../../utils/generate';
-import { resetDb, insertStudent } from '../../utils/db-utils';
-jest.mock('../../../services/MailService');
+} from '../generate';
+import { resetDb, insertStudent } from '../db-utils';
+jest.mock('../../services/MailService');
 
 const US_IP_ADDRESS = '161.185.160.93';
 

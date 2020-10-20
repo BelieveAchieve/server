@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
 import SessionService from '../../services/SessionService';
-import { buildMessage } from '../utils/generate';
+import { buildMessage } from '../generate';
 import {
   insertVolunteer,
   insertSessionWithVolunteer,
   resetDb,
   insertStudent,
   insertSession
-} from '../utils/db-utils';
+} from '../db-utils';
 jest.mock('../../services/MailService');
 
 beforeAll(async () => {

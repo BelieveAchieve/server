@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import TrainingCtrl from '../../controllers/TrainingCtrl';
-import { resetDb, insertVolunteer, getVolunteer } from '../utils/db-utils';
-import { buildCertifications, buildVolunteer } from '../utils/generate';
+import { resetDb, insertVolunteer, getVolunteer } from '../db-utils';
+import { buildCertifications, buildVolunteer } from '../generate';
 import {
   TRAINING,
   MATH_CERTS,
@@ -15,7 +15,7 @@ import {
 } from '../../constants';
 import Question from '../../models/Question';
 import algebraQuestions from '../../seeds/questions/algebra.json';
-import { Certifications } from '../utils/types';
+import { Certifications } from '../types';
 import UserActionModel from '../../models/UserAction';
 jest.mock('../../services/MailService');
 
