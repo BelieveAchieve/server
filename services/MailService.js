@@ -260,7 +260,6 @@ module.exports = {
       'Mark at UPchieve',
       config.sendgrid.referenceFollowupTemplate,
       emailData,
-      // @note: Change to unsubscribeGroup recruitment?
       config.sendgrid.unsubscribeGroup.account
     )
   },
