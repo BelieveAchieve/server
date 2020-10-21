@@ -50,7 +50,8 @@ const sendEmail = (
   templateId,
   dynamicData,
   unsubscribeGroupId,
-  callback
+  callback,
+  overrides = {}
 ) => {
   // Unsubscribe email preferences
   const asm = {
@@ -68,7 +69,8 @@ const sendEmail = (
     },
     templateId: templateId,
     dynamic_template_data: dynamicData,
-    asm
+    asm,
+    ...overrides
   }
 
   return sgMail.send(msg, callback)
@@ -264,6 +266,11 @@ module.exports = {
       volunteerName: `${volunteerFirstName} ${volunteerLastName}`,
       volunteerFirstName
     }
+    const overrides = {
+      reply_to: {
+        email: config.mail.receivers.recruitment
+      }
+    }
 
     return sendEmail(
       reference.email,
@@ -271,7 +278,9 @@ module.exports = {
       'Mark at UPchieve',
       config.sendgrid.referenceFollowupTemplate,
       emailData,
-      config.sendgrid.unsubscribeGroup.account
+      config.sendgrid.unsubscribeGroup.account,
+      null,
+      overrides
     )
   },
 
