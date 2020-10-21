@@ -244,6 +244,17 @@ module.exports = {
     )
   },
 
+  sendRejectedPhotoSubmission: volunteer => {
+    return sendEmail(
+      volunteer.email,
+      config.mail.senders.support,
+      'The UPchieve Team',
+      config.sendgrid.rejectedPhotoSubmissionTemplate,
+      { firstName: volunteer.firstname },
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
   sendReferenceFollowup: ({ reference, volunteer }) => {
     const volunteerFirstName = capitalize(volunteer.firstName)
     const volunteerLastName = capitalize(volunteer.lastName)

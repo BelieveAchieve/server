@@ -217,6 +217,7 @@ module.exports = {
       volunteerBeforeUpdate.photoIdStatus !== PHOTO_ID_STATUS.REJECTED
     ) {
       UserActionCtrl.rejectedPhotoId(volunteerId)
+      MailService.sendRejectedPhotoSubmission(volunteerBeforeUpdate)
     }
 
     const isNewlyApproved = isApproved && !volunteerBeforeUpdate.isApproved

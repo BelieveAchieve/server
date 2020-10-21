@@ -33,6 +33,7 @@ export const Config = Record({
     partnerReadyToCoachTemplate: String,
     bannedUserAlertTemplate: String,
     referenceFollowupTemplate: String,
+    rejectedPhotoSubmissionTemplate: String,
     unsubscribeGroup: Record({
       newsletter: Number,
       account: Number
