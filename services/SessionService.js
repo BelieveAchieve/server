@@ -72,6 +72,72 @@ const getReviewFlags = session => {
   return flags
 }
 
+const getFeedbackFlags = feedback => {
+  const flags = []
+  const sessionExperience = feedback['session-experience']
+  const otherFeedback = feedback['other-feedback']
+  const feedbackRatings = {
+    studentSessionGoal: feedback['session-goal'],
+    studentCoachRating: feedback['coach-rating'],
+    volunteerSessionRating:
+      feedback['rate-session'] && feedback['rate-session'].rating
+  }
+
+  if (sessionExperience) {
+    feedbackRatings.volunteerEasyToAnswer =
+      sessionExperience['easy-to-answer-questions']
+    feedbackRatings.volunteerFeelLikeHelped =
+      sessionExperience['feel-like-helped-student']
+    feedbackRatings.volunteerFulfilled =
+      sessionExperience['feel-more-fulfilled']
+    feedbackRatings.volunteerGoodUseOfTime =
+      sessionExperience['good-use-of-time']
+    feedbackRatings.volunteerAgain =
+      sessionExperience['plan-on-volunteering-again']
+  }
+
+  for (const [key, value] of Object.entries(feedbackRatings)) {
+    if (value <= 3) {
+      switch (key) {
+        case 'studentSessionGoal':
+        case 'studentCoachRating':
+          flags.push(SESSION_FLAGS.STUDENT_RATING)
+          break
+        case 'volunteerSessionRating':
+        case 'volunteerEasyToAnswer':
+        case 'volunteerFeelLikeHelped':
+        case 'volunteerFulfilled':
+        case 'volunteerGoodUseOfTime':
+        case 'volunteerAgain':
+          flags.push(SESSION_FLAGS.VOLUNTEER_RATING)
+          break
+        default:
+          break
+      }
+      break
+    }
+  }
+
+  if (otherFeedback) flags.push(SESSION_FLAGS.COMMENT)
+
+  return flags
+}
+
+const addFeedbackFlags = async ({ sessionId, userType, flags }) => {
+  if (flags.length === 0) return
+
+  const update = {}
+  if (userType === 'student') update.reviewedStudent = false
+  if (userType === 'volunteer') update.reviewedVolunteer = false
+  return Session.updateOne(
+    { _id: sessionId },
+    {
+      $addToSet: { flags },
+      ...update
+    }
+  )
+}
+
 const addPastSession = async ({ userId, sessionId }) => {
   await User.update({ _id: userId }, { $addToSet: { pastSessions: sessionId } })
 }
@@ -641,5 +707,7 @@ module.exports = {
   // Session Service helpers exposed for testing
   didParticipantsChat,
   getReviewFlags,
+  getFeedbackFlags,
+  addFeedbackFlags,
   calculateHoursTutored
 }
