@@ -4,7 +4,8 @@ import {
   buildMessage,
   buildStudent,
   buildVolunteer,
-  buildSession
+  buildSession,
+  generateSentence
 } from '../generate';
 import {
   insertVolunteer,
@@ -463,6 +464,140 @@ describe('getReviewFlags', () => {
     const result = SessionService.getReviewFlags(populatedSession);
     const expected = [SESSION_FLAGS.REPORTED];
     expect(result).toEqual(expected);
+  });
+});
+
+describe('getFeedbackFlags', () => {
+  test(`Should add ${SESSION_FLAGS.STUDENT_RATING} flag when student leaves a feedback rating with <= 3`, () => {
+    const feedback = {
+      'coach-rating': 1,
+      'session-goal': 4
+    };
+    const result = SessionService.getFeedbackFlags(feedback);
+    const expected = [SESSION_FLAGS.STUDENT_RATING];
+    expect(result).toEqual(expected);
+  });
+
+  test(`Should not add ${SESSION_FLAGS.STUDENT_RATING} flag when student leaves feedback ratings > 3`, () => {
+    const feedback = {
+      'coach-rating': 4,
+      'session-goal': 4
+    };
+    const result = SessionService.getFeedbackFlags(feedback);
+    const expected = [];
+    expect(result).toEqual(expected);
+  });
+  test(`Should add ${SESSION_FLAGS.VOLUNTEER_RATING} flag when volunteer leaves a feedback rating with <= 3`, () => {
+    const feedback = {
+      'rate-session': {
+        rating: 2
+      },
+      'session-experience': {
+        'easy-to-answer-questions': 1,
+        'feel-like-helped-student': 1,
+        'feel-more-fulfilled': 1,
+        'good-use-of-time': 1,
+        'plan-on-volunteering-again': 1
+      }
+    };
+    const result = SessionService.getFeedbackFlags(feedback);
+    const expected = [SESSION_FLAGS.VOLUNTEER_RATING];
+    expect(result).toEqual(expected);
+  });
+  test(`Should not add ${SESSION_FLAGS.VOLUNTEER_RATING} flag when student leaves feedback ratings > 3`, () => {
+    const feedback = {
+      'rate-session': {
+        rating: 5
+      }
+    };
+    const result = SessionService.getFeedbackFlags(feedback);
+    const expected = [];
+    expect(result).toEqual(expected);
+  });
+
+  test(`Should add ${SESSION_FLAGS.COMMENT} flag when user leaves a comment`, () => {
+    const comment = generateSentence();
+    const feedback = {
+      'other-feedback': comment
+    };
+    const result = SessionService.getFeedbackFlags(feedback);
+    const expected = [SESSION_FLAGS.COMMENT];
+    expect(result).toEqual(expected);
+  });
+});
+
+describe('addFeedbackFlags', () => {
+  test('Should add student feedback flags to the session and set studentReviewed to false', async () => {
+    const { session } = await insertSessionWithVolunteer({
+      endedAt: Date.now(),
+      flags: [SESSION_FLAGS.FIRST_TIME_STUDENT],
+      reviewedStudent: true
+    });
+    const flags = [SESSION_FLAGS.COMMENT, SESSION_FLAGS.STUDENT_RATING];
+    const input = {
+      sessionId: session._id,
+      userType: 'student',
+      flags
+    };
+    await SessionService.addFeedbackFlags(input);
+    const updatedSession = await getSession(
+      { _id: input.sessionId },
+      {
+        flags: 1,
+        reviewedStudent: 1
+      }
+    );
+    const expectedFlags = [SESSION_FLAGS.FIRST_TIME_STUDENT, ...flags];
+    expect(updatedSession.flags).toEqual(expectedFlags);
+    expect(updatedSession.reviewedStudent).toBeFalsy();
+  });
+
+  test('Should add volunteer feedback flags to the session and set reviewedVolunteer to false', async () => {
+    const { session } = await insertSessionWithVolunteer({
+      endedAt: Date.now(),
+      flags: [SESSION_FLAGS.REPORTED],
+      isReported: true
+    });
+    const flags = [SESSION_FLAGS.VOLUNTEER_RATING];
+    const input = {
+      sessionId: session._id,
+      userType: 'volunteer',
+      flags
+    };
+    await SessionService.addFeedbackFlags(input);
+    const updatedSession = await getSession(
+      { _id: input.sessionId },
+      {
+        flags: 1,
+        reviewedVolunteer: 1
+      }
+    );
+    const expectedFlags = [SESSION_FLAGS.REPORTED, ...flags];
+    expect(updatedSession.flags).toEqual(expectedFlags);
+    expect(updatedSession.reviewedVolunteer).toBeFalsy();
+  });
+
+  test('Should not add feedback flags to the session', async () => {
+    const { session } = await insertSessionWithVolunteer({
+      endedAt: Date.now(),
+      flags: [SESSION_FLAGS.FIRST_TIME_STUDENT],
+      reviewedStudent: true
+    });
+    const flags = [];
+    const input = {
+      sessionId: session._id,
+      userType: 'student',
+      flags
+    };
+    await SessionService.addFeedbackFlags(input);
+    const updatedSession = await getSession(
+      { _id: input.sessionId },
+      {
+        flags: 1
+      }
+    );
+    const expectedFlags = [SESSION_FLAGS.FIRST_TIME_STUDENT];
+    expect(updatedSession.flags).toEqual(expectedFlags);
   });
 });
 
