@@ -18,6 +18,7 @@ export interface User {
   password: string;
   referredByCode: Types.ObjectId | string;
   referralCode: string;
+  pastSessions: Types.ObjectId[] | Session[];
 }
 
 // @todo: clean up - use the Student interface from Student.ts when available
@@ -223,4 +224,8 @@ export interface Session {
   isReported: boolean;
   reportReason: string;
   reportMessage: string;
+  reviewStatus: string;
+  flags: string[];
+  reviewedStudent: boolean;
+  reviewedVolunteer: boolean;
 }

@@ -130,6 +130,7 @@ export const buildStudent = (overrides = {}): Student => {
     studentPartnerOrg: 'example',
     referredByCode: '',
     referralCode: generateReferralCode(_id.toString()),
+    pastSessions: [],
     ...overrides
   };
 
@@ -161,6 +162,7 @@ export const buildVolunteer = (overrides = {}): Volunteer => {
     trainingCourses: buildTrainingCourses(),
     sentReadyToCoachEmail: false,
     hoursTutored: Types.Decimal128.fromString('0'),
+    pastSessions: [],
     ...overrides
   };
 
