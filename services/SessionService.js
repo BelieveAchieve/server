@@ -205,6 +205,63 @@ const calculateHoursTutored = session => {
   return Number((sessionLengthMs / 3600000).toFixed(2))
 }
 
+const getSessionsToReview = async ({ users, page }) => {
+  const pageNum = parseInt(page) || 1
+  const PER_PAGE = 15
+  const skip = (pageNum - 1) * PER_PAGE
+
+  const query = {}
+  if (users === 'students') query.reviewedStudent = false
+  if (users === 'volunteers') query.reviewedVolunteer = false
+  if (!users)
+    query.$or = [{ reviewedStudent: false }, { reviewedVolunteer: false }]
+
+  try {
+    const sessions = await Session.aggregate([
+      {
+        $sort: {
+          createdAt: -1
+        }
+      },
+      {
+        $match: query
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'student',
+          foreignField: '_id',
+          as: 'student'
+        }
+      },
+      {
+        $unwind: '$student'
+      },
+      {
+        $project: {
+          createdAt: 1,
+          endedAt: 1,
+          volunteer: { $ifNull: ['$volunteer', null] },
+          totalMessages: { $size: '$messages' },
+          type: 1,
+          subTopic: 1,
+          studentFirstName: '$student.firstname',
+          isReported: 1,
+          flags: 1
+        }
+      }
+    ])
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(PER_PAGE)
+
+    const isLastPage = sessions.length < PER_PAGE
+    return { sessions, isLastPage }
+  } catch (err) {
+    throw new Error(err.message)
+  }
+}
+
 module.exports = {
   getSession,
 
@@ -703,11 +760,12 @@ module.exports = {
       throw new Error(err.message)
     }
   },
+  getFeedbackFlags,
+  addFeedbackFlags,
+  getSessionsToReview,
 
   // Session Service helpers exposed for testing
   didParticipantsChat,
   getReviewFlags,
-  getFeedbackFlags,
-  addFeedbackFlags,
   calculateHoursTutored
 }

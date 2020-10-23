@@ -159,6 +159,23 @@ module.exports = function(router, io) {
     }
   })
 
+  router.get('/sessions/review', passport.isAdmin, async function(
+    req,
+    res,
+    next
+  ) {
+    try {
+      console.log(req.query)
+      const { sessions, isLastPage } = await SessionService.getSessionsToReview(
+        req.query
+      )
+      res.json({ sessions, isLastPage })
+    } catch (err) {
+      console.log(err)
+      next(err)
+    }
+  })
+
   router.get('/session/:sessionId/photo-url', async function(req, res, next) {
     try {
       const { sessionId } = req.params
