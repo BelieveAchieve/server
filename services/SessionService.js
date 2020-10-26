@@ -123,17 +123,15 @@ const getFeedbackFlags = feedback => {
   return flags
 }
 
-const addFeedbackFlags = async ({ sessionId, userType, flags }) => {
+const addFeedbackFlags = async ({ sessionId, flags }) => {
   if (flags.length === 0) return
 
-  const update = {}
-  if (userType === 'student') update.reviewedStudent = false
-  if (userType === 'volunteer') update.reviewedVolunteer = false
   return Session.updateOne(
     { _id: sessionId },
     {
       $addToSet: { flags },
-      ...update
+      reviewedStudent: false,
+      reviewedVolunteer: false
     }
   )
 }

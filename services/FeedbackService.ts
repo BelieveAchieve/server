@@ -17,12 +17,11 @@ export const saveFeedback = async (data: {
   volunteerId: string;
 }): Promise<FeedbackDocument> => {
   const feedback = new FeedbackModel(data);
-  const { sessionId, userType, responseData } = data;
+  const { sessionId, responseData } = data;
   const flags = await SessionService.getFeedbackFlags(responseData);
   if (flags.length > 0)
     await SessionService.addFeedbackFlags({
       sessionId,
-      userType,
       flags
     });
   return feedback.save();

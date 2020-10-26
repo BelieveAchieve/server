@@ -536,7 +536,6 @@ describe('addFeedbackFlags', () => {
     const flags = [SESSION_FLAGS.COMMENT, SESSION_FLAGS.STUDENT_RATING];
     const input = {
       sessionId: session._id,
-      userType: 'student',
       flags
     };
     await SessionService.addFeedbackFlags(input);
@@ -561,7 +560,6 @@ describe('addFeedbackFlags', () => {
     const flags = [SESSION_FLAGS.VOLUNTEER_RATING];
     const input = {
       sessionId: session._id,
-      userType: 'volunteer',
       flags
     };
     await SessionService.addFeedbackFlags(input);
