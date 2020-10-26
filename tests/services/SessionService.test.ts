@@ -19,7 +19,7 @@ import {
 } from '../db-utils';
 import { Student, Volunteer } from '../types';
 import { Message } from '../../models/Message';
-import { SESSION_FLAGS, SESSION_REVIEW_STATUS } from '../../constants';
+import { SESSION_FLAGS } from '../../constants';
 import { convertObjectIdListToStringList } from '../utils';
 import WhiteboardService from '../../services/WhiteboardService';
 jest.mock('../../services/MailService');
@@ -809,9 +809,6 @@ describe('endSession', () => {
       expect(updatedSession.flags).toEqual(expectedFlags);
       expect(updatedSession.reviewedStudent).toBeFalsy();
       expect(updatedSession.reviewedVolunteer).toBeFalsy();
-      expect(updatedSession.reviewStatus).toEqual(
-        SESSION_REVIEW_STATUS.NEEDS_REVIEW
-      );
     });
 
     test.todo('Test mock function for QuillDoc was executed');

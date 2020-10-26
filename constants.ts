@@ -332,11 +332,6 @@ export enum SURVEY_TYPES {
   STUDENT_POSTSESSION = 'student post-session'
 }
 
-export enum SESSION_REVIEW_STATUS {
-  REVIEWED = 'REVIEWED',
-  NEEDS_REVIEW = 'NEEDS_REVIEW'
-}
-
 export enum SESSION_FLAGS {
   ABSENT_USER = 'ABSENT_USER',
   COMMENT = 'COMMENT',
