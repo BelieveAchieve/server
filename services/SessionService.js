@@ -10,7 +10,7 @@ const UserActionCtrl = require('../controllers/UserActionCtrl')
 const ObjectId = require('mongodb').ObjectId
 const { USER_ACTION } = require('../constants')
 const VolunteerModel = require('../models/Volunteer')
-const { SESSION_REVIEW_STATUS, SESSION_FLAGS } = require('../constants')
+const { SESSION_FLAGS } = require('../constants')
 
 const didParticipantsChat = (messages, studentId, volunteerId) => {
   let studentSentMessage = false
@@ -144,6 +144,19 @@ const getSession = async sessionId => {
   return Session.findOne({ _id: sessionId })
     .lean()
     .exec()
+}
+
+const updateSession = async ({
+  sessionId,
+  reviewedStudent,
+  reviewedVolunteer
+}) => {
+  const update = {}
+  if (reviewedStudent !== undefined) update.reviewedStudent = reviewedStudent
+  if (reviewedVolunteer !== undefined)
+    update.reviewedVolunteer = reviewedVolunteer
+
+  return Session.updateOne({ _id: sessionId }, update)
 }
 
 const isSessionParticipant = (session, user) => {
@@ -324,25 +337,25 @@ module.exports = {
 
     const endedAt = new Date()
 
+    const reviewFlags = getReviewFlags({ ...session, endedAt })
+    const update = {}
+    if (reviewFlags.length > 0) {
+      update.flags = reviewFlags
+      update.reviewedStudent = false
+    }
+
     if (session.volunteer) {
       const hoursTutored = calculateHoursTutored({ ...session, endedAt })
       await VolunteerModel.updateOne(
         { _id: session.volunteer._id },
         { $addToSet: { pastSessions: session._id }, $inc: { hoursTutored } }
       )
+
+      if (reviewFlags.length > 0) update.reviewedVolunteer = false
     }
 
     const quillDoc = await QuillDocService.getDoc(session._id.toString())
     const whiteboardDoc = await WhiteboardService.getDoc(session._id.toString())
-
-    const reviewFlags = getReviewFlags({ ...session, endedAt })
-    const update = {}
-    if (reviewFlags.length > 0) {
-      update.flags = reviewFlags
-      update.reviewStatus = SESSION_REVIEW_STATUS.NEEDS_REVIEW
-      update.reviewedVolunteer = false
-      update.reviewedStudent = false
-    }
 
     await Session.updateOne(
       { _id: session._id },
@@ -761,6 +774,7 @@ module.exports = {
   getFeedbackFlags,
   addFeedbackFlags,
   getSessionsToReview,
+  updateSession,
 
   // Session Service helpers exposed for testing
   didParticipantsChat,

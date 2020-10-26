@@ -159,7 +159,7 @@ module.exports = function(router, io) {
     }
   })
 
-  router.get('/sessions/review', passport.isAdmin, async function(
+  router.get('/session/review', passport.isAdmin, async function(
     req,
     res,
     next
@@ -170,6 +170,25 @@ module.exports = function(router, io) {
         req.query
       )
       res.json({ sessions, isLastPage })
+    } catch (err) {
+      console.log(err)
+      next(err)
+    }
+  })
+
+  router.put('/session/:sessionId', passport.isAdmin, async function(
+    req,
+    res,
+    next
+  ) {
+    try {
+      const { sessionId } = req.params
+      const data = {
+        ...req.body,
+        sessionId
+      }
+      await SessionService.updateSession(data)
+      res.sendStatus(200)
     } catch (err) {
       console.log(err)
       next(err)
