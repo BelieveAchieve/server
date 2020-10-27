@@ -72,6 +72,7 @@ const getReviewFlags = session => {
   return flags
 }
 
+// Get flags for a session if there's a feedback rating <= 3 or a comment was left
 const getFeedbackFlags = feedback => {
   const flags = []
   const sessionExperience = feedback['session-experience']
