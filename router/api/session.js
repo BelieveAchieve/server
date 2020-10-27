@@ -165,13 +165,11 @@ module.exports = function(router, io) {
     next
   ) {
     try {
-      console.log(req.query)
       const { sessions, isLastPage } = await SessionService.getSessionsToReview(
         req.query
       )
       res.json({ sessions, isLastPage })
     } catch (err) {
-      console.log(err)
       next(err)
     }
   })
@@ -190,7 +188,6 @@ module.exports = function(router, io) {
       await SessionService.updateSession(data)
       res.sendStatus(200)
     } catch (err) {
-      console.log(err)
       next(err)
     }
   })
