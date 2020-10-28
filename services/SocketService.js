@@ -1,6 +1,7 @@
 const User = require('../models/User')
 const Session = require('../models/Session')
 const Message = require('../models/Message')
+const Sentry = require('@sentry/node')
 
 const userSockets = {} // userId => [sockets]
 
@@ -29,6 +30,11 @@ module.exports = function(io) {
   return {
     // to be called by router/api/sockets.js when user connects socket and authenticates
     connectUser: async function(userId, socket) {
+      if (!userId)
+        Sentry.captureMessage(
+          'No userId found when connecting user to a socket connection'
+        )
+
       if (!userSockets[userId]) {
         userSockets[userId] = []
       }

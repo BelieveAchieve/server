@@ -115,9 +115,11 @@ module.exports = function(router, io) {
     }
   })
 
+  // @todo: switch to a GET request
   router.route('/session/current').post(async function(req, res, next) {
-    const data = req.body || {}
-    const userId = ObjectId(data.user_id)
+    const {
+      user: { _id: userId }
+    } = req
 
     try {
       const currentSession = await Session.current(userId)
@@ -195,7 +197,7 @@ module.exports = function(router, io) {
 
   router.get('/sessions', passport.isAdmin, async function(req, res, next) {
     try {
-      const { sessions, isLastPage } = await sessionCtrl.getFilteredSessions(
+      const { sessions, isLastPage } = await SessionService.getFilteredSessions(
         req.query
       )
       res.json({ sessions, isLastPage })

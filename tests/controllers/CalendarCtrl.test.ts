@@ -1,14 +1,14 @@
 import mongoose from 'mongoose';
 import CalendarCtrl from '../../controllers/CalendarCtrl';
-import { insertVolunteer, resetDb } from '../utils/db-utils';
+import { insertVolunteer, resetDb } from '../db-utils';
 import {
   buildAvailability,
   buildVolunteer,
   buildCertifications
-} from '../utils/generate';
+} from '../generate';
 import VolunteerModel from '../../models/Volunteer';
 import UserActionModel from '../../models/UserAction';
-import { Volunteer } from '../utils/types';
+import { Volunteer } from '../types';
 import { USER_ACTION, SUBJECTS } from '../../constants';
 
 // db connection

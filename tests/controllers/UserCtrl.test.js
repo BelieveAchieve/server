@@ -1,10 +1,10 @@
-const Volunteer = require('../../../models/Volunteer')
-const UserCtrl = require('../../../controllers/UserCtrl')
+const Volunteer = require('../../models/Volunteer')
+const UserCtrl = require('../../controllers/UserCtrl')
 const {
   flexibleHoursSelected,
   noHoursSelected,
   allHoursSelected
-} = require('../../mocks/volunteer-availability')
+} = require('../mocks/volunteer-availability')
 
 const goodUser = new Volunteer({
   email: 'email@email.com',

@@ -2,7 +2,6 @@ const UserCtrl = require('../../controllers/UserCtrl')
 const UserService = require('../../services/UserService')
 const MailService = require('../../services/MailService')
 const AwsService = require('../../services/AwsService')
-const User = require('../../models/User')
 const Volunteer = require('../../models/Volunteer')
 const passport = require('../auth/passport')
 const config = require('../../config')
@@ -18,21 +17,6 @@ module.exports = function(router) {
 
     const parsedUser = UserService.parseUser(req.user)
     return res.json({ user: parsedUser })
-  })
-
-  router.route('/user/volunteer-stats').get(async function(req, res, next) {
-    if (!req.user) {
-      return res.status(401).json({
-        err: 'Client has no authenticated session'
-      })
-    }
-
-    try {
-      const volunteerStats = await UserCtrl.getVolunteerStats(req.user)
-      res.json({ volunteerStats })
-    } catch (error) {
-      return next(error)
-    }
   })
 
   // @note: Currently, only volunteers are able to update their profile
@@ -158,19 +142,10 @@ module.exports = function(router) {
 
   router.get('/user/:userId', passport.isAdmin, async function(req, res, next) {
     const { userId } = req.params
+    const { page } = req.query
 
     try {
-      const user = await User.findOne({ _id: userId })
-        .populate({
-          path: 'pastSessions',
-          options: {
-            sort: { createdAt: -1 },
-            limit: 50
-          }
-        })
-        .populate('approvedHighschool')
-        .lean()
-        .exec()
+      const user = await UserService.adminGetUser(userId, parseInt(page))
 
       if (user.isVolunteer && user.photoIdS3Key)
         user.photoUrl = await AwsService.getPhotoIdUrl({
