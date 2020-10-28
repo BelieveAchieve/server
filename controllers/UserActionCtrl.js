@@ -184,6 +184,20 @@ const endedSession = (userId, sessionId, userAgent, ipAddress) => {
   )
 }
 
+const timedOutSession = (
+  userId,
+  sessionId,
+  timeoutTime,
+  userAgent,
+  ipAddress
+) => {
+  let action
+  if (timeoutTime === 15) action = USER_ACTION.SESSION.TIMED_OUT_15_MINS
+  else action = USER_ACTION.SESSION.TIMED_OUT_45_MINS
+
+  return createSessionAction(userId, sessionId, userAgent, ipAddress, action)
+}
+
 const updatedProfile = (userId, ipAddress) => {
   return createAccountAction(
     userId,
@@ -278,6 +292,7 @@ module.exports = {
   rejoinedSession,
   endedSession,
   repliedYesToSession,
+  timedOutSession,
   updatedProfile,
   updatedAvailability,
   createdAccount,

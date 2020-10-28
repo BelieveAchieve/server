@@ -228,6 +228,15 @@ module.exports = function(router, io) {
     return res.json({ msg: 'Success' })
   })
 
+  router.post('/session/:sessionId/timed-out', async function(req, res) {
+    const { sessionId } = req.params
+    const { timeout } = req.body
+    const { user, ip } = req
+    const userAgent = req.get('User-Agent')
+    UserActionCtrl.timedOutSession(user._id, sessionId, timeout, userAgent, ip)
+    res.sendStatus(200)
+  })
+
   router.get('/sessions', passport.isAdmin, async function(req, res, next) {
     try {
       const { sessions, isLastPage } = await SessionService.getFilteredSessions(
