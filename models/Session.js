@@ -2,6 +2,8 @@ const mongoose = require('mongoose')
 
 const Message = require('./Message')
 const moment = require('moment-timezone')
+const { SESSION_FLAGS } = require('../constants')
+const { values } = require('lodash')
 
 const validTypes = ['Math', 'College', 'Science']
 
@@ -86,7 +88,13 @@ const sessionSchema = new mongoose.Schema({
     default: false
   },
   reportReason: String,
-  reportMessage: String
+  reportMessage: String,
+  flags: {
+    type: [String],
+    enum: values(SESSION_FLAGS)
+  },
+  reviewedStudent: Boolean,
+  reviewedVolunteer: Boolean
 })
 
 sessionSchema.methods.saveMessage = function(messageObj, cb) {

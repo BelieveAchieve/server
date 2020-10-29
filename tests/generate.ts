@@ -31,6 +31,7 @@ export const getEmail = faker.internet.email;
 export const getFirstName = faker.name.firstName;
 export const getLastName = faker.name.lastName;
 export const getId = faker.random.uuid;
+export const generateSentence = (): string => faker.lorem.sentence();
 
 const generateReferralCode = (userId): string =>
   base64url(Buffer.from(userId, 'hex'));
@@ -130,6 +131,7 @@ export const buildStudent = (overrides = {}): Student => {
     studentPartnerOrg: 'example',
     referredByCode: '',
     referralCode: generateReferralCode(_id.toString()),
+    pastSessions: [],
     ...overrides
   };
 
@@ -161,6 +163,7 @@ export const buildVolunteer = (overrides = {}): Volunteer => {
     trainingCourses: buildTrainingCourses(),
     sentReadyToCoachEmail: false,
     hoursTutored: Types.Decimal128.fromString('0'),
+    pastSessions: [],
     ...overrides
   };
 

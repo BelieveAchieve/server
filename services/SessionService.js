@@ -10,6 +10,132 @@ const UserActionCtrl = require('../controllers/UserActionCtrl')
 const ObjectId = require('mongodb').ObjectId
 const { USER_ACTION } = require('../constants')
 const VolunteerModel = require('../models/Volunteer')
+const { SESSION_FLAGS } = require('../constants')
+
+const didParticipantsChat = (messages, studentId, volunteerId) => {
+  let studentSentMessage = false
+  let volunteerSentMessage = false
+
+  for (const message of messages) {
+    const messager = message.user.toString()
+    if (studentId.equals(messager)) studentSentMessage = true
+    if (volunteerId.equals(messager)) volunteerSentMessage = true
+    if (studentSentMessage && volunteerSentMessage) break
+  }
+
+  return studentSentMessage && volunteerSentMessage
+}
+
+const getReviewFlags = session => {
+  const flags = []
+  const {
+    messages,
+    student,
+    volunteer,
+    createdAt,
+    endedAt,
+    isReported
+  } = session
+  const isStudentsFirstSession = student.pastSessions.length === 0
+  const sessionLength =
+    new Date(endedAt).getTime() - new Date(createdAt).getTime()
+
+  if (volunteer) {
+    const isFullConversation = didParticipantsChat(
+      messages,
+      student._id,
+      volunteer._id
+    )
+    const isVolunteersFirstSession = volunteer.pastSessions.length === 0
+
+    // one user never sent any messages
+    if (!isFullConversation) flags.push(SESSION_FLAGS.ABSENT_USER)
+
+    // both users messaged back and forth and less than 20 messages were sent
+    if (isFullConversation && messages.length < 20)
+      flags.push(SESSION_FLAGS.LOW_MESSAGES)
+
+    // volunteer was a first time user
+    if (isVolunteersFirstSession) flags.push(SESSION_FLAGS.FIRST_TIME_VOLUNTEER)
+
+    // session was reported by the volunteer
+    if (isReported) flags.push(SESSION_FLAGS.REPORTED)
+  } else {
+    // session duration >= 10 mins
+    if (sessionLength >= 1000 * 60 * 10) flags.push(SESSION_FLAGS.UNMATCHED)
+  }
+
+  // student was a first time user and session duration >= 1
+  if (isStudentsFirstSession && sessionLength >= 1000 * 60)
+    flags.push(SESSION_FLAGS.FIRST_TIME_STUDENT)
+
+  return flags
+}
+
+// Get flags for a session if there's a feedback rating <= 3 or a comment was left
+const getFeedbackFlags = feedback => {
+  const flags = []
+  const sessionExperience = feedback['session-experience']
+  const otherFeedback = feedback['other-feedback']
+  const feedbackRatings = {
+    studentSessionGoal: feedback['session-goal'],
+    studentCoachRating: feedback['coach-rating'],
+    volunteerSessionRating:
+      feedback['rate-session'] && feedback['rate-session'].rating
+  }
+
+  if (sessionExperience) {
+    feedbackRatings.volunteerEasyToAnswer =
+      sessionExperience['easy-to-answer-questions']
+    feedbackRatings.volunteerFeelLikeHelped =
+      sessionExperience['feel-like-helped-student']
+    feedbackRatings.volunteerFulfilled =
+      sessionExperience['feel-more-fulfilled']
+    feedbackRatings.volunteerGoodUseOfTime =
+      sessionExperience['good-use-of-time']
+    feedbackRatings.volunteerAgain =
+      sessionExperience['plan-on-volunteering-again']
+  }
+
+  for (const [key, value] of Object.entries(feedbackRatings)) {
+    if (value <= 3) {
+      switch (key) {
+        case 'studentSessionGoal':
+        case 'studentCoachRating':
+          flags.push(SESSION_FLAGS.STUDENT_RATING)
+          break
+        case 'volunteerSessionRating':
+        case 'volunteerEasyToAnswer':
+        case 'volunteerFeelLikeHelped':
+        case 'volunteerFulfilled':
+        case 'volunteerGoodUseOfTime':
+        case 'volunteerAgain':
+          flags.push(SESSION_FLAGS.VOLUNTEER_RATING)
+          break
+        default:
+          break
+      }
+      break
+    }
+  }
+
+  if (otherFeedback) flags.push(SESSION_FLAGS.COMMENT)
+
+  return flags
+}
+
+const addFeedbackFlags = async ({ sessionId, flags }) => {
+  if (flags.length === 0) return
+
+  return Session.updateOne(
+    { _id: sessionId },
+    {
+      $addToSet: { flags },
+      reviewedStudent: false,
+      reviewedVolunteer: false
+    }
+  )
+}
 
 const addPastSession = async ({ userId, sessionId }) => {
   await User.update({ _id: userId }, { $addToSet: { pastSessions: sessionId } })
@@ -21,9 +147,22 @@ const getSession = async sessionId => {
     .exec()
 }
 
+const updateSession = async ({
+  sessionId,
+  reviewedStudent,
+  reviewedVolunteer
+}) => {
+  const update = {}
+  if (reviewedStudent !== undefined) update.reviewedStudent = reviewedStudent
+  if (reviewedVolunteer !== undefined)
+    update.reviewedVolunteer = reviewedVolunteer
+
+  return Session.updateOne({ _id: sessionId }, update)
+}
+
 const isSessionParticipant = (session, user) => {
   return [session.student, session.volunteer].some(
-    participant => !!participant && user._id.equals(participant)
+    participant => !!participant && user._id.equals(participant._id)
   )
 }
 
@@ -78,6 +217,63 @@ const calculateHoursTutored = session => {
   return Number((sessionLengthMs / 3600000).toFixed(2))
 }
 
+const getSessionsToReview = async ({ users, page }) => {
+  const pageNum = parseInt(page) || 1
+  const PER_PAGE = 15
+  const skip = (pageNum - 1) * PER_PAGE
+
+  const query = {}
+  if (users === 'students') query.reviewedStudent = false
+  if (users === 'volunteers') query.reviewedVolunteer = false
+  if (!users)
+    query.$or = [{ reviewedStudent: false }, { reviewedVolunteer: false }]
+
+  try {
+    const sessions = await Session.aggregate([
+      {
+        $sort: {
+          createdAt: -1
+        }
+      },
+      {
+        $match: query
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'student',
+          foreignField: '_id',
+          as: 'student'
+        }
+      },
+      {
+        $unwind: '$student'
+      },
+      {
+        $project: {
+          createdAt: 1,
+          endedAt: 1,
+          volunteer: { $ifNull: ['$volunteer', null] },
+          totalMessages: { $size: '$messages' },
+          type: 1,
+          subTopic: 1,
+          studentFirstName: '$student.firstname',
+          isReported: 1,
+          flags: 1
+        }
+      }
+    ])
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(PER_PAGE)
+
+    const isLastPage = sessions.length < PER_PAGE
+    return { sessions, isLastPage }
+  } catch (err) {
+    throw new Error(err.message)
+  }
+}
+
 module.exports = {
   getSession,
 
@@ -124,25 +320,39 @@ module.exports = {
   },
 
   endSession: async ({ sessionId, endedBy = null, isAdmin = false }) => {
-    const session = await getSession(sessionId)
+    const session = await Session.findOne({ _id: sessionId })
+      .populate({ path: 'student', select: 'pastSessions' })
+      .populate({ path: 'volunteer', select: 'pastSessions' })
+      .lean()
+      .exec()
+
     if (!session) throw new Error('No session found')
     if (session.endedAt) return
     if (!isAdmin && !isSessionParticipant(session, endedBy))
       throw new Error('Only session participants can end a session')
 
     await addPastSession({
-      userId: session.student,
+      userId: session.student._id,
       sessionId: session._id
     })
 
     const endedAt = new Date()
 
+    const reviewFlags = getReviewFlags({ ...session, endedAt })
+    const update = {}
+    if (reviewFlags.length > 0) {
+      update.flags = reviewFlags
+      update.reviewedStudent = false
+    }
+
     if (session.volunteer) {
       const hoursTutored = calculateHoursTutored({ ...session, endedAt })
       await VolunteerModel.updateOne(
-        { _id: session.volunteer },
+        { _id: session.volunteer._id },
         { $addToSet: { pastSessions: session._id }, $inc: { hoursTutored } }
       )
+
+      if (reviewFlags.length > 0) update.reviewedVolunteer = false
     }
 
     const quillDoc = await QuillDocService.getDoc(session._id.toString())
@@ -154,7 +364,8 @@ module.exports = {
         endedAt,
         endedBy,
         whiteboardDoc: whiteboardDoc || undefined,
-        quillDoc: quillDoc ? JSON.stringify(quillDoc) : undefined
+        quillDoc: quillDoc ? JSON.stringify(quillDoc) : undefined,
+        ...update
       }
     )
 
@@ -561,6 +772,13 @@ module.exports = {
       throw new Error(err.message)
     }
   },
+  getFeedbackFlags,
+  addFeedbackFlags,
+  getSessionsToReview,
+  updateSession,
 
+  // Session Service helpers exposed for testing
+  didParticipantsChat,
+  getReviewFlags,
   calculateHoursTutored
 }

@@ -64,7 +64,7 @@ export const insertSession = async (
   return { session: createdSession.toObject(), student };
 };
 
-// @todo: make the student configurable
+// @todo: make the student and volunteer configurable
 export const insertSessionWithVolunteer = async (
   overrides = {}
 ): Promise<{
@@ -85,11 +85,31 @@ export const insertSessionWithVolunteer = async (
   return { session: createdSession.toObject(), student, volunteer };
 };
 
+export const getStudent = (
+  query,
+  projection = {}
+): Promise<Partial<Student>> => {
+  return StudentModel.findOne(query)
+    .select(projection)
+    .lean()
+    .exec();
+};
+
 export const getVolunteer = (
   query,
   projection = {}
 ): Promise<Partial<Volunteer>> => {
   return VolunteerModel.findOne(query)
+    .select(projection)
+    .lean()
+    .exec();
+};
+
+export const getSession = (
+  query,
+  projection = {}
+): Promise<Partial<Session>> => {
+  return SessionModel.findOne(query)
     .select(projection)
     .lean()
     .exec();
