@@ -56,7 +56,9 @@ module.exports = {
       availability: { $exists: true },
       isFakeUser: false,
       isTestUser: false,
-      isFailsafeVolunteer: false
+      isFailsafeVolunteer: false,
+      isOnboarded: true,
+      isDeactivated: false
     }
 
     Volunteer.find(volunteerQuery)

@@ -2,6 +2,8 @@ const mongoose = require('mongoose')
 
 const Message = require('./Message')
 const moment = require('moment-timezone')
+const { SESSION_FLAGS } = require('../constants')
+const { values } = require('lodash')
 
 const validTypes = ['Math', 'College', 'Science']
 
@@ -86,7 +88,13 @@ const sessionSchema = new mongoose.Schema({
     default: false
   },
   reportReason: String,
-  reportMessage: String
+  reportMessage: String,
+  flags: {
+    type: [String],
+    enum: values(SESSION_FLAGS)
+  },
+  reviewedStudent: Boolean,
+  reviewedVolunteer: Boolean
 })
 
 sessionSchema.methods.saveMessage = function(messageObj, cb) {
@@ -170,6 +178,7 @@ sessionSchema.methods.addNotifications = function(notificationsToAdd, cb) {
 }
 
 sessionSchema.statics.findLatest = function(attrs, cb) {
+  // @todo: refactor this query
   return this.find(attrs)
     .sort({ createdAt: -1 })
     .limit(1)
@@ -182,20 +191,18 @@ sessionSchema.statics.findLatest = function(attrs, cb) {
 // user's current session
 sessionSchema.statics.current = function(userId, cb) {
   return this.findLatest({
-    $and: [
-      { endedAt: { $exists: false } },
-      {
-        $or: [{ student: userId }, { volunteer: userId }]
-      }
-    ]
+    endedAt: { $exists: false },
+    $or: [{ student: userId }, { volunteer: userId }]
   })
 }
 
 // sessions that have not yet been fulfilled by a volunteer
 sessionSchema.statics.getUnfulfilledSessions = async function() {
+  // @note: this query is sorted in memory and uses the volunteer: 1, endedAt: 1 index
   const queryAttrs = {
-    volunteerJoinedAt: { $exists: false },
-    endedAt: { $exists: false }
+    volunteer: { $exists: false },
+    endedAt: { $exists: false },
+    createdAt: { $gt: new Date(Date.now() - 24 * 60 * 60 * 1000) }
   }
 
   const sessions = await this.find(queryAttrs)

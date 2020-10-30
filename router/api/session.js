@@ -7,6 +7,7 @@ const UserActionCtrl = require('../../controllers/UserActionCtrl')
 const SocketService = require('../../services/SocketService')
 const SessionService = require('../../services/SessionService')
 const AwsService = require('../../services/AwsService')
+const QuillDocService = require('../../services/QuillDocService')
 const recordIpAddress = require('../../middleware/record-ip-address')
 const passport = require('../auth/passport')
 const mapMultiWordSubtopic = require('../../utils/map-multi-word-subtopic')
@@ -114,9 +115,11 @@ module.exports = function(router, io) {
     }
   })
 
+  // @todo: switch to a GET request
   router.route('/session/current').post(async function(req, res, next) {
-    const data = req.body || {}
-    const userId = ObjectId(data.user_id)
+    const {
+      user: { _id: userId }
+    } = req
 
     try {
       const currentSession = await Session.current(userId)
@@ -151,6 +154,39 @@ module.exports = function(router, io) {
           data: latestSession
         })
       }
+    } catch (err) {
+      next(err)
+    }
+  })
+
+  router.get('/session/review', passport.isAdmin, async function(
+    req,
+    res,
+    next
+  ) {
+    try {
+      const { sessions, isLastPage } = await SessionService.getSessionsToReview(
+        req.query
+      )
+      res.json({ sessions, isLastPage })
+    } catch (err) {
+      next(err)
+    }
+  })
+
+  router.put('/session/:sessionId', passport.isAdmin, async function(
+    req,
+    res,
+    next
+  ) {
+    try {
+      const { sessionId } = req.params
+      const data = {
+        ...req.body,
+        sessionId
+      }
+      await SessionService.updateSession(data)
+      res.sendStatus(200)
     } catch (err) {
       next(err)
     }
@@ -192,9 +228,18 @@ module.exports = function(router, io) {
     return res.json({ msg: 'Success' })
   })
 
+  router.post('/session/:sessionId/timed-out', async function(req, res) {
+    const { sessionId } = req.params
+    const { timeout } = req.body
+    const { user, ip } = req
+    const userAgent = req.get('User-Agent')
+    UserActionCtrl.timedOutSession(user._id, sessionId, timeout, userAgent, ip)
+    res.sendStatus(200)
+  })
+
   router.get('/sessions', passport.isAdmin, async function(req, res, next) {
     try {
-      const { sessions, isLastPage } = await sessionCtrl.getFilteredSessions(
+      const { sessions, isLastPage } = await SessionService.getFilteredSessions(
         req.query
       )
       res.json({ sessions, isLastPage })
@@ -204,7 +249,7 @@ module.exports = function(router, io) {
     }
   })
 
-  router.get('/session/:sessionId', passport.isAdmin, async function(
+  router.get('/session/:sessionId/admin', passport.isAdmin, async function(
     req,
     res,
     next
@@ -217,6 +262,11 @@ module.exports = function(router, io) {
         .select('+quillDoc')
         .lean()
         .exec()
+
+      if (session.type === 'college' && !session.endedAt) {
+        const quillDoc = await QuillDocService.getDoc(session._id.toString())
+        session.quillDoc = JSON.stringify(quillDoc)
+      }
 
       const sessionUserAgent = await UserAction.findOne({
         session: sessionId,
@@ -235,6 +285,18 @@ module.exports = function(router, io) {
         s3Keys: session.photos
       })
 
+      res.json({ session })
+    } catch (err) {
+      console.log(err)
+      next(err)
+    }
+  })
+
+  router.get('/session/:sessionId', async function(req, res, next) {
+    const { sessionId } = req.params
+
+    try {
+      const [session] = await SessionService.getPublicSession(sessionId)
       res.json({ session })
     } catch (err) {
       console.log(err)

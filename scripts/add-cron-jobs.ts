@@ -26,6 +26,10 @@ const jobTemplates: JobTemplate[] = [
   {
     name: Jobs.EmailReadyToCoach,
     options: { repeat: { cron: '30 * * * *' } } // every hour at minute 30
+  },
+  {
+    name: Jobs.EmailReferenceFollowup,
+    options: { repeat: { cron: '0 10 * * *', tz: 'America/New_York' } } // each day at 10am
   }
 ];
 

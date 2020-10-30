@@ -1,6 +1,7 @@
 const config = require('../config')
 const sgMail = require('@sendgrid/mail')
 const axios = require('axios')
+const { capitalize } = require('lodash')
 
 sgMail.setApiKey(config.sendgrid.apiKey)
 
@@ -38,7 +39,8 @@ const SG_CUSTOM_FIELDS = {
   studentPartnerOrg: 'e11_T',
   studentPartnerOrgDisplay: 'e12_T',
   volunteerPartnerOrg: 'e13_T',
-  volunteerPartnerOrgDisplay: 'e14_T'
+  volunteerPartnerOrgDisplay: 'e14_T',
+  passedUpchieve101: 'e17_T'
 }
 
 const sendEmail = (
@@ -48,7 +50,8 @@ const sendEmail = (
   templateId,
   dynamicData,
   unsubscribeGroupId,
-  callback
+  callback,
+  overrides = {}
 ) => {
   // Unsubscribe email preferences
   const asm = {
@@ -66,7 +69,8 @@ const sendEmail = (
     },
     templateId: templateId,
     dynamic_template_data: dynamicData,
-    asm
+    asm,
+    ...overrides
   }
 
   return sgMail.send(msg, callback)
@@ -223,6 +227,63 @@ module.exports = {
     )
   },
 
+  sendBannedUserAlert: ({ userId, banReason, sessionId }) => {
+    const userAdminLink = buildLink(`admin/users/${userId}`)
+    const sessionAdminLink = buildLink(`admin/sessions/${sessionId}`)
+    return sendEmail(
+      config.mail.receivers.staff,
+      config.mail.senders.noreply,
+      'UPchieve',
+      config.sendgrid.bannedUserAlertTemplate,
+      {
+        userId,
+        banReason,
+        sessionId,
+        userAdminLink,
+        sessionAdminLink
+      },
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
+  sendRejectedPhotoSubmission: volunteer => {
+    return sendEmail(
+      volunteer.email,
+      config.mail.senders.support,
+      'The UPchieve Team',
+      config.sendgrid.rejectedPhotoSubmissionTemplate,
+      { firstName: volunteer.firstname },
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
+  sendReferenceFollowup: ({ reference, volunteer }) => {
+    const volunteerFirstName = capitalize(volunteer.firstName)
+    const volunteerLastName = capitalize(volunteer.lastName)
+    const emailData = {
+      referenceUrl: buildLink(`reference-form/${reference._id}`),
+      referenceName: reference.firstName,
+      volunteerName: `${volunteerFirstName} ${volunteerLastName}`,
+      volunteerFirstName
+    }
+    const overrides = {
+      reply_to: {
+        email: config.mail.receivers.recruitment
+      }
+    }
+
+    return sendEmail(
+      reference.email,
+      config.mail.senders.recruitment,
+      'Mark at UPchieve',
+      config.sendgrid.referenceFollowupTemplate,
+      emailData,
+      config.sendgrid.unsubscribeGroup.account,
+      null,
+      overrides
+    )
+  },
+
   createContact: async user => {
     const customFields = {
       [SG_CUSTOM_FIELDS.isBanned]: String(user.isBanned),
@@ -237,6 +298,11 @@ module.exports = {
     const contactListId = user.isVolunteer
       ? config.sendgrid.contactList.volunteers
       : config.sendgrid.contactList.students
+
+    if (user.isVolunteer)
+      customFields[SG_CUSTOM_FIELDS.passedUpchieve101] = String(
+        user.certifications.upchieve101.passed
+      )
 
     if (user.volunteerPartnerOrg) {
       customFields[SG_CUSTOM_FIELDS.volunteerPartnerOrg] =

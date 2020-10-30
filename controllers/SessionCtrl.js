@@ -12,17 +12,15 @@ module.exports = function(socketService) {
       const userId = user._id
       const type = options.type
       const subTopic = options.subTopic
-      const currentSession = await Session.current(userId)
 
-      if (!userId) {
-        throw new Error('Cannot create a session without a user id')
-      } else if (user.isVolunteer) {
+      if (!userId) throw new Error('Cannot create a session without a user id')
+      if (user.isVolunteer)
         throw new Error('Volunteers cannot create new sessions')
-      } else if (!type) {
-        throw new Error('Must provide a type for a new session')
-      } else if (currentSession) {
+      if (!type) throw new Error('Must provide a type for a new session')
+
+      const currentSession = await Session.current(userId)
+      if (currentSession)
         throw new Error('Student already has an active session')
-      }
 
       const session = new Session({
         student: userId,
@@ -60,6 +58,7 @@ module.exports = function(socketService) {
       const userAgent = socket.request.headers['user-agent']
       const ipAddress = socket.handshake.address
 
+      // @todo: handle these unhandled errors
       if (!user) {
         throw new Error('User not authenticated')
       }
@@ -173,200 +172,6 @@ module.exports = function(socketService) {
     ) {
       const session = await Session.findById(sessionId)
       this.verifySessionParticipant(session, user, error)
-    },
-
-    getFilteredSessions: async function({
-      showBannedUsers,
-      showTestUsers,
-      minSessionLength,
-      sessionActivityFrom,
-      sessionActivityTo,
-      minMessagesSent,
-      studentRating,
-      volunteerRating,
-      firstTimeStudent,
-      firstTimeVolunteer,
-      isReported,
-      page
-    }) {
-      const PER_PAGE = 15
-      const pageNum = parseInt(page) || 1
-      const skip = (pageNum - 1) * PER_PAGE
-      const oneDayInMS = 1000 * 60 * 60 * 24
-      const estTimeOffset = 1000 * 60 * 60 * 4
-
-      // Add a day to the sessionActivityTo to make it inclusive for the activity range: [sessionActivityFrom, sessionActivityTo]
-      const inclusiveSessionActivityTo =
-        new Date(sessionActivityTo).getTime() + oneDayInMS
-
-      const sessionQueryFilter = {
-        // Filter by the length of a session
-        sessionLength: { $gte: parseInt(minSessionLength) * 60000 }, // convert mins to milliseconds
-        // Filter by a specific date range the sessions took place
-        createdAtEstTime: {
-          $gte: new Date(sessionActivityFrom),
-          $lte: new Date(inclusiveSessionActivityTo)
-        },
-        // Filter a session by the amount of messages sent
-        $expr: {
-          $gte: [{ $size: '$messages' }, parseInt(minMessagesSent)]
-        }
-      }
-
-      if (Number(studentRating))
-        sessionQueryFilter.studentRating = Number(studentRating)
-      if (Number(volunteerRating))
-        sessionQueryFilter.volunteerRating = Number(volunteerRating)
-      if (isReported) sessionQueryFilter.isReported = true
-
-      const userQueryFilter = {
-        'student.isBanned': showBannedUsers ? { $in: [true, false] } : false,
-        'student.isTestUser': showTestUsers ? { $in: [true, false] } : false
-      }
-
-      if (firstTimeStudent && firstTimeVolunteer) {
-        userQueryFilter.$or = [
-          { 'student.pastSessions': { $size: 1 } },
-          { 'volunteer.pastSessions': { $size: 1 } }
-        ]
-      } else if (firstTimeStudent) {
-        userQueryFilter['student.pastSessions'] = { $size: 1 }
-      } else if (firstTimeVolunteer) {
-        userQueryFilter['volunteer.pastSessions'] = { $size: 1 }
-      }
-
-      try {
-        const sessions = await Session.aggregate([
-          {
-            $addFields: {
-              // Add the length of a session on the session documents
-              sessionLength: {
-                $cond: {
-                  if: { $ifNull: ['$endedAt', undefined] },
-                  then: { $subtract: ['$endedAt', '$createdAt'] },
-                  // $$NOW is a mongodb system variable which returns the current time
-                  else: { $subtract: ['$$NOW', '$createdAt'] }
-                }
-              },
-              createdAtEstTime: {
-                $subtract: ['$createdAt', estTimeOffset]
-              },
-              stringSessionId: { $toString: '$_id' }
-            }
-          },
-          {
-            $lookup: {
-              from: 'feedbacks',
-              localField: 'stringSessionId',
-              foreignField: 'sessionId',
-              as: 'feedbacks'
-            }
-          },
-          // add student and volunteer feedback if present
-          {
-            $addFields: {
-              studentFeedback: {
-                $filter: {
-                  input: '$feedbacks',
-                  as: 'feedback',
-                  cond: { $eq: ['$$feedback.userType', 'student'] }
-                }
-              },
-              volunteerFeedback: {
-                $filter: {
-                  input: '$feedbacks',
-                  as: 'feedback',
-                  cond: { $eq: ['$$feedback.userType', 'volunteer'] }
-                }
-              }
-            }
-          },
-          {
-            $unwind: {
-              path: '$studentFeedback',
-              preserveNullAndEmptyArrays: true
-            }
-          },
-          {
-            $unwind: {
-              path: '$volunteerFeedback',
-              preserveNullAndEmptyArrays: true
-            }
-          },
-          {
-            $addFields: {
-              studentRating: {
-                $cond: {
-                  if: '$studentFeedback.responseData.rate-session.rating',
-                  then: '$studentFeedback.responseData.rate-session.rating',
-                  else: null
-                }
-              },
-              volunteerRating: {
-                $cond: {
-                  if: '$volunteerFeedback.responseData.rate-session.rating',
-                  then: '$volunteerFeedback.responseData.rate-session.rating',
-                  else: null
-                }
-              }
-            }
-          },
-          {
-            $match: sessionQueryFilter
-          },
-          {
-            $lookup: {
-              from: 'users',
-              localField: 'student',
-              foreignField: '_id',
-              as: 'student'
-            }
-          },
-          {
-            $unwind: '$student'
-          },
-          {
-            $lookup: {
-              from: 'users',
-              localField: 'volunteer',
-              foreignField: '_id',
-              as: 'volunteer'
-            }
-          },
-          {
-            $unwind: {
-              path: '$volunteer',
-              preserveNullAndEmptyArrays: true
-            }
-          },
-          {
-            $match: userQueryFilter
-          },
-          {
-            $project: {
-              createdAt: 1,
-              endedAt: 1,
-              volunteer: 1,
-              messages: 1,
-              notifications: 1,
-              type: 1,
-              subTopic: 1,
-              studentFirstName: '$student.firstname',
-              studentRating: 1
-            }
-          }
-        ])
-          .sort({ createdAt: -1 })
-          .skip(skip)
-          .limit(PER_PAGE)
-          .exec()
-
-        const isLastPage = sessions.length < PER_PAGE
-
-        return { sessions, isLastPage }
-      } catch (err) {
-        throw new Error(err.message)
-      }
     }
   }
 }

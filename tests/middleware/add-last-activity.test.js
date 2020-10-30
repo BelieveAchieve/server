@@ -1,4 +1,4 @@
-const addLastActivity = require('../../../middleware/add-last-activity')
+const addLastActivity = require('../../middleware/add-last-activity')
 
 const USER_ID = '5a39d174a6f3b3973d5633z7'
 

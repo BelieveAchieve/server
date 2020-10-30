@@ -3,6 +3,7 @@ const Sentry = require('@sentry/node')
 const IpAddress = require('../models/IpAddress')
 const User = require('../models/User')
 const { IP_ADDRESS_STATUS, USER_BAN_REASON } = require('../constants')
+const MailService = require('./MailService')
 
 const cleanIpString = rawIpString => {
   // Remove ipv6 prefix if present
@@ -63,9 +64,16 @@ module.exports = {
 
   ban: async ({ user, ipAddress }) => {
     let didBanUser = false
+    const isOnlyUserWithIpAddress =
+      ipAddress.users.length === 1 &&
+      ipAddress.users[0].toString() === user._id.toString()
 
-    // Ban IP if user banned
-    if (user.isBanned && ipAddress.status === IP_ADDRESS_STATUS.OK)
+    // Ban IP if it has only one user listed and user is banned
+    if (
+      user.isBanned &&
+      ipAddress.status === IP_ADDRESS_STATUS.OK &&
+      isOnlyUserWithIpAddress
+    )
       await IpAddress.updateOne(
         { _id: ipAddress._id },
         { $set: { status: IP_ADDRESS_STATUS.BANNED } }
@@ -74,6 +82,13 @@ module.exports = {
     // Ban user if IP banned
     if (ipAddress.status === IP_ADDRESS_STATUS.BANNED && !user.isBanned) {
       didBanUser = true
+      const updatedUser = Object.assign(user, { isBanned: true })
+      // Update user in the SendGrid contact list with banned status
+      MailService.createContact(updatedUser)
+      MailService.sendBannedUserAlert({
+        userId: user._id,
+        banReason: USER_BAN_REASON.BANNED_IP
+      })
       await User.updateOne(
         { _id: user._id },
         { $set: { isBanned: true, banReason: USER_BAN_REASON.BANNED_IP } }
@@ -81,5 +96,12 @@ module.exports = {
     }
 
     return didBanUser
+  },
+
+  unbanUserIps: async user => {
+    await IpAddress.updateMany(
+      { users: user._id },
+      { status: IP_ADDRESS_STATUS.OK }
+    )
   }
 }

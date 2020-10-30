@@ -31,6 +31,9 @@ export const Config = Record({
     approvedNotOnboardedTemplate: String,
     openReadyToCoachTemplate: String,
     partnerReadyToCoachTemplate: String,
+    bannedUserAlertTemplate: String,
+    referenceFollowupTemplate: String,
+    rejectedPhotoSubmissionTemplate: String,
     unsubscribeGroup: Record({
       newsletter: Number,
       account: Number
@@ -43,12 +46,14 @@ export const Config = Record({
   mail: Record({
     senders: Record({
       noreply: String,
-      support: String
+      support: String,
+      recruitment: String
     }),
     receivers: Record({
       contact: String,
       staff: String,
-      support: String
+      support: String,
+      recruitment: String
     })
   }),
   client: Record({

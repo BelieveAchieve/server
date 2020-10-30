@@ -11,7 +11,8 @@ import {
   SCIENCE_CERTS,
   COLLEGE_CERTS,
   SAT_CERTS
-} from '../../constants';
+} from '../constants';
+import { Message } from '../models/Message';
 import {
   User,
   Volunteer,
@@ -30,6 +31,7 @@ export const getEmail = faker.internet.email;
 export const getFirstName = faker.name.firstName;
 export const getLastName = faker.name.lastName;
 export const getId = faker.random.uuid;
+export const generateSentence = (): string => faker.lorem.sentence();
 
 const generateReferralCode = (userId): string =>
   base64url(Buffer.from(userId, 'hex'));
@@ -129,6 +131,7 @@ export const buildStudent = (overrides = {}): Student => {
     studentPartnerOrg: 'example',
     referredByCode: '',
     referralCode: generateReferralCode(_id.toString()),
+    pastSessions: [],
     ...overrides
   };
 
@@ -159,6 +162,8 @@ export const buildVolunteer = (overrides = {}): Volunteer => {
     subjects: [],
     trainingCourses: buildTrainingCourses(),
     sentReadyToCoachEmail: false,
+    hoursTutored: Types.Decimal128.fromString('0'),
+    pastSessions: [],
     ...overrides
   };
 
@@ -287,6 +292,19 @@ export const buildSession = (overrides = {}): Partial<Session> => {
   };
 
   return session;
+};
+
+export const buildMessage = (overrides = {}): Partial<Message> => {
+  const _id = Types.ObjectId();
+  const message = {
+    _id,
+    user: null,
+    contents: faker.lorem.sentence(),
+    createdAt: new Date(),
+    ...overrides
+  };
+
+  return message;
 };
 
 export const authLogin = (agent, { email, password }: Partial<User>): Test =>

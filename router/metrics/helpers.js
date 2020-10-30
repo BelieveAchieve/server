@@ -1,6 +1,6 @@
 const _ = require('lodash')
-const moment = require('moment')
-const ObjectId = require('mongoose').Types.ObjectId
+const { extendMoment } = require('moment-range')
+const moment = extendMoment(require('moment'))
 
 const Feedback = require('../../models/Feedback')
 const Session = require('../../models/Session')
@@ -106,8 +106,8 @@ async function getFeedbackStats(userType, options) {
     .lean()
 
   const feedbacksWithExtras = _.map(feedbacks, feedback => {
-    const student = _.find(allUsers, { _id: ObjectId(feedback.studentId) })
-    const volunteer = _.find(allUsers, { _id: ObjectId(feedback.volunteerId) })
+    const student = _.find(allUsers, { _id: feedback.studentId })
+    const volunteer = _.find(allUsers, { _id: feedback.volunteerId })
     return _.defaults(
       {
         studentPartnerOrg: student && student.studentPartnerOrg,
@@ -182,6 +182,40 @@ function getFeedbackStatsPerSegment(
   )
 }
 
+async function getCumulativeSessions({ minTime, maxTime }) {
+  const sessions = await Session.find({
+    createdAt: { $lte: maxTime }
+  })
+    .select([
+      'createdAt',
+      'volunteerJoinedAt',
+      'student',
+      'volunteer',
+      'endedAt',
+      'messages',
+      'type',
+      'subTopic'
+    ])
+    .lean()
+
+  const sessionsWithExtras = getSessionsWithExtras(sessions)
+
+  const range = moment.range(minTime, maxTime)
+  const rangeArr = Array.from(range.by('day'))
+  const allDatapoints = _.map(rangeArr, date => {
+    return {
+      segmentSlug: '',
+      scaledTime: getScaledTimeByTimeScale('day', date),
+      count: _.filter(sessionsWithExtras, ({ startTime }) => {
+        return startTime.isSameOrBefore(date)
+      }).length,
+      dimensionSlug: 'all',
+      dimensionValue: 'all'
+    }
+  })
+  return allDatapoints
+}
+
 async function getSessionStats({ minTime, maxTime, timeScale = 'day' }) {
   const sessions = await Session.find({
     createdAt: { $gte: minTime, $lte: maxTime }
@@ -211,48 +245,51 @@ async function getSessionStats({ minTime, maxTime, timeScale = 'day' }) {
     .select(['_id', 'studentPartnerOrg', 'volunteerPartnerOrg'])
     .lean()
 
-  const sessionsWithExtras = _.filter(
-    await Promise.all(
-      _.map(sessions, async session => {
-        const startTime = moment.utc(session.createdAt)
-        const endTime = moment.utc(session.endedAt)
-        const hasVolunteer = Boolean(session.volunteerJoinedAt)
-        let waitSeconds, durationSeconds
-        if (hasVolunteer) {
-          const matchedTime = moment.utc(session.volunteerJoinedAt)
-          waitSeconds = matchedTime.diff(startTime, 'seconds')
-          durationSeconds = endTime.diff(matchedTime, 'seconds')
-        } else {
-          waitSeconds = endTime.diff(startTime, 'seconds')
-          durationSeconds = 0
-        }
-
-        if (
-          waitSeconds > MAX_SESSION_LENGTH_SECONDS ||
-          durationSeconds > MAX_SESSION_LENGTH_SECONDS ||
-          (durationSeconds < MIN_SESSION_LENGTH_SECONDS && !hasVolunteer)
-        ) {
-          return // ignore outliers. TODO: smarter approach (based on chat messages)
-        }
-
-        const student = _.find(allUsers, { _id: session.student })
-        const volunteer = _.find(allUsers, { _id: session.volunteer })
-
-        const extras = {
-          waitSeconds,
-          durationSeconds,
-          studentPartnerOrg: student && student.studentPartnerOrg,
-          volunteerPartnerOrg: volunteer && volunteer.volunteerPartnerOrg,
-          dayOfWeek: startTime.format('ddd'),
-          hourOfDay: startTime.format('H'),
-          isSuccessful: durationSeconds >= MIN_MINUTES_FOR_SUCCESSFUL_SESSION
-        }
-        return _.defaults(extras, session)
-      })
-    )
-  )
+  const sessionsWithExtras = getSessionsWithExtras(sessions, allUsers)
 
   return getPerSegment(sessionsWithExtras, getSessionStatsPerSegment, timeScale)
+}
+
+function getSessionsWithExtras(sessions, allUsers) {
+  return _.filter(
+    _.map(sessions, session => {
+      const startTime = moment.utc(session.createdAt)
+      const endTime = moment.utc(session.endedAt)
+      const hasVolunteer = Boolean(session.volunteerJoinedAt)
+      let waitSeconds, durationSeconds
+      if (hasVolunteer) {
+        const matchedTime = moment.utc(session.volunteerJoinedAt)
+        waitSeconds = matchedTime.diff(startTime, 'seconds')
+        durationSeconds = endTime.diff(matchedTime, 'seconds')
+      } else {
+        waitSeconds = endTime.diff(startTime, 'seconds')
+        durationSeconds = 0
+      }
+
+      if (
+        waitSeconds > MAX_SESSION_LENGTH_SECONDS ||
+        durationSeconds > MAX_SESSION_LENGTH_SECONDS ||
+        (durationSeconds < MIN_SESSION_LENGTH_SECONDS && !hasVolunteer)
+      ) {
+        return // ignore outliers. TODO: smarter approach (based on chat messages)
+      }
+
+      const student = _.find(allUsers, { _id: session.student })
+      const volunteer = _.find(allUsers, { _id: session.volunteer })
+
+      const extras = {
+        startTime,
+        waitSeconds,
+        durationSeconds,
+        studentPartnerOrg: student && student.studentPartnerOrg,
+        volunteerPartnerOrg: volunteer && volunteer.volunteerPartnerOrg,
+        dayOfWeek: startTime.format('ddd'),
+        hourOfDay: startTime.format('H'),
+        isSuccessful: durationSeconds >= MIN_MINUTES_FOR_SUCCESSFUL_SESSION
+      }
+      return _.defaults(extras, session)
+    })
+  )
 }
 
 function getSessionStatsPerSegment(sessionsWithExtras, segmentSlug, timeScale) {
@@ -266,7 +303,10 @@ function getSessionStatsPerSegment(sessionsWithExtras, segmentSlug, timeScale) {
       count: sessions.length,
       durationSecSum: _.sumBy(sessions, 'durationSeconds'),
       waitSecSum: _.sumBy(sessions, 'waitSeconds'),
-      messageSum: _.sumBy(sessions, ({ messages }) => messages.length),
+      messageSum: _.sumBy(
+        sessions,
+        ({ messages }) => messages && messages.length
+      ),
       successfulMatches: successfulSessions.length,
       'day-of-week': _.countBy(sessions, 'dayOfWeek'),
       'hour-of-day': _.countBy(sessions, 'hourOfDay'),
@@ -298,6 +338,35 @@ function getPerSegment(rowsWithExtras, fn, timeScale, type = 'all') {
     type === 'all' || type === 'student' ? studentPartnerStats : {},
     type === 'all' || type === 'volunteer' ? volunteerPartnerStats : {}
   )
+}
+
+async function getCumulativeStudents({ minTime, maxTime }) {
+  const students = await User.find({
+    isVolunteer: false,
+    isTestUser: false,
+    createdAt: { $lte: maxTime }
+  })
+    .select(['createdAt', 'zipCode', 'studentPartnerOrg'])
+    .lean()
+
+  const studentsWithExtras = _.map(students, student =>
+    _.defaults({ startTime: moment.utc(student.createdAt) }, student)
+  )
+
+  const range = moment.range(minTime, maxTime)
+  const rangeArr = Array.from(range.by('day'))
+  const allDatapoints = _.map(rangeArr, date => {
+    return {
+      segmentSlug: '',
+      scaledTime: getScaledTimeByTimeScale('day', date),
+      count: _.filter(studentsWithExtras, ({ startTime }) => {
+        return startTime.isSameOrBefore(date)
+      }).length,
+      dimensionSlug: 'all',
+      dimensionValue: 'all'
+    }
+  })
+  return allDatapoints
 }
 
 async function getStudents({ minTime, maxTime, timeScale = 'day' }) {
@@ -488,7 +557,9 @@ function getVolunteerStatsPerSegment(
 
 module.exports = {
   getFeedbackStats,
+  getCumulativeSessions,
   getSessionStats,
+  getCumulativeStudents,
   getStudents,
   getVolunteerDistributionStats,
   getVolunteerStats,

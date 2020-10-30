@@ -79,6 +79,16 @@ const createAccountAction = async (
   return userActionDoc.save()
 }
 
+const createAdminAction = async (userId, action, options = {}) => {
+  const userActionDoc = new UserAction({
+    user: userId,
+    actionType: USER_ACTION.TYPE.ADMIN,
+    action,
+    ...options
+  })
+  return userActionDoc.save()
+}
+
 const startedQuiz = (userId, quizCategory, ipAddress) => {
   return createQuizAction(
     userId,
@@ -174,6 +184,20 @@ const endedSession = (userId, sessionId, userAgent, ipAddress) => {
   )
 }
 
+const timedOutSession = (
+  userId,
+  sessionId,
+  timeoutTime,
+  userAgent,
+  ipAddress
+) => {
+  let action
+  if (timeoutTime === 15) action = USER_ACTION.SESSION.TIMED_OUT_15_MINS
+  else action = USER_ACTION.SESSION.TIMED_OUT_45_MINS
+
+  return createSessionAction(userId, sessionId, userAgent, ipAddress, action)
+}
+
 const updatedProfile = (userId, ipAddress) => {
   return createAccountAction(
     userId,
@@ -226,6 +250,15 @@ const accountApproved = (userId, ipAddress) =>
 const accountOnboarded = (userId, ipAddress) =>
   createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.ONBOARDED)
 
+const accountBanned = (userId, sessionId, banReason) =>
+  createAccountAction(userId, '', USER_ACTION.ACCOUNT.BANNED, {
+    session: sessionId,
+    banReason
+  })
+
+const accountDeactivated = (userId, ipAddress) =>
+  createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.DEACTIVATED)
+
 const submittedReferenceForm = (userId, ipAddress, options) =>
   createAccountAction(
     userId,
@@ -245,6 +278,9 @@ const rejectedReference = (userId, options) =>
     options
   )
 
+const adminDeactivatedAccount = userId =>
+  createAdminAction(userId, USER_ACTION.ACCOUNT.DEACTIVATED)
+
 module.exports = {
   startedQuiz,
   passedQuiz,
@@ -256,6 +292,7 @@ module.exports = {
   rejoinedSession,
   endedSession,
   repliedYesToSession,
+  timedOutSession,
   updatedProfile,
   updatedAvailability,
   createdAccount,
@@ -265,7 +302,10 @@ module.exports = {
   deletedReference,
   accountApproved,
   accountOnboarded,
+  accountBanned,
+  accountDeactivated,
   submittedReferenceForm,
   rejectedPhotoId,
-  rejectedReference
+  rejectedReference,
+  adminDeactivatedAccount
 }

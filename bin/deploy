@@ -138,7 +138,7 @@ deploy_repos() {
   slack_notify "[Build $BUILD_TIMESTAMP] Restarting server..."
   hrule
   step "Restarting server..."
-  pm2 restart main
+  pm2 restart main --time
   pm2 restart worker
 
   slack_notify "[Build $BUILD_TIMESTAMP] Deploy complete. web/$WEB_BRANCH and server/$SERVER_BRANCH are live on $UPCHIEVE_ENV."

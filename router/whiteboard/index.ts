@@ -33,10 +33,7 @@ const messageHandlers: {
 } = {
   [MessageType.INIT]: async ({ message, sessionId, wsClient }) => {
     const document = await WhiteboardService.getDoc(sessionId);
-    if (
-      message.creationMode === CreationMode.NEVER_CREATE &&
-      !document
-    ) {
+    if (message.creationMode === CreationMode.NEVER_CREATE && !document) {
       return wsClient.send(
         encode({
           messageType: MessageType.ERROR,
@@ -46,10 +43,7 @@ const messageHandlers: {
         })
       );
     }
-    if (
-      message.creationMode === CreationMode.ALWAYS_CREATE &&
-      !document
-    ) {
+    if (message.creationMode === CreationMode.ALWAYS_CREATE && !document) {
       return wsClient.send(
         encode({
           messageType: MessageType.ERROR,
@@ -65,7 +59,8 @@ const messageHandlers: {
       !document
     ) {
       await WhiteboardService.createDoc(sessionId);
-      if (message.data) await WhiteboardService.appendToDoc(sessionId, message.data);
+      if (message.data)
+        await WhiteboardService.appendToDoc(sessionId, message.data);
       const docLength = await WhiteboardService.getDocLength(sessionId);
       return wsClient.send(
         encode({
@@ -187,7 +182,12 @@ const messageHandlers: {
       })
     );
   },
-  [MessageType.CONTINUATION]: async ({ message, wsClient, sessionId, route }) => {
+  [MessageType.CONTINUATION]: async ({
+    message,
+    wsClient,
+    sessionId,
+    route
+  }) => {
     await WhiteboardService.appendToDoc(sessionId, message.data);
     const newDocLength = await WhiteboardService.getDocLength(sessionId);
     const broadcastMessage = encode({
@@ -242,9 +242,9 @@ const whiteboardRouter = function(app): void {
     }, 30 * 1000);
 
     wsClient.on('message', rawMessage => {
-      if (rawMessage === "p1ng") {
+      if (rawMessage === 'p1ng') {
         // Respond to ping and exit early
-        wsClient.send("p0ng");
+        wsClient.send('p0ng');
         return;
       }
       let message = decode(rawMessage as Uint8Array);
@@ -268,14 +268,18 @@ const whiteboardRouter = function(app): void {
     next();
   });
 
-  router.ws('/admin/:sessionId', function(wsClient, req, next) {
+  router.ws('/admin/:sessionId', function(wsClient, req) {
     const sessionId = req.params.sessionId;
 
     wsClient.on('message', async rawMessage => {
       const message = decode(rawMessage as Uint8Array);
 
       if (message.messageType === MessageType.INIT) {
-        const document = await WhiteboardService.getFinalDocState(sessionId);
+        // Active session's document
+        let document = await WhiteboardService.getDoc(sessionId);
+        // Completed session's document
+        if (!document)
+          document = await WhiteboardService.getFinalDocState(sessionId);
         return wsClient.send(
           encode({
             messageType: MessageType.APPEND,
@@ -286,6 +290,20 @@ const whiteboardRouter = function(app): void {
         );
       }
     });
+  });
+
+  router.route('/reset').post(async function(req, res, next) {
+    const {
+      body: { sessionId }
+    } = req;
+
+    try {
+      await WhiteboardService.deleteDoc(sessionId);
+      res.sendStatus(200);
+    } catch (err) {
+      Sentry.captureException(err);
+      next(err);
+    }
   });
 
   app.use('/whiteboard', router);

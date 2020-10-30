@@ -25,7 +25,8 @@ const SG_CUSTOM_FIELDS = {
   studentPartnerOrg: 'e11_T',
   studentPartnerOrgDisplay: 'e12_T',
   volunteerPartnerOrg: 'e13_T',
-  volunteerPartnerOrgDisplay: 'e14_T'
+  volunteerPartnerOrgDisplay: 'e14_T',
+  passedUpchieve101: 'e17_T'
 };
 
 const putContact = data =>
@@ -80,11 +81,17 @@ const createVolunteerContacts = async users => {
       [SG_CUSTOM_FIELDS.joined]: user.createdAt
     };
 
-    if (user.volunteerPartnerOrg) {
-      customFields[SG_CUSTOM_FIELDS.volunteerPartnerOrg] = user.volunteerPartnerOrg;
-      if (config.studentPartnerManifests[user.volunteerPartnerOrg]) {
+    if (user.isVolunteer)
+    customFields[SG_CUSTOM_FIELDS.passedUpchieve101] = String(
+      user.certifications.upchieve101.passed
+    )
+
+    const parterOrg = user.volunteerPartnerOrg
+    if (parterOrg) {
+      customFields[SG_CUSTOM_FIELDS.volunteerPartnerOrg] = parterOrg;
+      if (config.volunteerPartnerManifests[parterOrg]) {
         customFields[SG_CUSTOM_FIELDS.volunteerPartnerOrgDisplay] =
-          config.studentPartnerManifests[user.volunteerPartnerOrg].name;
+          config.volunteerPartnerManifests[parterOrg].name;
       }
     }
 
