@@ -36,7 +36,7 @@ module.exports = function(io) {
           'No userId found when connecting user to a socket connection'
         )
 
-      const userSockets = JSON.parse(await Redis.redisGet(userSocketsKey))
+      let userSockets = JSON.parse(await Redis.redisGet(userSocketsKey))
       if (userSockets === null) {
         userSockets = {}
       }
@@ -64,7 +64,7 @@ module.exports = function(io) {
 
     // to be called by router/api/sockets.js when user socket disconnects
     disconnectUser: async function(socket) {
-      const userSockets = JSON.parse(await Redis.redisGet(userSocketsKey))
+      let userSockets = JSON.parse(await Redis.redisGet(userSocketsKey))
       if (userSockets === null) {
         userSockets = {}
       }
@@ -84,7 +84,7 @@ module.exports = function(io) {
     },
 
     emitToUser: async function(userId, event, ...args) {
-      const userSockets = JSON.parse(await Redis.redisGet(userSocketsKey))
+      let userSockets = JSON.parse(await Redis.redisGet(userSocketsKey))
       if (userSockets === null) {
         userSockets = {}
       }
