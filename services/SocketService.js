@@ -2,8 +2,9 @@ const User = require('../models/User')
 const Session = require('../models/Session')
 const Message = require('../models/Message')
 const Sentry = require('@sentry/node')
+const Redis = require('./RedisService')
 
-const userSockets = {} // userId => [sockets]
+const userSocketsKey = 'userSockets'
 
 /**
  * Get session data to send to client for a given session ID
@@ -35,10 +36,15 @@ module.exports = function(io) {
           'No userId found when connecting user to a socket connection'
         )
 
+      const userSockets = JSON.parse(await Redis.redisGet(userSocketsKey))
+      if (userSockets === null) {
+        userSockets = {}
+      }
       if (!userSockets[userId]) {
         userSockets[userId] = []
       }
       userSockets[userId].push(socket)
+      await Redis.redisSet(userSocketsKey, JSON.stringify(userSockets))
 
       // query database to see if user is a volunteer
       const user = await User.findById(userId, 'isVolunteer').exec()
@@ -57,7 +63,11 @@ module.exports = function(io) {
     },
 
     // to be called by router/api/sockets.js when user socket disconnects
-    disconnectUser: function(socket) {
+    disconnectUser: async function(socket) {
+      const userSockets = JSON.parse(await Redis.redisGet(userSocketsKey))
+      if (userSockets === null) {
+        userSockets = {}
+      }
       const userId = Object.keys(userSockets).find(
         id =>
           userSockets[id].findIndex(
@@ -70,9 +80,14 @@ module.exports = function(io) {
       )
 
       userSockets[userId].splice(socketIndex, 1)
+      await Redis.redisSet(userSocketsKey, JSON.stringify(userSockets))
     },
 
-    emitToUser: function(userId, event, ...args) {
+    emitToUser: async function(userId, event, ...args) {
+      const userSockets = JSON.parse(await Redis.redisGet(userSocketsKey))
+      if (userSockets === null) {
+        userSockets = {}
+      }
       const sockets = userSockets[userId]
       if (sockets && sockets.length) {
         for (const socket of sockets) {
