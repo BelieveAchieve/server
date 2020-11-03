@@ -9,7 +9,6 @@ import endUnmatchedSession from '../../worker/jobs/endUnmatchedSession';
 import { log } from '../../worker/logger';
 import SessionService from '../../services/SessionService';
 jest.mock('../../worker/logger');
-// jest.mock('../../services/SessionService');
 
 // db connection
 beforeAll(async () => {
