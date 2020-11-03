@@ -2,9 +2,10 @@ import { Job } from 'bull';
 import Session from '../../models/Session';
 import SessionService from '../../services/SessionService';
 import { log } from '../logger';
+import { Types } from 'mongoose';
 
 export interface EndUnmatchedSessionJobData {
-  sessionId: string;
+  sessionId: string | Types.ObjectId;
 }
 
 export default async (job: Job<EndUnmatchedSessionJobData>): Promise<void> => {
