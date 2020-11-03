@@ -43,9 +43,8 @@ module.exports = function(router, io) {
 
         const userAgent = req.get('User-Agent')
 
-        // A modal is displayed after 45 minutes if the session is unmatched
-        // Give users a minute to see the popup before endUnmatchedSession is fired
-        const delay = 1000 * 60 * 46
+        // Auto end the session after 45 minutes if the session is unmatched
+        const delay = 1000 * 60 * 45
         QueueService.add(
           'EndUnmatchedSession',
           { sessionId: session._id },
