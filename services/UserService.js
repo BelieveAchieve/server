@@ -139,7 +139,7 @@ module.exports = {
     )
   },
 
-  getPendingVolunteers: async function(page) {
+  getVolunteersToReview: async function(page) {
     const pageNum = parseInt(page) || 1
     const PER_PAGE = 15
     const skip = (pageNum - 1) * PER_PAGE
