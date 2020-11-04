@@ -10,7 +10,8 @@ const {
   PHOTO_ID_STATUS,
   REFERENCE_STATUS,
   STATUS,
-  USER_BAN_REASON
+  USER_BAN_REASON,
+  USER_ACTION
 } = require('../constants')
 const config = require('../config')
 const ObjectId = require('mongodb').ObjectId
@@ -171,9 +172,42 @@ module.exports = {
             email: 1,
             createdAt: 1
           }
+        },
+        {
+          $lookup: {
+            from: 'useractions',
+            localField: '_id',
+            foreignField: 'user',
+            as: 'userAction'
+          }
+        },
+        {
+          $unwind: "$userAction"
+        },
+        {
+          $match: {
+              "userAction.action":{ 
+                $in: [
+                  USER_ACTION.ACCOUNT.ADDED_PHOTO_ID, 
+                  USER_ACTION.ACCOUNT.SUBMITTED_REFERENCE_FORM, 
+                  USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
+                ] 
+              }
+          }
+        },
+        {
+          $group: {
+            _id: "$_id",
+            firstname: { $first: '$firstname'},
+            lastname: { $first: '$lastname'},
+            email: { $first: '$email'},
+            readyForReviewAt: {
+              $max: "$userAction.createdAt"
+            }
+          }
         }
       ])
-        .sort({ createdAt: -1 })
+        .sort({ readyForReviewAt: 1 })
         .skip(skip)
         .limit(PER_PAGE)
 
