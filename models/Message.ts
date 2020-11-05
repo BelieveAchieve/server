@@ -47,11 +47,6 @@ messageSchema.virtual('isVolunteer').get(function() {
   return this.user.isVolunteer;
 });
 
-messageSchema.virtual('picture').get(function() {
-  // only works if user is populated
-  return this.user.picture;
-});
-
 const MessageModel = model<MessageDocument>('Message', messageSchema);
 
 module.exports = MessageModel;
