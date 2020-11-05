@@ -15,6 +15,7 @@ const { USER_ACTION } = require('../../constants')
 const NotificationService = require('../../services/NotificationService')
 const UserAction = require('../../models/UserAction')
 const config = require('../../config')
+const QueueService = require('../../services/QueueService')
 
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
@@ -41,6 +42,14 @@ module.exports = function(router, io) {
         })
 
         const userAgent = req.get('User-Agent')
+
+        // Auto end the session after 45 minutes if the session is unmatched
+        const delay = 1000 * 60 * 45
+        QueueService.add(
+          'EndUnmatchedSession',
+          { sessionId: session._id },
+          { delay }
+        )
 
         UserActionCtrl.requestedSession(
           user._id,
@@ -115,9 +124,11 @@ module.exports = function(router, io) {
     }
   })
 
+  // @todo: switch to a GET request
   router.route('/session/current').post(async function(req, res, next) {
-    const data = req.body || {}
-    const userId = ObjectId(data.user_id)
+    const {
+      user: { _id: userId }
+    } = req
 
     try {
       const currentSession = await Session.current(userId)
@@ -152,6 +163,39 @@ module.exports = function(router, io) {
           data: latestSession
         })
       }
+    } catch (err) {
+      next(err)
+    }
+  })
+
+  router.get('/session/review', passport.isAdmin, async function(
+    req,
+    res,
+    next
+  ) {
+    try {
+      const { sessions, isLastPage } = await SessionService.getSessionsToReview(
+        req.query
+      )
+      res.json({ sessions, isLastPage })
+    } catch (err) {
+      next(err)
+    }
+  })
+
+  router.put('/session/:sessionId', passport.isAdmin, async function(
+    req,
+    res,
+    next
+  ) {
+    try {
+      const { sessionId } = req.params
+      const data = {
+        ...req.body,
+        sessionId
+      }
+      await SessionService.updateSession(data)
+      res.sendStatus(200)
     } catch (err) {
       next(err)
     }
@@ -193,9 +237,18 @@ module.exports = function(router, io) {
     return res.json({ msg: 'Success' })
   })
 
+  router.post('/session/:sessionId/timed-out', async function(req, res) {
+    const { sessionId } = req.params
+    const { timeout } = req.body
+    const { user, ip } = req
+    const userAgent = req.get('User-Agent')
+    UserActionCtrl.timedOutSession(user._id, sessionId, timeout, userAgent, ip)
+    res.sendStatus(200)
+  })
+
   router.get('/sessions', passport.isAdmin, async function(req, res, next) {
     try {
-      const { sessions, isLastPage } = await sessionCtrl.getFilteredSessions(
+      const { sessions, isLastPage } = await SessionService.getFilteredSessions(
         req.query
       )
       res.json({ sessions, isLastPage })

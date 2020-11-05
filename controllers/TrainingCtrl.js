@@ -14,6 +14,7 @@ const {
   COLLEGE_SUBJECTS
 } = require('../constants')
 const getSubjectType = require('../utils/getSubjectType')
+const MailService = require('../services/MailService')
 
 // change depending on how many of each subcategory are wanted
 const numQuestions = {
@@ -101,6 +102,9 @@ module.exports = {
         cert,
         user.certifications
       )
+
+      // set custom field passedUpchieve101 in SendGrid
+      if (cert === TRAINING.UPCHIEVE_101) MailService.createContact(user)
 
       // Create a user action for every subject unlocked
       for (const subject of unlockedSubjects) {

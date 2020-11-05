@@ -44,18 +44,18 @@ function getCurrentAvailabilityPath() {
   return `availability.${days[day]}.${hour}`
 }
 
-const getNextVolunteer = async ({ subtopic, priorityFilter = {} }) => {
+const getNextVolunteer = async ({ priorityFilter = {} }) => {
   const availabilityPath = getCurrentAvailabilityPath()
 
   const filter = {
     isApproved: true,
     [availabilityPath]: true,
-    subjects: subtopic,
     phone: { $exists: true },
     isTestUser: false,
     isFakeUser: false,
     isDeactivated: false,
     isFailsafeVolunteer: false,
+    isBanned: false,
     ...priorityFilter
   }
 
@@ -188,41 +188,81 @@ const notifyVolunteer = async session => {
     relativeDate(7 * 24 * 60 * 60 * 1000)
   )
 
+  // Prioritize volunteers who do not have high-level subjects to avoid
+  // lack of volunteers when high-level subjects are requested
+  const highLevelSubjects = ['calculusAB', 'chemistry']
+  const isHighLevelSubject = highLevelSubjects.includes(subtopic)
+  const subjectsFilter = { $eq: subtopic }
+  if (!isHighLevelSubject) subjectsFilter['$nin'] = highLevelSubjects
+
   /**
-   * 1. mizuho or atlassian volunteer not texted in last 3 days
-   * 2. any partner volunteer not texted in last 3 days
-   * 3. any regular volunteer not texted in the last 7 days
-   * 4. any volunteer not texted in the last fifteen mins
+   * 1. Partner volunteers - not notified in the last 7 days
+   * 2. Regular volunteers - not notified in the last 7 days
+   * 3. Partner volunteers - not notified in the last 3 days AND they don’t have "high level subjects"
+   * 4. Regular volunteers - not notified in the last 3 days AND they don’t have "high level subjects"
+   * 5. Partner volunteers - not notified in the last 3 days
+   * 6. All volunteers - not notified in the last 15 mins who don't have "high level subjects"
+   * 7. All volunteers - not notified in the last 15 mins
    */
   const volunteerPriority = [
     {
-      groupName:
-        'Mizuho and Atlassian volunteers - Not notified in last 3 days',
+      groupName: 'Partner volunteers - not notified in the last 7 days',
       filter: {
         volunteerPartnerOrg: {
-          $exists: true,
-          $in: ['mizuho', 'atlassian']
+          $exists: true
         },
-        _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
-      }
-    },
-    {
-      groupName: 'Partner volunteers - Not notified in last 3 days',
-      filter: {
-        volunteerPartnerOrg: { $exists: true },
-        _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
-      }
-    },
-    {
-      groupName: 'Regular volunteers - Not notified in last 7 days',
-      filter: {
-        volunteerPartnerOrg: { $exists: false },
+        subjects: subtopic,
         _id: { $nin: activeSessionVolunteers.concat(notifiedLastSevenDays) }
       }
     },
     {
-      groupName: 'All volunteers - Not notified in last 15 mins',
+      groupName: 'Regular volunteers - not notified in the last 7 days',
       filter: {
+        volunteerPartnerOrg: {
+          $exists: false
+        },
+        subjects: subtopic,
+        _id: { $nin: activeSessionVolunteers.concat(notifiedLastSevenDays) }
+      }
+    },
+    {
+      groupName:
+        'Partner volunteers - not notified in the last 3 days AND they don’t have "high level subjects"',
+      filter: {
+        volunteerPartnerOrg: { $exists: true },
+        subjects: subjectsFilter,
+        _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
+      }
+    },
+    {
+      groupName:
+        'Regular volunteers - not notified in the last 3 days AND they don’t have "high level subjects"',
+      filter: {
+        volunteerPartnerOrg: { $exists: false },
+        subjects: subjectsFilter,
+        _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
+      }
+    },
+    {
+      groupName: 'Partner volunteers - not notified in the last 3 days',
+      filter: {
+        volunteerPartnerOrg: { $exists: true },
+        subjects: subtopic,
+        _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
+      }
+    },
+    {
+      groupName:
+        'All volunteers - not notified in the last 15 mins who don\'t have "high level subjects"',
+      filter: {
+        subjects: subjectsFilter,
+        _id: { $nin: activeSessionVolunteers.concat(notifiedLastFifteenMins) }
+      }
+    },
+    {
+      groupName: 'All volunteers - not notified in the last 15 mins',
+      filter: {
+        subjects: subtopic,
         _id: { $nin: activeSessionVolunteers.concat(notifiedLastFifteenMins) }
       }
     }
@@ -232,7 +272,6 @@ const notifyVolunteer = async session => {
 
   for (const priorityFilter of volunteerPriority) {
     volunteer = await getNextVolunteer({
-      subtopic,
       priorityFilter: priorityFilter.filter
     })
 

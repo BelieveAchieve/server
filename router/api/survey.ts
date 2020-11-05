@@ -11,7 +11,7 @@ module.exports = function(router) {
         sessionId,
         responseData
       });
-      res.status(200);
+      res.sendStatus(200);
     } catch (error) {
       next(error);
     }

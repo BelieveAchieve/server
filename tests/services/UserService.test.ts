@@ -1,14 +1,14 @@
 import mongoose from 'mongoose';
-import UserService from '../../../services/UserService';
-import VolunteerModel from '../../../models/Volunteer';
-import UserActionModel from '../../../models/UserAction';
+import UserService from '../../services/UserService';
+import VolunteerModel from '../../models/Volunteer';
+import UserActionModel from '../../models/UserAction';
 import {
   PHOTO_ID_STATUS,
   REFERENCE_STATUS,
   STATUS,
   USER_ACTION
-} from '../../../constants';
-import { Volunteer } from '../../utils/types';
+} from '../../constants';
+import { Volunteer } from '../types';
 import {
   buildVolunteer,
   buildReference,
@@ -16,9 +16,9 @@ import {
   buildPhotoIdData,
   buildReferenceWithForm,
   buildBackgroundInfo
-} from '../../utils/generate';
-import { insertVolunteer, resetDb } from '../../utils/db-utils';
-jest.mock('../../../services/MailService');
+} from '../generate';
+import { insertVolunteer, resetDb } from '../db-utils';
+jest.mock('../../services/MailService');
 
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGO_URL, {

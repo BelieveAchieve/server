@@ -11,7 +11,8 @@
     "lint": "eslint . --fix",
     "lint:prod": "eslint . --fix --max-warnings 0",
     "worker": "ts-node worker",
-    "worker:dev": "ts-node-dev worker"
+    "worker:dev": "ts-node-dev worker",
+    "transpile": "tsc"
   },
   "nyc": {
     "check-coverage": true,
@@ -63,6 +64,7 @@
     "firebase-admin": "^8.10.0",
     "jszip": "^3.2.2",
     "lodash": "^4.17.19",
+    "moment-range": "^4.0.2",
     "moment-timezone": "^0.5.23",
     "mongoose": "^5.7.5",
     "morgan": "^1.9.1",

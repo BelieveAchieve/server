@@ -3,11 +3,11 @@ import {
   resetDb,
   insertSessionWithVolunteer,
   insertSession
-} from '../utils/db-utils';
+} from '../db-utils';
 import notifyTutors from '../../worker/jobs/notifyTutors';
 import config from '../../config';
 import TwilioService from '../../services/twilio';
-import { buildVolunteer } from '../utils/generate';
+import { buildVolunteer } from '../generate';
 import { log } from '../../worker/logger';
 jest.mock('../../services/twilio');
 jest.mock('../../worker/logger');

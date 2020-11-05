@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 import emailReadyToCoach from '../../worker/jobs/emailReadyToCoach';
-import { insertVolunteer, resetDb } from '../utils/db-utils';
-import { buildVolunteer } from '../utils/generate';
+import { insertVolunteer, resetDb } from '../db-utils';
+import { buildVolunteer } from '../generate';
 import VolunteerModel from '../../models/Volunteer';
 import MailService from '../../services/MailService';
-import { Volunteer } from '../utils/types';
+import { Volunteer } from '../types';
 jest.mock('../../services/MailService');
 
 const buildReadyToSendVolunteer = (): Volunteer => {

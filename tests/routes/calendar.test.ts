@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import request, { Test } from 'supertest';
 import app from '../../app';
-import { insertVolunteer, resetDb } from '../utils/db-utils';
-import { buildAvailability, authLogin } from '../utils/generate';
+import { insertVolunteer, resetDb } from '../db-utils';
+import { buildAvailability, authLogin } from '../generate';
 
 const agent = request.agent(app);
 

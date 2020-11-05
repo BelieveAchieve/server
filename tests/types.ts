@@ -5,7 +5,7 @@ import {
   SCIENCE_CERTS,
   COLLEGE_CERTS,
   SAT_CERTS
-} from '../../constants';
+} from '../constants';
 
 export interface User {
   _id: Types.ObjectId;
@@ -18,6 +18,7 @@ export interface User {
   password: string;
   referredByCode: Types.ObjectId | string;
   referralCode: string;
+  pastSessions: Types.ObjectId[] | Session[];
 }
 
 // @todo: clean up - use the Student interface from Student.ts when available
@@ -74,6 +75,7 @@ export interface Volunteer extends User {
   subjects: Array<string>;
   trainingCourses: TrainingCourses;
   sentReadyToCoachEmail: boolean;
+  hoursTutored: Types.Decimal128;
 }
 
 export interface StudentRegistrationForm extends Student {
@@ -222,4 +224,8 @@ export interface Session {
   isReported: boolean;
   reportReason: string;
   reportMessage: string;
+  reviewStatus: string;
+  flags: string[];
+  reviewedStudent: boolean;
+  reviewedVolunteer: boolean;
 }

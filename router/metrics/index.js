@@ -3,7 +3,9 @@ const moment = require('moment')
 
 const {
   getFeedbackStats,
+  getCumulativeSessions,
   getSessionStats,
+  getCumulativeStudents,
   getStudents,
   getVolunteerDistributionStats,
   getVolunteerStats,
@@ -34,6 +36,16 @@ module.exports = function(app) {
         slug: 'students',
         name: 'Student signups',
         datapoints: await getStudents(options)
+      },
+      {
+        slug: 'cumulative-students',
+        name: 'Total Students',
+        datapoints: await getCumulativeStudents(options)
+      },
+      {
+        slug: 'cumulative-sessions',
+        name: 'Total Sessions',
+        datapoints: await getCumulativeSessions(options)
       },
       {
         slug: 'sessions',
