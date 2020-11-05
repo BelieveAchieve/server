@@ -141,10 +141,18 @@ const addPastSession = async ({ userId, sessionId }) => {
   await User.update({ _id: userId }, { $addToSet: { pastSessions: sessionId } })
 }
 
-const getSession = async sessionId => {
+const getSession = async (sessionId, projection = {}) => {
   return Session.findOne({ _id: sessionId })
+    .select(projection)
     .lean()
     .exec()
+}
+
+const addFailedJoins = async ({ userId, sessionId }) => {
+  await Session.update(
+    { _id: sessionId },
+    { $addToSet: { failedJoins: userId } }
+  )
 }
 
 const updateSession = async ({
@@ -776,6 +784,7 @@ module.exports = {
   addFeedbackFlags,
   getSessionsToReview,
   updateSession,
+  addFailedJoins,
 
   // Session Service helpers exposed for testing
   didParticipantsChat,
