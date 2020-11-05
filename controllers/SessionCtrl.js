@@ -1,6 +1,7 @@
 const Session = require('../models/Session')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
 const TwilioService = require('../services/twilio')
+const SessionService = require('../services/SessionService')
 const Sentry = require('@sentry/node')
 const PushTokenService = require('../services/PushTokenService')
 const PushToken = require('../models/PushToken')
@@ -30,7 +31,7 @@ module.exports = function(socketService) {
 
       const savedSession = await session.save()
 
-      socketService.emitNewSession(savedSession)
+      socketService.emitNewSession()
 
       if (!user.isBanned) {
         TwilioService.beginRegularNotifications(savedSession)
@@ -52,87 +53,81 @@ module.exports = function(socketService) {
 
     // Given a sessionId and userId, join the user to the session and send necessary
     // socket events and notifications
-    join: async function(socket, options) {
-      const sessionId = options.sessionId
-      const user = options.user
+    join: async function(socket, { session, user }) {
       const userAgent = socket.request.headers['user-agent']
       const ipAddress = socket.handshake.address
 
-      // @todo: handle these unhandled errors
-      if (!user) {
-        throw new Error('User not authenticated')
+      if (session.endedAt) {
+        SessionService.addFailedJoins({
+          userId: user._id,
+          sessionId: session._id
+        })
+        throw new Error('Session has ended')
       }
 
-      if (user.isVolunteer && !user.isApproved) {
-        throw new Error('Volunteer not approved')
+      if (!user.isVolunteer && !user._id.equals(session.student)) {
+        SessionService.addFailedJoins({
+          userId: user._id,
+          sessionId: session._id
+        })
+        throw new Error("A student cannot join another student's session")
       }
 
-      const session = await Session.findById(sessionId).exec()
-      if (!session) {
-        throw new Error('No session found!')
+      if (
+        user.isVolunteer &&
+        session.volunteer &&
+        !user._id.equals(session.volunteer)
+      ) {
+        SessionService.addFailedJoins({
+          userId: user._id,
+          sessionId: session._id
+        })
+        throw new Error('A volunter has already joined the session')
       }
 
-      try {
-        const isInitialVolunteerJoin = user.isVolunteer && !session.volunteer
-
-        await session.joinUser(user)
-
-        if (isInitialVolunteerJoin) {
-          UserActionCtrl.joinedSession(
-            user._id,
-            session._id,
-            userAgent,
-            ipAddress
-          ).catch(error => Sentry.captureException(error))
-
-          const pushTokens = await PushToken.find({ user: session.student })
-            .lean()
-            .exec()
-
-          if (pushTokens && pushTokens.length > 0) {
-            const tokens = pushTokens.map(token => token.token)
-            PushTokenService.sendVolunteerJoined(session, tokens)
-          }
-        }
-
-        // After 30 seconds of the this.createdAt, we can assume the user is
-        // rejoining the session instead of joining for the first time
-        const thirtySecondsElapsed = 1000 * 30
-        if (
-          !isInitialVolunteerJoin &&
-          Date.parse(session.createdAt) + thirtySecondsElapsed < Date.now()
-        ) {
-          UserActionCtrl.rejoinedSession(
-            user._id,
-            session._id,
-            userAgent,
-            ipAddress
-          ).catch(error => Sentry.captureException(error))
-        }
-
-        socketService.emitSessionChange(session._id)
-      } catch (err) {
-        // data passed so client knows whether the session has ended or was fulfilled
-        socketService.bump(
-          socket,
+      const isInitialVolunteerJoin = user.isVolunteer && !session.volunteer
+      if (isInitialVolunteerJoin) {
+        await Session.updateOne(
+          { _id: session._id },
           {
-            endedAt: session.endedAt,
-            volunteer: session.volunteer || null,
-            student: session.student
-          },
-          err
+            volunteerJoinedAt: new Date(),
+            volunteer: user._id
+          }
         )
+        UserActionCtrl.joinedSession(
+          user._id,
+          session._id,
+          userAgent,
+          ipAddress
+        ).catch(error => Sentry.captureException(error))
+
+        const pushTokens = await PushToken.find({ user: session.student })
+          .lean()
+          .exec()
+        if (pushTokens && pushTokens.length > 0) {
+          const tokens = pushTokens.map(token => token.token)
+          PushTokenService.sendVolunteerJoined(session, tokens)
+        }
+      }
+
+      // After 30 seconds of the this.createdAt, we can assume the user is
+      // rejoining the session instead of joining for the first time
+      const thirtySecondsElapsed = 1000 * 30
+      if (
+        !isInitialVolunteerJoin &&
+        Date.parse(session.createdAt) + thirtySecondsElapsed < Date.now()
+      ) {
+        UserActionCtrl.rejoinedSession(
+          user._id,
+          session._id,
+          userAgent,
+          ipAddress
+        ).catch(error => Sentry.captureException(error))
       }
     },
 
     // deliver a message
-    message: async function(data) {
-      const message = {
-        user: data.user,
-        contents: data.message
-      }
-      const sessionId = data.sessionId
-
+    saveMessage: async function({ sessionId, user, message }) {
       const session = await Session.findById(sessionId).exec()
       if (!session) {
         throw new Error('No session found with that ID!')
@@ -140,13 +135,16 @@ module.exports = function(socketService) {
 
       this.verifySessionParticipant(
         session,
-        data.user,
+        user,
         new Error('Only session participants are allowed to send messages')
       )
 
-      const savedMessage = await session.saveMessage(message)
-
-      socketService.deliverMessage(savedMessage, sessionId)
+      return Session.updateOne(
+        {
+          _id: sessionId
+        },
+        { $push: { messages: message } }
+      )
     },
 
     // verify that a user is a session participant
