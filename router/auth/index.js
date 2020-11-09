@@ -10,6 +10,7 @@ const School = require('../../models/School')
 const { USER_BAN_REASON } = require('../../constants')
 const authPassport = require('./passport')
 const UserCtrl = require('../../controllers/UserCtrl')
+const MailService = require('../../services/MailService')
 
 // Validation functions
 function checkPassword(password) {
@@ -202,6 +203,12 @@ module.exports = function(app) {
 
     try {
       const student = await UserCtrl.createStudent(studentData)
+      if (isBanned)
+        MailService.sendBannedUserAlert({
+          userId: student._id,
+          banReason
+        })
+
       await req.login(student)
       return res.json({
         user: student

@@ -5,6 +5,7 @@ import { log } from '../logger';
 import notifyTutors from './notifyTutors';
 import updateElapsedAvailability from './updateElapsedAvailability';
 import endStaleSessions from './endStaleSessions';
+import endUnmatchedSession from './endUnmatchedSession';
 import emailReferences from './emailReferences';
 import emailReadyToCoach from './emailReadyToCoach';
 import emailReferenceFollowup from './emailReferenceFollowup';
@@ -13,6 +14,7 @@ export enum Jobs {
   NotifyTutors = 'NotifyTutors',
   UpdateElapsedAvailability = 'UpdateElapsedAvailability',
   EndStaleSessions = 'EndStaleSessions',
+  EndUnmatchedSession = 'EndUnmatchedSession',
   EmailReferences = 'EmailReferences',
   EmailReadyToCoach = 'EmailReadyToCoach',
   EmailReferenceFollowup = 'EmailReferenceFollowup'
@@ -36,6 +38,10 @@ const jobProcessors: JobProcessor[] = [
   {
     name: Jobs.EndStaleSessions,
     processor: endStaleSessions
+  },
+  {
+    name: Jobs.EndUnmatchedSession,
+    processor: endUnmatchedSession
   },
   {
     name: Jobs.EmailReferences,

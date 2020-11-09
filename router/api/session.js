@@ -15,6 +15,7 @@ const { USER_ACTION } = require('../../constants')
 const NotificationService = require('../../services/NotificationService')
 const UserAction = require('../../models/UserAction')
 const config = require('../../config')
+const QueueService = require('../../services/QueueService')
 
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
@@ -41,6 +42,14 @@ module.exports = function(router, io) {
         })
 
         const userAgent = req.get('User-Agent')
+
+        // Auto end the session after 45 minutes if the session is unmatched
+        const delay = 1000 * 60 * 45
+        QueueService.add(
+          'EndUnmatchedSession',
+          { sessionId: session._id },
+          { delay }
+        )
 
         UserActionCtrl.requestedSession(
           user._id,
