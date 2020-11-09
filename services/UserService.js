@@ -261,13 +261,19 @@ module.exports = {
       MailService.sendApprovedNotOnboardedEmail(volunteerBeforeUpdate)
 
     for (let i = 0; i < referencesStatus.length; i++) {
+      const reference = volunteerBeforeUpdate.references[i]
       if (
         referencesStatus[i] === REFERENCE_STATUS.REJECTED &&
-        volunteerBeforeUpdate.references[i].status !== REFERENCE_STATUS.REJECTED
-      )
+        reference.status !== REFERENCE_STATUS.REJECTED
+      ) {
         UserActionCtrl.rejectedReference(volunteerId, {
-          referenceEmail: volunteerBeforeUpdate.references[i].email
+          referenceEmail: reference.email
         })
+        MailService.sendRejectedReference({
+          volunteer: volunteerBeforeUpdate,
+          reference
+        })
+      }
     }
   },
 
