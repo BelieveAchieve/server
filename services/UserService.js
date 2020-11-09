@@ -182,27 +182,28 @@ module.exports = {
           }
         },
         {
-          $unwind: "$userAction"
+          $unwind: '$userAction'
         },
         {
           $match: {
-              "userAction.action":{ 
-                $in: [
-                  USER_ACTION.ACCOUNT.ADDED_PHOTO_ID, 
-                  USER_ACTION.ACCOUNT.SUBMITTED_REFERENCE_FORM, 
-                  USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
-                ] 
-              }
+            'userAction.action': {
+              $in: [
+                USER_ACTION.ACCOUNT.ADDED_PHOTO_ID,
+                USER_ACTION.ACCOUNT.SUBMITTED_REFERENCE_FORM,
+                USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
+              ]
+            }
           }
         },
         {
           $group: {
-            _id: "$_id",
-            firstname: { $first: '$firstname'},
-            lastname: { $first: '$lastname'},
-            email: { $first: '$email'},
+            _id: '$_id',
+            firstname: { $first: '$firstname' },
+            lastname: { $first: '$lastname' },
+            email: { $first: '$email' },
+            // Get the date of their latest user action associated with the approval process
             readyForReviewAt: {
-              $max: "$userAction.createdAt"
+              $max: '$userAction.createdAt'
             }
           }
         }
