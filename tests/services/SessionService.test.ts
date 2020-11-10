@@ -1,10 +1,11 @@
-import mongoose, { Types } from 'mongoose';
+import mongoose from 'mongoose';
 import SessionService from '../../services/SessionService';
 import {
   buildMessage,
   buildStudent,
   buildVolunteer,
   buildSession,
+  buildPastSessions,
   generateSentence
 } from '../generate';
 import {
@@ -25,13 +26,6 @@ import WhiteboardService from '../../services/WhiteboardService';
 jest.mock('../../services/MailService');
 jest.mock('../../services/WhiteboardService');
 jest.mock('../../services/QuillDocService');
-
-const buildPastSessions = (): Types.ObjectId[] => {
-  const pastSession = buildSession();
-  const pastSessions = [pastSession._id];
-
-  return pastSessions;
-};
 
 const loadMessages = ({
   studentSentMessages,
@@ -788,9 +782,8 @@ describe('endSession', () => {
       await SessionService.endSession(input);
       const projection = {
         flags: 1,
-        reviewStatus: 1,
-        reviewStudent: 1,
-        reviewVolunteer: 1
+        reviewedStudent: 1,
+        reviewedVolunteer: 1
       };
       const updatedSession = await getSession(
         {
@@ -809,6 +802,49 @@ describe('endSession', () => {
       expect(updatedSession.flags).toEqual(expectedFlags);
       expect(updatedSession.reviewedStudent).toBeFalsy();
       expect(updatedSession.reviewedVolunteer).toBeFalsy();
+    });
+
+    test('Should ignore session flags that do not trigger a review', async () => {
+      const { messages, student, volunteer } = loadMessages({
+        studentSentMessages: true,
+        volunteerSentMessages: false,
+        messagesPerUser: 5
+      });
+      await insertStudent(student as Student);
+      await insertVolunteer(volunteer as Volunteer);
+      const oneHourAgo = Date.now() - 1000 * 60 * 60 * 1;
+      const createdAt = new Date(oneHourAgo);
+      const volunteerJoinedAt = new Date(oneHourAgo + 1000 * 60);
+      const { session } = await insertSession({
+        createdAt,
+        student: student._id,
+        volunteerJoinedAt,
+        volunteer: volunteer._id,
+        messages
+      });
+
+      const input = {
+        sessionId: session._id,
+        endedBy: student._id
+      };
+      await SessionService.endSession(input);
+      const projection = {
+        flags: 1,
+        reviewedStudent: 1,
+        reviewedVolunteer: 1
+      };
+      const updatedSession = await getSession(
+        {
+          _id: session._id
+        },
+        projection
+      );
+
+      const expectedFlags = [SESSION_FLAGS.ABSENT_USER];
+
+      expect(updatedSession.flags).toEqual(expectedFlags);
+      expect(updatedSession.reviewedStudent).toBeUndefined();
+      expect(updatedSession.reviewedVolunteer).toBeUndefined();
     });
 
     test.todo('Test mock function for QuillDoc was executed');
