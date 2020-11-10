@@ -488,8 +488,8 @@ describe('getFeedbackFlags', () => {
       },
       'session-experience': {
         'easy-to-answer-questions': 1,
-        'feel-like-helped-student': 1,
-        'feel-more-fulfilled': 1,
+        'feel-like-helped-student': 4,
+        'feel-more-fulfilled': 3,
         'good-use-of-time': 1,
         'plan-on-volunteering-again': 1
       }
