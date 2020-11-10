@@ -102,18 +102,9 @@ const getFeedbackFlags = feedback => {
       feedback['rate-session'] && feedback['rate-session'].rating
   }
 
-  if (sessionExperience) {
-    feedbackRatings.volunteerEasyToAnswer =
-      sessionExperience['easy-to-answer-questions']
-    feedbackRatings.volunteerFeelLikeHelped =
-      sessionExperience['feel-like-helped-student']
-    feedbackRatings.volunteerFulfilled =
-      sessionExperience['feel-more-fulfilled']
-    feedbackRatings.volunteerGoodUseOfTime =
-      sessionExperience['good-use-of-time']
+  if (sessionExperience)
     feedbackRatings.volunteerAgain =
       sessionExperience['plan-on-volunteering-again']
-  }
 
   for (const [key, value] of Object.entries(feedbackRatings)) {
     if (value <= 3) {
@@ -123,10 +114,6 @@ const getFeedbackFlags = feedback => {
           flags.push(SESSION_FLAGS.STUDENT_RATING)
           break
         case 'volunteerSessionRating':
-        case 'volunteerEasyToAnswer':
-        case 'volunteerFeelLikeHelped':
-        case 'volunteerFulfilled':
-        case 'volunteerGoodUseOfTime':
         case 'volunteerAgain':
           flags.push(SESSION_FLAGS.VOLUNTEER_RATING)
           break
