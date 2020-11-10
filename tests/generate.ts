@@ -307,6 +307,13 @@ export const buildMessage = (overrides = {}): Partial<Message> => {
   return message;
 };
 
+export const buildPastSessions = (): Types.ObjectId[] => {
+  const pastSession = buildSession();
+  const pastSessions = [pastSession._id];
+
+  return pastSessions;
+};
+
 export const authLogin = (agent, { email, password }: Partial<User>): Test =>
   agent
     .post('/auth/login')
