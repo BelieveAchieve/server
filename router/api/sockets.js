@@ -15,7 +15,6 @@ const getSessionRoom = sessionId => `sessions-${sessionId}`
 
 module.exports = function(io, sessionStore) {
   const socketService = SocketService(io)
-  const sessionCtrl = SessionCtrl(socketService)
 
   // Authentication for sockets
   io.use(
@@ -88,7 +87,7 @@ module.exports = function(io, sessionStore) {
       }
 
       try {
-        await sessionCtrl.join(socket, {
+        await SessionCtrl.join(socket, {
           session,
           user
         })
@@ -134,7 +133,7 @@ module.exports = function(io, sessionStore) {
           user: user._id,
           createdAt: new Date()
         }
-        await sessionCtrl.saveMessage({
+        await SessionCtrl.saveMessage({
           sessionId: data.sessionId,
           user: data.user,
           message: newMessage
