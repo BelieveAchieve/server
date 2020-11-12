@@ -308,6 +308,13 @@ export const buildMessage = (overrides = {}): Partial<Message> => {
   return message;
 };
 
+export const buildPastSessions = (): Types.ObjectId[] => {
+  const pastSession = buildSession();
+  const pastSessions = [pastSession._id];
+
+  return pastSessions;
+};
+
 export const buildNotification = (overrides = {}): Partial<Notification> => {
   const _id = Types.ObjectId();
   const notification = {

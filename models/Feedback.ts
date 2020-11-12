@@ -38,7 +38,7 @@ const feedbackSchema = new Schema({
    * coach-rating: number
    * other-feedback: string
    * coach-feedback: string
-   * session-rating: { rating: number }
+   * rate-session: { rating: number }
    * coach-ratings: (legacy. only in college session currently) {
    *    coach-knowedgable: number,
    *    coach-friendly: number,
