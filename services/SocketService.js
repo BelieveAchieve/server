@@ -32,10 +32,6 @@ module.exports = function(io) {
       io.in('volunteers').emit('sessions', sessions)
     },
 
-    emitNewSession: async function() {
-      await this.updateSessionList()
-    },
-
     emitSessionChange: async function(sessionId) {
       const session = await getSessionData(sessionId)
       io.to(getSessionRoom(sessionId)).emit('session-change', session)
