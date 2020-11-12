@@ -6,7 +6,7 @@ const Sentry = require('@sentry/node')
 const PushTokenService = require('../services/PushTokenService')
 const PushToken = require('../models/PushToken')
 
-module.exports = function(socketService) {
+module.exports = function() {
   return {
     create: async function(options) {
       const user = options.user || {}
@@ -30,8 +30,6 @@ module.exports = function(socketService) {
       })
 
       const savedSession = await session.save()
-
-      socketService.emitNewSession()
 
       if (!user.isBanned) {
         TwilioService.beginRegularNotifications(savedSession)

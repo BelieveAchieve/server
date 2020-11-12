@@ -20,7 +20,6 @@ const QueueService = require('../../services/QueueService')
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
   const socketService = SocketService(io)
-  const sessionCtrl = SessionCtrl(socketService)
 
   router
     .route('/session/new')
@@ -35,7 +34,7 @@ module.exports = function(router, io) {
       sessionSubTopic = mapMultiWordSubtopic(sessionSubTopic)
 
       try {
-        const session = await sessionCtrl.create({
+        const session = await SessionCtrl.create({
           user,
           type: sessionType,
           subTopic: sessionSubTopic
@@ -96,7 +95,7 @@ module.exports = function(router, io) {
     const user = req.user
 
     try {
-      await sessionCtrl.endAll(user)
+      await SessionCtrl.endAll(user)
       res.json({ success: true })
     } catch (err) {
       next(err)
