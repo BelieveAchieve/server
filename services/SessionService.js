@@ -12,6 +12,24 @@ const { USER_ACTION } = require('../constants')
 const VolunteerModel = require('../models/Volunteer')
 const { SESSION_FLAGS } = require('../constants')
 
+const hasReviewTriggerFlags = flags => {
+  const excludedFlags = [
+    SESSION_FLAGS.UNMATCHED,
+    SESSION_FLAGS.LOW_MESSAGES,
+    SESSION_FLAGS.ABSENT_USER
+  ]
+  let isReviewTrigger = false
+
+  for (const flag of flags) {
+    if (!excludedFlags.includes(flag)) {
+      isReviewTrigger = true
+      break
+    }
+  }
+
+  return isReviewTrigger
+}
+
 const didParticipantsChat = (messages, studentId, volunteerId) => {
   let studentSentMessage = false
   let volunteerSentMessage = false
@@ -84,18 +102,9 @@ const getFeedbackFlags = feedback => {
       feedback['rate-session'] && feedback['rate-session'].rating
   }
 
-  if (sessionExperience) {
-    feedbackRatings.volunteerEasyToAnswer =
-      sessionExperience['easy-to-answer-questions']
-    feedbackRatings.volunteerFeelLikeHelped =
-      sessionExperience['feel-like-helped-student']
-    feedbackRatings.volunteerFulfilled =
-      sessionExperience['feel-more-fulfilled']
-    feedbackRatings.volunteerGoodUseOfTime =
-      sessionExperience['good-use-of-time']
+  if (sessionExperience)
     feedbackRatings.volunteerAgain =
       sessionExperience['plan-on-volunteering-again']
-  }
 
   for (const [key, value] of Object.entries(feedbackRatings)) {
     if (value <= 3) {
@@ -105,10 +114,6 @@ const getFeedbackFlags = feedback => {
           flags.push(SESSION_FLAGS.STUDENT_RATING)
           break
         case 'volunteerSessionRating':
-        case 'volunteerEasyToAnswer':
-        case 'volunteerFeelLikeHelped':
-        case 'volunteerFulfilled':
-        case 'volunteerGoodUseOfTime':
         case 'volunteerAgain':
           flags.push(SESSION_FLAGS.VOLUNTEER_RATING)
           break
@@ -347,11 +352,13 @@ module.exports = {
     const endedAt = new Date()
 
     const reviewFlags = getReviewFlags({ ...session, endedAt })
-    const update = {}
-    if (reviewFlags.length > 0) {
-      update.flags = reviewFlags
-      update.reviewedStudent = false
+    const isReviewNeeded =
+      reviewFlags.length > 0 && hasReviewTriggerFlags(reviewFlags)
+    const update = {
+      flags: reviewFlags
     }
+
+    if (isReviewNeeded) update.reviewedStudent = false
 
     if (session.volunteer) {
       const hoursTutored = calculateHoursTutored({ ...session, endedAt })
@@ -360,7 +367,7 @@ module.exports = {
         { $addToSet: { pastSessions: session._id }, $inc: { hoursTutored } }
       )
 
-      if (reviewFlags.length > 0) update.reviewedVolunteer = false
+      if (isReviewNeeded) update.reviewedVolunteer = false
     }
 
     const quillDoc = await QuillDocService.getDoc(session._id.toString())
