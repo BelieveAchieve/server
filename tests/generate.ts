@@ -13,6 +13,7 @@ import {
   SAT_CERTS
 } from '../constants';
 import { Message } from '../models/Message';
+import { Notification } from '../models/Notification';
 import {
   User,
   Volunteer,
@@ -305,6 +306,17 @@ export const buildMessage = (overrides = {}): Partial<Message> => {
   };
 
   return message;
+};
+
+export const buildNotification = (overrides = {}): Partial<Notification> => {
+  const _id = Types.ObjectId();
+  const notification = {
+    _id,
+    sentAt: new Date(),
+    ...overrides
+  };
+
+  return notification;
 };
 
 export const authLogin = (agent, { email, password }: Partial<User>): Test =>

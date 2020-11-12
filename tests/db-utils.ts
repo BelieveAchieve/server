@@ -4,9 +4,15 @@ import VolunteerModel from '../models/Volunteer';
 import StudentModel from '../models/Student';
 import UserActionModel from '../models/UserAction';
 import SessionModel from '../models/Session';
+import NotificationModel from '../models/Notification';
 import config from '../config';
 import { Volunteer, Student, Session } from './types';
-import { buildVolunteer, buildStudent, buildSession } from './generate';
+import {
+  buildNotification,
+  buildSession,
+  buildStudent,
+  buildVolunteer
+} from './generate';
 
 const hashPassword = async function(password): Promise<Error | string> {
   try {
@@ -19,7 +25,11 @@ const hashPassword = async function(password): Promise<Error | string> {
 };
 
 export const resetDb = async (): Promise<void> => {
+  await NotificationModel.remove({});
+  await SessionModel.remove({});
   await UserModel.remove({});
+  await VolunteerModel.remove({});
+
   await UserActionModel.remove({});
 };
 
@@ -83,6 +93,22 @@ export const insertSessionWithVolunteer = async (
   const createdSession = await SessionModel.create(session);
   // Return the session and the student
   return { session: createdSession.toObject(), student, volunteer };
+};
+
+export const insertNotification = async (
+  volunteer = buildVolunteer(),
+  overrides = {}
+): Promise<{
+  notification: Notification;
+  volunteer: Volunteer;
+}> => {
+  const notification = buildNotification({
+    volunteer: volunteer._id,
+    ...overrides
+  });
+  const createdNotification = await NotificationModel.create(notification);
+  // Return the notification and the volunteer
+  return { notification: createdNotification.toObject(), volunteer };
 };
 
 export const getStudent = (
