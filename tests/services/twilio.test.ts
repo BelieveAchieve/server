@@ -170,6 +170,7 @@ test('Notifies only the failsafe volunteers', async () => {
   const { session } = await insertSession();
 
   let notifications;
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   session.addNotifications = n => (notifications = n);
 
   await TwilioService.beginFailsafeNotifications(session);

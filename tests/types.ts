@@ -206,6 +206,8 @@ export interface Notification {
 }
 
 export interface Session {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  addNotifications: (n: any) => any;
   _id: Types.ObjectId;
   student: Student;
   volunteer: Volunteer;
