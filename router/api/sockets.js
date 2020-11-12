@@ -55,9 +55,10 @@ module.exports = function(io, sessionStore) {
     // Join user to their latest session if it has not ended
     if (latestSession && !latestSession.endedAt) {
       socket.join(getSessionRoom(latestSession._id))
-      // @todo: utilize SocketService.sessionChange?
       socket.emit('session-change', latestSession)
     }
+
+    if (user && user.isVolunteer) socket.join('volunteers')
 
     // Session management
     socket.on('join', async function(data) {
@@ -147,7 +148,7 @@ module.exports = function(io, sessionStore) {
         }
 
         const socketRoom = getSessionRoom(data.sessionId)
-        io.to(socketRoom).emit('messageSend', messageData)
+        io.in(socketRoom).emit('messageSend', messageData)
       } catch (error) {
         // @todo: handle error
         console.log(error)
