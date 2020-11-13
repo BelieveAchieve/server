@@ -9,9 +9,7 @@ const config = require('../../config')
 const SessionCtrl = require('../../controllers/SessionCtrl.js')
 const SocketService = require('../../services/SocketService.js')
 const QuillDocService = require('../../services/QuillDocService')
-
-// @todo: duplicate in socketservice.js
-const getSessionRoom = sessionId => `sessions-${sessionId}`
+const getSessionRoom = require('../../utils/get-session-room')
 
 module.exports = function(io, sessionStore) {
   const socketService = SocketService(io)
@@ -27,6 +25,7 @@ module.exports = function(io, sessionStore) {
       fail: (data, message, error, accept) => {
         if (error) {
           console.log(new Error(message))
+          throw new Error(message)
         } else {
           console.log(message)
           accept(null, false)
@@ -35,19 +34,14 @@ module.exports = function(io, sessionStore) {
     })
   )
 
-  // @todo: check if passportSocketIO will throw an error for unauthorized users, if so remove this
-  io.use((socket, next) => {
-    if (socket.request.user) {
-      next()
-    } else {
-      next(new Error('unauthorized'))
-    }
-  })
-
   io.on('connection', async function(socket) {
     const {
       request: { user }
     } = socket
+    if (!user) {
+      socket.emit('redirect')
+      throw new Error('User not authenticated')
+    }
     const latestSession = await SessionModel.current(user._id)
 
     // @note: students don't join the room by default until they are in the session view
@@ -61,8 +55,10 @@ module.exports = function(io, sessionStore) {
 
     // Session management
     socket.on('join', async function(data) {
-      // @todo: Throw error and redirect?
-      if (!data || !data.sessionId) return
+      if (!data || !data.sessionId) {
+        socket.emit('redirect')
+        return
+      }
 
       const { sessionId } = data
       const {
@@ -73,7 +69,7 @@ module.exports = function(io, sessionStore) {
       try {
         // @todo: have middleware handle the auth
         if (!user) throw new Error('User not authenticated')
-        if (user.isVolunteer && !user.isApproved && !user.isOnboarded)
+        if (user.isVolunteer && !user.isApproved)
           throw new Error('Volunteer not approved')
 
         session = await SessionModel.findById(sessionId)
@@ -81,7 +77,6 @@ module.exports = function(io, sessionStore) {
           .exec()
         if (!session) throw new Error('No session found!')
       } catch (error) {
-        // @todo: implement redirect listener client-side
         socket.emit('redirect')
         return
       }
@@ -124,7 +119,7 @@ module.exports = function(io, sessionStore) {
 
     socket.on('message', async function(data) {
       const { user, sessionId, message } = data
-      // @todo: handle this?
+      // @todo: handle this differently?
       if (!sessionId) return
 
       try {
