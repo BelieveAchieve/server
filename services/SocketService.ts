@@ -1,46 +1,53 @@
-const Session = require('../models/Session')
-const MessageModel = require('../models/Message')
-const getSessionRoom = require('../utils/get-session-room')
+import Session from '../models/Session';
+import MessageModel, { MessageDocument } from '../models/Message';
+import getSessionRoom from '../utils/get-session-room';
 
-/**
- * Get session data to send to client for a given session ID
- * @param sessionId
- * @returns the session object
- */
-async function getSessionData(sessionId) {
-  const populateOptions = [
-    { path: 'student', select: 'firstname isVolunteer' },
-    { path: 'volunteer', select: 'firstname isVolunteer' }
-  ]
+class SocketService {
+  private io;
 
-  const populatedSession = await Session.findById(sessionId)
-    .populate(populateOptions)
-    .exec()
+  constructor(io) {
+    this.io = io;
+  }
 
-  return MessageModel.populate(populatedSession, {
-    path: 'messages.user',
-    select: 'firstname isVolunteer'
-  })
-}
+  /**
+   * Get session data to send to client for a given session ID
+   * @param sessionId
+   * @returns the session object
+   */
+  private async getSessionData(sessionId): Promise<MessageDocument> {
+    const populateOptions = [
+      { path: 'student', select: 'firstname isVolunteer' },
+      { path: 'volunteer', select: 'firstname isVolunteer' }
+    ];
 
-module.exports = function(io) {
-  return {
-    updateSessionList: async function() {
-      const sessions = await Session.getUnfulfilledSessions()
-      io.in('volunteers').emit('sessions', sessions)
-    },
+    const populatedSession = await Session.findById(sessionId)
+      .populate(populateOptions)
+      .exec();
 
-    emitSessionChange: async function(sessionId) {
-      const session = await getSessionData(sessionId)
-      io.to(getSessionRoom(sessionId)).emit('session-change', session)
+    return MessageModel.populate(populatedSession, {
+      path: 'messages.user',
+      select: 'firstname isVolunteer'
+    });
+  }
 
-      await this.updateSessionList()
-    },
+  async updateSessionList(): Promise<void> {
+    const sessions = await Session.getUnfulfilledSessions();
+    this.io.in('volunteers').emit('sessions', sessions);
+  }
 
-    bump: function(socket, data, err) {
-      console.log('Could not join session')
-      console.log(err)
-      socket.emit('bump', data, err.toString())
-    }
+  async emitSessionChange(sessionId): Promise<void> {
+    const session = await this.getSessionData(sessionId);
+    this.io.to(getSessionRoom(sessionId)).emit('session-change', session);
+
+    await this.updateSessionList();
+  }
+
+  bump(socket, data, err): void {
+    console.log('Could not join session');
+    console.log(err);
+    socket.emit('bump', data, err.toString());
   }
 }
+
+module.exports = SocketService;
+export default SocketService;
