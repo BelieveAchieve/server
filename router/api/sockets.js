@@ -7,12 +7,12 @@ const Sentry = require('@sentry/node')
 const SessionModel = require('../../models/Session.js')
 const config = require('../../config')
 const SessionCtrl = require('../../controllers/SessionCtrl.js')
-const SocketService = require('../../services/SocketService.js')
+const SocketService = require('../../services/SocketService')
 const QuillDocService = require('../../services/QuillDocService')
 const getSessionRoom = require('../../utils/get-session-room')
 
 module.exports = function(io, sessionStore) {
-  const socketService = SocketService(io)
+  const socketService = new SocketService(io)
 
   // Authentication for sockets
   io.use(

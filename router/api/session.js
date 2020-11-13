@@ -19,7 +19,7 @@ const QueueService = require('../../services/QueueService')
 
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
-  const socketService = SocketService(io)
+  const socketService = new SocketService(io)
 
   router
     .route('/session/new')
