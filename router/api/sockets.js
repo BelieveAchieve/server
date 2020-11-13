@@ -144,8 +144,7 @@ module.exports = function(io, sessionStore) {
         const socketRoom = getSessionRoom(data.sessionId)
         io.in(socketRoom).emit('messageSend', messageData)
       } catch (error) {
-        // @todo: handle error
-        console.log(error)
+        socket.emit('messageError')
       }
     })
 
