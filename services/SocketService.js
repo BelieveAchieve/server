@@ -1,5 +1,6 @@
 const Session = require('../models/Session')
 const MessageModel = require('../models/Message')
+const getSessionRoom = require('../utils/get-session-room')
 
 /**
  * Get session data to send to client for a given session ID
@@ -21,9 +22,6 @@ async function getSessionData(sessionId) {
     select: 'firstname isVolunteer'
   })
 }
-
-// @todo: duplicate in sockets.js
-const getSessionRoom = sessionId => `sessions-${sessionId}`
 
 module.exports = function(io) {
   return {
