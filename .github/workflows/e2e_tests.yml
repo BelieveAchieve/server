@@ -32,10 +32,10 @@ jobs:
         if curl --head --silent --fail "https://github.com/UPchieve/web/tree/${{ github.head_ref }}" 2> /dev/null;
          then
           echo "found companion branch"
-          echo "::set-env name=HAS_SAME_WEB_BRANCH::1"
+          echo "name=HAS_SAME_WEB_BRANCH::1" >> $GITHUB_ENV
          else
           echo "did not find companion branch"
-          echo "::set-env name=HAS_SAME_WEB_BRANCH::0"
+          echo "name=HAS_SAME_WEB_BRANCH::0" >> $GITHUB_ENV
         fi
     # If no matching branch is found in web, checkout master to $GITHUB_WORKSPACE/web
     - name: Checkout default (master) branch from server repo (if there is no matching branch in web)
