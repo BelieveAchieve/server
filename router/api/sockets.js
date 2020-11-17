@@ -151,7 +151,7 @@ module.exports = function(io, sessionStore) {
     socket.on('requestQuillState', async ({ sessionId }) => {
       let docState = await QuillDocService.getDoc(sessionId)
       if (!docState) docState = await QuillDocService.createDoc(sessionId)
-      socket.to(getSessionRoom(sessionId)).emit('quillState', {
+      socket.emit('quillState', {
         delta: docState
       })
     })
