@@ -34,6 +34,7 @@ export const Config = Record({
     bannedUserAlertTemplate: String,
     referenceFollowupTemplate: String,
     rejectedPhotoSubmissionTemplate: String,
+    rejectedReferenceTemplate: String,
     unsubscribeGroup: Record({
       newsletter: Number,
       account: Number

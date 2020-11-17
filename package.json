@@ -59,6 +59,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "express": "^4.16.4",
+    "express-cache-controller": "^1.1.0",
     "express-ejs-layouts": "^2.5.0",
     "express-session": "^1.14.2",
     "firebase-admin": "^8.10.0",
