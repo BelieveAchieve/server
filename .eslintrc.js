@@ -7,7 +7,6 @@ module.exports = {
     'handle-callback-err': ['error', '^(err|error)$'],
     'no-debugger': 'warn'
   },
-  ignorePatterns: ['dbutils/*', 'utils/zwibblerDecoder.ts', 'mongo-volume/*'],
   overrides: [
     {
       files: ['*.ts'],
