@@ -39,10 +39,10 @@ module.exports = function(router) {
     }
   )
 
-  router.get('/volunteers/pending', passport.isAdmin, async function(req, res) {
+  router.get('/volunteers/review', passport.isAdmin, async function(req, res) {
     try {
       const { page } = req.query
-      const { volunteers, isLastPage } = await UserService.getPendingVolunteers(
+      const { volunteers, isLastPage } = await UserService.getVolunteersToReview(
         page
       )
       res.json({ volunteers, isLastPage })
@@ -53,7 +53,7 @@ module.exports = function(router) {
     }
   })
 
-  router.post('/volunteers/pending/:id', passport.isAdmin, async function(
+  router.post('/volunteers/review/:id', passport.isAdmin, async function(
     req,
     res
   ) {

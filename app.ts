@@ -9,6 +9,7 @@ import expressWs from '@small-tech/express-ws';
 import logger from 'morgan';
 import config from './config';
 import router from './router';
+import cacheControl from 'express-cache-controller';
 
 interface LoadedRequest extends Request {
   user: {};
@@ -44,6 +45,11 @@ app.use(
     exposedHeaders: config.NODE_ENV === 'dev' ? ['Date'] : undefined
   })
 );
+// for now, send directive to never cache to prevent Zwibbler issues
+// until we figure out a caching strategy
+app.use(cacheControl({
+  noCache: true
+}));
 // see https://stackoverflow.com/questions/51023943/nodejs-getting-username-of-logged-in-user-within-route
 app.use((req: LoadedRequest, res, next) => {
   res.locals.user = req.user || null;

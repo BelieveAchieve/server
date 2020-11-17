@@ -28,5 +28,14 @@ module.exports = function(app) {
     res.sendStatus(200)
   })
 
+  router.get('/:referenceId', async (req, res, next) => {
+    const { referenceId } = req.params
+    const user = await UserService.getUser({
+      'references._id': ObjectId(referenceId)
+    })
+    if (!user) return res.sendStatus(404)
+    res.sendStatus(200)
+  })
+
   app.use('/api-public/reference', router)
 }

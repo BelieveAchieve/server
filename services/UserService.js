@@ -10,7 +10,8 @@ const {
   PHOTO_ID_STATUS,
   REFERENCE_STATUS,
   STATUS,
-  USER_BAN_REASON
+  USER_BAN_REASON,
+  USER_ACTION
 } = require('../constants')
 const config = require('../config')
 const ObjectId = require('mongodb').ObjectId
@@ -138,7 +139,7 @@ module.exports = {
     )
   },
 
-  getPendingVolunteers: async function(page) {
+  getVolunteersToReview: async function(page) {
     const pageNum = parseInt(page) || 1
     const PER_PAGE = 15
     const skip = (pageNum - 1) * PER_PAGE
@@ -171,9 +172,43 @@ module.exports = {
             email: 1,
             createdAt: 1
           }
+        },
+        {
+          $lookup: {
+            from: 'useractions',
+            localField: '_id',
+            foreignField: 'user',
+            as: 'userAction'
+          }
+        },
+        {
+          $unwind: '$userAction'
+        },
+        {
+          $match: {
+            'userAction.action': {
+              $in: [
+                USER_ACTION.ACCOUNT.ADDED_PHOTO_ID,
+                USER_ACTION.ACCOUNT.SUBMITTED_REFERENCE_FORM,
+                USER_ACTION.ACCOUNT.COMPLETED_BACKGROUND_INFO
+              ]
+            }
+          }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            firstname: { $first: '$firstname' },
+            lastname: { $first: '$lastname' },
+            email: { $first: '$email' },
+            // Get the date of their latest user action associated with the approval process
+            readyForReviewAt: {
+              $max: '$userAction.createdAt'
+            }
+          }
         }
       ])
-        .sort({ createdAt: -1 })
+        .sort({ readyForReviewAt: 1 })
         .skip(skip)
         .limit(PER_PAGE)
 
@@ -226,13 +261,19 @@ module.exports = {
       MailService.sendApprovedNotOnboardedEmail(volunteerBeforeUpdate)
 
     for (let i = 0; i < referencesStatus.length; i++) {
+      const reference = volunteerBeforeUpdate.references[i]
       if (
         referencesStatus[i] === REFERENCE_STATUS.REJECTED &&
-        volunteerBeforeUpdate.references[i].status !== REFERENCE_STATUS.REJECTED
-      )
+        reference.status !== REFERENCE_STATUS.REJECTED
+      ) {
         UserActionCtrl.rejectedReference(volunteerId, {
-          referenceEmail: volunteerBeforeUpdate.references[i].email
+          referenceEmail: reference.email
         })
+        MailService.sendRejectedReference({
+          volunteer: volunteerBeforeUpdate,
+          reference
+        })
+      }
     }
   },
 
