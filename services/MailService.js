@@ -257,6 +257,25 @@ module.exports = {
     )
   },
 
+  sendRejectedReference: ({ reference, volunteer }) => {
+    const firstName = capitalize(volunteer.firstname)
+    const emailData = {
+      referenceName: `${capitalize(reference.firstName)} ${capitalize(
+        reference.lastName
+      )}`,
+      firstName
+    }
+
+    return sendEmail(
+      volunteer.email,
+      config.mail.senders.support,
+      'The UPchieve Team',
+      config.sendgrid.rejectedReferenceTemplate,
+      emailData,
+      config.sendgrid.unsubscribeGroup.account
+    )
+  },
+
   sendReferenceFollowup: ({ reference, volunteer }) => {
     const volunteerFirstName = capitalize(volunteer.firstName)
     const volunteerLastName = capitalize(volunteer.lastName)
