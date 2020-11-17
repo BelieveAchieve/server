@@ -4,15 +4,15 @@
 const passportSocketIo = require('passport.socketio')
 const cookieParser = require('cookie-parser')
 const Sentry = require('@sentry/node')
-const Session = require('../../models/Session.js')
+const SessionModel = require('../../models/Session')
 const config = require('../../config')
-const SessionCtrl = require('../../controllers/SessionCtrl.js')
-const SocketService = require('../../services/SocketService.js')
+const SessionCtrl = require('../../controllers/SessionCtrl')
+const SocketService = require('../../services/SocketService')
 const QuillDocService = require('../../services/QuillDocService')
+const getSessionRoom = require('../../utils/get-session-room')
 
 module.exports = function(io, sessionStore) {
-  const socketService = SocketService(io)
-  const sessionCtrl = SessionCtrl(socketService)
+  const socketService = new SocketService(io)
 
   // Authentication for sockets
   io.use(
@@ -25,6 +25,7 @@ module.exports = function(io, sessionStore) {
       fail: (data, message, error, accept) => {
         if (error) {
           console.log(new Error(message))
+          throw new Error(message)
         } else {
           console.log(message)
           accept(null, false)
@@ -34,85 +35,138 @@ module.exports = function(io, sessionStore) {
   )
 
   io.on('connection', async function(socket) {
-    // store user and socket in SocketService
-    const connectPromise = socketService.connectUser(
-      socket.request.user._id,
-      socket
-    )
+    const {
+      request: { user }
+    } = socket
+    if (!user) {
+      socket.emit('redirect')
+      throw new Error('User not authenticated')
+    }
+    const latestSession = await SessionModel.current(user._id)
+
+    // @note: students don't join the room by default until they are in the session view
+    // Join user to their latest session if it has not ended
+    if (latestSession && !latestSession.endedAt) {
+      socket.join(getSessionRoom(latestSession._id))
+      socket.emit('session-change', latestSession)
+    }
+
+    if (user && user.isVolunteer) socket.join('volunteers')
 
     // Session management
     socket.on('join', async function(data) {
       if (!data || !data.sessionId) {
+        socket.emit('redirect')
         return
       }
 
-      // wait for socketService.connectUser to complete before joining
-      await connectPromise.then(() => {
-        sessionCtrl.join(socket, {
-          sessionId: data.sessionId,
-          user: socket.request.user
+      const { sessionId } = data
+      const {
+        request: { user }
+      } = socket
+      let session
+
+      try {
+        // @todo: have middleware handle the auth
+        if (!user) throw new Error('User not authenticated')
+        if (user.isVolunteer && !user.isApproved)
+          throw new Error('Volunteer not approved')
+
+        session = await SessionModel.findById(sessionId)
+          .lean()
+          .exec()
+        if (!session) throw new Error('No session found!')
+      } catch (error) {
+        socket.emit('redirect')
+        return
+      }
+
+      try {
+        await SessionCtrl.join(socket, {
+          session,
+          user
         })
-      })
-    })
 
-    socket.on('disconnect', function(reason) {
-      console.log(`${reason} - User ID: ${socket.request.user._id}`)
+        const sessionRoom = getSessionRoom(sessionId)
+        socket.join(sessionRoom)
 
-      socketService.disconnectUser(socket)
+        socketService.emitSessionChange(sessionId)
+      } catch (error) {
+        socketService.bump(
+          socket,
+          {
+            endedAt: session.endedAt,
+            volunteer: session.volunteer || null,
+            student: session.student
+          },
+          error
+        )
+      }
     })
 
     socket.on('list', async function() {
-      const sessions = await Session.getUnfulfilledSessions()
+      const sessions = await SessionModel.getUnfulfilledSessions()
       socket.emit('sessions', sessions)
     })
 
     socket.on('typing', function(data) {
-      socketService.emitToOtherUser(
-        data.sessionId,
-        socket.request.user._id,
-        'is-typing'
-      )
+      socket.to(getSessionRoom(data.sessionId)).emit('is-typing')
     })
 
     socket.on('notTyping', function(data) {
-      socketService.emitToOtherUser(
-        data.sessionId,
-        socket.request.user._id,
-        'not-typing'
-      )
+      socket.to(getSessionRoom(data.sessionId)).emit('not-typing')
     })
 
     socket.on('message', async function(data) {
-      if (!data.sessionId) return
+      const { user, sessionId, message } = data
+      // @todo: handle this differently?
+      if (!sessionId) return
 
-      await sessionCtrl.message(data)
+      try {
+        const newMessage = {
+          contents: message,
+          user: user._id,
+          createdAt: new Date()
+        }
+        await SessionCtrl.saveMessage({
+          sessionId: data.sessionId,
+          user: data.user,
+          message: newMessage
+        })
+
+        const messageData = {
+          contents: newMessage.contents,
+          createdAt: newMessage.createdAt,
+          isVolunteer: user.isVolunteer,
+          userId: user._id
+        }
+
+        const socketRoom = getSessionRoom(data.sessionId)
+        io.in(socketRoom).emit('messageSend', messageData)
+      } catch (error) {
+        socket.emit('messageError')
+      }
     })
 
     socket.on('requestQuillState', async ({ sessionId }) => {
       let docState = await QuillDocService.getDoc(sessionId)
       if (!docState) docState = await QuillDocService.createDoc(sessionId)
-      socketService.emitToUser(socket.request.user._id, 'quillState', {
+      socket.emit('quillState', {
         delta: docState
       })
     })
 
     socket.on('transmitQuillDelta', async ({ sessionId, delta }) => {
       QuillDocService.appendToDoc(sessionId, delta)
-      socketService.emitToOtherUser(
-        sessionId,
-        socket.request.user._id,
-        'partnerQuillDelta',
-        { delta }
-      )
+      socket.to(getSessionRoom(sessionId)).emit('partnerQuillDelta', {
+        delta
+      })
     })
 
     socket.on('transmitQuillSelection', async ({ sessionId, range }) => {
-      socketService.emitToOtherUser(
-        sessionId,
-        socket.request.user._id,
-        'quillPartnerSelection',
-        { range }
-      )
+      socket.to(getSessionRoom(sessionId)).emit('quillPartnerSelection', {
+        range
+      })
     })
 
     socket.on('error', function(error) {
@@ -121,11 +175,7 @@ module.exports = function(io, sessionStore) {
     })
 
     socket.on('resetWhiteboard', async ({ sessionId }) => {
-      socketService.emitToOtherUser(
-        sessionId,
-        socket.request.user._id,
-        'resetWhiteboard'
-      )
+      socket.to(getSessionRoom(sessionId)).emit('resetWhiteboard')
     })
   })
 }
