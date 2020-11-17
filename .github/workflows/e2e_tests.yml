@@ -53,7 +53,7 @@ jobs:
         path: 'web'
         ref: ${{ github.head_ref }}
     - run: cd web && npm install
-    - uses: cypress-io/github-action@v1
+    - uses: cypress-io/github-action@v2
       with:
         working-directory: ./web
         browser: chrome
