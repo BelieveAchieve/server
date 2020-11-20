@@ -30,6 +30,8 @@ const config: Static<typeof Config> = {
     referenceFollowupTemplate: 'd-6b0d96c0cf15469db7a5e6ec655cf37a',
     rejectedPhotoSubmissionTemplate: 'd-c6d146a9eb4e44f6acc94a29a131d50d',
     rejectedReferenceTemplate: 'd-9afea0862a264bbb93ed6a2c074fd6b4',
+    waitingOnReferencesTemplate: 'd-65bf8204d28746f58ad28a4aa92407c7',
+    niceToMeetYouTemplate: 'd-8afee528e5184d8797c50c109d6b631b',
     unsubscribeGroup: {
       newsletter: 12567,
       account: 12570

@@ -35,6 +35,8 @@ export const Config = Record({
     referenceFollowupTemplate: String,
     rejectedPhotoSubmissionTemplate: String,
     rejectedReferenceTemplate: String,
+    waitingOnReferencesTemplate: String,
+    niceToMeetYouTemplate: String,
     unsubscribeGroup: Record({
       newsletter: Number,
       account: Number
