@@ -9,6 +9,8 @@ import endUnmatchedSession from './endUnmatchedSession';
 import emailReferences from './emailReferences';
 import emailReadyToCoach from './emailReadyToCoach';
 import emailReferenceFollowup from './emailReferenceFollowup';
+import emailWaitingOnReferences from './emailWaitingOnReferences';
+import emailNiceToMeetYou from './emailNiceToMeetYou';
 
 export enum Jobs {
   NotifyTutors = 'NotifyTutors',
@@ -17,7 +19,9 @@ export enum Jobs {
   EndUnmatchedSession = 'EndUnmatchedSession',
   EmailReferences = 'EmailReferences',
   EmailReadyToCoach = 'EmailReadyToCoach',
-  EmailReferenceFollowup = 'EmailReferenceFollowup'
+  EmailReferenceFollowup = 'EmailReferenceFollowup',
+  EmailWaitingOnReferences = 'emailWaitingOnReferences',
+  EmailNiceToMeetYou = 'emailNiceToMeetYou'
 }
 
 // register new job processors here
@@ -54,6 +58,14 @@ const jobProcessors: JobProcessor[] = [
   {
     name: Jobs.EmailReferenceFollowup,
     processor: emailReferenceFollowup
+  },
+  {
+    name: Jobs.EmailWaitingOnReferences,
+    processor: emailWaitingOnReferences
+  },
+  {
+    name: Jobs.EmailNiceToMeetYou,
+    processor: emailNiceToMeetYou
   }
 ];
 

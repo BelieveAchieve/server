@@ -30,6 +30,14 @@ const jobTemplates: JobTemplate[] = [
   {
     name: Jobs.EmailReferenceFollowup,
     options: { repeat: { cron: '0 10 * * *', tz: 'America/New_York' } } // each day at 10am
+  },
+  {
+    name: Jobs.EmailWaitingOnReferences,
+    options: { repeat: { cron: '0 11 * * *', tz: 'America/New_York' } } // each day at 11am
+  },
+  {
+    name: Jobs.EmailNiceToMeetYou,
+    options: { repeat: { cron: '0 10 * * *', tz: 'America/New_York' } } // each day at 10am
   }
 ];
 
