@@ -303,6 +303,42 @@ module.exports = {
     )
   },
 
+  sendWaitingOnReferences: volunteer => {
+    return sendEmail(
+      volunteer.email,
+      config.mail.senders.support,
+      'The UPchieve Team',
+      config.sendgrid.waitingOnReferencesTemplate,
+      {
+        firstName: capitalize(volunteer.firstname)
+      },
+      config.sendgrid.unsubscribeGroup.account,
+      null
+    )
+  },
+
+  sendNiceToMeetYou: volunteer => {
+    const teamMemberEmail = 'mark.espinoza@upchieve.org'
+    const overrides = {
+      reply_to: {
+        email: teamMemberEmail
+      }
+    }
+
+    return sendEmail(
+      volunteer.email,
+      teamMemberEmail,
+      'Mark',
+      config.sendgrid.niceToMeetYouTemplate,
+      {
+        firstName: capitalize(volunteer.firstname)
+      },
+      config.sendgrid.unsubscribeGroup.account,
+      null,
+      overrides
+    )
+  },
+
   createContact: async user => {
     const customFields = {
       [SG_CUSTOM_FIELDS.isBanned]: String(user.isBanned),
