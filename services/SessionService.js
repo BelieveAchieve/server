@@ -235,7 +235,9 @@ const getSessionsToReview = async ({ users, page }) => {
   const PER_PAGE = 15
   const skip = (pageNum - 1) * PER_PAGE
 
-  const query = {}
+  const query = {
+    isTestUser: false
+  }
   if (users === 'students') query.reviewedStudent = false
   if (users === 'volunteers') query.reviewedVolunteer = false
   if (!users)
