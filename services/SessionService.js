@@ -277,9 +277,28 @@ const getSessionsToReview = async ({ users, page }) => {
         }
       },
       {
+        $addFields: {
+          hasTestUser: {
+            $cond: [
+              {
+                $or: [
+                  {
+                    $eq: ['$student.isTestUser', true]
+                  },
+                  {
+                    $eq: ['$volunteer.isTestUser', true]
+                  }
+                ]
+              },
+              true,
+              false
+            ]
+          }
+        }
+      },
+      {
         $match: {
-          'student.isTestUser': false,
-          'volunteer.isTestUser': false
+          hasTestUser: false
         }
       },
       {
