@@ -235,9 +235,7 @@ const getSessionsToReview = async ({ users, page }) => {
   const PER_PAGE = 15
   const skip = (pageNum - 1) * PER_PAGE
 
-  const query = {
-    isTestUser: false
-  }
+  const query = {}
   if (users === 'students') query.reviewedStudent = false
   if (users === 'volunteers') query.reviewedVolunteer = false
   if (!users)
@@ -263,6 +261,26 @@ const getSessionsToReview = async ({ users, page }) => {
       },
       {
         $unwind: '$student'
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'volunteer',
+          foreignField: '_id',
+          as: 'volunteer'
+        }
+      },
+      {
+        $unwind: {
+          path: '$volunteer',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $match: {
+          'student.isTestUser': false,
+          'volunteer.isTestUser': false
+        }
       },
       {
         $project: {
