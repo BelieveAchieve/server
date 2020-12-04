@@ -150,6 +150,17 @@ const trainingCourseSchema = new mongoose.Schema({
   }
 });
 
+const subjectsSchema = new mongoose.Schema(
+  {
+    subject: {
+      type: String,
+      enum: values(SUBJECTS)
+    },
+    isActivated: Boolean
+  },
+  { _id: false }
+);
+
 const volunteerSchemaOptions = {
   toJSON: {
     virtuals: true
@@ -517,10 +528,7 @@ const volunteerSchema = new mongoose.Schema(
         lastAttemptedAt: { type: Date }
       }
     },
-    subjects: {
-      type: [String],
-      enum: values(SUBJECTS)
-    }
+    subjects: [subjectsSchema]
   },
   volunteerSchemaOptions
 );

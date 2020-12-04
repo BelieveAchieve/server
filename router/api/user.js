@@ -23,7 +23,7 @@ module.exports = function(router) {
   router.put('/user', async (req, res, next) => {
     const { ip } = req
     const { _id } = req.user
-    const { phone, isDeactivated } = req.body
+    const { phone, isDeactivated, subjects } = req.body
 
     if (isDeactivated !== req.user.isDeactivated) {
       const updatedUser = Object.assign(req.user, { isDeactivated })
@@ -33,7 +33,11 @@ module.exports = function(router) {
     }
 
     try {
-      await Volunteer.updateOne({ _id }, { phone, isDeactivated })
+      await Volunteer.updateOne(
+        { _id },
+        { phone, isDeactivated, subjects },
+        { runValidators: true }
+      )
       res.sendStatus(200)
     } catch (err) {
       next(err)

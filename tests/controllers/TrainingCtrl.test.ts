@@ -287,6 +287,48 @@ describe('getQuizScore', () => {
     ).toBeTruthy();
   });
 
+  test('Should only add new unlocked subjects for a user when passing a certification', async () => {
+    const volunteer = await insertVolunteer(
+      buildVolunteer({
+        availabilityLastModifiedAt: new Date(),
+        certifications: {
+          [TRAINING.UPCHIEVE_101]: { passed: true }
+        },
+        subjects: [
+          { subject: MATH_SUBJECTS.PREALGREBA, isActivated: false },
+          { subject: MATH_SUBJECTS.GEOMETRY, isActivated: true },
+          { subject: MATH_SUBJECTS.TRIGONOMETRY, isActivated: false }
+        ]
+      })
+    );
+
+    const idAnswerMap = await generateIdAnswerMapHelper();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const quizScoreInput: any = {
+      user: volunteer,
+      category: MATH_CERTS.PRECALCULUS,
+      idAnswerMap
+    };
+
+    await TrainingCtrl.getQuizScore(quizScoreInput);
+    const updatedVolunteer = await getVolunteer(
+      { _id: volunteer._id },
+      { subjects: 1 }
+    );
+
+    const expectedSubjects = [
+      { subject: MATH_SUBJECTS.PREALGREBA, isActivated: false },
+      { subject: MATH_SUBJECTS.GEOMETRY, isActivated: true },
+      { subject: MATH_SUBJECTS.TRIGONOMETRY, isActivated: false },
+      { subject: MATH_SUBJECTS.PRECALCULUS, isActivated: true },
+      { subject: MATH_SUBJECTS.ALGEBRA_ONE, isActivated: true },
+      { subject: MATH_SUBJECTS.ALGEBRA_TWO, isActivated: true },
+      { subject: MATH_SUBJECTS.INTEGRATED_MATH_FOUR, isActivated: true }
+    ];
+
+    expect(updatedVolunteer.subjects).toEqual(expectedSubjects);
+  });
+
   test('Should create user actions for unlocking a subject', async () => {
     const certifications = buildCertificationsWithUpchieve101({
       [MATH_CERTS.CALCULUS_AB]: { passed: true, tries: 1 }
@@ -353,9 +395,9 @@ describe('getQuizScore', () => {
       [MATH_CERTS.ALGEBRA]: { passed: true, tries: 1 }
     });
     const subjects = [
-      SUBJECTS.PREALGREBA,
-      SUBJECTS.ALGEBRA_ONE,
-      SUBJECTS.ALGEBRA_TWO
+      { subject: SUBJECTS.PREALGREBA, isActivated: true },
+      { subject: SUBJECTS.ALGEBRA_ONE, isActivated: true },
+      { subject: SUBJECTS.ALGEBRA_TWO, isActivated: true }
     ];
     const volunteer = await insertVolunteer(
       buildVolunteer({
@@ -754,7 +796,7 @@ describe('getUnlockedSubjects', () => {
       expect(result).toEqual(expected);
     });
 
-    test('xShould unlock all Integrated Math subjects when higher cert unlocks Algebra and is certified in Geometry and Statistics', async () => {
+    test('Should unlock all Integrated Math subjects when higher cert unlocks Algebra and is certified in Geometry and Statistics', async () => {
       const cert = TRAINING.TUTORING_SKILLS;
       const certifications = buildCertificationsWithUpchieve101({
         [MATH_CERTS.GEOMETRY]: { passed: true, tries: 1 },

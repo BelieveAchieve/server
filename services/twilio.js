@@ -192,8 +192,14 @@ const notifyVolunteer = async session => {
   // lack of volunteers when high-level subjects are requested
   const highLevelSubjects = ['calculusAB', 'chemistry']
   const isHighLevelSubject = highLevelSubjects.includes(subtopic)
-  const subjectsFilter = { $eq: subtopic }
-  if (!isHighLevelSubject) subjectsFilter['$nin'] = highLevelSubjects
+  let subjectsFilter = {
+    subjects: {
+      subject: subtopic,
+      isActivated: true
+    }
+  }
+  if (!isHighLevelSubject)
+    subjectsFilter['subjects.subject'] = { $nin: highLevelSubjects }
 
   /**
    * 1. Partner volunteers - not notified in the last 7 days
@@ -211,7 +217,10 @@ const notifyVolunteer = async session => {
         volunteerPartnerOrg: {
           $exists: true
         },
-        subjects: subtopic,
+        subjects: {
+          subject: subtopic,
+          isActivated: true
+        },
         _id: { $nin: activeSessionVolunteers.concat(notifiedLastSevenDays) }
       }
     },
@@ -221,7 +230,10 @@ const notifyVolunteer = async session => {
         volunteerPartnerOrg: {
           $exists: false
         },
-        subjects: subtopic,
+        subjects: {
+          subject: subtopic,
+          isActivated: true
+        },
         _id: { $nin: activeSessionVolunteers.concat(notifiedLastSevenDays) }
       }
     },
@@ -230,7 +242,7 @@ const notifyVolunteer = async session => {
         'Partner volunteers - not notified in the last 3 days AND they don’t have "high level subjects"',
       filter: {
         volunteerPartnerOrg: { $exists: true },
-        subjects: subjectsFilter,
+        ...subjectsFilter,
         _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
       }
     },
@@ -239,7 +251,7 @@ const notifyVolunteer = async session => {
         'Regular volunteers - not notified in the last 3 days AND they don’t have "high level subjects"',
       filter: {
         volunteerPartnerOrg: { $exists: false },
-        subjects: subjectsFilter,
+        ...subjectsFilter,
         _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
       }
     },
@@ -247,7 +259,10 @@ const notifyVolunteer = async session => {
       groupName: 'Partner volunteers - not notified in the last 3 days',
       filter: {
         volunteerPartnerOrg: { $exists: true },
-        subjects: subtopic,
+        subjects: {
+          subject: subtopic,
+          isActivated: true
+        },
         _id: { $nin: activeSessionVolunteers.concat(notifiedLastThreeDays) }
       }
     },
@@ -255,14 +270,17 @@ const notifyVolunteer = async session => {
       groupName:
         'All volunteers - not notified in the last 15 mins who don\'t have "high level subjects"',
       filter: {
-        subjects: subjectsFilter,
+        ...subjectsFilter,
         _id: { $nin: activeSessionVolunteers.concat(notifiedLastFifteenMins) }
       }
     },
     {
       groupName: 'All volunteers - not notified in the last 15 mins',
       filter: {
-        subjects: subtopic,
+        subjects: {
+          subject: subtopic,
+          isActivated: true
+        },
         _id: { $nin: activeSessionVolunteers.concat(notifiedLastFifteenMins) }
       }
     }

@@ -106,13 +106,19 @@ module.exports = {
       // set custom field passedUpchieve101 in SendGrid
       if (cert === TRAINING.UPCHIEVE_101) MailService.createContact(user)
 
-      // Create a user action for every subject unlocked
-      for (const subject of unlockedSubjects) {
-        if (!user.subjects.includes(subject))
-          UserActionCtrl.unlockedSubject(user._id, subject, ip)
+      const currentSubjects = new Set()
+      for (const subject of user.subjects) {
+        currentSubjects.add(subject.subject)
       }
 
-      userUpdates.$addToSet = { subjects: unlockedSubjects }
+      const newSubjects = []
+      for (const subject of unlockedSubjects) {
+        if (!currentSubjects.has(subject)) {
+          newSubjects.push({ subject, isActivated: true })
+          UserActionCtrl.unlockedSubject(user._id, subject, ip)
+        }
+      }
+      userUpdates.$addToSet = { subjects: { $each: newSubjects } }
 
       if (
         !user.isOnboarded &&

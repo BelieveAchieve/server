@@ -71,7 +71,7 @@ test('Properly notifies a volunteer', async () => {
       firstname: 'Austin',
       isApproved: true,
       availability: MATCHING_AVAILABILITY,
-      subjects: [SAT_SUBJECTS.SAT_READING]
+      subjects: [{ subject: SAT_SUBJECTS.SAT_READING, isActivated: true }]
     })
   );
   const notifiedVolunteer = await TwilioService.notifyVolunteer(SESSION);
@@ -84,7 +84,7 @@ test('Does nothing when no suitable volunteers are found', async () => {
     buildVolunteer({
       isApproved: true,
       availability: NON_MATCHING_AVAILABILITY,
-      subjects: [SAT_SUBJECTS.SAT_READING]
+      subjects: [{ subject: SAT_SUBJECTS.SAT_READING, isActivated: true }]
     })
   );
   const notifiedVolunteer = await TwilioService.notifyVolunteer(SESSION);
@@ -98,7 +98,7 @@ test('Does nothing when all volunteers are in an active session', async () => {
       firstname: 'Austin',
       isApproved: true,
       availability: MATCHING_AVAILABILITY,
-      subjects: [SAT_SUBJECTS.SAT_READING]
+      subjects: [{ subject: SAT_SUBJECTS.SAT_READING, isActivated: true }]
     })
   );
   const firstVolunteer = await TwilioService.notifyVolunteer(SESSION);
@@ -116,7 +116,7 @@ test('Prioritizes partner volunteers', async () => {
       volunteerPartnerOrg: 'Twilio',
       isApproved: true,
       availability: MATCHING_AVAILABILITY,
-      subjects: [SAT_SUBJECTS.SAT_READING]
+      subjects: [{ subject: SAT_SUBJECTS.SAT_READING, isActivated: true }]
     })
   );
   await insertVolunteer(
@@ -124,7 +124,7 @@ test('Prioritizes partner volunteers', async () => {
       firstname: 'Schmilion',
       isApproved: true,
       availability: MATCHING_AVAILABILITY,
-      subjects: [SAT_SUBJECTS.SAT_READING]
+      subjects: [{ subject: SAT_SUBJECTS.SAT_READING, isActivated: true }]
     })
   );
   const notifiedVolunteer = await TwilioService.notifyVolunteer(SESSION);
@@ -142,7 +142,10 @@ test('Prioritizes non-high-level SME volunteers for non-high-level subjects', as
       firstname: 'Einstein',
       isApproved: true,
       availability: MATCHING_AVAILABILITY,
-      subjects: [SAT_SUBJECTS.SAT_READING, MATH_SUBJECTS.CALCULUS_AB]
+      subjects: [
+        { subject: SAT_SUBJECTS.SAT_READING, isActivated: true },
+        { subject: MATH_SUBJECTS.CALCULUS_AB, isActivated: true }
+      ]
     })
   );
   const hemingway = await insertVolunteer(
@@ -150,7 +153,7 @@ test('Prioritizes non-high-level SME volunteers for non-high-level subjects', as
       firstname: 'Hemingway',
       isApproved: true,
       availability: MATCHING_AVAILABILITY,
-      subjects: [SAT_SUBJECTS.SAT_READING]
+      subjects: [{ subject: SAT_SUBJECTS.SAT_READING, isActivated: true }]
     })
   );
   await insertNotification(einstein, { sentAt: fiveDaysAgo });

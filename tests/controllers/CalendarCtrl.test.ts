@@ -91,9 +91,9 @@ describe('Save availability and time zone', () => {
       buildVolunteer({
         certifications,
         subjects: [
-          SUBJECTS.ALGEBRA_TWO,
-          SUBJECTS.ALGEBRA_ONE,
-          SUBJECTS.PREALGREBA
+          { subject: SUBJECTS.ALGEBRA_TWO, isActivated: true },
+          { subject: SUBJECTS.ALGEBRA_ONE, isActivated: true },
+          { subject: SUBJECTS.PREALGREBA, isActivated: true }
         ]
       })
     );

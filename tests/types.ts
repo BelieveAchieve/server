@@ -46,6 +46,11 @@ export interface Reference {
   additionalInfo: string;
 }
 
+interface Subjects {
+  subject: string;
+  isActivated: boolean;
+}
+
 // @todo: clean up - use the Volunteer interface from Volunteer.ts when available
 export interface Volunteer extends User {
   zipCode: string;
@@ -72,7 +77,7 @@ export interface Volunteer extends User {
   city?: string;
   certifications: Certifications;
   availability: Availability;
-  subjects: Array<string>;
+  subjects: Array<Subjects>;
   trainingCourses: TrainingCourses;
   sentReadyToCoachEmail: boolean;
   hoursTutored: Types.Decimal128;
