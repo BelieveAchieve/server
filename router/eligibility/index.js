@@ -203,5 +203,21 @@ module.exports = function(app) {
     }
   })
 
+  router.get('/zip-codes/:zipCode', passport.isAdmin, async function(req, res) {
+    const { zipCode } = req.params
+
+    try {
+      const result = await ZipCode.findByZipCode(zipCode).exec()
+      if (!result) res.sendStatus(404)
+      else
+        res.json({
+          zipCode: { ...result.toObject(), isEligible: result.isEligible }
+        })
+    } catch (err) {
+      Sentry.captureException(err)
+      res.sendStatus(500)
+    }
+  })
+
   app.use('/api-public/eligibility', router)
 }

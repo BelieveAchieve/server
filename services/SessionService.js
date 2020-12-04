@@ -263,6 +263,45 @@ const getSessionsToReview = async ({ users, page }) => {
         $unwind: '$student'
       },
       {
+        $lookup: {
+          from: 'users',
+          localField: 'volunteer',
+          foreignField: '_id',
+          as: 'volunteer'
+        }
+      },
+      {
+        $unwind: {
+          path: '$volunteer',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $addFields: {
+          hasTestUser: {
+            $cond: [
+              {
+                $or: [
+                  {
+                    $eq: ['$student.isTestUser', true]
+                  },
+                  {
+                    $eq: ['$volunteer.isTestUser', true]
+                  }
+                ]
+              },
+              true,
+              false
+            ]
+          }
+        }
+      },
+      {
+        $match: {
+          hasTestUser: false
+        }
+      },
+      {
         $project: {
           createdAt: 1,
           endedAt: 1,
