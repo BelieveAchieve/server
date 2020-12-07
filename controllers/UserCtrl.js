@@ -25,8 +25,8 @@ module.exports = {
   // Expects a "lean" (non-Mongoose doc) volunteer to be passed in,
   // otherwise the volunteer needs to be coerced using the mongoose method "toObject()"
   calculateElapsedAvailability: function(volunteer, newModifiedDate) {
-    // A volunteer must be onboarded before calculating their elapsed availability
-    if (!volunteer.isOnboarded) return 0
+    // A volunteer must be onboarded and approved before calculating their elapsed availability
+    if (!volunteer.isOnboarded || !volunteer.isApproved) return 0
 
     const { availability, availabilityLastModifiedAt } = volunteer
 
