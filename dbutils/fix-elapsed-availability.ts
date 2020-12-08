@@ -8,7 +8,9 @@ const main = async (): Promise<void> => {
 
     const result = await VolunteerModel.updateMany(
       {
-        $or: [{ isOnboarded: false }, { isApproved: false }]
+        isApproved: false,
+        isOnboarded: true,
+        elapsedAvailability: { $gt: 0 }
       },
       {
         elapsedAvailability: 0
