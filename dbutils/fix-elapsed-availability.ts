@@ -27,4 +27,4 @@ const main = async (): Promise<void> => {
 
 // To downgrade the migration run:
 // npx ts-node dbutils/fix-elapsed-availability.ts
-main()
+main();
