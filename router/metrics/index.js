@@ -38,12 +38,12 @@ module.exports = function(app) {
         datapoints: await getStudents(options)
       },
       {
-        slug: 'cumulative-students',
+        slug: 'cumulative-students', // FIXME probably need a daily cron to update this? or have impact handle it
         name: 'Total Students',
         datapoints: await getCumulativeStudents(options)
       },
       {
-        slug: 'cumulative-sessions',
+        slug: 'cumulative-sessions', // FIXME probably need a daily cron to update this? or have impact handle it
         name: 'Total Sessions',
         datapoints: await getCumulativeSessions(options)
       },

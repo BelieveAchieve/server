@@ -2,6 +2,7 @@ const Session = require('../models/Session')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
 const TwilioService = require('../services/twilio')
 const SessionService = require('../services/SessionService')
+const StatsService = require('../services/StatsService')
 const Sentry = require('@sentry/node')
 const PushTokenService = require('../services/PushTokenService')
 const PushToken = require('../models/PushToken')
@@ -134,6 +135,11 @@ module.exports = {
       user,
       new Error('Only session participants are allowed to send messages')
     )
+
+    // FIXME this needs studentPartnerOrg / volunteerPartnerOrg for segmentSlugs.
+    // it's stored on User model for both student and volunteer, so needs another 1-2 queries...
+    const segmentSlugs = []
+    StatsService.increment('chat-messages', {}, { segmentSlugs })
 
     return Session.updateOne(
       {

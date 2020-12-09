@@ -1,3 +1,4 @@
+const moment = require('moment')
 const Session = require('../models/Session')
 const User = require('../models/User')
 const WhiteboardService = require('../services/WhiteboardService')
@@ -5,12 +6,16 @@ const crypto = require('crypto')
 const QuillDocService = require('../services/QuillDocService')
 const UserService = require('./UserService')
 const MailService = require('./MailService')
+const StatsService = require('./StatsService')
 const { USER_BAN_REASON, SESSION_REPORT_REASON } = require('../constants')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
 const ObjectId = require('mongodb').ObjectId
 const { USER_ACTION } = require('../constants')
 const VolunteerModel = require('../models/Volunteer')
 const { SESSION_FLAGS } = require('../constants')
+
+const MAX_SESSION_LENGTH_SECONDS = 3600 * 5 // 5hr
+const MIN_SESSION_LENGTH_SECONDS = 60
 
 const hasReviewTriggerFlags = flags => {
   const excludedFlags = [
@@ -144,6 +149,57 @@ const addFeedbackFlags = async ({ sessionId, flags }) => {
 
 const addPastSession = async ({ userId, sessionId }) => {
   await User.update({ _id: userId }, { $addToSet: { pastSessions: sessionId } })
+}
+
+const isCountableSession = (waitSeconds, durationSeconds, hasVolunteer) => {
+  return (
+    waitSeconds < MAX_SESSION_LENGTH_SECONDS &&
+    durationSeconds < MAX_SESSION_LENGTH_SECONDS &&
+    (durationSeconds > MIN_SESSION_LENGTH_SECONDS || hasVolunteer)
+  )
+}
+
+const logMetrics = session => {
+  const hasVolunteer = Boolean(session.volunteerJoinedAt)
+  const startTime = moment.utc(session.createdAt)
+  const endTime = moment.utc(session.endedAt)
+
+  let waitSeconds, durationSeconds
+  if (hasVolunteer) {
+    const matchedTime = moment.utc(session.volunteerJoinedAt)
+    waitSeconds = matchedTime.diff(startTime, 'seconds')
+    durationSeconds = endTime.diff(matchedTime, 'seconds')
+  } else {
+    waitSeconds = endTime.diff(startTime, 'seconds')
+    durationSeconds = 0
+  }
+
+  if (isCountableSession(waitSeconds, durationSeconds, hasVolunteer)) {
+    const segmentSlugs = [
+      session.student.studentPartnerOrg,
+      session.volunteer.volunteerPartnerOrg
+    ]
+    StatsService.increment('successful-matches', {}, { segmentSlugs })
+    if (hasVolunteer) {
+      StatsService.updateActiveVolunteers(session.volunteer._id)
+    }
+    StatsService.increment(
+      'sessions',
+      {
+        topic: session.type,
+        'sub-topic': session.subTopic,
+        'hour-of-day': startTime.format('H'),
+        'day-of-week': startTime.format('ddd')
+      },
+      { segmentSlugs }
+    )
+
+    StatsService.increment('session-duration', {}, durationSeconds, {
+      segmentSlugs
+    })
+    StatsService.increment('session-wait', {}, waitSeconds, { segmentSlugs })
+  }
+  StatsService.updateActiveStudents(session.student._id)
 }
 
 const getSession = async (sessionId, projection = {}) => {
@@ -408,6 +464,8 @@ module.exports = {
 
       if (isReviewNeeded) update.reviewedVolunteer = false
     }
+
+    logMetrics(session)
 
     const quillDoc = await QuillDocService.getDoc(session._id.toString())
     const whiteboardDoc = await WhiteboardService.getDoc(session._id.toString())

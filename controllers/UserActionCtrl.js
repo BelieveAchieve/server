@@ -1,4 +1,5 @@
 const UserAction = require('../models/UserAction')
+const StatsService = require('../services/StatsService')
 const { USER_ACTION } = require('../constants')
 const getSubjectType = require('../utils/getSubjectType')
 const getDeviceFromUserAgent = require('../utils/getDeviceFromUserAgent')
@@ -125,9 +126,12 @@ const viewedMaterials = (userId, quizCategory, ipAddress) => {
   )
 }
 
-const unlockedSubject = (userId, subject, ipAddress) => {
+const unlockedSubject = (user, subject, ipAddress) => {
+  const segmentSlugs = [`volunteer-${user.volunteerPartnerOrg}`]
+  StatsService.increment('certified-volunteers', { subject }, { segmentSlugs })
+
   return createQuizAction(
-    userId,
+    user._id,
     subject,
     ipAddress,
     USER_ACTION.QUIZ.UNLOCKED_SUBJECT
@@ -247,8 +251,10 @@ const deletedReference = (userId, ipAddress, options) =>
 const accountApproved = (userId, ipAddress) =>
   createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.APPROVED)
 
-const accountOnboarded = (userId, ipAddress) =>
+const accountOnboarded = (userId, ipAddress) => {
+  StatsService.updateOnboardedVolunteers('onboarded-volunteers', userId)
   createAccountAction(userId, ipAddress, USER_ACTION.ACCOUNT.ONBOARDED)
+}
 
 const accountBanned = (userId, sessionId, banReason) =>
   createAccountAction(userId, '', USER_ACTION.ACCOUNT.BANNED, {

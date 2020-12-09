@@ -109,7 +109,7 @@ module.exports = {
       // Create a user action for every subject unlocked
       for (const subject of unlockedSubjects) {
         if (!user.subjects.includes(subject))
-          UserActionCtrl.unlockedSubject(user._id, subject, ip)
+          UserActionCtrl.unlockedSubject(user, subject, ip)
       }
 
       userUpdates.$addToSet = { subjects: unlockedSubjects }

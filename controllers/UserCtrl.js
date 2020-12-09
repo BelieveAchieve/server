@@ -5,6 +5,7 @@ const moment = require('moment-timezone')
 const Sentry = require('@sentry/node')
 const base64url = require('base64url')
 const MailService = require('../services/MailService')
+const StatsService = require('../services/StatsService')
 const VerificationCtrl = require('../controllers/VerificationCtrl')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
 const countAvailabilityHours = require('../utils/count-availability-hours')
@@ -118,6 +119,18 @@ module.exports = {
       Sentry.captureException(err)
     }
 
+    const segmentSlugs = [`student-${student.studentPartnerOrg}`]
+    StatsService.increment(
+      'students',
+      {
+        // state is a 'derived' dimension
+        // calc on impact-api end that gets state from zipCode
+        state: student.zipCode
+      },
+      { segmentSlugs }
+    )
+    StatsService.updateActiveStudents(student.id)
+
     return student
   },
 
@@ -132,6 +145,16 @@ module.exports = {
     } catch (error) {
       throw new Error(error)
     }
+
+    const segmentSlugs = [
+      `volunteer-${volunteer.volunteerPartnerOrg || 'none'}`
+    ]
+    StatsService.increment(
+      'volunteers',
+      { partnerOrg: volunteer.volunteerPartnerOrg },
+      { segmentSlugs }
+    )
+    StatsService.updateActiveVolunteers(volunteer.id)
 
     try {
       await VerificationCtrl.initiateVerification({ user: volunteer })
