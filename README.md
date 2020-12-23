@@ -57,7 +57,7 @@ Docker provides an alternative for local development. A docker-compose file exis
 1. Navigate to this directory and run `mkdir mongo-volume` to create a directory for the MongoDB volume.
 1. Run `cp config.example.ts config.ts` to copy the default config as your own config.
 1. Run `docker-compose up` to launch the server.
-1. After any change: Run `docker-compose down --rmi all` to destry images and containers. Then run `docker-compose up` to see your changes.
+1. After any change: Run `docker-compose down --rmi all` to destroy images and containers. Then run `docker-compose up` to see your changes.
 
 Note: the default command ran when starting the server will populate/refresh all seed data, so any data changes to seed data will be overwritten.
 
@@ -66,7 +66,7 @@ If not using docker-compose, follow these steps to start required components.
 
 ### Dependencies
 
-The recommended tool for runtime version managment is [`asdf`][asdf] and [`Docker`][Docker]. To use `asdf` on Windows, first install the appropriate Linux shell distribution using [`WSL`][wsl] (Windows Subsystem for Linux).
+The recommended tool for runtime version management is [`asdf`][asdf] and [`Docker`][Docker]. To use `asdf` on Windows, first install the appropriate Linux shell distribution using [`WSL`][wsl] (Windows Subsystem for Linux).
 
 #### Node 11.7.0
 
@@ -110,7 +110,7 @@ docker run -i --rm --name redis -p 6379:6379 -v <Absolute Path to directory on y
 
 ### Setup
 
-1. Try connecting to your database container by running `mongo` (see Mongo dependancy if this will not connect). Run `quit()` to exit the shell. You can also interface with the database using a free MongoDB GUI such as [MongoDB Compass Community](https://docs.mongodb.com/manual/administration/install-community/)
+1. Try connecting to your database container by running `mongo` (see Mongo dependency if this will not connect). Run `quit()` to exit the shell. You can also interface with the database using a free MongoDB GUI such as [MongoDB Compass Community](https://docs.mongodb.com/manual/administration/install-community/)
 1. Run `cp config.example.ts config.ts` to copy the default config as your own config.
 1. Run `npm install` to install the required dependancies.
 1. Run `npx ts-node init` to seed the database with users, quiz questions, schools, and zip codes.
@@ -192,8 +192,8 @@ Removes the user's current session.
 
 ### POST /auth/register/checkcred
 
-Check whether the credential user entered is valid. (first step of registeration)
-The server will check is there any duplications for email and validate the password.
+Check whether the credential user entered is valid. (first step of registration)
+The server will check for email duplications and validate the password.
 
 ```json
 {
@@ -386,7 +386,7 @@ currently authenticated user:
 ### GET /api/user/:id
 
 Returns a sanitized public user record for a user with the given id. May perform
-checks on the authorization level of the current user to strip out priveliged
+checks on the authorization level of the current user to strip out privileged
 information.
 
 ### POST /api/volunteers
