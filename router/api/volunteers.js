@@ -42,9 +42,10 @@ module.exports = function(router) {
   router.get('/volunteers/review', passport.isAdmin, async function(req, res) {
     try {
       const { page } = req.query
-      const { volunteers, isLastPage } = await UserService.getVolunteersToReview(
-        page
-      )
+      const {
+        volunteers,
+        isLastPage
+      } = await UserService.getVolunteersToReview(page)
       res.json({ volunteers, isLastPage })
     } catch (error) {
       res

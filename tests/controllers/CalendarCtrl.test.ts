@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import CalendarCtrl from '../../controllers/CalendarCtrl';
+import { updateSchedule, clearSchedule } from '../../controllers/CalendarCtrl';
 import { insertVolunteer, resetDb } from '../db-utils';
 import {
   buildAvailability,
@@ -32,7 +32,7 @@ describe('Save availability and time zone', () => {
       tz: 'American/New York'
     };
 
-    await expect(CalendarCtrl.updateSchedule(input)).rejects.toThrow(
+    await expect(updateSchedule(input)).rejects.toThrow(
       'No availability object specified'
     );
   });
@@ -47,7 +47,7 @@ describe('Save availability and time zone', () => {
       availability
     };
 
-    await expect(CalendarCtrl.updateSchedule(input)).rejects.toThrow(
+    await expect(updateSchedule(input)).rejects.toThrow(
       'Availability object missing required keys'
     );
   });
@@ -62,7 +62,7 @@ describe('Save availability and time zone', () => {
       tz: 'American/New York',
       availability
     };
-    await CalendarCtrl.updateSchedule(input);
+    await updateSchedule(input);
 
     const {
       availability: updatedAvailability,
@@ -105,7 +105,7 @@ describe('Save availability and time zone', () => {
       tz: 'American/New York',
       availability
     };
-    await CalendarCtrl.updateSchedule(input);
+    await updateSchedule(input);
 
     const {
       availability: updatedAvailability,
@@ -146,7 +146,7 @@ describe('Clear schedule', () => {
     );
     const timeZone = 'American/New York';
 
-    await CalendarCtrl.clearSchedule(volunteer, timeZone);
+    await clearSchedule(volunteer, timeZone);
 
     const emptyAvailability = buildAvailability();
     const { availability: updatedAvailability } = (await VolunteerModel.findOne(

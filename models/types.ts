@@ -4,6 +4,7 @@ export interface User extends Document {
   _id: Types.ObjectId;
   availabilityLastModifiedAt: Date;
   elapsedAvailability: number;
+  timezone;
 }
 
 export interface Reference extends Document {
@@ -14,6 +15,21 @@ export interface Reference extends Document {
   status: string;
 }
 
-export interface Volunteer extends User {
+// @todo: find a way to reconcile availabilityDaySchema with typescript formats, which cannot start with numbers
+
+export interface Availability {
+  Sunday?;
+  Monday?;
+  Tuesday?;
+  Wednesday?;
+  Thursday?;
+  Friday?;
+  Saturday?;
+}
+
+export interface IVolunteer extends User {
   references: [Reference];
+  availability: Availability;
+  isOnboarded: boolean;
+  subjects: string[];
 }

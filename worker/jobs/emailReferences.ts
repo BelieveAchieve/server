@@ -1,13 +1,13 @@
 import { flatten } from 'lodash';
 import { log } from '../logger';
 import VolunteerModel from '../../models/Volunteer';
-import { Volunteer, Reference } from '../../models/types';
+import { IVolunteer, Reference } from '../../models/types';
 import UserService from '../../services/UserService';
 import { REFERENCE_STATUS } from '../../constants';
 
 interface UnsentReference {
   reference: Reference;
-  volunteer: Volunteer;
+  volunteer: IVolunteer;
 }
 
 export default async (): Promise<void> => {
@@ -15,7 +15,7 @@ export default async (): Promise<void> => {
     'references.status': REFERENCE_STATUS.UNSENT
   })
     .lean()
-    .exec()) as Volunteer[];
+    .exec()) as IVolunteer[];
 
   const unsent: UnsentReference[] = flatten(
     volunteers.map(vol => {
