@@ -11,11 +11,22 @@ const QuillDocService = require('../../services/QuillDocService')
 const recordIpAddress = require('../../middleware/record-ip-address')
 const passport = require('../auth/passport')
 const mapMultiWordSubtopic = require('../../utils/map-multi-word-subtopic')
-const { USER_ACTION } = require('../../constants')
+const { USER_ACTION, SUBJECTS } = require('../../constants')
 const NotificationService = require('../../services/NotificationService')
 const UserAction = require('../../models/UserAction')
 const config = require('../../config')
 const QueueService = require('../../services/QueueService')
+
+const isSupportedSubject = subject => {
+  let isSupported = false
+  for (const s in SUBJECTS) {
+    if (subject === SUBJECTS[s].toLowerCase()) {
+      isSupported = true
+      break
+    }
+  }
+  return isSupported
+}
 
 module.exports = function(router, io) {
   // io is now passed to this module so that API events can trigger socket events as needed
@@ -28,6 +39,11 @@ module.exports = function(router, io) {
       const sessionType = data.sessionType
       let sessionSubTopic = data.sessionSubTopic
       const { user, ip } = req
+
+      if (!isSupportedSubject(sessionSubTopic)) {
+        res.sendStatus(404)
+        return
+      }
 
       // Map multi-word categories from lowercased to how it's defined in the User model
       // ex: 'physicsone' -> 'physicsOne' and stores 'physicsOne' on the session
@@ -221,9 +237,12 @@ module.exports = function(router, io) {
     const { sessionId } = req.params
     const { reportReason, reportMessage } = req.body
     const { user } = req
-    const session = await SessionService.getSession(sessionId)
+    const session = await SessionService.getSession(sessionId, {
+      student: 1,
+      volunteer: 1
+    })
 
-    if (!session || !session.volunteer || !session.volunteer === user._id)
+    if (!session || !session.volunteer || !user._id.equals(session.volunteer))
       return res.status(401).json({ err: 'Unable to report this session' })
 
     await SessionService.reportSession({
