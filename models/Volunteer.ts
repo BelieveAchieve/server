@@ -521,6 +521,10 @@ const volunteerSchema = new mongoose.Schema(
     subjects: {
       type: [String],
       enum: values(SUBJECTS)
+    },
+    sentHourSummaryIntroEmail: {
+      type: Boolean,
+      default: false
     }
   },
   volunteerSchemaOptions

@@ -12,6 +12,7 @@ import AvailabilitySnapshotModel, {
 import AvailabilityHistoryModel, {
   AvailabilityHistory
 } from '../models/Availability/History';
+import { UserAction } from '../services/UserActionService';
 import { Volunteer, Student, Session } from './types';
 import {
   buildNotification,
@@ -19,7 +20,8 @@ import {
   buildStudent,
   buildVolunteer,
   buildAvailabilitySnapshot,
-  buildAvailabilityHistory
+  buildAvailabilityHistory,
+  buildUserAction
 } from './generate';
 
 const hashPassword = async function(password): Promise<Error | string> {
@@ -42,8 +44,9 @@ export const resetDb = async (): Promise<void> => {
 };
 
 export const insertVolunteer = async (
-  volunteer = buildVolunteer()
+  overrides: Partial<Volunteer> = {}
 ): Promise<Volunteer> => {
+  const volunteer = buildVolunteer(overrides);
   const hashedPassword = await hashPassword(volunteer.password);
   const createdVolunteer = await VolunteerModel.create({
     ...volunteer,
@@ -54,8 +57,9 @@ export const insertVolunteer = async (
 };
 
 export const insertStudent = async (
-  student = buildStudent()
+  overrides: Partial<Student> = {}
 ): Promise<Student> => {
+  const student = buildStudent(overrides);
   const hashedPassword = await hashPassword(student.password);
   const createdStudent = await StudentModel.create({
     ...student,
@@ -165,4 +169,12 @@ export const insertAvailabilityHistory = async (
     availabilityHistory
   );
   return { ...createdAvailabilityHistory.toObject() };
+};
+
+export const insertUserAction = async (
+  overrides: Partial<UserAction> = {}
+): Promise<UserAction> => {
+  const userAction = buildUserAction(overrides);
+  const createdUserAction = await UserActionModel.create(userAction);
+  return { ...createdUserAction.toObject() };
 };

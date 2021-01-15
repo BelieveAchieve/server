@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import SessionService from '../../services/SessionService';
+import SessionModel from '../../models/Session';
 import {
   buildMessage,
   buildStudent,
@@ -883,6 +884,48 @@ describe('endSession', () => {
     });
 
     test.todo('Test mock function for QuillDoc was executed');
+  });
+});
+
+describe('getTimeTutoredForDateRange', () => {
+  test('Should get the total time tutored over a date range', async () => {
+    const { _id: volunteerId } = buildVolunteer();
+    const timeTutoredOneMin = 60000;
+    const timeTutoredTwoMins = 120000;
+    await SessionModel.insertMany([
+      buildSession({
+        createdAt: new Date('12/10/2020'),
+        volunteer: volunteerId,
+        timeTutored: timeTutoredOneMin
+      }),
+      buildSession({
+        createdAt: new Date('12/14/2020'),
+        volunteer: volunteerId,
+        timeTutored: timeTutoredTwoMins
+      }),
+      buildSession({
+        createdAt: new Date('12/21/2020'),
+        volunteer: volunteerId,
+        timeTutored: timeTutoredOneMin
+      }),
+      buildSession({
+        createdAt: new Date('12/25/2020'),
+        volunteer: volunteerId,
+        timeTutored: timeTutoredTwoMins
+      })
+    ]);
+
+    const fromDate = new Date('12/13/2020');
+    const toDate = new Date('12/25/2020');
+
+    const timeTutored = await SessionService.getTimeTutoredForDateRange(
+      volunteerId,
+      fromDate,
+      toDate
+    );
+    const expectedTimeTutored =
+      timeTutoredOneMin + timeTutoredTwoMins + timeTutoredTwoMins;
+    expect(timeTutored).toEqual(expectedTimeTutored);
   });
 });
 

@@ -341,6 +341,38 @@ const getSessionsToReview = async ({ users, page }) => {
   }
 }
 
+const getTimeTutoredForDateRange = async (volunteerId, fromDate, toDate) => {
+  const [aggregate] = await Session.aggregate([
+    {
+      $sort: { createdAt: -1 }
+    },
+    {
+      $match: {
+        volunteer: volunteerId,
+        createdAt: {
+          $gte: new Date(fromDate),
+          $lte: new Date(toDate)
+        }
+      }
+    },
+    {
+      $project: {
+        timeTutored: 1
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        timeTutored: {
+          $sum: '$timeTutored'
+        }
+      }
+    }
+  ])
+  if (aggregate) return aggregate.timeTutored
+  else return 0
+}
+
 module.exports = {
   getSession,
 
@@ -856,6 +888,7 @@ module.exports = {
   getSessionsToReview,
   updateSession,
   addFailedJoins,
+  getTimeTutoredForDateRange,
 
   // Session Service helpers exposed for testing
   didParticipantsChat,

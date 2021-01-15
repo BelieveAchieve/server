@@ -12,7 +12,14 @@ import {
   insertAvailabilityHistory,
   resetDb
 } from '../db-utils';
-import { buildAvailabilityDay, buildVolunteer } from '../generate';
+import {
+  buildVolunteer,
+  buildAvailabilitySnapshot,
+  buildAvailabilityHistory,
+  buildAvailabilityDay
+} from '../generate';
+import AvailabilityHistoryModel from '../../models/Availability/History';
+import AvailabilitySnapshotModel from '../../models/Availability/Snapshot';
 
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGO_URL, {
@@ -44,20 +51,20 @@ describe('getAvailability', () => {
 describe('getAvailabilities', () => {
   test('Should get multiple availability documents given a query', async () => {
     const snapshots = [
-      insertAvailabilitySnapshot({
+      buildAvailabilitySnapshot({
         createdAt: new Date('10/10/2020')
       }),
-      insertAvailabilitySnapshot({
+      buildAvailabilitySnapshot({
         createdAt: new Date('10/11/2020')
       }),
-      insertAvailabilitySnapshot({
+      buildAvailabilitySnapshot({
         createdAt: new Date('10/10/2021')
       }),
-      insertAvailabilitySnapshot({
+      buildAvailabilitySnapshot({
         createdAt: new Date('10/11/2021')
       })
     ];
-    await Promise.all(snapshots);
+    await AvailabilitySnapshotModel.insertMany(snapshots);
 
     const dateFilter = new Date('10/01/2021');
     const results = await getAvailabilities({
@@ -89,19 +96,19 @@ describe('getRecentAvailabilityHistory', () => {
     const newton = buildVolunteer();
     const volunteerId = newton._id;
     const date = new Date();
-    const newestDoc = insertAvailabilityHistory({
+    const newestDoc = buildAvailabilityHistory({
       date,
       volunteerId
     });
-    const oldestDoc = insertAvailabilityHistory({
+    const oldestDoc = buildAvailabilityHistory({
       date: new Date('10/10/2020'),
       volunteerId
     });
-    const oldDoc = insertAvailabilityHistory({
+    const oldDoc = buildAvailabilityHistory({
       date: new Date('10/11/2020'),
       volunteerId
     });
-    await Promise.all([newestDoc, oldestDoc, oldDoc]);
+    await AvailabilityHistoryModel.insertMany([newestDoc, oldestDoc, oldDoc]);
 
     const result = await getRecentAvailabilityHistory(volunteerId);
     expect(result.date).toEqual(date);
@@ -112,18 +119,18 @@ describe('getElapsedAvailabilityForDateRange', () => {
   test('Should get the total elapsed availability for a volunteer over given a date range', async () => {
     const turing = buildVolunteer();
     const volunteerId = turing._id;
-    await Promise.all([
-      insertAvailabilityHistory({
+    await AvailabilityHistoryModel.insertMany([
+      buildAvailabilityHistory({
         date: new Date('12/01/2020'),
         volunteerId,
         availability: buildAvailabilityDay({ '12p': true, '1p': true })
       }),
-      insertAvailabilityHistory({
+      buildAvailabilityHistory({
         date: new Date('12/02/2020'),
         volunteerId,
         availability: buildAvailabilityDay()
       }),
-      insertAvailabilityHistory({
+      buildAvailabilityHistory({
         date: new Date('12/03/2020'),
         volunteerId,
         availability: buildAvailabilityDay({
@@ -133,12 +140,12 @@ describe('getElapsedAvailabilityForDateRange', () => {
           '4p': true
         })
       }),
-      insertAvailabilityHistory({
+      buildAvailabilityHistory({
         date: new Date('12/04/2020'),
         volunteerId,
         availability: buildAvailabilityDay({ '4p': true, '5p': true })
       }),
-      insertAvailabilityHistory({
+      buildAvailabilityHistory({
         date: new Date('12/14/2020'),
         volunteerId,
         availability: buildAvailabilityDay({ '4p': true, '5p': true })

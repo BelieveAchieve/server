@@ -10,7 +10,7 @@ import AvailabilityHistoryModel, {
 import { AvailabilityDay } from '../models/Availability/types';
 
 export const getAvailability = (
-  query,
+  query: Partial<AvailabilitySnapshot>,
   projection = {}
 ): Promise<AvailabilitySnapshot> => {
   return AvailabilitySnapshotModel.findOne(query)
@@ -20,7 +20,7 @@ export const getAvailability = (
 };
 
 export const getAvailabilities = (
-  query,
+  query: Partial<AvailabilitySnapshot>,
   projection = {}
 ): Promise<AvailabilitySnapshot[]> => {
   return AvailabilitySnapshotModel.find(query)
@@ -30,7 +30,7 @@ export const getAvailabilities = (
 };
 
 export const getAvailabilityHistory = (
-  query,
+  query: Partial<AvailabilityHistory>,
   projection = {}
 ): Promise<AvailabilityHistory> => {
   return AvailabilityHistoryModel.findOne(query)
@@ -41,7 +41,7 @@ export const getAvailabilityHistory = (
 
 // @todo: Create a compound index on date and volunteerId
 export const getRecentAvailabilityHistory = async (
-  volunteerId
+  volunteerId: Types.ObjectId | string
 ): Promise<AvailabilityHistory> => {
   const [document] = await AvailabilityHistoryModel.find({ volunteerId })
     .sort({ date: -1 })
@@ -63,9 +63,9 @@ export const getElapsedAvailability = (day: AvailabilityDay): number => {
 };
 
 export const getElapsedAvailabilityForDateRange = async (
-  volunteerId,
-  fromDate,
-  toDate
+  volunteerId: Types.ObjectId | string,
+  fromDate: Date,
+  toDate: Date
 ): Promise<number> => {
   const historyDocs = await AvailabilityHistoryModel.aggregate([
     {
@@ -93,13 +93,13 @@ export const getElapsedAvailabilityForDateRange = async (
 };
 
 export const createAvailabilitySnapshot = (
-  volunteerId
+  volunteerId: Types.ObjectId | string
 ): Promise<AvailabilitySnapshotDocument> =>
   AvailabilitySnapshotModel.create({ volunteerId });
 
 export const updateAvailabilitySnapshot = (
-  volunteerId,
-  update
+  volunteerId: Types.ObjectId | string,
+  update: Partial<AvailabilitySnapshot>
 ): Query<AvailabilitySnapshotDocument> =>
   AvailabilitySnapshotModel.updateOne(
     {

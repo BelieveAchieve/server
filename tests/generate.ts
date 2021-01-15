@@ -17,6 +17,7 @@ import { Message } from '../models/Message';
 import { Notification } from '../models/Notification';
 import { AvailabilitySnapshot } from '../models/Availability/Snapshot';
 import { AvailabilityHistory } from '../models/Availability/History';
+import { UserAction } from '../services/UserActionService';
 import { AvailabilityDay } from '../models/Availability/types';
 import {
   User,
@@ -174,6 +175,7 @@ export const buildStudent = (overrides = {}): Student => {
     referredByCode: '',
     referralCode: generateReferralCode(_id.toString()),
     pastSessions: [],
+    createdAt: new Date(),
     ...overrides
   };
 
@@ -207,7 +209,9 @@ export const buildVolunteer = (overrides = {}): Volunteer => {
     hoursTutored: Types.Decimal128.fromString('0'),
     timeTutored: 0,
     pastSessions: [],
+    createdAt: new Date(),
     elapsedAvailability: 0,
+    sentHourSummaryIntroEmail: false,
     ...overrides
   };
 
@@ -368,6 +372,32 @@ export const buildNotification = (overrides = {}): Partial<Notification> => {
   };
 
   return notification;
+};
+
+export const buildUserAction = (
+  overrides: Partial<UserAction> = {}
+): Partial<UserAction> => {
+  const userAction = {
+    _id: Types.ObjectId(),
+    user: null,
+    session: null,
+    createdAt: new Date(),
+    actionType: null,
+    action: null,
+    quizCategory: null,
+    quizSubcategory: null,
+    device: null,
+    browser: null,
+    browserVersion: null,
+    operatingSystem: null,
+    operatingSystemVersion: null,
+    ipAddress: null,
+    referenceEmail: null,
+    banReason: null,
+    ...overrides
+  };
+
+  return userAction;
 };
 
 export const buildAvailabilityDay = (overrides = {}): AvailabilityDay => {

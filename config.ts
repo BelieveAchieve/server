@@ -24,6 +24,12 @@ const bannedServiceProviderList =
   process.env.SUBWAY_BANNED_SERVICE_PROVIDERS || 'Example';
 const bannedServiceProviders = bannedServiceProviderList.split(',');
 
+const unsubscribedSummaryEmailPartnersList =
+  process.env.SUBWAY_UNSUBSCRIBED_SUMMARY_EMAIL_PARTNERS || 'example';
+const unsubscribedSummaryEmailPartners = unsubscribedSummaryEmailPartnersList.split(
+  ','
+);
+
 let nodeEnv = process.env.NODE_ENV;
 if (nodeEnv !== 'dev' && nodeEnv !== 'staging' && nodeEnv !== 'production') {
   nodeEnv = 'dev';
@@ -58,9 +64,12 @@ const config: Static<typeof Config> = {
     rejectedReferenceTemplate: 'd-9afea0862a264bbb93ed6a2c074fd6b4',
     waitingOnReferencesTemplate: 'd-65bf8204d28746f58ad28a4aa92407c7',
     niceToMeetYouTemplate: 'd-8afee528e5184d8797c50c109d6b631b',
+    weeklyHourSummaryEmailTemplate: 'd-19a5fbe8656249d2822c8bde1c2ab086',
+    weeklyHourSummaryIntroEmailTemplate: 'd-4d8394e4da3847eabdfd23f257f7a8d3',
     unsubscribeGroup: {
       newsletter: 12567,
-      account: 12570
+      account: 12570,
+      volunteerSummary: 14543
     },
     contactList: {
       students:
@@ -150,6 +159,7 @@ const config: Static<typeof Config> = {
     projectId: Number(process.env.SUBWAY_FIREBASE_PROJECT_ID) || 123456789012
   },
   bannedServiceProviders: bannedServiceProviders,
+  unsubscribedSummaryEmailPartners,
   awsS3: {
     accessKeyId: process.env.SUBWAY_AWS_ACCESSKEY || 'ACCESSKEY123',
     secretAccessKey:

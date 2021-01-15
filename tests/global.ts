@@ -1,10 +1,10 @@
 jest.mock('redis', () => {
-  const redisMock = require('fakeredis')
+  const redisMock = require('fakeredis');
   return {
     __esModule: true,
     default: redisMock
-  }
-})
+  };
+});
 
 jest.mock('../config', () => {
   return {
@@ -17,7 +17,7 @@ jest.mock('../config', () => {
       sessionPhotoBucket: 'session-photo-bucket'
     },
     volunteerPartnerManifestPath: 'localManifests/volunteer.yaml',
-    studentPartnerManifestPath:'localManifests/student.yaml',
+    studentPartnerManifestPath: 'localManifests/student.yaml',
     sendgrid: {
       apiKey: ''
     },
@@ -47,6 +47,7 @@ jest.mock('../config', () => {
         schoolSignupRequired: false
       }
     },
-    bannedServiceProviders: ['Example']
-  }
-})
+    bannedServiceProviders: ['Example'],
+    unsubscribedSummaryEmailPartners: ['example']
+  };
+});
