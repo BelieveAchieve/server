@@ -1,7 +1,9 @@
 const _ = require('lodash')
 const Volunteer = require('../models/Volunteer')
-const UserCtrl = require('../controllers/UserCtrl')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
+const {
+  updateAvailabilitySnapshot
+} = require('../services/AvailabilityService')
 
 module.exports = {
   updateSchedule: async function(options) {
@@ -34,27 +36,29 @@ module.exports = {
       throw new Error('Availability object missing required keys')
     }
 
-    const userUpdates = {
+    const currentDate = new Date().toISOString()
+    const volunteerUpdates = {
+      // @note: keep "availability", "timezone", "availabilityLastModifiedAt" for a volunteer until new availability schema is migrated
+      availabilityLastModifiedAt: currentDate,
       availability: newAvailability,
       timezone: newTimezone
     }
-
-    const currentTime = new Date().toISOString()
-    const newElapsedAvailability = UserCtrl.calculateElapsedAvailability(
-      user,
-      currentTime
-    )
-    userUpdates.availabilityLastModifiedAt = currentTime
-    userUpdates.elapsedAvailability =
-      user.elapsedAvailability + newElapsedAvailability
-
     // an onboarded volunteer must have updated their availability, completed required training, and unlocked a subject
     if (!user.isOnboarded && user.subjects.length > 0) {
-      userUpdates.isOnboarded = true
+      volunteerUpdates.isOnboarded = true
       UserActionCtrl.accountOnboarded(user._id, ip)
     }
 
-    await Volunteer.updateOne({ _id: user._id }, userUpdates)
+    const availabilityUpdates = {
+      onCallAvailability: newAvailability,
+      timezone: newTimezone,
+      modifiedAt: currentDate
+    }
+
+    await Promise.all([
+      updateAvailabilitySnapshot(user._id, availabilityUpdates),
+      Volunteer.updateOne({ _id: user._id }, volunteerUpdates)
+    ])
   },
 
   clearSchedule: async function(user, tz) {

@@ -1,33 +1,61 @@
-import { map, size } from 'lodash';
+import { map } from 'lodash';
+import moment from 'moment-timezone';
 import VolunteerModel from '../../models/Volunteer';
-import { User } from '../../models/types';
+import { Volunteer } from '../../models/types';
 import { log } from '../logger';
-import UserCtrl from '../../controllers/UserCtrl';
+import { AvailabilitySnapshot } from '../../models/Availability/Snapshot';
+import {
+  createAvailabilityHistory,
+  getAvailability,
+  getElapsedAvailability
+} from '../../services/AvailabilityService';
 
 export default async (): Promise<void> => {
-  // Fetch volunteers
-  const volunteers = (await VolunteerModel.find()
+  const volunteers = await VolunteerModel.find({
+    isOnboarded: true,
+    isApproved: true
+  })
+    .select({ _id: 1 })
     .lean()
-    .exec()) as User[];
+    .exec();
+
+  let totalUpdated = 0;
+
   await Promise.all(
-    map(volunteers, async volunteer => {
-      const updates: {
-        elapsedAvailability?: number;
-        availabilityLastModifiedAt?: Date;
-      } = {};
-      const currentTime = new Date();
-      const newElapsedAvailability = UserCtrl.calculateElapsedAvailability(
-        volunteer,
-        currentTime
+    map(volunteers, async (volunteer: Volunteer) => {
+      const availability: AvailabilitySnapshot = await getAvailability({
+        volunteerId: volunteer._id
+      });
+      if (!availability) return;
+
+      const endOfYesterday = moment()
+        .utc()
+        .subtract(1, 'days')
+        .endOf('day');
+      const yesterday = moment()
+        .utc()
+        .subtract(1, 'days')
+        .format('dddd');
+      const availabilityDay = availability.onCallAvailability[yesterday];
+      const elapsedAvailability = getElapsedAvailability(availabilityDay);
+
+      await VolunteerModel.updateOne(
+        {
+          _id: volunteer._id
+        },
+        { $inc: { elapsedAvailability } }
       );
 
-      updates.elapsedAvailability =
-        volunteer.elapsedAvailability + newElapsedAvailability;
-      if (volunteer.availabilityLastModifiedAt)
-        updates.availabilityLastModifiedAt = currentTime;
+      totalUpdated++;
 
-      return VolunteerModel.updateOne({ _id: volunteer._id }, updates);
+      const newAvailabilityHistory = {
+        availability: availabilityDay,
+        volunteerId: volunteer._id,
+        timezone: availability.timezone,
+        date: endOfYesterday
+      };
+      return createAvailabilityHistory(newAvailabilityHistory);
     })
   );
-  log(`updated ${size(volunteers)} volunteers`);
+  log(`updated ${totalUpdated} volunteers`);
 };

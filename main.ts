@@ -1,6 +1,7 @@
 import 'newrelic';
 import mongoose from 'mongoose';
 import { Static } from 'runtypes';
+import initializeUnleash from './utils/initialize-unleash';
 import rawConfig from './config';
 import { Config } from './config-type';
 import app from './app';
@@ -14,6 +15,8 @@ const main = (): void => {
     console.trace(`${error.name}: ${error.message} [${error.key}]`);
     return;
   }
+
+  initializeUnleash();
 
   // Database
   mongoose.connect(config.database, { useNewUrlParser: true });

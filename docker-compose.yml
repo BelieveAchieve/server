@@ -1,16 +1,19 @@
 version: "3.2"
-services: 
+services:
     server:
-        build: .
+        image: 'upchieve/subway:local'
         ports:
             - "3000-3001:3000-3001"
         expose:
             - "3000-3001"
-        depends_on: 
-            - db
+        depends_on:
+            - mongodb
             - cache
-    db:
-        image: mongo:4.2.3-bionic
+        entrypoint: local-web
+    mongodb:
+        ports:
+          - "27017"
+        image: mongo:4.2.3
         environment:
             - MONGO_INITDB_DATABASE=upchieve
         volumes:

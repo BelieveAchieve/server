@@ -14,6 +14,22 @@ const getSessionRoom = require('../../utils/get-session-room')
 module.exports = function(io, sessionStore) {
   const socketService = new SocketService(io)
 
+  const getSocketIdsFromRoom = room =>
+    new Promise((resolve, reject) => {
+      io.in(room).clients((err, clients) => {
+        if (err) return reject(err)
+        return resolve(clients)
+      })
+    })
+
+  const remoteJoinRoom = (socketId, room) =>
+    new Promise((resolve, reject) => {
+      io.of('/').adapter.remoteJoin(socketId, room, err => {
+        if (err) reject(err)
+        resolve('success')
+      })
+    })
+
   // Authentication for sockets
   io.use(
     passportSocketIo.authorize({
@@ -42,6 +58,11 @@ module.exports = function(io, sessionStore) {
       socket.emit('redirect')
       throw new Error('User not authenticated')
     }
+
+    // Join a user to their own room to handle the event where a user might have
+    // multiple socket connections open
+    socket.join(user._id.toString())
+
     const latestSession = await SessionModel.current(user._id)
 
     // @note: students don't join the room by default until they are in the session view
@@ -53,7 +74,7 @@ module.exports = function(io, sessionStore) {
 
     if (user && user.isVolunteer) socket.join('volunteers')
 
-    // Session management
+    // Tutor session management
     socket.on('join', async function(data) {
       if (!data || !data.sessionId) {
         socket.emit('redirect')
@@ -88,7 +109,11 @@ module.exports = function(io, sessionStore) {
         })
 
         const sessionRoom = getSessionRoom(sessionId)
-        socket.join(sessionRoom)
+        const socketIds = await getSocketIdsFromRoom(user._id.toString())
+        // Have all of the user's socket connections join the tutoring session room
+        for (const id of socketIds) {
+          await remoteJoinRoom(id, sessionRoom)
+        }
 
         socketService.emitSessionChange(sessionId)
       } catch (error) {

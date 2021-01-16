@@ -10,6 +10,11 @@ import logger from 'morgan';
 import config from './config';
 import router from './router';
 import cacheControl from 'express-cache-controller';
+import timeout from 'connect-timeout';
+
+function haltOnTimedout (req, res, next) {
+  if (!req.timedout) next()
+}
 
 interface LoadedRequest extends Request {
   user: {};
@@ -24,6 +29,8 @@ Sentry.init({
 
 // Express App
 const app = express();
+
+app.use(timeout(300000));
 
 /**
  * Account for nginx proxy when getting client's IP address
@@ -50,6 +57,7 @@ app.use(
 app.use(cacheControl({
   noCache: true
 }));
+app.use(haltOnTimedout);
 // see https://stackoverflow.com/questions/51023943/nodejs-getting-username-of-logged-in-user-within-route
 app.use((req: LoadedRequest, res, next) => {
   res.locals.user = req.user || null;
@@ -70,14 +78,16 @@ expressWs(app);
 
 // Load server router
 router(app);
+app.use(haltOnTimedout);
 
 // Send error responses to API requests after they are passed to Sentry
 app.use(
-  ['/api', '/auth', '/contact', '/school', '/twiml', '/whiteboard'],
+  ['/api', '/auth', '/contact', '/school', '/twiml', '/whiteboard'], haltOnTimedout,
   (err, req, res, next) => {
     res.status(err.httpStatus || 500).json({ err: err.message || err });
     next();
   }
 );
+app.use(haltOnTimedout);
 
 export default app;

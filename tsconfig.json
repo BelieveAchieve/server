@@ -4,5 +4,13 @@
       "allowUmdGlobalAccess": true,
       "outDir": "build",
       "resolveJsonModule": true,
+      "allowJs": true,
+      "skipLibCheck": true,
   },
+  "exclude": [
+    "dbutils/",
+    "tests/",
+    "node_modules/",
+    "build/"
+  ]
 }

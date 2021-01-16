@@ -6,6 +6,7 @@ import Student from '../models/Student';
 import Volunteer from '../models/Volunteer';
 import dbconnect from './dbconnect';
 import config from '../config';
+import { volunteerPartnerManifests, studentPartnerManifests } from '../../partnerManifests'
 
 const options = {
   headers: {
@@ -46,9 +47,9 @@ const createStudentContacts = async users => {
 
     if (user.studentPartnerOrg) {
       customFields[SG_CUSTOM_FIELDS.studentPartnerOrg] = user.studentPartnerOrg;
-      if (config.studentPartnerManifests[user.studentPartnerOrg]) {
+      if (studentPartnerManifests[user.studentPartnerOrg]) {
         customFields[SG_CUSTOM_FIELDS.studentPartnerOrgDisplay] =
-          config.studentPartnerManifests[user.studentPartnerOrg].name;
+          studentPartnerManifests[user.studentPartnerOrg].name;
       }
     }
 
@@ -89,9 +90,9 @@ const createVolunteerContacts = async users => {
     const parterOrg = user.volunteerPartnerOrg
     if (parterOrg) {
       customFields[SG_CUSTOM_FIELDS.volunteerPartnerOrg] = parterOrg;
-      if (config.volunteerPartnerManifests[parterOrg]) {
+      if (volunteerPartnerManifests[parterOrg]) {
         customFields[SG_CUSTOM_FIELDS.volunteerPartnerOrgDisplay] =
-          config.volunteerPartnerManifests[parterOrg].name;
+          volunteerPartnerManifests[parterOrg].name;
       }
     }
 

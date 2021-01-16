@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import SessionService from '../../services/SessionService';
+import SessionModel from '../../models/Session';
 import {
   buildMessage,
   buildStudent,
@@ -27,6 +28,15 @@ jest.mock('../../services/MailService');
 jest.mock('../../services/WhiteboardService');
 jest.mock('../../services/QuillDocService');
 
+/**
+ * @todo refactor
+ * - some of the test cases are getting too complicated to rely on this function anymore
+ *
+ * some additional notes:
+ * an ABSENT_USER flag gets triggered in some test cases because
+ * the volunteerJoinedAt is greater than the createdAt of the messages. refactor to
+ * allow an easier way to trigger or not trigger ABSENT_USER or LOW_MESSAGES flags
+ */
 const loadMessages = ({
   studentSentMessages,
   volunteerSentMessages,
@@ -81,29 +91,28 @@ beforeEach(async () => {
   jest.clearAllMocks();
 });
 
-describe('calculateHoursTutored', () => {
+describe('calculateTimeTutored', () => {
   const similarTestCases = [
-    'Return 0 hours tutored if no volunteer has joined the session',
-    'Return 0 hours tutored if no volunteerJoinedAt and no endedAt',
-    'Return 0 hours tutored if no messages were sent during the session'
+    'Return 0ms if no volunteer has joined the session',
+    'Return 0ms if no volunteerJoinedAt and no endedAt',
+    'Return 0ms if no messages were sent during the session'
   ];
   for (const testCase of similarTestCases) {
     test(testCase, async () => {
-      const { session } = await insertSession();
-      const result = await SessionService.calculateHoursTutored(session);
-      const expectedHoursTutored = 0;
+      const session = buildSession();
+      const result = SessionService.calculateTimeTutored(session);
+      const expectedTimeTutored = 0;
 
-      expect(result).toEqual(expectedHoursTutored);
+      expect(result).toEqual(expectedTimeTutored);
     });
   }
 
-  test('Return 0 hours tutored if volunteer joined after session ended', async () => {
+  test('Return 0ms if volunteer joined after session ended', () => {
     const createdAt = new Date('2020-10-05T12:00:00.000Z');
     const endedAt = new Date('2020-10-05T12:05:00.000Z');
     const volunteerJoinedAt = new Date('2020-10-05T12:10:00.000Z');
-
-    const volunteer = await insertVolunteer();
-    const { session } = await insertSession({
+    const volunteer = buildVolunteer();
+    const session = buildSession({
       createdAt,
       endedAt,
       volunteerJoinedAt,
@@ -114,19 +123,19 @@ describe('calculateHoursTutored', () => {
       })
     });
 
-    const result = await SessionService.calculateHoursTutored(session);
-    const expectedHoursTutored = 0;
+    const result = SessionService.calculateTimeTutored(session);
+    const expectedTimeTutored = 0;
 
-    expect(result).toEqual(expectedHoursTutored);
+    expect(result).toEqual(expectedTimeTutored);
   });
 
-  test('Return 0 hours tutored if latest message was sent before a volunteer joined', async () => {
+  test('Return 0ms if latest message was sent before a volunteer joined', () => {
     const createdAt = new Date('2020-10-05T12:00:00.000Z');
     const endedAt = new Date('2020-10-05T12:05:00.000Z');
     const volunteerJoinedAt = new Date('2020-10-05T12:10:00.000Z');
-    const student = await insertStudent();
-    const volunteer = await insertVolunteer();
-    const { session } = await insertSession({
+    const student = buildStudent();
+    const volunteer = buildVolunteer();
+    const session = buildSession({
       createdAt,
       endedAt,
       volunteerJoinedAt,
@@ -138,42 +147,19 @@ describe('calculateHoursTutored', () => {
       })
     });
 
-    const result = await SessionService.calculateHoursTutored(session);
-    const expectedHoursTutored = 0;
+    const result = SessionService.calculateTimeTutored(session);
+    const expectedTimeTutored = 0;
 
-    expect(result).toEqual(expectedHoursTutored);
+    expect(result).toEqual(expectedTimeTutored);
   });
 
-  test('Should return amount of hours tutored', async () => {
+  test('Should return amount of time tutored', () => {
     const createdAt = new Date('2020-10-05T12:00:00.000Z');
     const endedAt = new Date('2020-10-05T12:05:00.000Z');
     const volunteerJoinedAt = new Date('2020-10-05T12:01:00.000Z');
-
-    const volunteer = await insertVolunteer();
-    const { session } = await insertSession({
-      createdAt,
-      endedAt,
-      volunteerJoinedAt,
-      volunteer: volunteer._id,
-      messages: buildMessage({
-        user: volunteer._id,
-        createdAt: new Date('2020-10-05T12:03:00.000Z')
-      })
-    });
-
-    const result = await SessionService.calculateHoursTutored(session);
-    const expectedHoursTutored = 0.03;
-
-    expect(result).toEqual(expectedHoursTutored);
-  });
-
-  test('Should add hours tutored to user for sessions less than 3 hours', async () => {
-    const createdAt = new Date('2020-10-05T11:55:00.000Z');
-    const endedAt = new Date('2020-10-06T14:06:00.000Z');
-    const volunteerJoinedAt = new Date('2020-10-05T12:00:00.000Z');
-
-    const volunteer = await insertVolunteer();
-    const { session } = await insertSessionWithVolunteer({
+    const lastMessageSentAt = new Date('2020-10-05T12:03:00.000Z');
+    const volunteer = buildVolunteer();
+    const session = buildSession({
       createdAt,
       endedAt,
       volunteerJoinedAt,
@@ -181,25 +167,52 @@ describe('calculateHoursTutored', () => {
       messages: [
         buildMessage({
           user: volunteer._id,
-          createdAt: new Date('2020-10-05T14:05:00.000Z')
+          createdAt: lastMessageSentAt
         })
       ]
     });
 
-    const hoursTutored = SessionService.calculateHoursTutored(session);
-    const expectedHoursTutored = 2.08;
-    expect(hoursTutored).toEqual(expectedHoursTutored);
+    const result = SessionService.calculateTimeTutored(session);
+    const expectedTimeTutored =
+      lastMessageSentAt.getTime() - volunteerJoinedAt.getTime();
+
+    expect(result).toEqual(expectedTimeTutored);
+  });
+
+  test('Should calculate time tutored for sessions less than 3 hours', () => {
+    const createdAt = new Date('2020-10-05T11:55:00.000Z');
+    const endedAt = new Date('2020-10-06T14:06:00.000Z');
+    const volunteerJoinedAt = new Date('2020-10-05T12:00:00.000Z');
+    const lastMessageSentAt = new Date('2020-10-05T14:05:00.000Z');
+    const volunteer = buildVolunteer();
+    const session = buildSession({
+      createdAt,
+      endedAt,
+      volunteerJoinedAt,
+      volunteer: volunteer._id,
+      messages: [
+        buildMessage({
+          user: volunteer._id,
+          createdAt: lastMessageSentAt
+        })
+      ]
+    });
+
+    const result = SessionService.calculateTimeTutored(session);
+    const expectedTimeTutored =
+      lastMessageSentAt.getTime() - volunteerJoinedAt.getTime();
+    expect(result).toEqual(expectedTimeTutored);
   });
 
   // When sessions are greater than 3 hours, use the last messages that were sent
   // within a 15 minute window to get an estimate of the session length / hours tutored
-  test('Should add hours tutored to user for sessions greater than 3 hours', async () => {
+  test('Should calculate time tutored for sessions greater than 3 hours', () => {
     const createdAt = new Date('2020-10-05T11:55:00.000Z');
     const endedAt = new Date('2020-10-06T16:00:00.000Z');
     const volunteerJoinedAt = new Date('2020-10-05T12:00:00.000Z');
-
-    const volunteer = await insertVolunteer();
-    const { session } = await insertSession({
+    const lastMessageSentAt = new Date('2020-10-05T15:59:00.000Z');
+    const volunteer = buildVolunteer();
+    const session = buildSession({
       createdAt,
       endedAt,
       volunteerJoinedAt,
@@ -215,14 +228,15 @@ describe('calculateHoursTutored', () => {
         }),
         buildMessage({
           user: volunteer._id,
-          createdAt: new Date('2020-10-05T15:59:00.000Z')
+          createdAt: lastMessageSentAt
         })
       ]
     });
 
-    const hoursTutored = SessionService.calculateHoursTutored(session);
-    const expectedHoursTutored = 3.98;
-    expect(hoursTutored).toEqual(expectedHoursTutored);
+    const result = SessionService.calculateTimeTutored(session);
+    const expectedTimeTutored =
+      lastMessageSentAt.getTime() - volunteerJoinedAt.getTime();
+    expect(result).toEqual(expectedTimeTutored);
   });
 });
 
@@ -309,8 +323,8 @@ describe('getReviewFlags', () => {
     };
 
     const result = SessionService.getReviewFlags(populatedSession);
-    const expected = [SESSION_FLAGS.FIRST_TIME_STUDENT];
-    expect(result).toEqual(expected);
+    const expected = SESSION_FLAGS.FIRST_TIME_STUDENT;
+    expect(result).toContain(expected);
   });
 
   test(`Should trigger ${SESSION_FLAGS.FIRST_TIME_VOLUNTEER} flag for a volunteer's first session`, async () => {
@@ -336,8 +350,8 @@ describe('getReviewFlags', () => {
     };
 
     const result = SessionService.getReviewFlags(populatedSession);
-    const expected = [SESSION_FLAGS.FIRST_TIME_VOLUNTEER];
-    expect(result).toEqual(expected);
+    const expected = SESSION_FLAGS.FIRST_TIME_VOLUNTEER;
+    expect(result).toContain(expected);
   });
 
   test(`Should trigger ${SESSION_FLAGS.UNMATCHED} flag when a volunter does not join the session`, async () => {
@@ -363,17 +377,22 @@ describe('getReviewFlags', () => {
   });
 
   test(`Should trigger ${SESSION_FLAGS.LOW_MESSAGES} flag`, async () => {
-    const { messages, student, volunteer } = loadMessages({
-      studentSentMessages: true,
-      volunteerSentMessages: true,
-      messagesPerUser: 3
-    });
+    const student = buildStudent({ pastSessions: buildPastSessions() });
+    const volunteer = buildVolunteer({ pastSessions: buildPastSessions() });
+    const volunteerJoinedAt = new Date('2020-10-05T12:03:30.000Z');
+
+    const messages = [
+      { user: student._id, createdAt: new Date('2020-10-05T12:04:30.000Z') },
+      { user: volunteer._id, createdAt: new Date('2020-10-05T12:05:30.000Z') }
+    ];
+
     const { session } = await insertSession({
       createdAt: new Date('2020-10-05T12:03:00.000Z'),
       endedAt: new Date('2020-10-05T14:03:00.000Z'),
       student: student._id,
       volunteer,
-      messages
+      messages,
+      volunteerJoinedAt
     });
 
     const populatedSession = {
@@ -456,8 +475,8 @@ describe('getReviewFlags', () => {
     };
 
     const result = SessionService.getReviewFlags(populatedSession);
-    const expected = [SESSION_FLAGS.REPORTED];
-    expect(result).toEqual(expected);
+    const expected = SESSION_FLAGS.REPORTED;
+    expect(result).toContain(expected);
   });
 });
 
@@ -670,16 +689,22 @@ describe('endSession', () => {
     // eslint-disable-next-line quotes
     test("Should add session to past sessions for student and volunteer and update volunteer's hoursTutored", async () => {
       const volunteer = await insertVolunteer();
+      const student = await insertStudent();
       const oneHourAgo = Date.now() - 1000 * 60 * 60 * 1;
       const createdAt = new Date(oneHourAgo);
       const volunteerJoinedAt = new Date(oneHourAgo + 1000 * 60);
-      const { session, student } = await insertSession({
+      const { session } = await insertSession({
+        student: student._id,
         createdAt,
         volunteerJoinedAt,
         volunteer: volunteer._id,
         messages: [
           buildMessage({
             user: volunteer._id,
+            createdAt: new Date()
+          }),
+          buildMessage({
+            user: student._id,
             createdAt: new Date()
           })
         ]
@@ -724,16 +749,27 @@ describe('endSession', () => {
     });
 
     test('Should not add session review flags to the session', async () => {
+      const oneHourAgo = Date.now() - 1000 * 60 * 60 * 1;
+      const createdAt = new Date(oneHourAgo);
+      const volunteerJoinedAt = new Date(oneHourAgo + 1000 * 60);
       const { messages, student, volunteer } = loadMessages({
         studentSentMessages: true,
         volunteerSentMessages: true,
         messagesPerUser: 20
       });
+
+      // avoid LOW_MESSAGES flag by having the createdAt of the messages greater
+      // than the volunteerJoinedAt date
+      const updatedMessages = [];
+      for (const message of messages) {
+        updatedMessages.push({ ...message, createdAt: new Date(oneHourAgo) });
+      }
+
       await insertStudent(student as Student);
       await insertVolunteer(volunteer as Volunteer);
       const { session } = await insertSession({
-        createdAt: new Date(),
-        volunteerJoinedAt: new Date(),
+        createdAt,
+        volunteerJoinedAt,
         student: student._id,
         volunteer: volunteer._id,
         messages: messages
@@ -848,5 +884,126 @@ describe('endSession', () => {
     });
 
     test.todo('Test mock function for QuillDoc was executed');
+  });
+});
+
+describe('getTimeTutoredForDateRange', () => {
+  test('Should get the total time tutored over a date range', async () => {
+    const { _id: volunteerId } = buildVolunteer();
+    const timeTutoredOneMin = 60000;
+    const timeTutoredTwoMins = 120000;
+    await SessionModel.insertMany([
+      buildSession({
+        createdAt: new Date('12/10/2020'),
+        volunteer: volunteerId,
+        timeTutored: timeTutoredOneMin
+      }),
+      buildSession({
+        createdAt: new Date('12/14/2020'),
+        volunteer: volunteerId,
+        timeTutored: timeTutoredTwoMins
+      }),
+      buildSession({
+        createdAt: new Date('12/21/2020'),
+        volunteer: volunteerId,
+        timeTutored: timeTutoredOneMin
+      }),
+      buildSession({
+        createdAt: new Date('12/25/2020'),
+        volunteer: volunteerId,
+        timeTutored: timeTutoredTwoMins
+      })
+    ]);
+
+    const fromDate = new Date('12/13/2020');
+    const toDate = new Date('12/25/2020');
+
+    const timeTutored = await SessionService.getTimeTutoredForDateRange(
+      volunteerId,
+      fromDate,
+      toDate
+    );
+    const expectedTimeTutored =
+      timeTutoredOneMin + timeTutoredTwoMins + timeTutoredTwoMins;
+    expect(timeTutored).toEqual(expectedTimeTutored);
+  });
+});
+
+describe('getMessagesAfterDate', () => {
+  test('Should return messages after a given date', async () => {
+    const student = buildStudent();
+    const volunteer = buildVolunteer();
+    const volunteerJoinedAt = new Date('2021-01-14T12:00:00.000Z');
+    const messages = [
+      buildMessage({
+        user: student._id,
+        createdAt: new Date('2021-01-14T11:45:00.000Z')
+      }),
+      buildMessage({
+        user: student._id,
+        createdAt: new Date('2021-01-14T11:55:00.000Z')
+      }),
+      buildMessage({
+        user: student._id,
+        createdAt: new Date('2021-01-14T12:00:00.000Z')
+      }),
+      buildMessage({
+        user: volunteer._id,
+        createdAt: new Date('2021-01-14T12:10:00.000Z')
+      }),
+      buildMessage({
+        user: student._id,
+        createdAt: new Date('2021-01-14T12:15:00.000Z')
+      })
+    ];
+
+    const results = SessionService.getMessagesAfterDate(
+      messages,
+      volunteerJoinedAt
+    );
+    expect(results).toHaveLength(3);
+  });
+
+  test('Should return an empty array if no messages were sent', async () => {
+    const volunteerJoinedAt = new Date('2021-01-14T12:00:00.000Z');
+    const messages = [];
+
+    const results = SessionService.getMessagesAfterDate(
+      messages,
+      volunteerJoinedAt
+    );
+
+    expect(results).toHaveLength(0);
+  });
+
+  test('Should return an empty array if no date is provided', async () => {
+    const student = buildStudent();
+    const volunteer = buildVolunteer();
+
+    const messages = [
+      buildMessage({
+        user: student._id,
+        createdAt: new Date('2021-01-14T11:45:00.000Z')
+      }),
+      buildMessage({
+        user: student._id,
+        createdAt: new Date('2021-01-14T11:55:00.000Z')
+      }),
+      buildMessage({
+        user: student._id,
+        createdAt: new Date('2021-01-14T12:00:00.000Z')
+      }),
+      buildMessage({
+        user: volunteer._id,
+        createdAt: new Date('2021-01-14T12:10:00.000Z')
+      }),
+      buildMessage({
+        user: student._id,
+        createdAt: new Date('2021-01-14T12:15:00.000Z')
+      })
+    ];
+
+    const results = SessionService.getMessagesAfterDate(messages);
+    expect(results).toHaveLength(0);
   });
 });

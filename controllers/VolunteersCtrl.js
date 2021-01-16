@@ -1,4 +1,5 @@
-const Volunteer = require('../models/Volunteer')
+const VolunteerModel = require('../models/Volunteer')
+const { getAvailabilities } = require('../services/AvailabilityService')
 
 /**
  * Helper function that, given a single users's
@@ -48,41 +49,48 @@ module.exports = {
    * @param {*} options
    * @param {*} callback
    */
-  getVolunteersAvailability: function(options, callback) {
+  getVolunteersAvailability: async function(options, callback) {
     const certifiedSubjectQuery = `certifications.${options.certifiedSubject}.passed`
 
     const volunteerQuery = {
       [certifiedSubjectQuery]: true,
-      availability: { $exists: true },
       isFakeUser: false,
       isTestUser: false,
       isFailsafeVolunteer: false,
       isOnboarded: true,
-      isDeactivated: false
+      isDeactivated: false,
+      isBanned: false
     }
 
-    Volunteer.find(volunteerQuery)
-      .lean()
-      .exec(function(err, users) {
-        // defining and resetting variables
-        let aggAvailabilities = {}
-        aggAvailabilities.table = Array(7)
-          .fill(0)
-          .map(() => Array(24).fill(0))
-        aggAvailabilities.min = null
-        aggAvailabilities.max = 0
-
-        if (err) {
-          return callback(null, err)
-        } else {
-          aggAvailabilities = users.reduce(function(aggAvailabilities, user) {
-            const userAvailability = user.availability
-            return aggregateAvailabilities(userAvailability, aggAvailabilities)
-          }, aggAvailabilities)
-          aggAvailabilities = findMinAndMax(aggAvailabilities)
-          return callback(aggAvailabilities, null)
-        }
+    try {
+      // the projection returns { _id: 1, type: 1}
+      const volunteers = await VolunteerModel.find(volunteerQuery)
+        .select({ _id: 1 })
+        .lean()
+        .exec()
+      const volunteerIds = volunteers.map(vol => vol._id)
+      const availabilityDocs = await getAvailabilities({
+        volunteerId: { $in: volunteerIds }
       })
+
+      let aggAvailabilities = {}
+      aggAvailabilities.table = Array(7)
+        .fill(0)
+        .map(() => Array(24).fill(0))
+      aggAvailabilities.min = null
+      aggAvailabilities.max = 0
+
+      aggAvailabilities = availabilityDocs.reduce((aggAvailabilities, doc) => {
+        return aggregateAvailabilities(
+          doc.onCallAvailability,
+          aggAvailabilities
+        )
+      }, aggAvailabilities)
+      aggAvailabilities = findMinAndMax(aggAvailabilities)
+      return callback(aggAvailabilities, null)
+    } catch (error) {
+      return callback(null, error)
+    }
   },
 
   /**
@@ -90,7 +98,7 @@ module.exports = {
    * @param {*} callback
    */
   getVolunteers: function(callback) {
-    Volunteer.find({}, function(err, users) {
+    VolunteerModel.find({}, function(err, users) {
       if (err) {
         return callback(null, err)
       } else {

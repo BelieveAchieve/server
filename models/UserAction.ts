@@ -4,16 +4,37 @@
  * update their profile, etc.
  */
 
-const mongoose = require('mongoose')
-const { USER_ACTION } = require('../constants')
+import { Schema, Types, Document, model } from 'mongoose';
+import { USER_ACTION } from '../constants';
 
-const userActionSchema = new mongoose.Schema({
+export interface UserAction extends Document {
+  _id: Types.ObjectId;
+  user: Types.ObjectId;
+  session: Types.ObjectId;
+  createdAt: Date;
+  actionType: string;
+  action: string;
+  quizCategory: string;
+  quizSubcategory: string;
+  device: string;
+  browser: string;
+  browserVersion: string;
+  operatingSystem: string;
+  operatingSystemVersion: string;
+  ipAddress: string;
+  referenceEmail: string;
+  banReason: string;
+}
+
+export type UserActionDocument = UserAction & Document;
+
+const userActionSchema = new Schema({
   user: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'User'
   },
   session: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Session'
   },
   createdAt: {
@@ -71,6 +92,12 @@ const userActionSchema = new mongoose.Schema({
   ipAddress: String,
   referenceEmail: String,
   banReason: String
-})
+});
 
-module.exports = mongoose.model('UserAction', userActionSchema)
+const UserActionModel = model<UserActionDocument>(
+  'UserAction',
+  userActionSchema
+);
+
+module.exports = UserActionModel;
+export default UserActionModel;

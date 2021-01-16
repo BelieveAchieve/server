@@ -64,7 +64,7 @@ export const courses: TrainingCourse[] = [
             type: MaterialType.LINK,
             isRequired: false,
             linkUrl:
-              'https://join.slack.com/t/upchieveaccommunity/shared_invite/zt-jymxx11w-pyWJMQILItytHP0OmiFGBQ'
+              'https://join.slack.com/t/upchieveaccommunity/shared_invite/zt-ky326pfl-JCUpPDFqxeMkz1qaY9riVw'
           },
           {
             // eslint-disable-next-line quotes

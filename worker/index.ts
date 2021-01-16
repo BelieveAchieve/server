@@ -1,11 +1,13 @@
 import Queue from 'bull';
 import config from '../config';
 import dbconnect from '../dbutils/dbconnect';
+import initializeUnleash from '../utils/initialize-unleash';
 import { log } from './logger';
 import { addJobProcessors } from './jobs';
 
 const main = async (): Promise<void> => {
   try {
+    initializeUnleash();
     await dbconnect();
     log('Starting queue');
     const queue = new Queue(

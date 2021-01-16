@@ -16,4 +16,8 @@ export interface Reference extends Document {
 
 export interface Volunteer extends User {
   references: [Reference];
+  isApproved: boolean;
+  isOnboarded: boolean;
 }
+
+export type Student = User;

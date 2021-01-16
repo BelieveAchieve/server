@@ -3,7 +3,13 @@ UPchieve web server
 
 > Web server providing endpoints for the UPchieve web client
 
-[![CircleCI](https://circleci.com/gh/UPchieve/server.svg?style=svg)](https://circleci.com/gh/UPchieve/server) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](code_of_conduct.md)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
+
+[Contributing Guide](CONTRIBUTING.md)
+
+## GITLAB
+
+NOTE: Active development on this project has moved to https://gitlab.com/upchieve/subway, no more pushes should go straight to the Github repo.
 
 **Table of Contents**
 
@@ -54,6 +60,7 @@ Local Development
 ## docker-compose
 Docker provides an alternative for local development. A docker-compose file exists, tied to Mongo. Here's how to work in docker-compose.
 
+1. Build the container using the command `$ pack build upchieve/subway:local --builder heroku/buildpacks:20`
 1. Navigate to this directory and run `mkdir mongo-volume` to create a directory for the MongoDB volume.
 1. Run `cp config.example.ts config.ts` to copy the default config as your own config.
 1. Run `docker-compose up` to launch the server.
@@ -66,24 +73,17 @@ If not using docker-compose, follow these steps to start required components.
 
 ### Dependencies
 
-The recommended tool for runtime version management is [`asdf`][asdf] and [`Docker`][Docker]. To use `asdf` on Windows, first install the appropriate Linux shell distribution using [`WSL`][wsl] (Windows Subsystem for Linux).
+The recommended tool for runtime version management is [`nvm`][nvm] and [`Docker`][Docker]. To use `nvm` on Windows, first install the appropriate Linux shell distribution using [`WSL`][wsl] (Windows Subsystem for Linux).
 
-#### Node 11.7.0
+#### Local Node
 
-You must use Node.js version `11.7.0`. Install the following asdf plugin:
+We currently run on Node v12.20.0, you can switch to this using
 
-- nodejs version `11.7.0`
-
-- [`asdf-nodejs`][asdf-nodejs]
-
-```shell-script
-asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
-asdf install nodejs 11.7.0
-asdf global nodejs 11.7.0
-node -v
+```shell
+$ nvm install v12.20.0 && nvm use v12.20.0
 ```
-The output of `node -v` should be: `v11.7.0`
+
+After switching npm versions using nvm, you will need to rerun `$ npm install`.
 
 #### Mongo 4.2.3
 
@@ -102,11 +102,8 @@ docker run -i --rm --name redis -p 6379:6379 -v <Absolute Path to directory on y
 ```
 
 [wsl]: https://docs.microsoft.com/en-us/windows/wsl/install-win10
-[asdf]: https://github.com/asdf-vm/asdf
+[nvm]: https://github.com/nvm-sh/nvm
 [Docker]: https://www.docker.com/products/docker-desktop
-[asdf-nodejs]: https://github.com/asdf-vm/asdf-nodejs
-[asdf-mongodb]: https://github.com/sylph01/asdf-mongodb
-[asdf-redis]: https://github.com/smashedtoatoms/asdf-redis
 
 ### Setup
 

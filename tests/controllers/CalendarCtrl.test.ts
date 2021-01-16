@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 import CalendarCtrl from '../../controllers/CalendarCtrl';
-import { insertVolunteer, resetDb } from '../db-utils';
+import {
+  insertAvailabilitySnapshot,
+  insertVolunteer,
+  resetDb
+} from '../db-utils';
 import {
   buildAvailability,
   buildVolunteer,
@@ -10,6 +14,7 @@ import VolunteerModel from '../../models/Volunteer';
 import UserActionModel from '../../models/UserAction';
 import { Volunteer } from '../types';
 import { USER_ACTION, SUBJECTS } from '../../constants';
+import * as AvailabilityService from '../../services/AvailabilityService';
 
 // db connection
 beforeAll(async () => {
@@ -54,6 +59,7 @@ describe('Save availability and time zone', () => {
 
   test('Should update availability (and user action fires) not onboarded', async () => {
     const volunteer = await insertVolunteer();
+    await insertAvailabilitySnapshot({ volunteerId: volunteer._id });
     const availability = buildAvailability({
       Saturday: { '1p': true, '2p': true }
     });
@@ -73,12 +79,16 @@ describe('Save availability and time zone', () => {
       .lean()
       .select('availability isOnboarded')
       .exec()) as Volunteer;
+    const availabilitySnapshot = await AvailabilityService.getAvailability({
+      volunteerId: volunteer._id
+    });
     const expectedUserAction = await UserActionModel.findOne({
       user: volunteer._id,
       action: USER_ACTION.ACCOUNT.ONBOARDED
     });
 
     expect(updatedAvailability).toMatchObject(availability);
+    expect(availabilitySnapshot.onCallAvailability).toMatchObject(availability);
     expect(isOnboarded).toBeFalsy();
     expect(expectedUserAction).toBeNull();
   });
@@ -97,6 +107,7 @@ describe('Save availability and time zone', () => {
         ]
       })
     );
+    await insertAvailabilitySnapshot({ volunteerId: volunteer._id });
     const availability = buildAvailability({
       Saturday: { '1p': true, '2p': true }
     });
@@ -120,7 +131,9 @@ describe('Save availability and time zone', () => {
       user: volunteer._id,
       action: USER_ACTION.ACCOUNT.ONBOARDED
     });
-
+    const availabilitySnapshot = await AvailabilityService.getAvailability({
+      volunteerId: volunteer._id
+    });
     const expectedUserAction = {
       user: volunteer._id,
       actionType: USER_ACTION.TYPE.ACCOUNT,
@@ -128,6 +141,7 @@ describe('Save availability and time zone', () => {
     };
 
     expect(updatedAvailability).toMatchObject(availability);
+    expect(availabilitySnapshot.onCallAvailability).toMatchObject(availability);
     expect(isOnboarded).toBeTruthy();
     expect(userAction).toMatchObject(expectedUserAction);
   });
@@ -144,9 +158,9 @@ describe('Clear schedule', () => {
     const volunteer = await insertVolunteer(
       buildVolunteer({ availability, certifications })
     );
-    const timeZone = 'American/New York';
+    const timezone = 'American/New York';
 
-    await CalendarCtrl.clearSchedule(volunteer, timeZone);
+    await CalendarCtrl.clearSchedule(volunteer, timezone);
 
     const emptyAvailability = buildAvailability();
     const { availability: updatedAvailability } = (await VolunteerModel.findOne(

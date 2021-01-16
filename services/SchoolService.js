@@ -27,7 +27,7 @@ module.exports = {
         .sort({
           isApproved: -1
         })
-        .limit(20)
+        .limit(40)
 
       dbQuery.exec(function(err, results) {
         if (err) {

@@ -3,18 +3,44 @@
 import { Static } from 'runtypes';
 import { Config } from './config-type';
 
+const mongoHost = process.env.SUBWAY_DB_HOST || 'mongodb';
+const mongoPort = process.env.SUBWAY_DB_PORT || '27017';
+const mongoName = process.env.SUBWAY_DB_NAME || 'upchieve';
+const mongoPass = process.env.SUBWAY_DB_PASS;
+const mongoUser = process.env.SUBWAY_DB_USER;
+
+let mongoConn;
+if (mongoPass) {
+  mongoConn = `mongodb+srv://${mongoUser}:${mongoPass}@${mongoHost}/${mongoName}`;
+} else {
+  mongoConn = `mongodb://${mongoHost}:${mongoPort}/${mongoName}`;
+}
+
+const redisHost = process.env.SUBWAY_REDIS_HOST || 'cache';
+const redisPort = process.env.SUBWAY_REDIS_PORT || '6379';
+const redisConn = `redis://${redisHost}:${redisPort}`;
+
+const bannedServiceProviderList =
+  process.env.SUBWAY_BANNED_SERVICE_PROVIDERS || 'Example';
+const bannedServiceProviders = bannedServiceProviderList.split(',');
+
+let nodeEnv = process.env.NODE_ENV;
+if (nodeEnv !== 'dev' && nodeEnv !== 'staging' && nodeEnv !== 'production') {
+  nodeEnv = 'dev';
+}
+
 const config: Static<typeof Config> = {
-  NODE_ENV: 'dev',
+  NODE_ENV: nodeEnv,
   SSL_CERT_PATH: '',
   // set host to your public IP address to test Twilio voice calling
-  host: process.env.SERVER_HOST || 'localhost:3000',
-  database: 'mongodb://mongodb:27017/upchieve',
-  sessionSecret: process.env.SESSION_SECRET || 'secret',
+  host: process.env.SUBWAY_SERVER_HOST || 'localhost:3000',
+  database: mongoConn,
+  sessionSecret: process.env.SUBWAY_SESSION_SECRET || 'secret',
   sessionCookieMaxAge:
-    parseInt(process.env.SESSION_COOKIE_MAX_AGE) || 5184000000,
+    parseInt(process.env.SUBWAY_SESSION_COOKIE_MAX_AGE) || 5184000000,
   saltRounds: 10,
   sendgrid: {
-    apiKey: process.env.SENDGRID_API_KEY || '',
+    apiKey: process.env.SUBWAY_SENDGRID_API_KEY || '',
     contactTemplate: 'd-e79546f380874c58965c163f45df2ef4',
     verifyTemplate: 'd-02281875a1cf4575bd3568e674faf147',
     resetTemplate: 'd-5005d2beb2ad49a883a10364f3e14b81',
@@ -32,117 +58,115 @@ const config: Static<typeof Config> = {
     rejectedReferenceTemplate: 'd-9afea0862a264bbb93ed6a2c074fd6b4',
     waitingOnReferencesTemplate: 'd-65bf8204d28746f58ad28a4aa92407c7',
     niceToMeetYouTemplate: 'd-8afee528e5184d8797c50c109d6b631b',
+    weeklyHourSummaryEmailTemplate: 'd-19a5fbe8656249d2822c8bde1c2ab086',
+    weeklyHourSummaryIntroEmailTemplate: 'd-4d8394e4da3847eabdfd23f257f7a8d3',
     unsubscribeGroup: {
       newsletter: 12567,
-      account: 12570
+      account: 12570,
+      volunteerSummary: 14543
     },
     contactList: {
-      students: '1111111a-111b-111c-111d-11111111111e',
-      volunteers: '1111111a-111b-111c-111d-11111111111e'
+      students:
+        process.env.SUBWAY_STUDENT_CONTACT_LIST ||
+        '1111111a-111b-111c-111d-11111111111e',
+      volunteers:
+        process.env.SUBWAY_VOLUNTEER_CONTACT_LIST ||
+        '1111111a-111b-111c-111d-11111111111e'
     }
   },
   mail: {
     senders: {
-      noreply: 'noreply@upchieve.org',
-      support: 'support@upchieve.org',
-      recruitment: 'recruitment@upchieve.org'
+      noreply: process.env.SUBWAY_NOREPLY_EMAIL_SENDER || 'example@example.org',
+      support: process.env.SUBWAY_SUPPORT_EMAIL_SENDER || 'example@example.org',
+      recruitment:
+        process.env.SUBWAY_RECRUITMENT_EMAIL_SENDER || 'example@example.org'
     },
     receivers: {
-      contact: 'staff@upchieve.org',
-      staff: 'staff@upchieve.org',
-      support: 'support@upchieve.org',
-      recruitment: 'recruitment@upchieve.org'
+      contact:
+        process.env.SUBWAY_CONTACT_EMAIL_RECEIVER || 'example@example.org',
+      staff: process.env.SUBWAY_STAFF_EMAIL_RECEIVER || 'example@example.org',
+      support:
+        process.env.SUBWAY_SUPPORT_EMAIL_RECEIVER || 'example@example.org',
+      recruitment:
+        process.env.SUBWAY_RECRUITMENT_EMAIL_RECEIVER || 'example@example.org'
     }
   },
   client: {
-    host: 'localhost:8080'
+    host: process.env.SUBWAY_CLIENT_HOST || 'localhost:8080'
   },
-  socketsPort: 3001,
+  socketsPort: Number(process.env.SUBWAY_SOCKETS_PORT) || 3001,
 
-  volunteerPartnerManifests: {
-    example: {
-      name: 'Example - Regular'
-    },
-    example2: {
-      name: 'Example - Email Requirement',
-      requiredEmailDomains: ['example.com']
-    },
-    example3: {
-      name: 'Example - Email Requirement & Math Only',
-      requiredEmailDomains: ['example.org', 'example.net']
-    }
-  },
+  volunteerPartnerManifestPath:
+    process.env.SUBWAY_VOLUNTEER_PARTNER_MANIFEST_PATH ||
+    'localManifests/volunteer.yaml',
 
-  studentPartnerManifests: {
-    example: {
-      name: 'Example - No School',
-      signupCode: 'EX1',
-      highSchoolSignup: false,
-      schoolSignupRequired: false
-    },
-    example2: {
-      name: 'Example - High School Optional',
-      signupCode: 'EX2',
-      highSchoolSignup: true,
-      schoolSignupRequired: false
-    },
-    example3: {
-      name: 'Example - High School Required',
-      signupCode: 'EX3',
-      highSchoolSignup: true,
-      schoolSignupRequired: true
-    },
-    example4: {
-      name: 'Example - Sites, No School',
-      signupCode: 'EX4',
-      sites: ['Site A', 'Site B', 'Site C']
-    },
-    example5: {
-      name: 'Example - College and High School Optional',
-      signupCode: 'EX5',
-      highSchoolSignup: true,
-      collegeSignup: true,
-      schoolSignupRequired: false
-    }
-  },
+  studentPartnerManifestPath:
+    process.env.SUBWAY_STUDENT_PARTNER_MANIFEST_PATH ||
+    'localManifests/student.yaml',
 
   // Sentry Data Source Name
-  sentryDsn: '',
+  sentryDsn: process.env.SUBWAY_SENTRY_DSN || '',
 
   // Twilio Credentials
-  accountSid: '',
-  authToken: '',
-  sendingNumber: '',
+  accountSid: process.env.SUBWAY_TWILIO_ACCOUNT_SID || '',
+  authToken: process.env.SUBWAY_TWILIO_AUTH_TOKEN || '',
+  sendingNumber: process.env.SUBWAY_TWILIO_SENDING_NUMBER || '',
 
   notificationSchedule: [
-    30 * 1000,
-    30 * 1000,
-    30 * 1000,
-    2 * 60 * 1000,
-    30 * 1000,
-    30 * 1000
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    3 * 60 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    3 * 60 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    3 * 60 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000,
+    5 * 1000
   ],
-  // Failsafe notification options
-  // time until second (desperate) SMS message is sent
-  desperateSMSTimeout: 300000,
-  // time until voice call is made
-  desperateVoiceTimeout: 600000,
   // voice to use to render speech
   voice: 'man',
 
   workerQueueName: 'main',
-  redisConnectionString: 'redis://127.0.0.1:6379',
+  redisConnectionString: redisConn,
   firebase: {
-    projectId: 123456789012
+    projectId: Number(process.env.SUBWAY_FIREBASE_PROJECT_ID) || 123456789012
   },
-  bannedServiceProviders: ['Example'],
+  bannedServiceProviders: bannedServiceProviders,
   awsS3: {
-    accessKeyId: 'ACCESSKEY123',
-    secretAccessKey: 'SECRETACCESSKEY789',
-    region: 'us-east-2',
-    photoIdBucket: 'photo-id-bucket',
-    sessionPhotoBucket: 'session-photo-bucket'
-  }
+    accessKeyId: process.env.SUBWAY_AWS_ACCESSKEY || 'ACCESSKEY123',
+    secretAccessKey:
+      process.env.SUBWAY_SECRET_ACCESS_KEY || 'SECRETACCESSKEY789',
+    region: process.env.SUBWAY_AWS_REGION || 'us-east-2',
+    photoIdBucket: process.env.SUBWAY_PHOTO_ID_BUCKET || 'photo-id-bucket',
+    sessionPhotoBucket:
+      process.env.SUBWAY_SESSION_PHOTO_BUCKET || 'session-photo-bucket'
+  },
+  unleashId: process.env.SUBWAY_UNLEASH_ID || 'djwdKPaf7s3oxMgDrRrd',
+  unleashName: process.env.SUBWAY_UNLEASH_NAME || 'dev',
+  unleashUrl:
+    process.env.SUBWAY_UNLEASH_URL ||
+    'https://gitlab.com/api/v4/feature_flags/unleash/23285197'
 };
 
 module.exports = config;

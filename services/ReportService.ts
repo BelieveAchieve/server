@@ -2,7 +2,7 @@ import moment from 'moment-timezone';
 import mongoose, { Types } from 'mongoose';
 import _ from 'lodash';
 import User from '../models/User';
-import config from '../config';
+import { studentPartnerManifests } from '../partnerManifests'
 
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -430,8 +430,8 @@ export const usageReport = async ({
   ]);
 
   const partnerSites =
-    config.studentPartnerManifests[studentPartnerOrg] &&
-    config.studentPartnerManifests[studentPartnerOrg].sites;
+    studentPartnerManifests[studentPartnerOrg] &&
+    studentPartnerManifests[studentPartnerOrg].sites;
 
   const studentUsage = students.map(student => {
     const feedback = Array.from(student.feedback);

@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import Session from '../models/Session';
 import MessageModel, { MessageDocument } from '../models/Message';
 import getSessionRoom from '../utils/get-session-room';
@@ -14,7 +15,9 @@ class SocketService {
    * @param sessionId
    * @returns the session object
    */
-  private async getSessionData(sessionId): Promise<MessageDocument> {
+  private async getSessionData(
+    sessionId: Types.ObjectId | string
+  ): Promise<MessageDocument> {
     const populateOptions = [
       { path: 'student', select: 'firstname isVolunteer' },
       { path: 'volunteer', select: 'firstname isVolunteer' }
@@ -35,9 +38,9 @@ class SocketService {
     this.io.in('volunteers').emit('sessions', sessions);
   }
 
-  async emitSessionChange(sessionId): Promise<void> {
+  async emitSessionChange(sessionId: Types.ObjectId | string): Promise<void> {
     const session = await this.getSessionData(sessionId);
-    this.io.to(getSessionRoom(sessionId)).emit('session-change', session);
+    this.io.in(getSessionRoom(sessionId)).emit('session-change', session);
 
     await this.updateSessionList();
   }

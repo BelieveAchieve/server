@@ -44,6 +44,17 @@ const didParticipantsChat = (messages, studentId, volunteerId) => {
   return studentSentMessage && volunteerSentMessage
 }
 
+const getMessagesAfterDate = (messages, date) => {
+  if (!date) return []
+
+  for (let i = 0; i < messages.length; i++) {
+    const message = messages[i]
+    if (message.createdAt >= date) return messages.slice(i)
+  }
+
+  return []
+}
+
 const getReviewFlags = session => {
   const flags = []
   const {
@@ -52,15 +63,20 @@ const getReviewFlags = session => {
     volunteer,
     createdAt,
     endedAt,
-    isReported
+    isReported,
+    volunteerJoinedAt
   } = session
   const isStudentsFirstSession = student.pastSessions.length === 0
   const sessionLength =
     new Date(endedAt).getTime() - new Date(createdAt).getTime()
 
   if (volunteer) {
-    const isFullConversation = didParticipantsChat(
+    const messagesAfterVolunteerJoined = getMessagesAfterDate(
       messages,
+      volunteerJoinedAt
+    )
+    const isFullConversation = didParticipantsChat(
+      messagesAfterVolunteerJoined,
       student._id,
       volunteer._id
     )
@@ -179,7 +195,7 @@ const isSessionParticipant = (session, user) => {
   )
 }
 
-const calculateHoursTutored = session => {
+const calculateTimeTutored = session => {
   const threeHoursMs = 1000 * 60 * 60 * 3
   const fifteenMinsMs = 1000 * 60 * 15
 
@@ -199,6 +215,7 @@ const calculateHoursTutored = session => {
   let wasMessageSentAfterSessionEnded =
     messages[latestMessageIndex].createdAt > sessionEndDate
 
+  // @todo: refactor - Don't allow users to send a message once the sessions ends
   // get the latest message that was sent within a 15 minute window of the message prior.
   // Sometimes sessions are not ended by either participant and one of the participants may send
   // a message to see if the other participant is still active before ending the session.
@@ -225,9 +242,7 @@ const calculateHoursTutored = session => {
     return 0
 
   sessionLengthMs = latestMessageDate - volunteerJoinDate
-
-  // milliseconds in an hour = (60,000 * 60) = 3,600,000
-  return Number((sessionLengthMs / 3600000).toFixed(2))
+  return sessionLengthMs
 }
 
 const getSessionsToReview = async ({ users, page }) => {
@@ -326,6 +341,38 @@ const getSessionsToReview = async ({ users, page }) => {
   }
 }
 
+const getTimeTutoredForDateRange = async (volunteerId, fromDate, toDate) => {
+  const [aggregate] = await Session.aggregate([
+    {
+      $sort: { createdAt: -1 }
+    },
+    {
+      $match: {
+        volunteer: volunteerId,
+        createdAt: {
+          $gte: new Date(fromDate),
+          $lte: new Date(toDate)
+        }
+      }
+    },
+    {
+      $project: {
+        timeTutored: 1
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        timeTutored: {
+          $sum: '$timeTutored'
+        }
+      }
+    }
+  ])
+  if (aggregate) return aggregate.timeTutored
+  else return 0
+}
+
 module.exports = {
   getSession,
 
@@ -399,11 +446,20 @@ module.exports = {
 
     if (isReviewNeeded) update.reviewedStudent = false
 
+    let timeTutored = 0
     if (session.volunteer) {
-      const hoursTutored = calculateHoursTutored({ ...session, endedAt })
+      // Calculate time tutored if both users were present in the session
+      if (!reviewFlags.includes(SESSION_FLAGS.ABSENT_USER))
+        timeTutored = calculateTimeTutored({ ...session, endedAt })
       await VolunteerModel.updateOne(
         { _id: session.volunteer._id },
-        { $addToSet: { pastSessions: session._id }, $inc: { hoursTutored } }
+        {
+          $addToSet: { pastSessions: session._id },
+          $inc: {
+            hoursTutored: Number((timeTutored / 3600000).toFixed(2)),
+            timeTutored
+          }
+        }
       )
 
       if (isReviewNeeded) update.reviewedVolunteer = false
@@ -419,6 +475,7 @@ module.exports = {
         endedBy,
         whiteboardDoc: whiteboardDoc || undefined,
         quillDoc: quillDoc ? JSON.stringify(quillDoc) : undefined,
+        timeTutored,
         ...update
       }
     )
@@ -831,9 +888,11 @@ module.exports = {
   getSessionsToReview,
   updateSession,
   addFailedJoins,
+  getTimeTutoredForDateRange,
 
   // Session Service helpers exposed for testing
   didParticipantsChat,
   getReviewFlags,
-  calculateHoursTutored
+  calculateTimeTutored,
+  getMessagesAfterDate
 }

@@ -1,3 +1,7 @@
+const {
+  volunteerPartnerManifests,
+  studentPartnerManifests
+} = require('../../partnerManifests')
 const express = require('express')
 const passport = require('passport')
 const Sentry = require('@sentry/node')
@@ -143,7 +147,7 @@ module.exports = function(app) {
 
     // Student partner org check (if no high school or zip code provided)
     if (isStudentPartnerSignup) {
-      const allStudentPartnerManifests = config.studentPartnerManifests
+      const allStudentPartnerManifests = studentPartnerManifests
       const studentPartnerManifest =
         allStudentPartnerManifests[studentPartnerOrg]
 
@@ -312,7 +316,7 @@ module.exports = function(app) {
     }
 
     // Volunteer partner org check
-    const allVolunteerPartnerManifests = config.volunteerPartnerManifests
+    const allVolunteerPartnerManifests = volunteerPartnerManifests
     const volunteerPartnerManifest =
       allVolunteerPartnerManifests[volunteerPartnerOrg]
 
@@ -372,7 +376,7 @@ module.exports = function(app) {
       })
     }
 
-    const allVolunteerPartnerManifests = config.volunteerPartnerManifests
+    const allVolunteerPartnerManifests = volunteerPartnerManifests
 
     if (!allVolunteerPartnerManifests) {
       return res.status(422).json({
@@ -400,7 +404,7 @@ module.exports = function(app) {
       })
     }
 
-    const allStudentPartnerManifests = config.studentPartnerManifests
+    const allStudentPartnerManifests = studentPartnerManifests
 
     if (!allStudentPartnerManifests) {
       return res.status(422).json({
@@ -428,7 +432,7 @@ module.exports = function(app) {
       })
     }
 
-    const allStudentPartnerManifests = config.studentPartnerManifests
+    const allStudentPartnerManifests = studentPartnerManifests
 
     if (!allStudentPartnerManifests) {
       return res.status(422).json({
@@ -455,9 +459,7 @@ module.exports = function(app) {
     .all(authPassport.isAdmin)
     .get(function(req, res, next) {
       const partnerOrgs = []
-      for (const [key, value] of Object.entries(
-        config.studentPartnerManifests
-      )) {
+      for (const [key, value] of Object.entries(studentPartnerManifests)) {
         partnerOrgs.push({
           key,
           displayName: value.name ? value.name : key,
@@ -475,9 +477,7 @@ module.exports = function(app) {
     .all(authPassport.isAdmin)
     .get(function(req, res, next) {
       const partnerOrgs = []
-      for (const [key, value] of Object.entries(
-        config.volunteerPartnerManifests
-      )) {
+      for (const [key, value] of Object.entries(volunteerPartnerManifests)) {
         partnerOrgs.push({
           key,
           displayName: value.name ? value.name : key

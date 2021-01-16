@@ -210,6 +210,7 @@ const volunteerSchema = new mongoose.Schema(
     },
     timezone: String,
     hoursTutored: { type: mongoose.Types.Decimal128, default: 0 },
+    timeTutored: { type: Number, default: 0 },
     availabilityLastModifiedAt: { type: Date },
     elapsedAvailability: { type: Number, default: 0 },
     sentReadyToCoachEmail: {
@@ -520,6 +521,10 @@ const volunteerSchema = new mongoose.Schema(
     subjects: {
       type: [String],
       enum: values(SUBJECTS)
+    },
+    sentHourSummaryIntroEmail: {
+      type: Boolean,
+      default: false
     }
   },
   volunteerSchemaOptions

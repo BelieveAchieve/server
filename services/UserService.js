@@ -1,3 +1,7 @@
+const {
+  volunteerPartnerManifests,
+  studentPartnerManifests
+} = require('../partnerManifests')
 const crypto = require('crypto')
 const { omit } = require('lodash')
 const User = require('../models/User')
@@ -13,7 +17,6 @@ const {
   USER_BAN_REASON,
   USER_ACTION
 } = require('../constants')
-const config = require('../config')
 const ObjectId = require('mongodb').ObjectId
 
 const getVolunteer = async volunteerId => {
@@ -388,10 +391,10 @@ module.exports = {
     if (lastName) query.lastname = { $regex: lastName, $options: 'i' }
     if (email) query.email = { $regex: email, $options: 'i' }
     if (partnerOrg) {
-      if (config.studentPartnerManifests[partnerOrg])
+      if (studentPartnerManifests[partnerOrg])
         query.studentPartnerOrg = { $regex: partnerOrg, $options: 'i' }
 
-      if (config.volunteerPartnerManifests[partnerOrg])
+      if (volunteerPartnerManifests[partnerOrg])
         query.volunteerPartnerOrg = { $regex: partnerOrg, $options: 'i' }
     }
 
