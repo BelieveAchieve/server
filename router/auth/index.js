@@ -14,6 +14,8 @@ const School = require('../../models/School')
 const { USER_BAN_REASON } = require('../../constants')
 const authPassport = require('./passport')
 const UserCtrl = require('../../controllers/UserCtrl')
+const UserActionCtrl = require('../../controllers/UserActionCtrl')
+const VerificationCtrl = require('../../controllers/VerificationCtrl')
 const MailService = require('../../services/MailService')
 
 // Validation functions
@@ -201,26 +203,33 @@ module.exports = function(app) {
       referredBy,
       isBanned,
       banReason,
-      password,
-      ip
+      password
     }
 
+    let student
+
     try {
-      const student = await UserCtrl.createStudent(studentData)
+      student = await UserCtrl.createStudent(studentData)
       if (isBanned)
         MailService.sendBannedUserAlert({
           userId: student._id,
           banReason
         })
-
       await req.login(student)
-      return res.json({
+      res.json({
         user: student
       })
     } catch (err) {
       Sentry.captureException(err)
       return res.status(422).json({ err: err.message })
     }
+
+    MailService.sendStudentWelcomeEmail({
+      email: student.email,
+      firstName: student.firstname
+    })
+    UserActionCtrl.createdAccount(student._id, ip)
+    MailService.createContact(student)
   })
 
   router.post('/register/volunteer/open', async function(req, res) {
@@ -266,20 +275,26 @@ module.exports = function(app) {
       lastname: lastName.trim(),
       verified: false,
       referredBy,
-      password,
-      ip
+      password
     }
 
+    let volunteer
+
     try {
-      const volunteer = await UserCtrl.createVolunteer(volunteerData)
+      volunteer = await UserCtrl.createVolunteer(volunteerData)
       await req.login(volunteer)
-      return res.json({
+      // @todo: better error handling for verification
+      await VerificationCtrl.initiateVerification({ user: volunteer })
+      res.json({
         user: volunteer
       })
     } catch (err) {
       Sentry.captureException(err)
       return res.status(422).json({ err: err.message })
     }
+
+    UserActionCtrl.createdAccount(volunteer._id, ip)
+    MailService.createContact(volunteer)
   })
 
   router.post('/register/volunteer/partner', async function(req, res) {
@@ -351,20 +366,26 @@ module.exports = function(app) {
       lastname: lastName.trim(),
       verified: false,
       referredBy,
-      password,
-      ip
+      password
     }
 
+    let volunteer
+
     try {
-      const volunteer = await UserCtrl.createVolunteer(volunteerData)
+      volunteer = await UserCtrl.createVolunteer(volunteerData)
       await req.login(volunteer)
-      return res.json({
+      // @todo: better error handling for verification
+      await VerificationCtrl.initiateVerification({ user: volunteer })
+      res.json({
         user: volunteer
       })
     } catch (err) {
       Sentry.captureException(err)
       return res.status(422).json({ err: err.message })
     }
+
+    UserActionCtrl.createdAccount(volunteer._id, ip)
+    MailService.createContact(volunteer)
   })
 
   router.get('/partner/volunteer', function(req, res) {

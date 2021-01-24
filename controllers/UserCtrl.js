@@ -3,9 +3,6 @@ const Student = require('../models/Student')
 const Volunteer = require('../models/Volunteer')
 const Sentry = require('@sentry/node')
 const base64url = require('base64url')
-const MailService = require('../services/MailService')
-const VerificationCtrl = require('../controllers/VerificationCtrl')
-const UserActionCtrl = require('../controllers/UserActionCtrl')
 const {
   createAvailabilitySnapshot
 } = require('../services/AvailabilityService')
@@ -37,43 +34,21 @@ module.exports = {
   },
 
   createStudent: async function(studentData) {
-    const { password, ip } = studentData
+    const { password } = studentData
     const student = new Student(studentData)
     student.referralCode = generateReferralCode(student.id)
 
     try {
       student.password = await student.hashPassword(password)
       await student.save()
+      return student
     } catch (error) {
       throw new Error(error)
     }
-
-    try {
-      MailService.sendStudentWelcomeEmail({
-        email: student.email,
-        firstName: student.firstname
-      })
-    } catch (err) {
-      Sentry.captureException(err)
-    }
-
-    try {
-      await UserActionCtrl.createdAccount(student._id, ip)
-    } catch (err) {
-      Sentry.captureException(err)
-    }
-
-    try {
-      await MailService.createContact(student)
-    } catch (err) {
-      Sentry.captureException(err)
-    }
-
-    return student
   },
 
   createVolunteer: async function(volunteerData) {
-    const { password, ip } = volunteerData
+    const { password } = volunteerData
     const volunteer = new Volunteer(volunteerData)
     volunteer.referralCode = generateReferralCode(volunteer.id)
 
@@ -83,29 +58,10 @@ module.exports = {
         volunteer.save(),
         createAvailabilitySnapshot(volunteer._id)
       ])
+      return volunteer
     } catch (error) {
       throw new Error(error)
     }
-
-    try {
-      await VerificationCtrl.initiateVerification({ user: volunteer })
-    } catch (err) {
-      Sentry.captureException(err)
-    }
-
-    try {
-      await UserActionCtrl.createdAccount(volunteer._id, ip)
-    } catch (err) {
-      Sentry.captureException(err)
-    }
-
-    try {
-      await MailService.createContact(volunteer)
-    } catch (err) {
-      Sentry.captureException(err)
-    }
-
-    return volunteer
   },
 
   isCertified: function(certifications) {

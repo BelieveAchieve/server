@@ -3,12 +3,6 @@ import { createVolunteer } from '../../controllers/UserCtrl';
 import { getVolunteer, resetDb } from '../db-utils';
 import { buildVolunteer } from '../generate';
 import { getAvailability } from '../../services/AvailabilityService';
-import { createContact } from '../../services/MailService';
-import { initiateVerification } from '../../controllers/VerificationCtrl';
-import { createdAccount } from '../../controllers/UserActionCtrl';
-jest.mock('../../services/MailService');
-jest.mock('../../controllers/VerificationCtrl');
-jest.mock('../../controllers/UserActionCtrl');
 
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGO_URL, {
@@ -22,7 +16,6 @@ afterAll(async () => {
 
 beforeEach(async () => {
   await resetDb();
-  jest.clearAllMocks();
 });
 
 describe('createVolunteer', () => {
@@ -36,8 +29,5 @@ describe('createVolunteer', () => {
 
     expect(einstein._id).toEqual(newVolunteer._id);
     expect(newAvailability.volunteerId).toEqual(newVolunteer._id);
-    expect(initiateVerification.mock.calls.length).toBe(1);
-    expect(createContact.mock.calls.length).toBe(1);
-    expect(createdAccount.mock.calls.length).toBe(1);
   });
 });

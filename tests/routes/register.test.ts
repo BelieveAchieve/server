@@ -10,7 +10,15 @@ import {
   buildStudent
 } from '../generate';
 import { resetDb, insertStudent } from '../db-utils';
+import {
+  createContact,
+  sendStudentWelcomeEmail
+} from '../../services/MailService';
+import { initiateVerification } from '../../controllers/VerificationCtrl';
+import { createdAccount } from '../../controllers/UserActionCtrl';
 jest.mock('../../services/MailService');
+jest.mock('../../controllers/VerificationCtrl');
+jest.mock('../../controllers/UserActionCtrl');
 
 const US_IP_ADDRESS = '161.185.160.93';
 
@@ -152,6 +160,7 @@ describe('Student registration', () => {
   describe('Successful student registration', () => {
     beforeEach(async () => {
       await resetDb();
+      jest.clearAllMocks();
     });
 
     test('Create a student from outside the US', async () => {
@@ -196,6 +205,9 @@ describe('Student registration', () => {
 
       const expected = studentOneId;
       expect(studentTwo.referredBy.toString()).toEqual(expected.toString());
+      expect((sendStudentWelcomeEmail as jest.Mock).mock.calls.length).toBe(1);
+      expect((createContact as jest.Mock).mock.calls.length).toBe(1);
+      expect((createdAccount as jest.Mock).mock.calls.length).toBe(1);
     });
 
     test('Student registered with a student partner org', async () => {
@@ -215,6 +227,9 @@ describe('Student registration', () => {
       const result = user.studentPartnerOrg;
 
       expect(result).toEqual(expectedStudentPartnerOrg);
+      expect((sendStudentWelcomeEmail as jest.Mock).mock.calls.length).toBe(1);
+      expect((createContact as jest.Mock).mock.calls.length).toBe(1);
+      expect((createdAccount as jest.Mock).mock.calls.length).toBe(1);
     });
   });
 });
@@ -285,6 +300,7 @@ describe('Open volunteer registration', () => {
   describe('Successful open volunteer registration', () => {
     beforeEach(async () => {
       await resetDb();
+      jest.clearAllMocks();
     });
 
     test('Open volunteer creates a new account', async () => {
@@ -301,6 +317,9 @@ describe('Open volunteer registration', () => {
       expect(user.firstname).toEqual(expectedFirstName);
       expect(user.email).toEqual(expectedEmail);
       expect(user.isApproved).toBeFalsy();
+      expect((initiateVerification as jest.Mock).mock.calls.length).toBe(1);
+      expect((createContact as jest.Mock).mock.calls.length).toBe(1);
+      expect((createdAccount as jest.Mock).mock.calls.length).toBe(1);
     });
   });
 });
@@ -400,6 +419,7 @@ describe('Partner volunteer registration', () => {
   describe('Successful partner volunteer registration', () => {
     beforeEach(async () => {
       await resetDb();
+      jest.clearAllMocks();
     });
 
     test('Partner volunteer creates a new account', async () => {
@@ -420,6 +440,9 @@ describe('Partner volunteer registration', () => {
       expect(user.firstname).toEqual(expectedFirstName);
       expect(user.email).toEqual(expectedEmail);
       expect(user.isApproved).toBeFalsy();
+      expect((initiateVerification as jest.Mock).mock.calls.length).toBe(1);
+      expect((createContact as jest.Mock).mock.calls.length).toBe(1);
+      expect((createdAccount as jest.Mock).mock.calls.length).toBe(1);
     });
   });
 });
