@@ -1,12 +1,12 @@
 const School = require('../models/School')
 const ObjectId = require('mongoose').Types.ObjectId
 const crypto = require('crypto')
+const config = require('../config')
 
 // helper to escape regex special characters
 function escapeRegex(str) {
   return str.replace(/[.*|\\+?{}()[^$]/g, c => '\\' + c)
 }
-
 function createUpchieveId() {
   const hex = crypto.randomBytes(4).toString('hex')
   const parsedHex = parseInt(hex, 16)
@@ -15,41 +15,93 @@ function createUpchieveId() {
 
 module.exports = {
   // search for schools by name or ID
-  search: function(query, cb) {
-    if (query.match(/^[0-9]{8}$/)) {
-      School.findByUpchieveId(query, cb)
-    } else {
+  search: async function(query) {
+    // @note: Atlas Search is unavailable for local development. This is a
+    // fallback query to be able to search for schools in local development
+    if (config.NODE_ENV === 'dev') {
       const regex = new RegExp(escapeRegex(query), 'i')
-      // look for both manually entered and auto-downloaded schools
-      const dbQuery = School.find({
+      const results = await School.find({
         $or: [{ nameStored: regex }, { SCH_NAME: regex }]
       })
-        .sort({
-          isApproved: -1
-        })
+        .sort({ isApproved: -1 })
         .limit(40)
 
-      dbQuery.exec(function(err, results) {
-        if (err) {
-          cb(err)
-        } else {
-          cb(
-            null,
-            results
-              .sort((s1, s2) => s1.name - s2.name)
-              .map(school => {
-                return {
-                  _id: school._id,
-                  upchieveId: school.upchieveId,
-                  name: school.name,
-                  districtName: school.districtName,
-                  city: school.city,
-                  state: school.state
+      return results
+        .sort((s1, s2) => s1.name - s2.name)
+        .map(school => {
+          return {
+            _id: school._id,
+            upchieveId: school.upchieveId,
+            name: school.name,
+            districtName: school.districtName,
+            city: school.city,
+            state: school.state
+          }
+        })
+    } else {
+      return School.aggregate([
+        {
+          index: 'school_name_search',
+          compound: {
+            should: [
+              {
+                autocomplete: {
+                  query,
+                  path: 'SCH_NAME',
+                  tokenOrder: 'sequential'
                 }
-              })
-          )
+              },
+              {
+                autocomplete: {
+                  query,
+                  path: 'nameStored',
+                  tokenOrder: 'sequential'
+                }
+              }
+            ]
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            upchieveId: 1,
+            // @note: These are virtuals in models/School.ts that should be moved to properties in the school document
+            name: {
+              $cond: {
+                if: { $not: ['$nameStored'] },
+                then: '$SCH_NAME',
+                else: '$nameStored'
+              }
+            },
+            districtName: {
+              $cond: {
+                if: { $not: ['$districtNameStored'] },
+                then: '$LEA_NAME',
+                else: '$districtNameStored'
+              }
+            },
+            city: {
+              $cond: {
+                if: { $not: ['$cityNameStored'] },
+                then: '$LCITY',
+                else: '$cityNameStored'
+              }
+            },
+            state: {
+              $cond: {
+                if: { $not: ['$stateStored'] },
+                then: '$ST',
+                else: '$stateStored'
+              }
+            }
+          }
+        },
+        {
+          $sort: {
+            isApproved: -1
+          }
         }
-      })
+      ])
     }
   },
 
