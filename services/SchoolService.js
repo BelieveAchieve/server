@@ -41,24 +41,26 @@ module.exports = {
     } else {
       return School.aggregate([
         {
-          index: 'school_name_search',
-          compound: {
-            should: [
-              {
-                autocomplete: {
-                  query,
-                  path: 'SCH_NAME',
-                  tokenOrder: 'sequential'
+          $search: {
+            index: 'school_name_search',
+            compound: {
+              should: [
+                {
+                  autocomplete: {
+                    query,
+                    path: 'SCH_NAME',
+                    tokenOrder: 'sequential'
+                  }
+                },
+                {
+                  autocomplete: {
+                    query,
+                    path: 'nameStored',
+                    tokenOrder: 'sequential'
+                  }
                 }
-              },
-              {
-                autocomplete: {
-                  query,
-                  path: 'nameStored',
-                  tokenOrder: 'sequential'
-                }
-              }
-            ]
+              ]
+            }
           }
         },
         {
