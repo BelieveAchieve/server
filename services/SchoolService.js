@@ -102,6 +102,9 @@ module.exports = {
           $sort: {
             isApproved: -1
           }
+        },
+        {
+          $limit: 60
         }
       ])
     }
