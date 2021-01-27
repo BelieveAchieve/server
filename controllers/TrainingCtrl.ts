@@ -3,6 +3,7 @@ import {
   unlockedSubject,
   accountOnboarded
 } from '../controllers/UserActionCtrl';
+import { captureEvent } from '../services/AnalyticsService';
 import QuestionModel, { QuestionDocument } from '../models/Question';
 import {
   CERT_UNLOCKING,
@@ -13,7 +14,8 @@ import {
   SAT_CERTS,
   SUBJECT_TYPES,
   COLLEGE_CERTS,
-  COLLEGE_SUBJECTS
+  COLLEGE_SUBJECTS,
+  EVENTS
 } from '../constants';
 import getSubjectType from '../utils/getSubjectType';
 import { createContact } from '../services/MailService';
@@ -274,8 +276,13 @@ export async function getQuizScore(
 
     // Create a user action for every subject unlocked
     for (const subject of unlockedSubjects) {
-      if (!user.subjects.includes(subject))
+      if (!user.subjects.includes(subject)) {
         unlockedSubject(user._id, subject, ip);
+        captureEvent(user._id, EVENTS.SUBJECT_UNLOCKED, {
+          action: EVENTS.SUBJECT_UNLOCKED,
+          subject
+        });
+      }
     }
 
     userUpdates.$addToSet = { subjects: unlockedSubjects };
@@ -287,6 +294,9 @@ export async function getQuizScore(
     ) {
       userUpdates.isOnboarded = true;
       accountOnboarded(user._id, ip);
+      captureEvent(user._id, EVENTS.ACCOUNT_ONBOARDED, {
+        action: EVENTS.ACCOUNT_ONBOARDED
+      });
     }
   }
 
