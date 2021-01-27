@@ -32,6 +32,7 @@ export interface User {
   referredBy: User;
   ipAddresses: IpAddress[];
   type: string;
+  hashPassword(password: string): string;
 }
 
 export type UserDocument = User & Document;

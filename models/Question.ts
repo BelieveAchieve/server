@@ -1,32 +1,51 @@
-const mongoose = require('mongoose')
-const {
+import { Document, Model, model, Schema, Types } from 'mongoose';
+import {
   TRAINING,
   MATH_CERTS,
   SCIENCE_CERTS,
   COLLEGE_CERTS,
   COLLEGE_SUBJECTS
-} = require('../constants')
+} from '../constants';
 
-const questionSchema = new mongoose.Schema({
+export interface Question {
+  _id: Types.ObjectId;
+  questionText: string;
+  possibleAnswers: {
+    txt: string;
+    val: string;
+  }[];
+  correctAnswer: string;
+  category: string;
+  subcategory: string;
+  imageSrc: string;
+}
+
+export type QuestionDocument = Question & Document;
+
+interface QuestionStaticModel extends Model<QuestionDocument> {
+  getSubcategories(category: string): string[];
+}
+
+const questionSchema = new Schema({
   questionText: String,
   possibleAnswers: [{ txt: String, val: String }],
   correctAnswer: String,
   category: String,
   subcategory: String,
   imageSrc: String
-})
+});
 
 // Given a question record, strip out sensitive data for public consumption
-questionSchema.methods.parseQuestion = function() {
+questionSchema.methods.parseQuestion = function(): Partial<Question> {
   return {
     _id: this._id,
     questionText: this.questionText,
     possibleAnswers: this.possibleAnswers,
     imageSrc: this.image
-  }
-}
+  };
+};
 
-questionSchema.statics.getSubcategories = function(category) {
+questionSchema.statics.getSubcategories = function(category: string): string[] {
   const categoryToSubcategoryMap = {
     [MATH_CERTS.PREALGREBA]: [
       'numbers',
@@ -221,7 +240,7 @@ questionSchema.statics.getSubcategories = function(category) {
       'the atmosphere'
     ],
     [TRAINING.UPCHIEVE_101]: ['upchieve']
-  }
+  };
 
   if (typeof category !== 'string') {
     throw new TypeError(
@@ -229,15 +248,22 @@ questionSchema.statics.getSubcategories = function(category) {
         category +
         '. It must be a string, not ' +
         typeof category
-    )
+    );
   }
 
   if (categoryToSubcategoryMap.hasOwnProperty(category)) {
-    const subcategories = categoryToSubcategoryMap[category]
-    return subcategories
+    const subcategories = categoryToSubcategoryMap[category];
+    return subcategories;
   } else {
-    throw new ReferenceError(category + ' is not a subcategory.')
+    throw new ReferenceError(category + ' is not a subcategory.');
   }
-}
+};
 
-module.exports = mongoose.model('Question', questionSchema, 'question')
+const QuestionModel = model<QuestionDocument, QuestionStaticModel>(
+  'Question',
+  questionSchema,
+  'question'
+);
+
+module.exports = QuestionModel;
+export default QuestionModel;

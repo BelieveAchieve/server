@@ -1,5 +1,8 @@
 import mongoose from 'mongoose';
-import TrainingCtrl from '../../controllers/TrainingCtrl';
+import {
+  getQuizScore,
+  getUnlockedSubjects
+} from '../../controllers/TrainingCtrl';
 import { resetDb, insertVolunteer, getVolunteer } from '../db-utils';
 import { buildCertifications, buildVolunteer } from '../generate';
 import {
@@ -101,7 +104,7 @@ describe('getQuizScore', () => {
       idAnswerMap
     };
 
-    let result = await TrainingCtrl.getQuizScore(quizScoreInput);
+    let result = await getQuizScore(quizScoreInput);
     let updatedVolunteer = await getVolunteer({ _id: volunteer._id });
     let expectedResult = {
       tries: 1,
@@ -120,7 +123,7 @@ describe('getQuizScore', () => {
       idAnswerMap
     };
 
-    result = await TrainingCtrl.getQuizScore(quizScoreInput);
+    result = await getQuizScore(quizScoreInput);
     updatedVolunteer = await getVolunteer({ _id: volunteer._id });
     expectedResult = {
       tries: 1,
@@ -141,7 +144,7 @@ describe('getQuizScore', () => {
     //   idAnswerMap
     // };
 
-    // result = await TrainingCtrl.getQuizScore(quizScoreInput);
+    // result = await getQuizScore(quizScoreInput);
     // updatedVolunteer = await getVolunteer({ _id: volunteer._id });
     // expectedResult = {
     //   tries: 1,
@@ -167,7 +170,7 @@ describe('getQuizScore', () => {
       idAnswerMap
     };
 
-    let result = await TrainingCtrl.getQuizScore(quizScoreInput);
+    let result = await getQuizScore(quizScoreInput);
     let updatedVolunteer = await getVolunteer({ _id: volunteer._id });
     let expectedResult = {
       tries: 1,
@@ -187,7 +190,7 @@ describe('getQuizScore', () => {
       idAnswerMap
     };
 
-    result = await TrainingCtrl.getQuizScore(quizScoreInput);
+    result = await getQuizScore(quizScoreInput);
     updatedVolunteer = await getVolunteer({ _id: volunteer._id });
 
     expectedResult = {
@@ -207,7 +210,7 @@ describe('getQuizScore', () => {
       idAnswerMap
     };
 
-    result = await TrainingCtrl.getQuizScore(quizScoreInput);
+    result = await getQuizScore(quizScoreInput);
     updatedVolunteer = await getVolunteer({ _id: volunteer._id });
 
     expectedResult = {
@@ -234,7 +237,7 @@ describe('getQuizScore', () => {
       idAnswerMap
     };
 
-    let result = await TrainingCtrl.getQuizScore(quizScoreInput);
+    let result = await getQuizScore(quizScoreInput);
     let updatedVolunteer = await getVolunteer({ _id: volunteer._id });
     let expectedResult = {
       tries: 1,
@@ -253,7 +256,7 @@ describe('getQuizScore', () => {
       idAnswerMap
     };
 
-    result = await TrainingCtrl.getQuizScore(quizScoreInput);
+    result = await getQuizScore(quizScoreInput);
     updatedVolunteer = await getVolunteer({ _id: volunteer._id });
 
     expectedResult = {
@@ -273,7 +276,7 @@ describe('getQuizScore', () => {
       idAnswerMap
     };
 
-    result = await TrainingCtrl.getQuizScore(quizScoreInput);
+    result = await getQuizScore(quizScoreInput);
     updatedVolunteer = await getVolunteer({ _id: volunteer._id });
 
     expectedResult = {
@@ -302,7 +305,7 @@ describe('getQuizScore', () => {
       idAnswerMap
     };
 
-    await TrainingCtrl.getQuizScore(quizScoreInput);
+    await getQuizScore(quizScoreInput);
     const userActions = await UserActionModel.find({
       action: USER_ACTION.QUIZ.UNLOCKED_SUBJECT
     })
@@ -334,7 +337,7 @@ describe('getQuizScore', () => {
       idAnswerMap
     };
 
-    const result = await TrainingCtrl.getQuizScore(quizScoreInput);
+    const result = await getQuizScore(quizScoreInput);
     const updatedVolunteer = await getVolunteer({ _id: volunteer._id });
 
     const expectedResult = {
@@ -373,7 +376,7 @@ describe('getQuizScore', () => {
       category: TRAINING.TUTORING_SKILLS,
       idAnswerMap
     };
-    await TrainingCtrl.getQuizScore(quizScoreInput);
+    await getQuizScore(quizScoreInput);
     let updatedVolunteer = await getVolunteer({ _id: volunteer._id });
     expect(updatedVolunteer.subjects).toEqual(subjects);
 
@@ -382,7 +385,7 @@ describe('getQuizScore', () => {
       category: TRAINING.UPCHIEVE_101,
       idAnswerMap
     };
-    await TrainingCtrl.getQuizScore(quizScoreInput);
+    await getQuizScore(quizScoreInput);
     updatedVolunteer = await getVolunteer({ _id: volunteer._id });
     expect(updatedVolunteer.subjects).toEqual(subjects);
   });
@@ -402,7 +405,7 @@ describe('getUnlockedSubjects', () => {
       });
       const expected = [];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
 
@@ -421,7 +424,7 @@ describe('getUnlockedSubjects', () => {
         MATH_SUBJECTS.INTEGRATED_MATH_FOUR
       ];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
 
@@ -441,7 +444,7 @@ describe('getUnlockedSubjects', () => {
         MATH_SUBJECTS.INTEGRATED_MATH_FOUR
       ];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
 
@@ -460,7 +463,7 @@ describe('getUnlockedSubjects', () => {
         MATH_SUBJECTS.INTEGRATED_MATH_FOUR
       ];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
 
@@ -480,7 +483,7 @@ describe('getUnlockedSubjects', () => {
         MATH_SUBJECTS.INTEGRATED_MATH_ONE
       ];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
 
@@ -503,7 +506,7 @@ describe('getUnlockedSubjects', () => {
         MATH_SUBJECTS.INTEGRATED_MATH_TWO
       ];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
 
@@ -524,7 +527,7 @@ describe('getUnlockedSubjects', () => {
         MATH_SUBJECTS.INTEGRATED_MATH_FOUR
       ];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
 
@@ -549,7 +552,7 @@ describe('getUnlockedSubjects', () => {
         MATH_SUBJECTS.INTEGRATED_MATH_FOUR
       ];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
 
@@ -580,10 +583,7 @@ describe('getUnlockedSubjects', () => {
         const certifications = buildCertificationsWithUpchieve101({
           [TRAINING.TUTORING_SKILLS]: { passed: true, tries: 1 }
         });
-        const result = TrainingCtrl.getUnlockedSubjects(
-          certs[i],
-          certifications
-        );
+        const result = getUnlockedSubjects(certs[i], certifications);
         await expect(result).toEqual(expected[i]);
       }
     });
@@ -595,7 +595,7 @@ describe('getUnlockedSubjects', () => {
       });
       const expected = [SAT_SUBJECTS.SAT_MATH];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
 
@@ -615,7 +615,7 @@ describe('getUnlockedSubjects', () => {
         SAT_SUBJECTS.SAT_MATH
       ];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
   });
@@ -628,7 +628,7 @@ describe('getUnlockedSubjects', () => {
       });
       const expected = [];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
 
@@ -646,7 +646,7 @@ describe('getUnlockedSubjects', () => {
         MATH_SUBJECTS.INTEGRATED_MATH_FOUR
       ];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
 
@@ -666,7 +666,7 @@ describe('getUnlockedSubjects', () => {
         MATH_SUBJECTS.INTEGRATED_MATH_FOUR
       ];
 
-      const result = TrainingCtrl.getUnlockedSubjects(subject, certifications);
+      const result = getUnlockedSubjects(subject, certifications);
       expect(result).toEqual(expected);
     });
 
@@ -686,7 +686,7 @@ describe('getUnlockedSubjects', () => {
         MATH_SUBJECTS.INTEGRATED_MATH_FOUR
       ];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
 
@@ -706,7 +706,7 @@ describe('getUnlockedSubjects', () => {
         MATH_SUBJECTS.INTEGRATED_MATH_ONE
       ];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
 
@@ -729,7 +729,7 @@ describe('getUnlockedSubjects', () => {
         MATH_SUBJECTS.INTEGRATED_MATH_TWO
       ];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
 
@@ -750,7 +750,7 @@ describe('getUnlockedSubjects', () => {
         MATH_SUBJECTS.INTEGRATED_MATH_FOUR
       ];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
 
@@ -775,7 +775,7 @@ describe('getUnlockedSubjects', () => {
         MATH_SUBJECTS.INTEGRATED_MATH_FOUR
       ];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
 
@@ -807,7 +807,7 @@ describe('getUnlockedSubjects', () => {
         const certifications = buildCertificationsWithUpchieve101({
           [passedCerts[i]]: { passed: true, tries: 1 }
         });
-        const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+        const result = getUnlockedSubjects(cert, certifications);
         await expect(result).toEqual(expected[i]);
       }
     });
@@ -819,7 +819,7 @@ describe('getUnlockedSubjects', () => {
       });
       const expected = [SAT_SUBJECTS.SAT_MATH];
 
-      const result = TrainingCtrl.getUnlockedSubjects(cert, certifications);
+      const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
   });
@@ -829,7 +829,7 @@ describe('getUnlockedSubjects', () => {
       const certifications = buildCertificationsWithUpchieve101();
       const expected = [];
 
-      const result = TrainingCtrl.getUnlockedSubjects(
+      const result = getUnlockedSubjects(
         TRAINING.TUTORING_SKILLS,
         certifications
       );
@@ -840,7 +840,7 @@ describe('getUnlockedSubjects', () => {
       const certifications = buildCertificationsWithUpchieve101();
       const expected = [SUBJECTS.PLANNING, SUBJECTS.APPLICATIONS];
 
-      const result = TrainingCtrl.getUnlockedSubjects(
+      const result = getUnlockedSubjects(
         TRAINING.COLLEGE_COUNSELING,
         certifications
       );

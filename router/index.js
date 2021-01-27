@@ -13,6 +13,7 @@ module.exports = function(app) {
   require('./metrics')(app)
   require('./mobile')(app)
   require('./reference')(app)
+  require('./referral')(app)
 
   app.get('/healthz', function(req, res) {
     res.sendStatus(200)

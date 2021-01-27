@@ -190,7 +190,7 @@ const notifyVolunteer = async session => {
 
   // Prioritize volunteers who do not have high-level subjects to avoid
   // lack of volunteers when high-level subjects are requested
-  const highLevelSubjects = ['calculusAB', 'chemistry']
+  const highLevelSubjects = ['calculusAB', 'chemistry', 'statistics']
   const isHighLevelSubject = highLevelSubjects.includes(subtopic)
   const subjectsFilter = { $eq: subtopic }
   if (!isHighLevelSubject) subjectsFilter['$nin'] = highLevelSubjects

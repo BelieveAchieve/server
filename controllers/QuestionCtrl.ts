@@ -1,25 +1,35 @@
-const Question = require('../models/Question')
+import { FilterQuery } from 'mongoose';
+import QuestionModel, { Question, QuestionDocument } from '../models/Question';
 
-const list = async (filters, cb) => {
-  return Question.find(filters)
+export async function list(
+  filters: FilterQuery<QuestionDocument>[]
+): Promise<QuestionDocument[]> {
+  return QuestionModel.find(filters);
 }
 
-const create = async attrs => {
-  return Question.create(attrs)
+export async function create(question: Question): Promise<Question> {
+  return QuestionModel.create(question);
 }
 
-const update = async options => {
-  const { id, question } = options
+export interface QuestionUpdateOptions {
+  id: string;
+  question: Partial<Question>;
+}
 
-  return Question.findOneAndUpdate(
+export async function update(
+  options: QuestionUpdateOptions
+): Promise<QuestionDocument> {
+  const { id, question } = options;
+
+  return QuestionModel.findOneAndUpdate(
     { _id: id },
     { $set: question },
     { new: true, upsert: true }
-  )
+  );
 }
 
-const destroy = async questionId => {
-  return Question.findByIdAndDelete(questionId)
+export async function destroy(questionId: string): Promise<QuestionDocument> {
+  return QuestionModel.findByIdAndDelete(questionId);
 }
 
 // Return an array of tuples, with each tuple containing a category and array of
@@ -32,8 +42,9 @@ const destroy = async questionId => {
 //         ['applications', ['LOR', 'basic']]
 //      ]
 //
-const categories = async () => {
-  const categories = await Question.aggregate([
+
+export async function categories(): Promise<any[]> {
+  const categories = await QuestionModel.aggregate([
     {
       $match: {}
     },
@@ -77,20 +88,12 @@ const categories = async () => {
         subcategories: 1
       }
     }
-  ])
+  ]);
   // TODO: we are making this complex so we can reduce it on the other end,
   // refactor this to just be able to return categories
-  const tuples = []
+  const tuples = [];
   for (const category of categories) {
-    tuples.push([category.category, category.subcategories])
+    tuples.push([category.category, category.subcategories]);
   }
-  return tuples
-}
-
-module.exports = {
-  list,
-  create,
-  update,
-  destroy,
-  categories
+  return tuples;
 }
