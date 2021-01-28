@@ -488,27 +488,21 @@ module.exports = function(app) {
       })
     })
 
-  router.post('/reset/send', function(req, res, next) {
+  router.post('/reset/send', async function(req, res, next) {
     const email = req.body.email
     if (!email) {
       return res.status(422).json({
         err: 'Must supply an email for password reset'
       })
     }
-    ResetPasswordCtrl.initiateReset(
-      {
-        email: email
-      },
-      function(err, data) {
-        if (err) {
-          next(err)
-        } else {
-          res.json({
-            msg: 'Password reset email sent'
-          })
-        }
-      }
-    )
+    try {
+      await ResetPasswordCtrl.initiateReset(email)
+      res.json({
+        msg: 'Password reset email sent'
+      })
+    } catch (error) {
+      next(error)
+    }
   })
 
   router.post('/reset/confirm', async function(req, res) {

@@ -6,6 +6,12 @@
       "resolveJsonModule": true,
       "allowJs": true,
       "skipLibCheck": true,
+      "target":"es2019",
+      "moduleResolution": "node",
+      "module": "commonjs",
+      "lib":[
+        "es2019", "dom"
+      ]
   },
   "exclude": [
     "dbutils/",

@@ -2,12 +2,11 @@ const ModerationCtrl = require('../../controllers/ModerationCtrl')
 
 module.exports = router => {
   router.route('/moderate/message').post((req, res, next) => {
-    ModerationCtrl.moderateMessage(req.body, (err, isClean) => {
-      if (err) {
-        next(err)
-      } else {
-        res.json({ isClean })
-      }
-    })
+    try {
+      const isClean = ModerationCtrl.moderateMessage(req.body)
+      res.json({ isClean })
+    } catch (error) {
+      next(error)
+    }
   })
 }
