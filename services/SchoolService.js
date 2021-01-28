@@ -24,7 +24,7 @@ module.exports = {
         $or: [{ nameStored: regex }, { SCH_NAME: regex }]
       })
         .sort({ isApproved: -1 })
-        .limit(40)
+        .limit(100)
 
       return results
         .sort((s1, s2) => s1.name - s2.name)
@@ -99,12 +99,7 @@ module.exports = {
           }
         },
         {
-          $sort: {
-            isApproved: -1
-          }
-        },
-        {
-          $limit: 60
+          $limit: 100
         }
       ])
     }
