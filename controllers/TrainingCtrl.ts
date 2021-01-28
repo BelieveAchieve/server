@@ -279,7 +279,7 @@ export async function getQuizScore(
       if (!user.subjects.includes(subject)) {
         unlockedSubject(user._id, subject, ip);
         captureEvent(user._id, EVENTS.SUBJECT_UNLOCKED, {
-          action: EVENTS.SUBJECT_UNLOCKED,
+          event: EVENTS.SUBJECT_UNLOCKED,
           subject
         });
       }
@@ -295,7 +295,7 @@ export async function getQuizScore(
       userUpdates.isOnboarded = true;
       accountOnboarded(user._id, ip);
       captureEvent(user._id, EVENTS.ACCOUNT_ONBOARDED, {
-        action: EVENTS.ACCOUNT_ONBOARDED
+        event: EVENTS.ACCOUNT_ONBOARDED
       });
     }
   }

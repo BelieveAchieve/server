@@ -140,7 +140,7 @@ module.exports = {
   deleteReference: async ({ userId, referenceEmail, ip }) => {
     UserActionCtrl.deletedReference(userId, ip, { referenceEmail })
     AnalyticsService.captureEvent(userId, EVENTS.REFERENCE_DELETED, {
-      action: EVENTS.REFERENCE_DELETED,
+      event: EVENTS.REFERENCE_DELETED,
       referenceEmail
     })
     return Volunteer.updateOne(
@@ -263,7 +263,7 @@ module.exports = {
     ) {
       UserActionCtrl.rejectedPhotoId(volunteerId)
       AnalyticsService.captureEvent(volunteerId, EVENTS.PHOTO_ID_REJECTED, {
-        action: EVENTS.PHOTO_ID_REJECTED
+        event: EVENTS.PHOTO_ID_REJECTED
       })
       MailService.sendRejectedPhotoSubmission(volunteerBeforeUpdate)
     }
@@ -272,7 +272,7 @@ module.exports = {
     if (isNewlyApproved) {
       UserActionCtrl.accountApproved(volunteerId)
       AnalyticsService.captureEvent(volunteerId, EVENTS.ACCOUNT_APPROVED, {
-        action: EVENTS.ACCOUNT_APPROVED
+        event: EVENTS.ACCOUNT_APPROVED
       })
     }
     if (isNewlyApproved && !volunteerBeforeUpdate.isOnboarded)
@@ -288,7 +288,7 @@ module.exports = {
           referenceEmail: reference.email
         })
         AnalyticsService.captureEvent(volunteerId, EVENTS.REFERENCE_REJECTED, {
-          action: EVENTS.REFERENCE_REJECTED,
+          event: EVENTS.REFERENCE_REJECTED,
           referenceEmail: reference.email
         })
         MailService.sendRejectedReference({

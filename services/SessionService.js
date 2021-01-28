@@ -411,7 +411,7 @@ module.exports = {
         USER_BAN_REASON.SESSION_REPORTED
       )
       AnalyticsService.captureEvent(session.student, EVENTS.ACCOUNT_BANNED, {
-        action: EVENTS.ACCOUNT_BANNED,
+        event: EVENTS.ACCOUNT_BANNED,
         sessionId: session._id.toString(),
         banReason: USER_BAN_REASON.SESSION_REPORTED
       })

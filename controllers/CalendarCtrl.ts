@@ -57,7 +57,7 @@ export async function updateSchedule(
     volunteerUpdates.isOnboarded = true;
     UserActionCtrl.accountOnboarded(user._id, ip);
     captureEvent(user._id, EVENTS.ACCOUNT_ONBOARDED, {
-      action: EVENTS.ACCOUNT_ONBOARDED
+      event: EVENTS.ACCOUNT_ONBOARDED
     });
   }
 

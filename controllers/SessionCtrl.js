@@ -100,7 +100,7 @@ module.exports = {
       ).catch(error => Sentry.captureException(error))
 
       AnalyticsService.captureEvent(user._id, EVENTS.SESSION_JOINED, {
-        action: EVENTS.SESSION_JOINED,
+        event: EVENTS.SESSION_JOINED,
         sessionId: session._id.toString(),
         joinedFrom
       })
@@ -128,7 +128,7 @@ module.exports = {
         ipAddress
       ).catch(error => Sentry.captureException(error))
       AnalyticsService.captureEvent(user._id, EVENTS.SESSION_REJOINED, {
-        action: EVENTS.SESSION_REJOINED,
+        event: EVENTS.SESSION_REJOINED,
         sessionId: session._id.toString()
       })
     }
