@@ -51,7 +51,7 @@ module.exports = {
 
   // Given a sessionId and userId, join the user to the session and send necessary
   // socket events and notifications
-  join: async function(socket, { session, user }) {
+  join: async function(socket, { session, user, joinedFrom = '' }) {
     const userAgent = socket.request.headers['user-agent']
     const ipAddress = socket.handshake.address
 
@@ -101,7 +101,8 @@ module.exports = {
 
       AnalyticsService.captureEvent(user._id, EVENTS.SESSION_JOINED, {
         action: EVENTS.SESSION_JOINED,
-        sessionId: session._id.toString()
+        sessionId: session._id.toString(),
+        joinedFrom
       })
 
       const pushTokens = await PushToken.find({ user: session.student })

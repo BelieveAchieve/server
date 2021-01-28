@@ -16,6 +16,7 @@ export const captureEvent = (
     subject?: string;
     referenceEmail?: string;
     banReason?: string;
+    joinedFrom?: string;
   }
 ): void => {
   let distinctId = '';
