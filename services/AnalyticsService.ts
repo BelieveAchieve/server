@@ -11,7 +11,7 @@ export const captureEvent = (
   eventName: string,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   properties: {
-    event?: string;
+    event: string;
     sessionId?: string;
     subject?: string;
     referenceEmail?: string;
