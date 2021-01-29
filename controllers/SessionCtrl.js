@@ -4,7 +4,9 @@ const TwilioService = require('../services/twilio')
 const SessionService = require('../services/SessionService')
 const Sentry = require('@sentry/node')
 const PushTokenService = require('../services/PushTokenService')
+const AnalyticsService = require('../services/AnalyticsService')
 const PushToken = require('../models/PushToken')
+const { EVENTS } = require('../constants')
 
 module.exports = {
   create: async function(options) {
@@ -49,7 +51,7 @@ module.exports = {
 
   // Given a sessionId and userId, join the user to the session and send necessary
   // socket events and notifications
-  join: async function(socket, { session, user }) {
+  join: async function(socket, { session, user, joinedFrom = '' }) {
     const userAgent = socket.request.headers['user-agent']
     const ipAddress = socket.handshake.address
 
@@ -97,6 +99,12 @@ module.exports = {
         ipAddress
       ).catch(error => Sentry.captureException(error))
 
+      AnalyticsService.captureEvent(user._id, EVENTS.SESSION_JOINED, {
+        event: EVENTS.SESSION_JOINED,
+        sessionId: session._id.toString(),
+        joinedFrom
+      })
+
       const pushTokens = await PushToken.find({ user: session.student })
         .lean()
         .exec()
@@ -119,6 +127,10 @@ module.exports = {
         userAgent,
         ipAddress
       ).catch(error => Sentry.captureException(error))
+      AnalyticsService.captureEvent(user._id, EVENTS.SESSION_REJOINED, {
+        event: EVENTS.SESSION_REJOINED,
+        sessionId: session._id.toString()
+      })
     }
   },
 

@@ -2,6 +2,8 @@ import _ from 'lodash';
 import VolunteerModel, { Volunteer } from '../models/Volunteer';
 import { Availability } from '../models/Availability/types';
 import { updateAvailabilitySnapshot } from '../services/AvailabilityService';
+import { captureEvent } from '../services/AnalyticsService';
+import { EVENTS } from '../constants';
 import * as UserActionCtrl from './UserActionCtrl';
 
 export interface UpdateScheduleOptions {
@@ -54,6 +56,9 @@ export async function updateSchedule(
   if (!user.isOnboarded && user.subjects.length > 0) {
     volunteerUpdates.isOnboarded = true;
     UserActionCtrl.accountOnboarded(user._id, ip);
+    captureEvent(user._id, EVENTS.ACCOUNT_ONBOARDED, {
+      event: EVENTS.ACCOUNT_ONBOARDED
+    });
   }
 
   const availabilityUpdates = {

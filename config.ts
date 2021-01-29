@@ -167,7 +167,8 @@ const config: Static<typeof Config> = {
   unleashName: process.env.SUBWAY_UNLEASH_NAME || 'dev',
   unleashUrl:
     process.env.SUBWAY_UNLEASH_URL ||
-    'https://gitlab.com/api/v4/feature_flags/unleash/23285197'
+    'https://gitlab.com/api/v4/feature_flags/unleash/23285197',
+  posthogToken: process.env.SUBWAY_POSTHOG_TOKEN || 'bogus'
 };
 
 module.exports = config;

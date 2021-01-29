@@ -87,5 +87,6 @@ export const Config = Record({
   }),
   unleashId: String,
   unleashName: String,
-  unleashUrl: String
+  unleashUrl: String,
+  posthogToken: String
 });

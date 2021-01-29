@@ -77,6 +77,7 @@
     "passport-local": "^1.0.0",
     "passport.socketio": "^3.7.0",
     "pino": "^6.11.0",
+    "posthog-node": "^1.0.6",
     "prettier": "1.19.1",
     "prettier-config-standard": "^1.0.1",
     "q": "^1.4.1",

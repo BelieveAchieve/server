@@ -15,8 +15,10 @@ const {
   REFERENCE_STATUS,
   STATUS,
   USER_BAN_REASON,
-  USER_ACTION
+  USER_ACTION,
+  EVENTS
 } = require('../constants')
+const AnalyticsService = require('./AnalyticsService')
 const ObjectId = require('mongodb').ObjectId
 
 const getVolunteer = async volunteerId => {
@@ -137,6 +139,10 @@ module.exports = {
 
   deleteReference: async ({ userId, referenceEmail, ip }) => {
     UserActionCtrl.deletedReference(userId, ip, { referenceEmail })
+    AnalyticsService.captureEvent(userId, EVENTS.REFERENCE_DELETED, {
+      event: EVENTS.REFERENCE_DELETED,
+      referenceEmail
+    })
     return Volunteer.updateOne(
       { _id: userId },
       { $pull: { references: { email: referenceEmail } } }
@@ -256,11 +262,19 @@ module.exports = {
       volunteerBeforeUpdate.photoIdStatus !== PHOTO_ID_STATUS.REJECTED
     ) {
       UserActionCtrl.rejectedPhotoId(volunteerId)
+      AnalyticsService.captureEvent(volunteerId, EVENTS.PHOTO_ID_REJECTED, {
+        event: EVENTS.PHOTO_ID_REJECTED
+      })
       MailService.sendRejectedPhotoSubmission(volunteerBeforeUpdate)
     }
 
     const isNewlyApproved = isApproved && !volunteerBeforeUpdate.isApproved
-    if (isNewlyApproved) UserActionCtrl.accountApproved(volunteerId)
+    if (isNewlyApproved) {
+      UserActionCtrl.accountApproved(volunteerId)
+      AnalyticsService.captureEvent(volunteerId, EVENTS.ACCOUNT_APPROVED, {
+        event: EVENTS.ACCOUNT_APPROVED
+      })
+    }
     if (isNewlyApproved && !volunteerBeforeUpdate.isOnboarded)
       MailService.sendApprovedNotOnboardedEmail(volunteerBeforeUpdate)
 
@@ -271,6 +285,10 @@ module.exports = {
         reference.status !== REFERENCE_STATUS.REJECTED
       ) {
         UserActionCtrl.rejectedReference(volunteerId, {
+          referenceEmail: reference.email
+        })
+        AnalyticsService.captureEvent(volunteerId, EVENTS.REFERENCE_REJECTED, {
+          event: EVENTS.REFERENCE_REJECTED,
           referenceEmail: reference.email
         })
         MailService.sendRejectedReference({

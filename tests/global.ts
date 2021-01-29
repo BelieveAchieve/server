@@ -6,6 +6,9 @@ jest.mock('redis', () => {
   };
 });
 
+jest.mock('posthog-node');
+jest.mock('../services/AnalyticsService');
+
 jest.mock('../config', () => {
   return {
     sessionSecret: 'secret',

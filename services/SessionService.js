@@ -1,11 +1,16 @@
 const Session = require('../models/Session')
 const User = require('../models/User')
-const WhiteboardService = require('../services/WhiteboardService')
+const WhiteboardService = require('./WhiteboardService')
 const crypto = require('crypto')
-const QuillDocService = require('../services/QuillDocService')
+const QuillDocService = require('./QuillDocService')
+const AnalyticsService = require('./AnalyticsService')
 const UserService = require('./UserService')
 const MailService = require('./MailService')
-const { USER_BAN_REASON, SESSION_REPORT_REASON } = require('../constants')
+const {
+  USER_BAN_REASON,
+  SESSION_REPORT_REASON,
+  EVENTS
+} = require('../constants')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
 const ObjectId = require('mongodb').ObjectId
 const { USER_ACTION } = require('../constants')
@@ -405,6 +410,11 @@ module.exports = {
         session._id,
         USER_BAN_REASON.SESSION_REPORTED
       )
+      AnalyticsService.captureEvent(session.student, EVENTS.ACCOUNT_BANNED, {
+        event: EVENTS.ACCOUNT_BANNED,
+        sessionId: session._id.toString(),
+        banReason: USER_BAN_REASON.SESSION_REPORTED
+      })
       const student = await UserService.getUser({ _id: session.student })
       // Update user in the SendGrid contact list with banned status
       MailService.createContact(student)
