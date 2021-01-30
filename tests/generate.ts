@@ -11,6 +11,7 @@ import {
   MATH_CERTS,
   SCIENCE_CERTS,
   COLLEGE_CERTS,
+  COLLEGE_SUBJECTS,
   SAT_CERTS
 } from '../constants';
 import { Message } from '../models/Message';
@@ -18,21 +19,22 @@ import { Notification } from '../models/Notification';
 import { AvailabilitySnapshot } from '../models/Availability/Snapshot';
 import { AvailabilityHistory } from '../models/Availability/History';
 import { UserAction } from '../models/UserAction';
-import { AvailabilityDay } from '../models/Availability/types';
 import {
-  User,
-  Volunteer,
-  Student,
-  StudentRegistrationForm,
-  VolunteerRegistrationForm,
-  Reference,
+  AvailabilityDay,
   Availability,
   DAYS,
-  HOURS,
-  Certifications,
+  HOURS
+} from '../models/Availability/types';
+import {
+  Volunteer,
+  Reference,
   TrainingCourses,
-  Session
-} from './types';
+  Certifications
+} from '../models/Volunteer';
+import { User } from '../models/User';
+import { Student } from '../models/Student';
+import { Session } from '../models/Session';
+import { StudentRegistrationForm, VolunteerRegistrationForm } from './types';
 export const getEmail = faker.internet.email;
 export const getFirstName = faker.name.firstName;
 export const getLastName = faker.name.lastName;
@@ -67,6 +69,8 @@ export const buildCertifications = (overrides = {}): Certifications => {
     [COLLEGE_CERTS.ESSAYS]: { passed: false, tries: 0 },
     [COLLEGE_CERTS.FINANCIAL_AID]: { passed: false, tries: 0 },
     [COLLEGE_CERTS.SPORTS_RECRUITMENT_PLANNING]: { passed: false, tries: 0 },
+    [COLLEGE_SUBJECTS.PLANNING]: { passed: false, tries: 0 },
+    [COLLEGE_SUBJECTS.APPLICATIONS]: { passed: false, tries: 0 },
     [SAT_CERTS.SAT_MATH]: { passed: false, tries: 0 },
     [SAT_CERTS.SAT_READING]: { passed: false, tries: 0 },
     [TRAINING.UPCHIEVE_101]: { passed: false, tries: 0 },
@@ -157,7 +161,7 @@ export const buildAvailabilityHistory = (
   };
 };
 
-export const buildStudent = (overrides = {}): Student => {
+export const buildStudent = (overrides = {}): Partial<Student> => {
   const firstName = getFirstName();
   const lastName = getLastName();
   const _id = Types.ObjectId();
@@ -182,7 +186,7 @@ export const buildStudent = (overrides = {}): Student => {
   return student;
 };
 
-export const buildVolunteer = (overrides = {}): Volunteer => {
+export const buildVolunteer = (overrides = {}): Partial<Volunteer> => {
   const firstName = getFirstName();
   const lastName = getLastName();
   const _id = Types.ObjectId();
@@ -365,9 +369,17 @@ export const buildPastSessions = (): Types.ObjectId[] => {
 
 export const buildNotification = (overrides = {}): Partial<Notification> => {
   const _id = Types.ObjectId();
+
   const notification = {
     _id,
     sentAt: new Date(),
+    // @todo:  use NotificationMethod from models/Notification
+    method: 'SMS',
+    volunteer: null,
+    // @todo:  use NotificationType from models/Notification
+    type: 'REGULAR',
+    wasSuccessful: true,
+    messageId: 'message123',
     ...overrides
   };
 

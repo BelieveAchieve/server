@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
 import UserModel from '../models/User';
 import VolunteerModel, { Volunteer } from '../models/Volunteer';
-import StudentModel from '../models/Student';
+import StudentModel, { Student } from '../models/Student';
 import UserActionModel, { UserAction } from '../models/UserAction';
-import SessionModel from '../models/Session';
+import SessionModel, { Session } from '../models/Session';
 import NotificationModel from '../models/Notification';
 import config from '../config';
 import AvailabilitySnapshotModel, {
@@ -12,7 +12,6 @@ import AvailabilitySnapshotModel, {
 import AvailabilityHistoryModel, {
   AvailabilityHistory
 } from '../models/Availability/History';
-import { Student, Session } from './types';
 import {
   buildNotification,
   buildSession,
@@ -53,6 +52,13 @@ export const insertVolunteer = async (
   });
   // Return volunteer with non-hashed password
   return { ...createdVolunteer.toObject(), password: volunteer.password };
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const insertVolunteerMany = async (volunteers): Promise<any> => {
+  // @note: Reasons for using collection.insertMany is because Mongoose casts each document in insertMany()
+  // this bypasses the overhead and speeds up the test
+  return VolunteerModel.collection.insertMany(volunteers);
 };
 
 export const insertStudent = async (
@@ -111,7 +117,7 @@ export const insertNotification = async (
   overrides = {}
 ): Promise<{
   notification: Notification;
-  volunteer: Volunteer;
+  volunteer: Partial<Volunteer>;
 }> => {
   const notification = buildNotification({
     volunteer: volunteer._id,
@@ -120,6 +126,14 @@ export const insertNotification = async (
   const createdNotification = await NotificationModel.create(notification);
   // Return the notification and the volunteer
   return { notification: createdNotification.toObject(), volunteer };
+};
+
+export const insertNotificationMany = async (
+  notifications
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any> => {
+  return NotificationModel.collection.insertMany(notifications);
 };
 
 export const getStudent = (
