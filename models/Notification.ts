@@ -5,21 +5,22 @@
  */
 import { values } from 'lodash';
 import { Document, model, Schema, Types } from 'mongoose';
-import { User } from './User';
+import { Volunteer } from './Volunteer';
 
-enum NotificationType {
+export enum NotificationType {
   REGULAR = 'REGULAR',
   FAILSAFE = 'FAILSAFE'
 }
 
-enum NotificationMethod {
+export enum NotificationMethod {
   SMS = 'SMS',
   VOICE = 'VOICE',
   EMAIL = 'EMAIL'
 }
 
 export interface Notification {
-  volunteer: Types.ObjectId | User;
+  _id: Types.ObjectId;
+  volunteer: Types.ObjectId | Volunteer;
   sentAt: Date;
   type: NotificationType;
   method: NotificationMethod;
