@@ -1,14 +1,19 @@
 import mongoose from 'mongoose';
+import { TOTAL_VOLUNTEERS_TO_TEXT_FOR_HELP } from '../../constants';
 import {
   resetDb,
   insertSessionWithVolunteer,
-  insertSession
+  insertSession,
+  insertNotificationMany,
+  insertVolunteerMany
 } from '../db-utils';
 import notifyTutors from '../../worker/jobs/notifyTutors';
 import config from '../../config';
 import TwilioService from '../../services/twilio';
-import { buildVolunteer } from '../generate';
+import { buildVolunteer, buildNotification } from '../generate';
 import { log } from '../../worker/logger';
+import { Volunteer } from '../../models/Volunteer';
+import { Notification } from '../../models/Notification';
 jest.mock('../../services/twilio');
 jest.mock('../../worker/logger');
 
@@ -26,6 +31,29 @@ afterAll(async () => {
 beforeEach(async () => {
   await resetDb();
 });
+
+const fillNotifications = async (
+  amount = TOTAL_VOLUNTEERS_TO_TEXT_FOR_HELP
+): Promise<{
+  notifications: Partial<Notification>[];
+  volunteers: Partial<Volunteer>[];
+}> => {
+  const volunteers = [];
+  const notifications = [];
+  for (let i = 0; i < amount; i++) {
+    const volunteer = buildVolunteer();
+    volunteers.push(volunteer);
+    const notification = buildNotification({ volunteer: volunteer._id });
+    notifications.push(notification);
+  }
+
+  await Promise.all([
+    insertVolunteerMany(volunteers),
+    insertNotificationMany(notifications)
+  ]);
+
+  return { notifications, volunteers };
+};
 
 describe('Notify tutors', () => {
   beforeEach(async () => {
@@ -106,5 +134,34 @@ describe('Notify tutors', () => {
     expect(job.queue.add).toHaveBeenCalledTimes(1);
     expect(job.data.notificationSchedule.length).toBe(1);
     expect(log).toHaveBeenCalledWith(`Volunteer notified: ${volunteer._id}`);
+  });
+
+  test('Should notify a volunteer who has already been texted with a follow-up text once total volunteers to text has been passed', async () => {
+    const { notifications, volunteers } = await fillNotifications(26);
+    const { session } = await insertSession({ notifications });
+
+    const notificationIndexPos = 26;
+    const expectedVolunteerIndex =
+      notificationIndexPos % TOTAL_VOLUNTEERS_TO_TEXT_FOR_HELP;
+
+    // @todo: figure out how to properly type
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const job: any = {
+      data: {
+        sessionId: session._id,
+        notificationSchedule: [1000, 1000, 1000, 1000]
+      },
+      queue: {
+        add: jest.fn()
+      }
+    };
+
+    await notifyTutors(job);
+    const expectedVolunteer = volunteers[expectedVolunteerIndex];
+
+    expect(TwilioService.sendFollowupText).toHaveBeenCalledTimes(1);
+    expect(log).toHaveBeenCalledWith(
+      `Sent follow-up notification to: ${expectedVolunteer._id}`
+    );
   });
 });
