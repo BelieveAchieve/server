@@ -304,13 +304,7 @@ export const COMPUTED_CERTS = {
     MATH_CERTS.PRECALCULUS,
     MATH_CERTS.STATISTICS
   ],
-  [SUBJECTS.INTEGRATED_MATH_FOUR]: [MATH_CERTS.PRECALCULUS],
-  // Calculus AB, Calculus BC, or Precalculus can also unlock SAT Math
-  [SUBJECTS.SAT_MATH]: [
-    SUBJECTS.ALGEBRA_ONE,
-    MATH_CERTS.TRIGONOMETRY,
-    MATH_CERTS.GEOMETRY
-  ]
+  [SUBJECTS.INTEGRATED_MATH_FOUR]: [MATH_CERTS.PRECALCULUS]
   // @note: temporarily hide these computed certs for when the college counseling course is added
   // [SUBJECTS.PLANNING]: [TRAINING.COLLEGE_COUNSELING],
   // [SUBJECTS.APPLICATIONS]: [TRAINING.COLLEGE_COUNSELING]
@@ -342,6 +336,16 @@ export const ALGEBRA_MAPPING = {
 export const FORMAT_ALGEBRA = {
   [MATH_SUBJECTS.ALGEBRA_ONE]: 'Algebra 1',
   [MATH_SUBJECTS.ALGEBRA_TWO]: 'Algebra 2'
+};
+
+export const SAT_MAPPING = {
+  satmath: SAT_SUBJECTS.SAT_MATH,
+  satreading: SAT_SUBJECTS.SAT_READING
+};
+
+export const FORMAT_SAT = {
+  [SAT_SUBJECTS.SAT_MATH]: 'SAT Math',
+  [SAT_SUBJECTS.SAT_READING]: 'SAT Reading'
 };
 
 export enum SURVEY_TYPES {
