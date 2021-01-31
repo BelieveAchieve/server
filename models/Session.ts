@@ -8,7 +8,7 @@ import { User } from './User';
 import { Student } from './Student';
 import { Volunteer } from './Volunteer';
 
-const validTypes = ['Math', 'College', 'Science'];
+const validTypes = ['Math', 'College', 'Science', 'SAT'];
 
 export interface Session {
   _id: Types.ObjectId;
