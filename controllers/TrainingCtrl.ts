@@ -44,7 +44,9 @@ const numQuestions = {
   [SCIENCE_CERTS.PHYSICS_ONE]: 1,
   [SCIENCE_CERTS.PHYSICS_TWO]: 1,
   [SCIENCE_CERTS.ENVIRONMENTAL_SCIENCE]: 1,
-  [TRAINING.UPCHIEVE_101]: 27
+  [TRAINING.UPCHIEVE_101]: 27,
+  [SAT_CERTS.SAT_MATH]: 1,
+  [SAT_CERTS.SAT_READING]: 1
 };
 const SUBJECT_THRESHOLD = 0.8;
 const TRAINING_THRESHOLD = 1.0;
@@ -157,7 +159,8 @@ export function getUnlockedSubjects(
     [cert]: { passed: true },
     // @note: temporarily bypass training requirements until these training courses are added
     [TRAINING.TUTORING_SKILLS]: { passed: true },
-    [TRAINING.COLLEGE_COUNSELING]: { passed: true }
+    [TRAINING.COLLEGE_COUNSELING]: { passed: true },
+    [TRAINING.SAT_STRATEGIES]: { passed: true }
   });
 
   // UPchieve 101 must be completed before a volunteer can be onboarded
@@ -201,14 +204,6 @@ export function getUnlockedSubjects(
     for (let i = 0; i < prerequisiteCerts.length; i++) {
       const prereqCert = prerequisiteCerts[i];
 
-      // SAT Math can be unlocked from taking Geometry, Trigonometry, and Algebra or
-      // from Calculus AB, Calculus BC, and Precalculus - none of which unlock Geometry
-      if (
-        cert === SAT_CERTS.SAT_MATH &&
-        currentSubjects.has(MATH_CERTS.PRECALCULUS)
-      )
-        break;
-
       if (!currentSubjects.has(prereqCert)) {
         meetsRequirements = false;
         break;
@@ -218,18 +213,12 @@ export function getUnlockedSubjects(
     if (meetsRequirements) currentSubjects.add(cert);
   }
 
-  // SAT Math is a special case, it can be unlocked by multiple math certs, but must have SAT Strategies completed
-  if (
-    currentSubjects.has(SAT_CERTS.SAT_MATH) &&
-    !userCertifications[TRAINING.SAT_STRATEGIES].passed
-  )
-    currentSubjects.delete(SAT_CERTS.SAT_MATH);
-
   return Array.from(currentSubjects);
 }
 
 export interface GetQuizScoreOptions {
   user: Volunteer;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   idAnswerMap: any;
   category: TRAINING;
   ip: string;
@@ -239,6 +228,7 @@ export interface GetQuizScoreOutput {
   tries: number;
   passed: boolean;
   score: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   idCorrectAnswerMap: any;
 }
 

@@ -598,26 +598,6 @@ describe('getUnlockedSubjects', () => {
       const result = getUnlockedSubjects(cert, certifications);
       expect(result).toEqual(expected);
     });
-
-    test('Completing a cert that should unlock SAT Math when certified in SAT Strategies and Tutoring Skills', async () => {
-      const cert = MATH_CERTS.PRECALCULUS;
-      const certifications = buildCertificationsWithUpchieve101({
-        [TRAINING.TUTORING_SKILLS]: { passed: true, tries: 1 },
-        [TRAINING.SAT_STRATEGIES]: { passed: true, tries: 1 }
-      });
-      const expected = [
-        MATH_SUBJECTS.PRECALCULUS,
-        MATH_SUBJECTS.TRIGONOMETRY,
-        MATH_SUBJECTS.ALGEBRA_ONE,
-        MATH_SUBJECTS.ALGEBRA_TWO,
-        MATH_SUBJECTS.PREALGREBA,
-        MATH_SUBJECTS.INTEGRATED_MATH_FOUR,
-        SAT_SUBJECTS.SAT_MATH
-      ];
-
-      const result = getUnlockedSubjects(cert, certifications);
-      expect(result).toEqual(expected);
-    });
   });
 
   describe('Completes required training and already has a prior certification', () => {
