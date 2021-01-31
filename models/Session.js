@@ -5,7 +5,7 @@ const moment = require('moment-timezone')
 const { SESSION_FLAGS } = require('../constants')
 const { values } = require('lodash')
 
-const validTypes = ['Math', 'College', 'Science']
+const validTypes = ['Math', 'College', 'Science', 'SAT']
 
 const sessionSchema = new mongoose.Schema({
   student: {

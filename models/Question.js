@@ -4,7 +4,8 @@ const {
   MATH_CERTS,
   SCIENCE_CERTS,
   COLLEGE_CERTS,
-  COLLEGE_SUBJECTS
+  COLLEGE_SUBJECTS,
+  SAT_CERTS
 } = require('../constants')
 
 const questionSchema = new mongoose.Schema({
@@ -220,7 +221,50 @@ questionSchema.statics.getSubcategories = function(category) {
       'populations',
       'the atmosphere'
     ],
-    [TRAINING.UPCHIEVE_101]: ['upchieve']
+    [TRAINING.UPCHIEVE_101]: ['upchieve'],
+    [SAT_CERTS.SAT_MATH]: [
+      'linear_equations',
+      'linear_inequalities',
+      'linear_functions',
+      'quadratic_problems',
+      'nonlinear_equations',
+      'rational_expressions',
+      'isolating_quantities',
+      'polynomials',
+      'linear_systems',
+      'functions',
+      'ratios_rates',
+      'units',
+      'percentages',
+      'linear_and_exponential',
+      'data_inferences',
+      'volume_word_problems',
+      'angles',
+      'complex_numbers',
+      'circle_equations',
+      'table_data',
+      'scatterplots',
+      'graphs',
+      'shape_of_distributions',
+      'right_triangle_problems',
+      'congruence_and_similarity'
+    ],
+    [SAT_CERTS.SAT_READING]: [
+      'explict_v_implicit',
+      'point_of_view',
+      'analyzing_relationships',
+      'citing_evidence',
+      'summarizing',
+      'analogical_reasoning',
+      'structure_passage',
+      'word_choice',
+      'graphs_and_data',
+      'purpose_of_text',
+      'analyzing_arguments',
+      'connecting_texts',
+      'history_passages',
+      'strategies'
+    ]
   }
 
   if (typeof category !== 'string') {
