@@ -179,7 +179,7 @@ const sendFollowupText = async ({ session, volunteerId, volunteerPhone }) => {
   const messageText = `Head's up: this student is still waiting for help!`
   const sendPromise = sendTextMessage(volunteerPhone, messageText)
   const notification = new Notification({
-    volunteerId,
+    volunteer: volunteerId,
     type: 'REGULAR',
     method: 'SMS'
   })
