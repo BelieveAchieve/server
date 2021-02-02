@@ -114,7 +114,7 @@ const config: Static<typeof Config> = {
   sendingNumber: process.env.SUBWAY_TWILIO_SENDING_NUMBER || '',
 
   notificationSchedule: [
-    // Minute 1 (after session request is made)
+    // Minute 1 (the time after a session request is made)
     1 * 60 * 1000,
     5 * 1000,
     5 * 1000,
