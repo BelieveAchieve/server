@@ -181,7 +181,8 @@ const sendFollowupText = async ({ session, volunteerId, volunteerPhone }) => {
   const notification = new Notification({
     volunteer: volunteerId,
     type: 'REGULAR',
-    method: 'SMS'
+    method: 'SMS',
+    priorityGroup: 'follow-up'
   })
 
   await recordNotification(sendPromise, notification)
