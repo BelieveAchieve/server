@@ -385,10 +385,10 @@ module.exports = {
 
     if (student.isTestUser) return
 
-    const notificationSchedule = config.notificationSchedule.slice()
     // Delay initial wave of notifications by 1 min to give
     // volunteers on the dashboard time to pick up the request
-    const delay = 1000 * 60
+    const notificationSchedule = config.notificationSchedule.slice()
+    const delay = notificationSchedule.shift()
     queue.add(
       'NotifyTutors',
       { sessionId: session._id, notificationSchedule },
