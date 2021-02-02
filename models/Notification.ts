@@ -26,6 +26,7 @@ export interface Notification {
   method: NotificationMethod;
   wasSuccessful: boolean;
   messageId: string;
+  priorityGroup: string;
 }
 
 export type NotificationDocument = Notification & Document;
