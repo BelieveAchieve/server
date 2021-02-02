@@ -140,6 +140,18 @@ module.exports = function(router) {
     }
   )
 
+  router.get('/user/referred-friends', async (req, res, next) => {
+    try {
+      const { user } = req
+      const referredFriends = await UserService.getReferredFriends(user._id, {
+        firstname: 1
+      })
+      res.json({ referredFriends })
+    } catch (err) {
+      next(err)
+    }
+  })
+
   router.get('/user/:userId', passport.isAdmin, async function(req, res, next) {
     const { userId } = req.params
     const { page } = req.query

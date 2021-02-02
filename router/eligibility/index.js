@@ -60,18 +60,17 @@ module.exports = function(app) {
     }
   })
 
-  router.route('/school/search').get(function(req, res, next) {
-    const q = req.query.q
+  router.route('/school/search').get(async (req, res, next) => {
+    const { q } = req.query
 
-    SchoolService.search(q, function(err, results) {
-      if (err) {
-        next(err)
-      } else {
-        res.json({
-          results: results
-        })
-      }
-    })
+    try {
+      const results = await SchoolService.search(q)
+      res.json({
+        results: results
+      })
+    } catch (error) {
+      next(error)
+    }
   })
 
   // Paginate eligible high schools (admins only)

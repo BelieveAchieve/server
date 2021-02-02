@@ -33,6 +33,13 @@ module.exports = {
       .exec()
   },
 
+  getReferredFriends: (userId, projection) => {
+    return User.find({ referredBy: userId })
+      .select(projection)
+      .lean()
+      .exec()
+  },
+
   parseUser: user => {
     // Approved volunteer
     if (user.isVolunteer && user.isApproved) {
