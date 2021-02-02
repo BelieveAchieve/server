@@ -115,6 +115,7 @@ const config: Static<typeof Config> = {
 
   notificationSchedule: [
     // Minute 1
+    1 * 60 * 1000,
     5 * 1000,
     5 * 1000,
     5 * 1000,
