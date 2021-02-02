@@ -31,6 +31,10 @@ module.exports = {
 
   getVolunteer: (query, projection) => {
     return Volunteer.findOne(query, projection)
+  },
+
+  getReferredFriends: (userId, projection) => {
+    return User.find({ referredBy: userId })
       .select(projection)
       .lean()
       .exec()
