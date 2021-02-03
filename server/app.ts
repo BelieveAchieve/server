@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 import { promisify } from 'util';
 import * as Sentry from '@sentry/node';
 import bodyParser from 'body-parser';
@@ -12,9 +13,17 @@ import cacheControl from 'express-cache-controller';
 import timeout from 'connect-timeout';
 import logger from './logger';
 import expressPino from 'express-pino-logger';
+import Mustache from 'mustache';
 
 function haltOnTimedout (req, res, next) {
   if (!req.timedout) next()
+}
+
+let distDir
+if (process.env.NODE_ENV === 'production') {
+  distDir = '../../dist'
+} else {
+  distDir = '../dist'
 }
 
 interface LoadedRequest extends Request {
@@ -30,6 +39,8 @@ Sentry.init({
 
 // Express App
 const app = express();
+
+const indexHtml = renderIndexHtml()
 
 const expressLogger = expressPino({ logger })
 app.use(expressLogger)
@@ -91,6 +102,46 @@ app.use(
     next();
   }
 );
-app.use(haltOnTimedout);
+app.use(haltOnTimedout)
 
-export default app;
+app.use(/.*css|.*js|.*mp3|.*png|.*svg|.*jpg|.*JPG|.*pdf|.*ttf|.*woff|.*woff2|.*eot/, express.static(path.join(__dirname, distDir)));
+
+app.use((req, res, next) => {
+  res.send(indexHtml).status(200);
+  next();
+})
+
+export default app
+
+function renderIndexHtml() {
+  let template = ""
+  const indexPath = path.join(__dirname, `${distDir}/index.html`)
+  try {
+    template = fs.readFileSync(indexPath, "utf8")
+  } catch (err) {
+    logger.error(`error reading index.html file: ${err}`)
+    process.exit(1)
+  }
+  // speeds up rendering on the first request
+  Mustache.parse(template)
+
+  const config = {
+    zwibblerUrl: process.env.VUE_APP_ZWIBBLER_URL,
+    websocketRoot: process.env.VUE_APP_WEBSOCKET_ROOT,
+    serverRoot: process.env.VUE_APP_SERVER_ROOT,
+    socketAddress: process.env.VUE_APP_SOCKET_ADDRESS,
+    mainWebsiteUrl: process.env.VUE_APP_MAIN_WEBSITE_URL,
+    posthogToken: process.env.VUE_APP_POSTHOG_TOKEN,
+    papercupsId: process.env.VUE_APP_PAPERCUPS_ID,
+    unleashUrl: process.env.VUE_APP_UNLEASH_URL,
+    unleashName: process.env.VUE_APP_UNLEASH_NAME,
+    unleashId: process.env.VUE_APP_UNLEASH_ID,
+    newRelicBrowserAccountId: process.env.VUE_APP_NEW_RELIC_ACCOUNT_ID,
+    newRelicBrowserTrustKey: process.env.VUE_APP_NEW_RELIC_TRUST_KEY,
+    newRelicBrowserAgentId: process.env.VUE_APP_NEW_RELIC_AGENT_ID,
+    newRelicBrowserLicenseKey: process.env.VUE_APP_NEW_RELIC_LICENSE_KEY,
+    newRelicBrowserAppId: process.env.VUE_APP_NEW_RELIC_APP_ID
+  }
+
+  return Mustache.render(template, config)
+}
