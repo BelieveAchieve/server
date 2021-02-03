@@ -1,0 +1,37 @@
+[
+    {
+        "upchieveId": "12345678",
+        "nameStored": "test data",
+        "districtNameStored": "district1",
+        "cityNameStored": "New York",
+        "stateStored": "NY",
+        "isApproved": false,
+        "approvalNotifyEmails": [
+          {
+            "email": "principal1@upchieve.org"
+          },{
+            "email": "principal2@upchieve.org"
+          }
+        ],
+        "SCHOOL_YEAR": "2020-2021",
+        "FIPST": 1
+      },
+      {
+        "upchieveId": "23456789",
+        "nameStored": "Legacy Signup High School",
+        "districtNameStored": "district2",
+        "cityNameStored": "New York",
+        "stateStored": "NY",
+        "isApproved": true,
+        "approvalNotifyEmails": [
+          {
+            "email": "principal3@upchieve.org"
+          },{
+            "email": "principal4@upchieve.org"
+          }
+        ],
+        "SCHOOL_YEAR": "2020-2021",
+        "FIPST": 2,
+        "LZIP": 11201
+      }
+]

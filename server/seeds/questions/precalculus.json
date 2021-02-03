@@ -1,0 +1,397 @@
+[
+  {
+    "questionText": "Find the center and radius of the circle with the standard equation shown in the image.",
+    "possibleAnswers": [
+      {
+        "txt": "Center (-4,3) with radius 4",
+        "val": "a"
+      },
+      {
+        "txt": "Center (-4,4) with radius 3",
+        "val": "b"
+      },
+      {
+        "txt": "Center (-3,4) with radius 6",
+        "val": "c"
+      },
+      {
+        "txt": "none of the above",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "c",
+    "category": "precalculus",
+    "subcategory": "rectangular coordinates",
+    "imageSrc": "/static/question_images/Precalc_1.png"
+  },
+  {
+    "questionText": "Use the distance formula to find an equation of the perpendicular bisector of the line segment between the points (4,3) and (-2,5).",
+    "possibleAnswers": [
+      {
+        "txt": "y=3x+1",
+        "val": "a"
+      },
+      {
+        "txt": "y=3x-1",
+        "val": "b"
+      },
+      {
+        "txt": "y=x+3",
+        "val": "c"
+      },
+      {
+        "txt": "none of the above",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "precalculus",
+    "subcategory": "rectangular coordinates"
+  },
+  {
+    "questionText": "Solve the inequality |x-4| < 5.",
+    "possibleAnswers": [
+      {
+        "txt": "(-1,9)",
+        "val": "a"
+      },
+      {
+        "txt": "(-4,4)",
+        "val": "b"
+      },
+      {
+        "txt": "(3,6)",
+        "val": "c"
+      },
+      {
+        "txt": "none of the above",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "precalculus",
+    "subcategory": "linear inequalities"
+  },
+  {
+    "questionText": "Solve the inequality -2 < 3x+1 < 13.",
+    "possibleAnswers": [
+      {
+        "txt": "(-1,9)",
+        "val": "a"
+      },
+      {
+        "txt": "(-4,4)",
+        "val": "b"
+      },
+      {
+        "txt": "(3,6)",
+        "val": "c"
+      },
+      {
+        "txt": "none of the above",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "d",
+    "category": "precalculus",
+    "subcategory": "linear inequalities"
+  },
+  {
+    "questionText": "Find the domain and range for the function in the image below.",
+    "possibleAnswers": [
+      {
+        "txt": "Domain: [-3,3] and range [0,3]",
+        "val": "a"
+      },
+      {
+        "txt": "Domain: [-9,1] and range [3,9]",
+        "val": "b"
+      },
+      {
+        "txt": "Domain: [-1,1] and range [0,3]",
+        "val": "c"
+      },
+      {
+        "txt": "Domain: [-3,3] and range [0,0]",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "precalculus",
+    "subcategory": "functions",
+    "imageSrc": "/static/question_images/Precalc_2.png"
+  },
+  {
+    "questionText": "Solve the equation in the image below.",
+    "possibleAnswers": [
+      {
+        "txt": "x=5",
+        "val": "a"
+      },
+      {
+        "txt": "x=3",
+        "val": "b"
+      },
+      {
+        "txt": "x=15",
+        "val": "c"
+      },
+      {
+        "txt": "x=25",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "d",
+    "category": "precalculus",
+    "subcategory": "rational exponents",
+    "imageSrc": "/static/question_images/Precalc_3.png"
+  },
+  {
+    "questionText": "Solve the equation in the image below.",
+    "possibleAnswers": [
+      {
+        "txt": "x=-9 or x=4",
+        "val": "a"
+      },
+      {
+        "txt": "x=9 or x=-4",
+        "val": "b"
+      },
+      {
+        "txt": "x=9 or x=4",
+        "val": "c"
+      },
+      {
+        "txt": "x=-4 or x=-9",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "c",
+    "category": "precalculus",
+    "subcategory": "quadratic functions",
+    "imageSrc": "/static/question_images/Precalc_4.png"
+  },
+  {
+    "questionText": "Find the vertex of the parabola whose equation is provided below.",
+    "possibleAnswers": [
+      {
+        "txt": "(2,-1)",
+        "val": "a"
+      },
+      {
+        "txt": "(-1,2)",
+        "val": "b"
+      },
+      {
+        "txt": "(1,2)",
+        "val": "c"
+      },
+      {
+        "txt": "none of the above",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "precalculus",
+    "subcategory": "quadratic functions",
+    "imageSrc": "/static/question_images/Precalc_5.png"
+  },
+  {
+    "questionText": "Find the minimum value of the function provided below.",
+    "possibleAnswers": [
+      {
+        "txt": "y=2",
+        "val": "a"
+      },
+      {
+        "txt": "y=9",
+        "val": "b"
+      },
+      {
+        "txt": "y=9/2",
+        "val": "c"
+      },
+      {
+        "txt": "y=2/9",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "c",
+    "category": "precalculus",
+    "subcategory": "quadratic functions",
+    "imageSrc": "/static/question_images/Precalc_6.png"
+  },
+  {
+    "questionText": "A rectangle with base x and height y has a perimeter of 120 ft. Express the area A of the rectangle as a function of x.",
+    "possibleAnswers": [
+      {
+        "txt": "A=60x",
+        "val": "a"
+      },
+      {
+        "txt": "A=60x+x^2",
+        "val": "b"
+      },
+      {
+        "txt": "A=60x-x^2",
+        "val": "c"
+      },
+      {
+        "txt": "none of the above",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "c",
+    "category": "precalculus",
+    "subcategory": "functions"
+  },
+  {
+    "questionText": "Simplify the expression in the image below.",
+    "possibleAnswers": [
+      {
+        "txt": "x",
+        "val": "a"
+      },
+      {
+        "txt": "x^2",
+        "val": "b"
+      },
+      {
+        "txt": "x^3",
+        "val": "c"
+      },
+      {
+        "txt": "x^4",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "c",
+    "category": "precalculus",
+    "subcategory": "logarithms and exponents",
+    "imageSrc": "/static/question_images/Precalc_7.png"
+  },
+  {
+    "questionText": "Simplify the expression in the image below.",
+    "possibleAnswers": [
+      {
+        "txt": "x",
+        "val": "a"
+      },
+      {
+        "txt": "x^2",
+        "val": "b"
+      },
+      {
+        "txt": "x^3",
+        "val": "c"
+      },
+      {
+        "txt": "x^4",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "c",
+    "category": "precalculus",
+    "subcategory": "logarithms and exponents",
+    "imageSrc": "/static/question_images/Precalc_7.png"
+  },
+  {
+    "questionText": "Solve the equation in image below.",
+    "possibleAnswers": [
+      {
+        "txt": "x=2 only",
+        "val": "a"
+      },
+      {
+        "txt": "x=2, x=-3",
+        "val": "b"
+      },
+      {
+        "txt": "x=-3 only",
+        "val": "c"
+      },
+      {
+        "txt": "none of the above",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "precalculus",
+    "subcategory": "logarithms and exponents",
+    "imageSrc": "/static/question_images/Precalc_8.png"
+  },
+  {
+    "questionText": "Solve the equation in image below.",
+    "possibleAnswers": [
+      {
+        "txt": "x=4 and x=-4",
+        "val": "a"
+      },
+      {
+        "txt": "x=16 only",
+        "val": "b"
+      },
+      {
+        "txt": "x=-16 only",
+        "val": "c"
+      },
+      {
+        "txt": "none of the above",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "precalculus",
+    "subcategory": "rational exponents",
+    "imageSrc": "/static/question_images/Precalc_9.png"
+  },
+  {
+    "questionText": "Find the equation of the circle with center (7,5) which is tangent to the x-axis.",
+    "possibleAnswers": [
+      {
+        "txt": "(x-7)2 + (y-5)2 = 81",
+        "val": "a"
+      },
+      {
+        "txt": "(x+7)2 + (y+5)2 = 81",
+        "val": "b"
+      },
+      {
+        "txt": "(x-5)2 + (y-7)2 = 81",
+        "val": "c"
+      },
+      {
+        "txt": "none of the above",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "precalculus",
+    "subcategory": "rectangular coordinates"
+  },
+  {
+    "questionText": "Solve the equation in image below.",
+    "possibleAnswers": [
+      {
+        "txt": "x=7",
+        "val": "a"
+      },
+      {
+        "txt": "x=3",
+        "val": "b"
+      },
+      {
+        "txt": "x=7/3 only",
+        "val": "c"
+      },
+      {
+        "txt": "3/7",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "c",
+    "category": "precalculus",
+    "subcategory": "rational exponents",
+    "imageSrc": "/static/question_images/Precalc_10.png"
+  }
+]

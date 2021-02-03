@@ -1,0 +1,15 @@
+<%- contentFor('title') %>
+UPchieve EDU Admin | Questions
+
+<%- contentFor('body') %>
+<% questions.forEach(question => { %>
+<div class="question-tile mt-4 mb-4 js-question-tile" id="<%= question._id %>">
+  <div class="m-4 p-4 js-question-rendered">
+    <%- include('question-rendered', { question, questionId: question._id, frontEndRoot }) %>
+  </div>
+
+  <form class="m-4 p-4 js-question-form d-none" action="/api/edu/questions/<%=question._id %>" method="put" novalidate>
+    <%- include('question-form', { question }) %>
+  </form>
+</div>
+<% }) %>

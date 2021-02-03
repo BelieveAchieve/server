@@ -1,0 +1,32 @@
+example:
+  name: Example - No School
+  signupCode: EX1
+  highSchoolSignup: false
+  schoolSignupRequired: false
+
+example2:
+  name: Example - High School Optional
+  signupCode: EX2
+  highSchoolSignup: true
+  schoolSignupRequired: false
+
+example3:
+  name: Example - High School Required
+  signupCode: EX3
+  highSchoolSignup: true
+  schoolSignupRequired: true
+
+example4:
+  name: Example - Sites No School
+  signupCode: EX4
+  sites:
+  - Site A
+  - Site B
+  - Site C
+
+example5:
+  name: Example - College and High School Optional
+  signupCode: EX5
+  highSchoolSignup: true
+  collegeSignup: true
+  schoolSignupRequired: false

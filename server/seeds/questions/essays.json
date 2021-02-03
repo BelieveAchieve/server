@@ -1,0 +1,362 @@
+[
+  {
+    "questionText": "All colleges will ask for a personal essay.",
+    "possibleAnswers": [
+      {
+        "txt": "true",
+        "val": "a"
+      },
+      {
+        "txt": "false",
+        "val": "b"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "essays",
+    "subcategory": "basic"
+  },
+  {
+    "questionText": "What is the word limit for CommonApp essays?",
+    "possibleAnswers": [
+      {
+        "txt": "1000",
+        "val": "a"
+      },
+      {
+        "txt": "500",
+        "val": "b"
+      },
+      {
+        "txt": "550",
+        "val": "c"
+      },
+      {
+        "txt": "650",
+        "val": "d"
+      },
+      {
+        "txt": "700",
+        "val": "e"
+      }
+    ],
+    "correctAnswer": "d",
+    "category": "essays",
+    "subcategory": "commonapp"
+  },
+  {
+    "questionText": "For CommonApp, students will be asked to choose to respond to _____ out of _____ 5 prompts.",
+    "possibleAnswers": [
+      {
+        "txt": "1, 5",
+        "val": "a"
+      },
+      {
+        "txt": "3,6",
+        "val": "b"
+      },
+      {
+        "txt": "2,10",
+        "val": "c"
+      },
+      {
+        "txt": "1,10",
+        "val": "d"
+      },
+      {
+        "txt": "1,8",
+        "val": "e"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "essays",
+    "subcategory": "commonapp"
+  },
+  {
+    "questionText": "For CommonApp, students should aim to reach _____ of the word limit or use full range.",
+    "possibleAnswers": [
+      {
+        "txt": "50%",
+        "val": "a"
+      },
+      {
+        "txt": "60%",
+        "val": "b"
+      },
+      {
+        "txt": "70%",
+        "val": "c"
+      },
+      {
+        "txt": "80%",
+        "val": "d"
+      },
+      {
+        "txt": "99%",
+        "val": "e"
+      }
+    ],
+    "correctAnswer": "d",
+    "category": "essays",
+    "subcategory": "commonapp"
+  },
+  {
+    "questionText": "Students shouldn’t talk about failure in their personal essays.",
+    "possibleAnswers": [
+      {
+        "txt": "True. Admissions committees want to hear the good parts of a student’s life.",
+        "val": "a"
+      },
+      {
+        "txt": "False. Admission committee want to see growth",
+        "val": "b"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "essays",
+    "subcategory": "commonapp"
+  },
+  {
+    "questionText": "In most cases, which isn’t a writing section listed on an application?",
+    "possibleAnswers": [
+      {
+        "txt": "fictional essay",
+        "val": "a"
+      },
+      {
+        "txt": "short response",
+        "val": "b"
+      },
+      {
+        "txt": "supplemental essay",
+        "val": "c"
+      },
+      {
+        "txt": "disciplinary history",
+        "val": "d"
+      },
+      {
+        "txt": "optional information",
+        "val": "e"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "essays",
+    "subcategory": "basic"
+  },
+  {
+    "questionText": "The essay prompt asks the student to write about a setback. What is the admissions committee looking for?",
+    "possibleAnswers": [
+      {
+        "txt": "essay about family’s setback",
+        "val": "a"
+      },
+      {
+        "txt": "essay about a peer’s setback and what they learned from the experience",
+        "val": "b"
+      },
+      {
+        "txt": "essay about the student’s setback and what they learned from the experience",
+        "val": "c"
+      },
+      {
+        "txt": "essay about student’s setback",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "c",
+    "category": "essays",
+    "subcategory": "answer"
+  },
+  {
+    "questionText": "A student writes a great essay but it’s 500 words over the word limit. What should the student do?",
+    "possibleAnswers": [
+      {
+        "txt": "Leave the essay as is. If the essay is that great, the admissions committee won’t care.",
+        "val": "a"
+      },
+      {
+        "txt": "Leave the essay as is. The student can always be the exception to the rule.",
+        "val": "b"
+      },
+      {
+        "txt": "Condense the original essay but still main their original points. The admissions committee will see the student follows directions.",
+        "val": "c"
+      },
+      {
+        "txt": "Write a new essay from scratch. The student can always be the exception to the rule.",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "c",
+    "category": "essays",
+    "subcategory": "basic"
+  },
+  {
+    "questionText": "What’s a helpful tip to write a strong essay but stay within the word limit?",
+    "possibleAnswers": [
+      {
+        "txt": "Don’t go into detail.",
+        "val": "a"
+      },
+      {
+        "txt": "Write in active voice. Avoid writing in passive voice or voice of beings.",
+        "val": "b"
+      },
+      {
+        "txt": "Use I-Statements in every sentence.",
+        "val": "c"
+      },
+      {
+        "txt": "Ask a peer to write the essay.",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "essays",
+    "subcategory": "basic"
+  },
+  {
+    "questionText": "When writing about disciplinary history, what isn’t a good reason for students for students to ask their guidance counselor for help?",
+    "possibleAnswers": [
+      {
+        "txt": "The guidance counselor knows what the high school reports to colleges, so the student knows what to share",
+        "val": "a"
+      },
+      {
+        "txt": "The guidance counselor is expected to support the student and talk about how good they are.",
+        "val": "b"
+      },
+      {
+        "txt": "The guidance counselor can write a letter of recommendation to discuss how the student’s grown from the experience",
+        "val": "c"
+      },
+      {
+        "txt": "If the student takes responsibility and is proactive about the process, they can earn the guidance counselor’s trust.",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "b",
+    "category": "essays",
+    "subcategory": "dhistory"
+  },
+  {
+    "questionText": "What shouldn’t the student do when writing about disciplinary history?",
+    "possibleAnswers": [
+      {
+        "txt": "Overshare. Write about every detail.",
+        "val": "a"
+      },
+      {
+        "txt": "Be honest.",
+        "val": "b"
+      },
+      {
+        "txt": "Take responsibility.",
+        "val": "c"
+      },
+      {
+        "txt": "Use guidance counselor for help.",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "essays",
+    "subcategory": "dhistory"
+  },
+  {
+    "questionText": "If a student has a record of disciplinary history, the school will never consider the student.",
+    "possibleAnswers": [
+      {
+        "txt": "True. The school wants the perfect student.",
+        "val": "a"
+      },
+      {
+        "txt": "True. The damage has been done and the student can’t change.",
+        "val": "b"
+      },
+      {
+        "txt": "False. Some infractions will be deemed more seriously than others, especially if the student demonstrates growth.",
+        "val": "c"
+      },
+      {
+        "txt": "False. As long as the student has perfect grades, the school won’t reject a student over their disciplinary history",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "c",
+    "category": "essays",
+    "subcategory": "dhistory"
+  },
+  {
+    "questionText": "What shouldn’t students write about in the optional essay?",
+    "possibleAnswers": [
+      {
+        "txt": "Gap in timeline/educational history",
+        "val": "a"
+      },
+      {
+        "txt": "a failed course",
+        "val": "b"
+      },
+      {
+        "txt": "family demands that impacted the student’s ability to perform well or be involved",
+        "val": "c"
+      },
+      {
+        "txt": "additional achievements",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "c",
+    "category": "essays",
+    "subcategory": "optional"
+  },
+  {
+    "questionText": "Students should always submit their first draft.",
+    "possibleAnswers": [
+      {
+        "txt": "True. The student doesn’t need someone to proofread because they have spellcheck.",
+        "val": "a"
+      },
+      {
+        "txt": "True. The first draft is the perfect draft. No need to overthink.",
+        "val": "b"
+      },
+      {
+        "txt": "False. Each draft needs to be proofread or read out loud.",
+        "val": "c"
+      },
+      {
+        "txt": "False. The student should submit the 63rd draft.",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "c",
+    "category": "essays",
+    "subcategory": "basic"
+  },
+  {
+    "questionText": "For supplemental essays, students do not receive the topic ahead of time so it can be challenging to prepare for this essay in advance. What tip shouldn’t students follow?",
+    "possibleAnswers": [
+      {
+        "txt": "Procrastinate.",
+        "val": "a"
+      },
+      {
+        "txt": "Create a 'bank' of influential people or events to speed up the process.",
+        "val": "b"
+      },
+      {
+        "txt": "Write a list about unique resources or attributes about the school.",
+        "val": "c"
+      },
+      {
+        "txt": "Write a list about personal characters that will help the student stand out from other applicants.",
+        "val": "d"
+      }
+    ],
+    "correctAnswer": "a",
+    "category": "essays",
+    "subcategory": "supplemental"
+  }
+]

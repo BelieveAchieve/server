@@ -1,0 +1,14 @@
+example:
+  name: Example - Regular
+  receiveWeeklyHourSummaryEmail: true
+example2:
+  name: Example - Email Requirement
+  requiredEmailDomains:
+    - example.com
+  receiveWeeklyHourSummaryEmail: true
+example3:
+  name: Example - Email Requirement & Math Only
+  requiredEmailDomains:
+    - example.org
+    - example.net
+  receiveWeeklyHourSummaryEmail: false
