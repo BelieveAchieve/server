@@ -14,8 +14,8 @@
       ]
   },
   "exclude": [
-    "dbutils/",
-    "tests/",
+    "server/dbutils",
+    "server/tests",
     "node_modules/",
     "build/"
   ]
