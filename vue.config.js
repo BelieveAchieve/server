@@ -57,5 +57,25 @@ module.exports = {
       .test(/\.pdf$/)
       .use("file-loader")
       .loader("file-loader");
+
+    config.module
+      .rule("eslint")
+      .use("eslint-loader")
+      .tap(options => {
+        return {
+          extensions: [
+            '.js',
+            '.jsx',
+            '.vue'
+          ],
+          cache: true,
+          cacheIdentifier: 'c861364c',
+          configFile: ".eslintrc-vue.js",
+          emitWarning: false,
+          emitError: false,
+          eslintPath: 'eslint',
+          formatter: function () { /* omitted long function */ }
+        }
+      })
   }
 };
