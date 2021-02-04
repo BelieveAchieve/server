@@ -20,7 +20,7 @@ function haltOnTimedout (req, res, next) {
 }
 
 let distDir
-if (process.env.NODE_ENV === 'production') {
+if (config.NODE_ENV === 'production') {
   distDir = '../../dist'
 } else {
   distDir = '../dist'
@@ -120,28 +120,31 @@ function renderIndexHtml() {
     template = fs.readFileSync(indexPath, "utf8")
   } catch (err) {
     logger.error(`error reading index.html file: ${err}`)
-    process.exit(1)
+    
+    if(config.NODE_ENV !== 'dev') {
+      process.exit(1)
+    }
   }
   // speeds up rendering on the first request
   Mustache.parse(template)
 
-  const config = {
-    zwibblerUrl: process.env.VUE_APP_ZWIBBLER_URL,
-    websocketRoot: process.env.VUE_APP_WEBSOCKET_ROOT,
-    serverRoot: process.env.VUE_APP_SERVER_ROOT,
-    socketAddress: process.env.VUE_APP_SOCKET_ADDRESS,
-    mainWebsiteUrl: process.env.VUE_APP_MAIN_WEBSITE_URL,
-    posthogToken: process.env.VUE_APP_POSTHOG_TOKEN,
-    papercupsId: process.env.VUE_APP_PAPERCUPS_ID,
-    unleashUrl: process.env.VUE_APP_UNLEASH_URL,
-    unleashName: process.env.VUE_APP_UNLEASH_NAME,
-    unleashId: process.env.VUE_APP_UNLEASH_ID,
-    newRelicBrowserAccountId: process.env.VUE_APP_NEW_RELIC_ACCOUNT_ID,
-    newRelicBrowserTrustKey: process.env.VUE_APP_NEW_RELIC_TRUST_KEY,
-    newRelicBrowserAgentId: process.env.VUE_APP_NEW_RELIC_AGENT_ID,
-    newRelicBrowserLicenseKey: process.env.VUE_APP_NEW_RELIC_LICENSE_KEY,
-    newRelicBrowserAppId: process.env.VUE_APP_NEW_RELIC_APP_ID
+  const frontendConfig = {
+    zwibblerUrl: config.zwibblerUrl,
+    websocketRoot: config.websocketRoot,
+    serverRoot: config.serverRoot,
+    socketAddress: config.socketAddress,
+    mainWebsiteUrl: config.mainWebsiteUrl,
+    posthogToken: config.posthogToken,
+    // papercupsId: config.papercupdsId,
+    unleashUrl: config.vueAppUnleashUrl,
+    unleashName: config.vueAppUnleashName,
+    unleashId: config.vueAppUnleashId,
+    newRelicBrowserAccountId: config.newRelicBrowserAccountId,
+    newRelicBrowserTrustKey: config.newRelicBrowserTrustKey,
+    newRelicBrowserAgentId: config.newRelicBrowserAgentId,
+    newRelicBrowserLicenseKey: config.newRelicBrowserLicenseKey,
+    newRelicBrowserAppId: config.newRelicBrowserAppId
   }
 
-  return Mustache.render(template, config)
+  return Mustache.render(template, frontendConfig)
 }

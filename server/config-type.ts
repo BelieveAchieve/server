@@ -88,5 +88,19 @@ export const Config = Record({
   unleashId: String,
   unleashName: String,
   unleashUrl: String,
-  posthogToken: String
+  posthogToken: String,
+  vueAppUnleashUrl: String,
+  vueAppUnleashId: String,
+  vueAppUnleashName: String,
+  zwibblerUrl: String,
+  websocketRoot: String,
+  serverRoot: String,
+  socketAddress: String,
+  mainWebsiteUrl: String,
+  newRelicBrowserAccountId: String,
+  newRelicBrowserTrustKey: String,
+  newRelicBrowserAgentId: String,
+  newRelicBrowserLicenseKey: String,
+  newRelicBrowserAppId: String,
+  papercupsId: String
 });
