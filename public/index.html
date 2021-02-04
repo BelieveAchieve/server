@@ -29,13 +29,13 @@
       src="https://app.papercups.io/widget.js"
     >
     </script> -->
-    <script
+    <!-- <script
     type="text/javascript"
     async
     defer
     src="https://app.papercups.io/storytime.js"
     >
-    </script>
+    </script> -->
     <script id="config" type="application/json">
     {
       "zwibblerUrl": "{{{zwibblerUrl}}}",
@@ -47,7 +47,8 @@
       "unleashUrl": "{{{unleashUrl}}}",
       "unleashName": "{{{unleashName}}}",
       "unleashId": "{{{unleashId}}}",
-      "papercupsId": "{{{papercupsId}}}"
+      "papercupsId": "{{{papercupsId}}}",
+      "devtools": "{{{devtools}}}"
     }
     </script>
     <meta charset="utf-8">
@@ -60,7 +61,7 @@
       </script>
     <!-- <meta name="viewport" content="width=device-width,initial-scale=1.0> -->
     <meta name="viewport" content="width=device-width, user-scalable=no">
-    <link rel="shortcut icon" type="image/png" href="<%= BASE_URL %>favicon.png">
+    <link rel="shortcut icon" type="image/png" href="{{{ serverRoot }}}/favicon.png">
     <title>UPchieve</title>
 
     <!-- Google Tag Manager -->
@@ -80,9 +81,9 @@
 
     <div id="app"></div>
     <!-- built files will be auto injected -->
-    
+
     <!-- Load Zwibbler -->
-    <script src="<%= VUE_APP_ZWIBBLER_URL %>"></script>
+    <script src="{{{ zwibblerUrl }}}"></script>
 
     <!-- Load MathJax -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML"></script>
