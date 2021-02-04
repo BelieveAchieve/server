@@ -152,8 +152,8 @@ describe('getElapsedAvailabilityForDateRange', () => {
       })
     ]);
 
-    const fromDate = '12/03/2020';
-    const toDate = '12/30/2020';
+    const fromDate = new Date('12/03/2020');
+    const toDate = new Date('12/30/2020');
     const result = await getElapsedAvailabilityForDateRange(
       volunteerId,
       fromDate,

@@ -84,7 +84,7 @@ describe('Email waiting on references to volunteer', () => {
       `Emailed ${expectedEmailsSent} volunteers that we're waiting on their reference(s)`
     );
 
-    expect(MailService.sendWaitingOnReferences.mock.calls.length).toBe(
+    expect((MailService.sendWaitingOnReferences as jest.Mock).mock.calls.length).toBe(
       expectedEmailsSent
     );
   });

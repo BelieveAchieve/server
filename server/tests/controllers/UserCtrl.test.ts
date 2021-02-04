@@ -36,8 +36,8 @@ describe('createVolunteer', () => {
 
     expect(einstein._id).toEqual(newVolunteer._id);
     expect(newAvailability.volunteerId).toEqual(newVolunteer._id);
-    expect(initiateVerification.mock.calls.length).toBe(1);
-    expect(createContact.mock.calls.length).toBe(1);
-    expect(createdAccount.mock.calls.length).toBe(1);
+    expect((initiateVerification as jest.Mock).mock.calls.length).toBe(1);
+    expect((createContact as jest.Mock).mock.calls.length).toBe(1);
+    expect((createdAccount as jest.Mock).mock.calls.length).toBe(1);
   });
 });

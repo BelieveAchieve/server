@@ -2,12 +2,11 @@ import mongoose from 'mongoose';
 import emailReadyToCoach from '../../worker/jobs/emailReadyToCoach';
 import { insertVolunteer, resetDb } from '../db-utils';
 import { buildVolunteer } from '../generate';
-import VolunteerModel from '../../models/Volunteer';
+import VolunteerModel, { Volunteer } from '../../models/Volunteer';
 import MailService from '../../services/MailService';
-import { Volunteer } from '../types';
 jest.mock('../../services/MailService');
 
-const buildReadyToSendVolunteer = (): Volunteer => {
+const buildReadyToSendVolunteer = (): Partial<Volunteer> => {
   return buildVolunteer({
     isOnboarded: true,
     isApproved: true,
@@ -44,16 +43,16 @@ describe('Ready to coach email', () => {
 
     await emailReadyToCoach();
 
-    const volunteers = (await VolunteerModel.find()
+    const volunteers = await VolunteerModel.find()
       .lean()
       .select('sentReadyToCoachEmail')
-      .exec()) as Volunteer[];
+      .exec()
 
     for (const volunteer of volunteers) {
       expect(volunteer.sentReadyToCoachEmail).toBeTruthy();
     }
 
-    expect(MailService.sendReadyToCoachEmail.mock.calls.length).toBe(3);
+    expect((MailService.sendReadyToCoachEmail as jest.Mock).mock .calls.length).toBe(3);
   });
   test('Should not send ready to coach email for volunteers that have not completed onboarding and not yet approved', async () => {
     await Promise.all([
@@ -64,14 +63,14 @@ describe('Ready to coach email', () => {
 
     await emailReadyToCoach();
 
-    const volunteers = (await VolunteerModel.find()
+    const volunteers = await VolunteerModel.find()
       .lean()
       .select('sentReadyToCoachEmail')
-      .exec()) as Volunteer[];
+      .exec();
 
     for (const volunteer of volunteers) {
       expect(volunteer.sentReadyToCoachEmail).toBeFalsy();
     }
-    expect(MailService.sendReadyToCoachEmail.mock.calls.length).toBe(0);
+    expect((MailService.sendReadyToCoachEmail as jest.Mock).mock.calls.length).toBe(0);
   });
 });

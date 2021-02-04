@@ -50,7 +50,7 @@ describe('Email nice to meet you to volunteers', () => {
       `Emailed "nice to meet you" to ${expectedEmailsSent} volunteers`
     );
 
-    expect(MailService.sendNiceToMeetYou.mock.calls.length).toBe(
+    expect((MailService.sendNiceToMeetYou as jest.Mock).mock.calls.length).toBe(
       expectedEmailsSent
     );
   });

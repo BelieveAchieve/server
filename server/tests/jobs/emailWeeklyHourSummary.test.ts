@@ -69,7 +69,7 @@ describe('emailWeeklyHourSummary', () => {
     expect(log).toHaveBeenCalledWith(
       `Emailed weekly hour summary email to ${expectedEmailsSent} volunteers`
     );
-    expect(MailService.sendHourSummaryEmail.mock.calls.length).toBe(2);
+    expect((MailService.sendHourSummaryEmail as jest.Mock).mock.calls.length).toBe(2);
   });
 
   test('Should set sentHourSummaryIntroEmail to true for volunteers that have not been sent sendHourSummaryEmail email before', async () => {

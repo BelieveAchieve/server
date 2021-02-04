@@ -50,7 +50,7 @@ describe('Follow-up email to references', () => {
       `Emailed ${expectedEmailsSent} references a follow-up`
     );
 
-    expect(MailService.sendReferenceFollowup.mock.calls.length).toBe(
+    expect((MailService.sendReferenceFollowup as jest.Mock).mock.calls.length).toBe(
       expectedEmailsSent
     );
   });
@@ -71,7 +71,7 @@ describe('Follow-up email to references', () => {
 
     const expectedEmailsSent = 0;
     expect(log).toHaveBeenCalledWith('No references to email for a follow-up');
-    expect(MailService.sendReferenceFollowup.mock.calls.length).toBe(
+    expect((MailService.sendReferenceFollowup as jest.Mock).mock.calls.length).toBe(
       expectedEmailsSent
     );
   });

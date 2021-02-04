@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import UserService from '../../services/UserService';
-import VolunteerModel from '../../models/Volunteer';
+import VolunteerModel, { Volunteer }  from '../../models/Volunteer';
 import UserActionModel from '../../models/UserAction';
 import {
   PHOTO_ID_STATUS,
@@ -8,7 +8,6 @@ import {
   STATUS,
   USER_ACTION
 } from '../../constants';
-import { Volunteer } from '../types';
 import {
   buildVolunteer,
   buildReference,
@@ -38,7 +37,7 @@ test('Successfully adds photoIdS3Key and photoIdStatus', async () => {
   const volunteer = buildVolunteer();
   await insertVolunteer(volunteer);
   const { _id: userId } = volunteer;
-  const newPhotoIdS3Key = await UserService.addPhotoId({ userId });
+  const newPhotoIdS3Key = await UserService.addPhotoId({ userId, ip: '' });
   // @note: UserActionCtrl methods are not being awaited in the UserService. tests can potentially
   //        fail if the test completes before the user action is stored
   const userAction = await UserActionModel.findOne({
@@ -74,7 +73,8 @@ test('Should add a reference', async () => {
     userId,
     referenceFirstName: reference.firstName,
     referenceLastName: reference.lastName,
-    referenceEmail: reference.email
+    referenceEmail: reference.email,
+    ip: ''
   };
 
   await UserService.addReference(input);
@@ -117,7 +117,8 @@ test('Should delete a reference', async () => {
   const { _id: userId } = volunteer;
   const input = {
     userId,
-    referenceEmail: referenceOne.email
+    referenceEmail: referenceOne.email,
+    ip: ''
   };
 
   await UserService.deleteReference(input);
@@ -169,7 +170,8 @@ test('Should save reference form data', async () => {
     userId,
     referenceId: reference._id,
     referenceFormData: buildReferenceForm(),
-    referenceEmail: reference.email
+    referenceEmail: reference.email,
+    ip: ''
   };
 
   await UserService.saveReferenceForm(referenceFormInput);
@@ -314,7 +316,8 @@ test('Open volunteer is not approved when submitting their background info', asy
   const update = buildBackgroundInfo();
   const input = {
     volunteerId: volunteer._id,
-    update
+    update,
+    ip: ''
   };
 
   await UserService.addBackgroundInfo(input);
@@ -360,7 +363,8 @@ test('Partner volunteer is approved when submitting background info', async () =
   const update = buildBackgroundInfo({ languages: [] });
   const input = {
     volunteerId: volunteer._id,
-    update
+    update,
+    ip: ''
   };
 
   await UserService.addBackgroundInfo(input);

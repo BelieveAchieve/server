@@ -35,7 +35,7 @@ describe('Save availability and time zone', () => {
     const input = {
       user: await insertVolunteer(),
       tz: 'American/New York',
-      ip: ''
+      ip: '',
     };
 
     await expect(CalendarCtrl.updateSchedule(input)).rejects.toThrow(

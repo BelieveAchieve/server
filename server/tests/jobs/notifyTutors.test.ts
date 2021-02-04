@@ -128,7 +128,7 @@ describe('Notify tutors', () => {
     };
     const volunteer = buildVolunteer();
 
-    TwilioService.notifyVolunteer = jest.fn(() => volunteer);
+    TwilioService.notifyVolunteer = jest.fn(() => Promise.resolve(volunteer));
     await notifyTutors(job);
 
     expect(job.queue.add).toHaveBeenCalledTimes(1);

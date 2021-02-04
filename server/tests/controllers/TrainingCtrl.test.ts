@@ -18,7 +18,7 @@ import {
 } from '../../constants';
 import Question from '../../models/Question';
 import algebraQuestions from '../../seeds/questions/algebra.json';
-import { Certifications } from '../types';
+import { Certifications } from '../../models/Volunteer';
 import UserActionModel from '../../models/UserAction';
 jest.mock('../../services/MailService');
 
@@ -302,7 +302,8 @@ describe('getQuizScore', () => {
     const quizScoreInput = {
       user: volunteer,
       category: TRAINING.TUTORING_SKILLS,
-      idAnswerMap
+      idAnswerMap,
+      ip: ''
     };
 
     await getQuizScore(quizScoreInput);
@@ -334,7 +335,8 @@ describe('getQuizScore', () => {
     const quizScoreInput = {
       user: volunteer,
       category: TRAINING.UPCHIEVE_101,
-      idAnswerMap
+      idAnswerMap,
+      ip: ''
     };
 
     const result = await getQuizScore(quizScoreInput);

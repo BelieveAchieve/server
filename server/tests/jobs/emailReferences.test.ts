@@ -2,13 +2,12 @@ import mongoose, { Aggregate } from 'mongoose';
 import emailReferences from '../../worker/jobs/emailReferences';
 import { insertVolunteer, resetDb } from '../db-utils';
 import { buildVolunteer, buildReference } from '../generate';
-import VolunteerModel, { Reference } from '../../models/Volunteer';
+import VolunteerModel, { Volunteer,  Reference } from '../../models/Volunteer';
 import MailService from '../../services/MailService';
-import { Volunteer } from '../types';
 import { REFERENCE_STATUS } from '../../constants';
 jest.mock('../../services/MailService');
 
-const buildVolunteerWithReferences = (): Volunteer => {
+const buildVolunteerWithReferences = (): Partial<Volunteer> => {
   return buildVolunteer({
     references: [
       buildReference({
@@ -72,7 +71,7 @@ describe('Email references', () => {
     for (const reference of references) {
       expect(reference.status).toEqual(REFERENCE_STATUS.SENT);
     }
-    expect(MailService.sendReferenceForm.mock.calls.length).toBe(4);
+    expect((MailService.sendReferenceForm as jest.Mock).mock.calls.length).toBe(4);
   });
 
   test('Should not send any references the reference form', async () => {
@@ -89,6 +88,6 @@ describe('Email references', () => {
     ]);
     await emailReferences();
 
-    expect(MailService.sendReferenceForm.mock.calls.length).toBe(0);
+    expect((MailService.sendReferenceForm as jest.Mock).mock.calls.length).toBe(0);
   });
 });

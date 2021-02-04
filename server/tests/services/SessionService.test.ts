@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import SessionService from '../../services/SessionService';
 import SessionModel from '../../models/Session';
+import { Student } from '../../models/Student';
+import { Volunteer} from '../../models/Volunteer';
 import {
   buildMessage,
   buildStudent,
@@ -19,7 +21,6 @@ import {
   getVolunteer,
   getSession
 } from '../db-utils';
-import { Student, Volunteer } from '../types';
 import { Message } from '../../models/Message';
 import { SESSION_FLAGS } from '../../constants';
 import { convertObjectIdListToStringList } from '../utils';
@@ -620,7 +621,6 @@ describe('endSession', () => {
       sessionId: session._id
     };
     await expect(SessionService.endSession(input)).rejects.toThrow(expected);
-    await expect(SessionService.endSession('')).rejects.toThrow(expected);
   });
 
   test('Should early exit when ending a session that already ended', async () => {
@@ -765,8 +765,8 @@ describe('endSession', () => {
         updatedMessages.push({ ...message, createdAt: new Date(oneHourAgo) });
       }
 
-      await insertStudent(student as Student);
-      await insertVolunteer(volunteer as Volunteer);
+      await insertStudent(student);
+      await insertVolunteer(volunteer);
       const { session } = await insertSession({
         createdAt,
         volunteerJoinedAt,
@@ -846,8 +846,8 @@ describe('endSession', () => {
         volunteerSentMessages: false,
         messagesPerUser: 5
       });
-      await insertStudent(student as Student);
-      await insertVolunteer(volunteer as Volunteer);
+      await insertStudent(student);
+      await insertVolunteer(volunteer);
       const oneHourAgo = Date.now() - 1000 * 60 * 60 * 1;
       const createdAt = new Date(oneHourAgo);
       const volunteerJoinedAt = new Date(oneHourAgo + 1000 * 60);
