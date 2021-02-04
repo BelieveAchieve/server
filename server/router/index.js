@@ -7,6 +7,7 @@ module.exports = function(app) {
 
   require('./auth')(app)
   require('./api')(app, sessionStore)
+  require('./edu')(app)
   require('./eligibility')(app)
   require('./twiml')(app)
   require('./contact')(app)

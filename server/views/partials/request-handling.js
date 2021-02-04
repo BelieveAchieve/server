@@ -109,10 +109,10 @@ $('.js-question-tile').on('click', '.js-save-button', e => {
       $tile.attr('id', _id)
       $tile
         .find(`.js-category-link`)
-        .attr('href', `/api/edu/questions?category=${categoryUri}`)
+        .attr('href', `/edu/questions?category=${categoryUri}`)
       $tile
         .find(`.js-subcategory-link`)
-        .attr('href', `/api/edu/questions?subcategory=${subUri}`)
+        .attr('href', `/edu/questions?subcategory=${subUri}`)
       $tile.find(`.js-category`).text(category)
       $tile.find(`.js-subcategory`).text(subcategory)
       $tile.find(`.js-questionText`).text(questionText)

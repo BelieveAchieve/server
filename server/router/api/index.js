@@ -22,7 +22,6 @@ module.exports = function(app, sessionStore) {
   require('./push-token')(router)
   require('./reports')(router)
   require('./survey')(router)
-  require('./edu')(router)
 
   app.use(addLastActivity)
   app.use(addUserAction)

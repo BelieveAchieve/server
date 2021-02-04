@@ -7,7 +7,7 @@ UPchieve EDU Admin | New Question
     <%- include('question-rendered', { question, questionId: null }) %>
   </div>
 
-  <form class="m-4 p-4 js-question-form" action="/api/edu/questions" method="post" novalidate>
+  <form class="m-4 p-4 js-question-form" action="/edu/questions" method="post" novalidate>
     <%- include('question-form', { question }) %>
   </form>
 </div>

@@ -8,7 +8,7 @@ UPchieve EDU Admin | Questions
     <%- include('question-rendered', { question, questionId: question._id, frontEndRoot }) %>
   </div>
 
-  <form class="m-4 p-4 js-question-form d-none" action="/api/edu/questions/<%=question._id %>" method="put" novalidate>
+  <form class="m-4 p-4 js-question-form d-none" action="/edu/questions/<%=question._id %>" method="put" novalidate>
     <%- include('question-form', { question }) %>
   </form>
 </div>

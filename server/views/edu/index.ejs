@@ -8,13 +8,13 @@ UPchieve EDU Admin
       <ul class="list-group list-group-horizontal-md">
         <% entry.forEach(e => { %>
           <li class="list-group-item small border-0">
-            <a href="/api/edu/<%= e.path %>"><%= e.label %></a>
+            <a href="/edu/<%= e.path %>"><%= e.label %></a>
           </li>
         <% }) %>
       </ul>
     <% } else { %>
       <li class="list-group-item font-weight-bold border-bottom-0">
-        <a href="/api/edu/<%= entry.path %>"><%= entry.label %></a>
+        <a href="/edu/<%= entry.path %>"><%= entry.label %></a>
       </li>
     <% } %>
   <% }) %>
