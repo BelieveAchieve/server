@@ -33,6 +33,7 @@ export interface Session {
   reviewedStudent: boolean;
   reviewedVolunteer: boolean;
   timeTutored: number;
+  addNotifications(notificationsToAdd: NotificationDocument[]): Promise<NotificationDocument[]>;
 }
 
 export type SessionDocument = Session & Document;
@@ -196,14 +197,14 @@ sessionSchema.statics.getUnfulfilledSessions = async function(): Promise<
   });
 };
 
-export interface SessionModelType extends Model<SessionDocument> {
-  addNotifications(): Promise<NotificationDocument[]>;
+export interface SessionStaticModel extends Model<SessionDocument> {
+  addNotifications(notificationsToAdd: NotificationDocument[]): Promise<NotificationDocument[]>;
   findLatest(): Promise<SessionDocument>;
   current(): Promise<SessionDocument>;
   getUnfulfilledSessions(): Promise<SessionDocument[]>;
 }
 
-const SessionModel = model<SessionDocument, SessionModelType>(
+const SessionModel = model<SessionDocument, SessionStaticModel>(
   'Session',
   sessionSchema
 );

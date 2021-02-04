@@ -9,7 +9,8 @@ import * as UserActionCtrl from './UserActionCtrl';
 export interface UpdateScheduleOptions {
   ip: string;
   user: Volunteer;
-  availability: Availability;
+  // @note: this is set to optional to test the absence of an availability object
+  availability?: Availability;
   tz: string; // FIXME: constrain this to official timezones
 }
 
