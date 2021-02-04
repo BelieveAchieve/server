@@ -15,7 +15,6 @@ import {
   SAT_CERTS
 } from '../constants';
 import { Message } from '../models/Message';
-import { Notification } from '../models/Notification';
 import { AvailabilitySnapshot } from '../models/Availability/Snapshot';
 import { AvailabilityHistory } from '../models/Availability/History';
 import { UserAction } from '../models/UserAction';
@@ -223,12 +222,17 @@ export const buildVolunteer = (overrides = {}): Partial<Volunteer> => {
 };
 
 export const buildStudentRegistrationForm = (
-  overrides = {}
+  overrides: Partial<StudentRegistrationForm> = {}
 ): StudentRegistrationForm => {
   const student = buildStudent();
   const form = {
+    zipCode: student.zipCode,
+    firstName: student.firstname,
+    lastName: student.lastname,
+    email: student.email,
+    password: student.password,
+    highSchoolId: '11111111',
     terms: true,
-    ...student,
     ...overrides
   };
 
@@ -236,12 +240,16 @@ export const buildStudentRegistrationForm = (
 };
 
 export const buildVolunteerRegistrationForm = (
-  overrides = {}
+  overrides: Partial<VolunteerRegistrationForm> = {}
 ): VolunteerRegistrationForm => {
   const volunteer = buildVolunteer();
   const form = {
+    firstName: volunteer.firstname,
+    lastName: volunteer.lastname,
+    email: volunteer.email,
+    password: volunteer.password,
+    phone: volunteer.phone,
     terms: true,
-    ...volunteer,
     ...overrides
   };
 
@@ -367,7 +375,15 @@ export const buildPastSessions = (): Types.ObjectId[] => {
   return pastSessions;
 };
 
-export const buildNotification = (overrides = {}): Partial<Notification> => {
+/**
+ * 
+ * @todo: use Partial<Notification> instead of Partial<any>
+ * Enums NotificationMethod & NotificationType do not exists at runtime, so
+ * a type error like "Cannot read property 'SMS' of undefined" is thrown
+ * 
+ **/
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const buildNotification = (overrides = {}): Partial<any> => {
   const _id = Types.ObjectId();
 
   const notification = {
