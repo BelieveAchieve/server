@@ -104,7 +104,7 @@ app.use(
 );
 app.use(haltOnTimedout)
 
-app.use(/.*css|.*js|.*mp3|.*png|.*svg|.*jpg|.*JPG|.*pdf|.*ttf|.*woff|.*woff2|.*eot/, express.static(path.join(__dirname, distDir)));
+app.use(express.static(path.join(__dirname, distDir), { index: indexHtml }));
 
 app.use((req, res, next) => {
   res.send(indexHtml).status(200);
@@ -120,7 +120,7 @@ function renderIndexHtml() {
     template = fs.readFileSync(indexPath, "utf8")
   } catch (err) {
     logger.error(`error reading index.html file: ${err}`)
-    
+
     if(config.NODE_ENV !== 'dev') {
       process.exit(1)
     }
@@ -143,7 +143,8 @@ function renderIndexHtml() {
     newRelicBrowserTrustKey: config.newRelicBrowserTrustKey,
     newRelicBrowserAgentId: config.newRelicBrowserAgentId,
     newRelicBrowserLicenseKey: config.newRelicBrowserLicenseKey,
-    newRelicBrowserAppId: config.newRelicBrowserAppId
+    newRelicBrowserAppId: config.newRelicBrowserAppId,
+    devtools: config.vueDevtools
   }
 
   return Mustache.render(template, frontendConfig)

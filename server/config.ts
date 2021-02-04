@@ -3,7 +3,7 @@
 import { Static } from 'runtypes';
 import { Config } from './config-type';
 
-const mongoHost = process.env.SUBWAY_DB_HOST || 'mongodb';
+const mongoHost = process.env.SUBWAY_DB_HOST || 'localhost';
 const mongoPort = process.env.SUBWAY_DB_PORT || '27017';
 const mongoName = process.env.SUBWAY_DB_NAME || 'upchieve';
 const mongoPass = process.env.SUBWAY_DB_PASS;
@@ -16,7 +16,7 @@ if (mongoPass) {
   mongoConn = `mongodb://${mongoHost}:${mongoPort}/${mongoName}`;
 }
 
-const redisHost = process.env.SUBWAY_REDIS_HOST || 'cache';
+const redisHost = process.env.SUBWAY_REDIS_HOST || 'localhost';
 const redisPort = process.env.SUBWAY_REDIS_PORT || '6379';
 const redisConn = `redis://${redisHost}:${redisPort}`;
 
@@ -195,6 +195,7 @@ const config: Static<typeof Config> = {
   newRelicBrowserLicenseKey: process.env.VUE_APP_NEW_RELIC_LICENSE_KEY  || 'bogus',
   newRelicBrowserAppId: process.env.VUE_APP_NEW_RELIC_APP_ID  || 'bogus',
   papercupsId: process.env.VUE_APP_PAPERCUPS_ID || 'bogus',
+  vueDevtools: nodeEnv === 'dev'
 };
 
 module.exports = config;

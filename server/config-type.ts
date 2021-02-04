@@ -1,4 +1,4 @@
-import { Record, Literal, String, Number, Array } from 'runtypes';
+import { Boolean, Record, Literal, String, Number, Array } from 'runtypes';
 
 export const Config = Record({
   NODE_ENV: String,
@@ -102,5 +102,6 @@ export const Config = Record({
   newRelicBrowserAgentId: String,
   newRelicBrowserLicenseKey: String,
   newRelicBrowserAppId: String,
-  papercupsId: String
+  papercupsId: String,
+  vueDevtools: Boolean
 });
