@@ -23,6 +23,10 @@ if (config.posthogToken) {
   })
 }
 
+if (config.devtools) {
+  Vue.config.devtools = true
+}
+
 if (config.unleashId) {
   initialize({
     url: config.unleashUrl,
