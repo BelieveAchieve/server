@@ -1,42 +1,44 @@
-import moment from 'moment-timezone';
-import { values } from 'lodash';
-import { Document, model, Model, Schema, Types } from 'mongoose';
-import { SESSION_FLAGS } from '../constants';
-import MessageModel, { Message } from './Message';
-import { Notification, NotificationDocument } from './Notification';
-import { User } from './User';
-import { Student } from './Student';
-import { Volunteer } from './Volunteer';
+import moment from 'moment-timezone'
+import { values } from 'lodash'
+import { Document, model, Model, Schema, Types } from 'mongoose'
+import { SESSION_FLAGS } from '../constants'
+import MessageModel, { Message } from './Message'
+import { Notification, NotificationDocument } from './Notification'
+import { User } from './User'
+import { Student } from './Student'
+import { Volunteer } from './Volunteer'
 
-const validTypes = ['Math', 'College', 'Science', 'SAT'];
+const validTypes = ['Math', 'College', 'Science', 'SAT']
 
 export interface Session {
-  _id: Types.ObjectId;
-  student: Types.ObjectId | Student;
-  volunteer: Types.ObjectId | Volunteer;
-  type: string;
-  subTopic: string;
-  messages: Message[];
-  whiteboardDoc: string;
-  quillDoc: string;
-  createdAt: Date;
-  volunteerJoinedAt: Date;
-  failedJoins: (Types.ObjectId | User)[];
-  endedAt: Date;
-  endedBy: Types.ObjectId | User;
-  notifications: (Types.ObjectId | Notification)[];
-  photos: string[];
-  isReported: boolean;
-  reportReason: string;
-  reportMessage: string;
-  flags: string[];
-  reviewedStudent: boolean;
-  reviewedVolunteer: boolean;
-  timeTutored: number;
-  addNotifications(notificationsToAdd: NotificationDocument[]): Promise<NotificationDocument[]>;
+  _id: Types.ObjectId
+  student: Types.ObjectId | Student
+  volunteer: Types.ObjectId | Volunteer
+  type: string
+  subTopic: string
+  messages: Message[]
+  whiteboardDoc: string
+  quillDoc: string
+  createdAt: Date
+  volunteerJoinedAt: Date
+  failedJoins: (Types.ObjectId | User)[]
+  endedAt: Date
+  endedBy: Types.ObjectId | User
+  notifications: (Types.ObjectId | Notification)[]
+  photos: string[]
+  isReported: boolean
+  reportReason: string
+  reportMessage: string
+  flags: string[]
+  reviewedStudent: boolean
+  reviewedVolunteer: boolean
+  timeTutored: number
+  addNotifications(
+    notificationsToAdd: NotificationDocument[]
+  ): Promise<NotificationDocument[]>
 }
 
-export type SessionDocument = Session & Document;
+export type SessionDocument = Session & Document
 
 const sessionSchema = new Schema({
   student: {
@@ -53,10 +55,10 @@ const sessionSchema = new Schema({
     type: String,
     validate: {
       validator: function(v): boolean {
-        const type = v.toLowerCase();
+        const type = v.toLowerCase()
         return validTypes.some(function(validType) {
-          return validType.toLowerCase() === type;
-        });
+          return validType.toLowerCase() === type
+        })
       },
       message: '{VALUE} is not a valid type'
     }
@@ -127,7 +129,7 @@ const sessionSchema = new Schema({
   reviewedStudent: Boolean,
   reviewedVolunteer: Boolean,
   timeTutored: { type: Number, default: 0 }
-});
+})
 
 sessionSchema.methods.addNotifications = function(
   notificationsToAdd: NotificationDocument[]
@@ -136,8 +138,8 @@ sessionSchema.methods.addNotifications = function(
     .findByIdAndUpdate(this._id, {
       $push: { notifications: { $each: notificationsToAdd } }
     })
-    .exec();
-};
+    .exec()
+}
 
 sessionSchema.statics.findLatest = function(
   attrs: Partial<Session>
@@ -149,8 +151,8 @@ sessionSchema.statics.findLatest = function(
     .findOne()
     .populate({ path: 'volunteer', select: 'firstname isVolunteer' })
     .populate({ path: 'student', select: 'firstname isVolunteer' })
-    .exec();
-};
+    .exec()
+}
 
 // user's current session
 sessionSchema.statics.current = function(
@@ -159,8 +161,8 @@ sessionSchema.statics.current = function(
   return this.findLatest({
     endedAt: { $exists: false },
     $or: [{ student: userId }, { volunteer: userId }]
-  });
-};
+  })
+}
 
 // sessions that have not yet been fulfilled by a volunteer
 sessionSchema.statics.getUnfulfilledSessions = async function(): Promise<
@@ -171,7 +173,7 @@ sessionSchema.statics.getUnfulfilledSessions = async function(): Promise<
     volunteer: { $exists: false },
     endedAt: { $exists: false },
     createdAt: { $gt: new Date(Date.now() - 24 * 60 * 60 * 1000) }
-  };
+  }
 
   const sessions = await this.find(queryAttrs)
     .populate({
@@ -179,35 +181,37 @@ sessionSchema.statics.getUnfulfilledSessions = async function(): Promise<
       select: 'firstname isVolunteer isTestUser isBanned pastSessions'
     })
     .sort({ createdAt: -1 })
-    .exec();
+    .exec()
 
-  const oneMinuteAgo = moment().subtract(1, 'minutes');
+  const oneMinuteAgo = moment().subtract(1, 'minutes')
 
   return sessions.filter(session => {
     const isNewStudent =
-      session.student.pastSessions && session.student.pastSessions.length === 0;
+      session.student.pastSessions && session.student.pastSessions.length === 0
     const wasSessionCreatedAMinuteAgo = moment(oneMinuteAgo).isBefore(
       session.createdAt
-    );
+    )
     // Don't show new students' sessions for a minute (they often cancel immediately)
-    if (isNewStudent && wasSessionCreatedAMinuteAgo) return false;
+    if (isNewStudent && wasSessionCreatedAMinuteAgo) return false
     // Don't show banned students' sessions
-    if (session.student.isBanned) return false;
-    return true;
-  });
-};
+    if (session.student.isBanned) return false
+    return true
+  })
+}
 
 export interface SessionStaticModel extends Model<SessionDocument> {
-  addNotifications(notificationsToAdd: NotificationDocument[]): Promise<NotificationDocument[]>;
-  findLatest(): Promise<SessionDocument>;
-  current(): Promise<SessionDocument>;
-  getUnfulfilledSessions(): Promise<SessionDocument[]>;
+  addNotifications(
+    notificationsToAdd: NotificationDocument[]
+  ): Promise<NotificationDocument[]>
+  findLatest(): Promise<SessionDocument>
+  current(): Promise<SessionDocument>
+  getUnfulfilledSessions(): Promise<SessionDocument[]>
 }
 
 const SessionModel = model<SessionDocument, SessionStaticModel>(
   'Session',
   sessionSchema
-);
+)
 
-module.exports = SessionModel;
-export default SessionModel;
+module.exports = SessionModel
+export default SessionModel

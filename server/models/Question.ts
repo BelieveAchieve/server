@@ -1,4 +1,4 @@
-import { Document, Model, model, Schema, Types } from 'mongoose';
+import { Document, Model, model, Schema, Types } from 'mongoose'
 import {
   TRAINING,
   MATH_CERTS,
@@ -6,25 +6,25 @@ import {
   COLLEGE_CERTS,
   COLLEGE_SUBJECTS,
   SAT_CERTS
-} from '../constants';
+} from '../constants'
 
 export interface Question {
-  _id: Types.ObjectId;
-  questionText: string;
+  _id: Types.ObjectId
+  questionText: string
   possibleAnswers: {
-    txt: string;
-    val: string;
-  }[];
-  correctAnswer: string;
-  category: string;
-  subcategory: string;
-  imageSrc: string;
+    txt: string
+    val: string
+  }[]
+  correctAnswer: string
+  category: string
+  subcategory: string
+  imageSrc: string
 }
 
-export type QuestionDocument = Question & Document;
+export type QuestionDocument = Question & Document
 
 interface QuestionStaticModel extends Model<QuestionDocument> {
-  getSubcategories(category: string): string[];
+  getSubcategories(category: string): string[]
 }
 
 const questionSchema = new Schema({
@@ -34,7 +34,7 @@ const questionSchema = new Schema({
   category: String,
   subcategory: String,
   imageSrc: String
-});
+})
 
 // Given a question record, strip out sensitive data for public consumption
 questionSchema.methods.parseQuestion = function(): Partial<Question> {
@@ -43,8 +43,8 @@ questionSchema.methods.parseQuestion = function(): Partial<Question> {
     questionText: this.questionText,
     possibleAnswers: this.possibleAnswers,
     imageSrc: this.image
-  };
-};
+  }
+}
 
 questionSchema.statics.getSubcategories = function(category: string): string[] {
   const categoryToSubcategoryMap = {
@@ -281,7 +281,7 @@ questionSchema.statics.getSubcategories = function(category: string): string[] {
       'history_passages',
       'strategies'
     ]
-  };
+  }
 
   if (typeof category !== 'string') {
     throw new TypeError(
@@ -289,22 +289,22 @@ questionSchema.statics.getSubcategories = function(category: string): string[] {
         category +
         '. It must be a string, not ' +
         typeof category
-    );
+    )
   }
 
   if (categoryToSubcategoryMap.hasOwnProperty(category)) {
-    const subcategories = categoryToSubcategoryMap[category];
-    return subcategories;
+    const subcategories = categoryToSubcategoryMap[category]
+    return subcategories
   } else {
-    throw new ReferenceError(category + ' is not a subcategory.');
+    throw new ReferenceError(category + ' is not a subcategory.')
   }
-};
+}
 
 const QuestionModel = model<QuestionDocument, QuestionStaticModel>(
   'Question',
   questionSchema,
   'question'
-);
+)
 
-module.exports = QuestionModel;
-export default QuestionModel;
+module.exports = QuestionModel
+export default QuestionModel

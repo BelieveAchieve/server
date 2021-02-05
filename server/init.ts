@@ -1,17 +1,17 @@
-import mongoose from 'mongoose';
-import ejson from 'mongodb-extended-json';
-import config from './config';
+import mongoose from 'mongoose'
+import ejson from 'mongodb-extended-json'
+import config from './config'
 
 // Database
-mongoose.connect(config.database, { useNewUrlParser: true });
-const db = mongoose.connection;
+mongoose.connect(config.database, { useNewUrlParser: true })
+const db = mongoose.connection
 
-db.on('error', console.error.bind(console, 'connection error:'));
+db.on('error', console.error.bind(console, 'connection error:'))
 
 db.once('open', function() {
-  console.log('Connected to database');
+  console.log('Connected to database')
 
-  const promises = [];
+  const promises = []
 
   // Data about the seed data we intend to import / update from this file
   const seedDataMetadata = [
@@ -55,49 +55,49 @@ db.once('open', function() {
         'upchieve101'
       ]
     }
-  ];
+  ]
 
   // For each of the above metadata items, replace each record in each file with the value from seed data
   seedDataMetadata.forEach(seedDataMetadataItem => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const aModel = require('./models/' + seedDataMetadataItem.model);
+    const aModel = require('./models/' + seedDataMetadataItem.model)
 
     seedDataMetadataItem.files.forEach(file => {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const seedData = require('./seeds/' +
         seedDataMetadataItem.folder +
         file +
-        '.json');
+        '.json')
 
       // use Extended JSON to handle formats like "$date" in json files
-      const deserializedSeedData = ejson.deserialize(seedData);
+      const deserializedSeedData = ejson.deserialize(seedData)
 
       deserializedSeedData.forEach(record => {
         // Build a Unique ID Key for each record to be updated. Start with empty object
-        const idKey = {};
+        const idKey = {}
 
         // Add a single key/value: key is seedDataMetadataItem.idField
         idKey[seedDataMetadataItem.idField] =
-          record[seedDataMetadataItem.idField];
+          record[seedDataMetadataItem.idField]
 
         const replacePromise = aModel.findOneAndReplace(idKey, record, {
           upsert: true,
           new: true,
           setDefaultsOnInsert: true
-        });
+        })
 
-        promises.push(replacePromise);
-        console.log(record);
-      });
-    });
-  });
+        promises.push(replacePromise)
+        console.log(record)
+      })
+    })
+  })
 
   Promise.all(promises)
     .then(() => {
-      console.log('Successfully imported data');
-      process.exit();
+      console.log('Successfully imported data')
+      process.exit()
     })
     .catch(err => {
-      throw new Error(err);
-    });
-});
+      throw new Error(err)
+    })
+})

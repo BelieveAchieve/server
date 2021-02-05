@@ -1,14 +1,14 @@
-import { Document, model, Schema, Types } from 'mongoose';
-import { User } from './User';
+import { Document, model, Schema, Types } from 'mongoose'
+import { User } from './User'
 
 export interface Message {
-  _id: Types.ObjectId;
-  user: Types.ObjectId | User;
-  contents: string;
-  createdAt: Date;
+  _id: Types.ObjectId
+  user: Types.ObjectId | User
+  contents: string
+  createdAt: Date
 }
 
-export type MessageDocument = Message & Document;
+export type MessageDocument = Message & Document
 
 const messageSchema = new Schema(
   {
@@ -31,23 +31,23 @@ const messageSchema = new Schema(
       virtuals: true
     }
   }
-);
+)
 
 messageSchema.virtual('userId').get(function() {
-  return this.user._id || this.user;
-});
+  return this.user._id || this.user
+})
 
 messageSchema.virtual('name').get(function() {
   // only works if user is populated
-  return this.user.firstname;
-});
+  return this.user.firstname
+})
 
 messageSchema.virtual('isVolunteer').get(function() {
   // only works if user is populated
-  return this.user.isVolunteer;
-});
+  return this.user.isVolunteer
+})
 
-const MessageModel = model<MessageDocument>('Message', messageSchema);
+const MessageModel = model<MessageDocument>('Message', messageSchema)
 
-module.exports = MessageModel;
-export default MessageModel;
+module.exports = MessageModel
+export default MessageModel

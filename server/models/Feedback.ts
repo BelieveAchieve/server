@@ -1,18 +1,18 @@
-import { Document, model, Schema, Types } from 'mongoose';
+import { Document, model, Schema, Types } from 'mongoose'
 
 export interface Feedback {
-  _id: Types.ObjectId;
-  sessionId: Types.ObjectId;
-  type: string;
-  subTopic: string;
-  responseData: { [key: string]: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
-  userType: string;
-  studentId: Types.ObjectId;
-  volunteerId: Types.ObjectId;
-  createdAt: Date;
+  _id: Types.ObjectId
+  sessionId: Types.ObjectId
+  type: string
+  subTopic: string
+  responseData: { [key: string]: any } // eslint-disable-line @typescript-eslint/no-explicit-any
+  userType: string
+  studentId: Types.ObjectId
+  volunteerId: Types.ObjectId
+  createdAt: Date
 }
 
-export type FeedbackDocument = Feedback & Document;
+export type FeedbackDocument = Feedback & Document
 
 const feedbackSchema = new Schema({
   sessionId: {
@@ -91,9 +91,9 @@ const feedbackSchema = new Schema({
     type: Date,
     default: Date.now
   }
-});
+})
 
-const FeedbackModel = model<FeedbackDocument>('Feedback', feedbackSchema);
+const FeedbackModel = model<FeedbackDocument>('Feedback', feedbackSchema)
 
-module.exports = FeedbackModel;
-export default FeedbackModel;
+module.exports = FeedbackModel
+export default FeedbackModel

@@ -1,3 +1,3 @@
 export const log = (message: string): void => {
-  console.log(`${new Date()} ${message}`);
-};
+  console.log(`${new Date()} ${message}`)
+}

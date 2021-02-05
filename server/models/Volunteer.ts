@@ -1,5 +1,5 @@
-import { Document, Schema, Types } from 'mongoose';
-import { values } from 'lodash';
+import { Document, Schema, Types } from 'mongoose'
+import { values } from 'lodash'
 import {
   PHOTO_ID_STATUS,
   REFERENCE_STATUS,
@@ -10,8 +10,8 @@ import {
   SCIENCE_CERTS,
   SAT_CERTS,
   COLLEGE_SUBJECTS
-} from '../constants';
-import UserModel, { User } from './User';
+} from '../constants'
+import UserModel, { User } from './User'
 
 export enum DAYS {
   SUNDAY = 'Sunday',
@@ -51,153 +51,153 @@ export enum HOURS {
 }
 
 export type AvailabilityDay = {
-  [hour in HOURS]: boolean;
-};
+  [hour in HOURS]: boolean
+}
 
 export type Availability = {
-  [day in DAYS]: AvailabilityDay;
-};
+  [day in DAYS]: AvailabilityDay
+}
 
 export interface Reference extends Document {
-  _id: Types.ObjectId;
-  firstName: string;
-  lastName: string;
-  createdAt: Date;
-  email: string;
-  status: string;
-  sentAt: Date;
-  affiliation: string;
-  relationshipLength: string;
-  patient: number;
-  positiveRoleModel: number;
-  agreeableAndApproachable: number;
-  communicatesEffectively: number;
-  trustworthyWithChildren: number;
-  rejectionReason: string;
-  additionalInfo: string;
+  _id: Types.ObjectId
+  firstName: string
+  lastName: string
+  createdAt: Date
+  email: string
+  status: string
+  sentAt: Date
+  affiliation: string
+  relationshipLength: string
+  patient: number
+  positiveRoleModel: number
+  agreeableAndApproachable: number
+  communicatesEffectively: number
+  trustworthyWithChildren: number
+  rejectionReason: string
+  additionalInfo: string
 }
 
 export interface CertificationInfo {
-  passed: boolean;
-  tries: number;
-  lastAttemptedAt?: Date;
+  passed: boolean
+  tries: number
+  lastAttemptedAt?: Date
 }
 
 export interface Certifications {
-  [MATH_CERTS.PREALGREBA]: CertificationInfo;
-  [MATH_CERTS.ALGEBRA]: CertificationInfo;
-  [MATH_CERTS.GEOMETRY]: CertificationInfo;
-  [MATH_CERTS.TRIGONOMETRY]: CertificationInfo;
-  [MATH_CERTS.PRECALCULUS]: CertificationInfo;
-  [MATH_CERTS.CALCULUS_AB]: CertificationInfo;
-  [MATH_CERTS.CALCULUS_BC]: CertificationInfo;
-  [MATH_CERTS.STATISTICS]: CertificationInfo;
-  [SCIENCE_CERTS.BIOLOGY]: CertificationInfo;
-  [SCIENCE_CERTS.CHEMISTRY]: CertificationInfo;
-  [SCIENCE_CERTS.PHYSICS_ONE]: CertificationInfo;
-  [SCIENCE_CERTS.PHYSICS_TWO]: CertificationInfo;
-  [SCIENCE_CERTS.ENVIRONMENTAL_SCIENCE]: CertificationInfo;
-  [COLLEGE_CERTS.ESSAYS]: CertificationInfo;
-  [COLLEGE_CERTS.FINANCIAL_AID]: CertificationInfo;
-  [COLLEGE_CERTS.SPORTS_RECRUITMENT_PLANNING]: CertificationInfo;
-  [SAT_CERTS.SAT_MATH]: CertificationInfo;
-  [SAT_CERTS.SAT_READING]: CertificationInfo;
-  [TRAINING.UPCHIEVE_101]: CertificationInfo;
-  [TRAINING.TUTORING_SKILLS]: CertificationInfo;
-  [TRAINING.COLLEGE_COUNSELING]: CertificationInfo;
-  [TRAINING.COLLEGE_SKILLS]: CertificationInfo;
-  [TRAINING.SAT_STRATEGIES]: CertificationInfo;
-  [COLLEGE_SUBJECTS.PLANNING]: CertificationInfo;
-  [COLLEGE_SUBJECTS.APPLICATIONS]: CertificationInfo;
+  [MATH_CERTS.PREALGREBA]: CertificationInfo
+  [MATH_CERTS.ALGEBRA]: CertificationInfo
+  [MATH_CERTS.GEOMETRY]: CertificationInfo
+  [MATH_CERTS.TRIGONOMETRY]: CertificationInfo
+  [MATH_CERTS.PRECALCULUS]: CertificationInfo
+  [MATH_CERTS.CALCULUS_AB]: CertificationInfo
+  [MATH_CERTS.CALCULUS_BC]: CertificationInfo
+  [MATH_CERTS.STATISTICS]: CertificationInfo
+  [SCIENCE_CERTS.BIOLOGY]: CertificationInfo
+  [SCIENCE_CERTS.CHEMISTRY]: CertificationInfo
+  [SCIENCE_CERTS.PHYSICS_ONE]: CertificationInfo
+  [SCIENCE_CERTS.PHYSICS_TWO]: CertificationInfo
+  [SCIENCE_CERTS.ENVIRONMENTAL_SCIENCE]: CertificationInfo
+  [COLLEGE_CERTS.ESSAYS]: CertificationInfo
+  [COLLEGE_CERTS.FINANCIAL_AID]: CertificationInfo
+  [COLLEGE_CERTS.SPORTS_RECRUITMENT_PLANNING]: CertificationInfo
+  [SAT_CERTS.SAT_MATH]: CertificationInfo
+  [SAT_CERTS.SAT_READING]: CertificationInfo
+  [TRAINING.UPCHIEVE_101]: CertificationInfo
+  [TRAINING.TUTORING_SKILLS]: CertificationInfo
+  [TRAINING.COLLEGE_COUNSELING]: CertificationInfo
+  [TRAINING.COLLEGE_SKILLS]: CertificationInfo
+  [TRAINING.SAT_STRATEGIES]: CertificationInfo
+  [COLLEGE_SUBJECTS.PLANNING]: CertificationInfo
+  [COLLEGE_SUBJECTS.APPLICATIONS]: CertificationInfo
 }
 
 interface TrainingCourseData {
-  isComplete: boolean;
-  progress: number;
-  completedMaterials: string[];
+  isComplete: boolean
+  progress: number
+  completedMaterials: string[]
 }
 
 export interface TrainingCourses {
-  [TRAINING.UPCHIEVE_101]: TrainingCourseData;
-  [TRAINING.TUTORING_SKILLS]: TrainingCourseData;
-  [TRAINING.COLLEGE_COUNSELING]: TrainingCourseData;
-  [TRAINING.COLLEGE_SKILLS]: TrainingCourseData;
-  [TRAINING.SAT_STRATEGIES]: TrainingCourseData;
+  [TRAINING.UPCHIEVE_101]: TrainingCourseData
+  [TRAINING.TUTORING_SKILLS]: TrainingCourseData
+  [TRAINING.COLLEGE_COUNSELING]: TrainingCourseData
+  [TRAINING.COLLEGE_SKILLS]: TrainingCourseData
+  [TRAINING.SAT_STRATEGIES]: TrainingCourseData
 }
 
 export interface Volunteer extends User {
-  volunteerPartnerOrg: string;
-  isFailsafeVolunteer: boolean;
-  phone: string;
-  favoriteAcademicSubject: string;
-  availability: Availability;
-  timezone: string;
-  availabilityLastModifiedAt: Date;
-  elapsedAvailability: number;
-  certifications: Certifications;
-  isApproved: boolean;
-  isOnboarded: boolean;
-  photoIdS3Key: string;
-  photoIdStatus: string;
-  references: Reference[];
-  occupation: string[];
-  company: string;
+  volunteerPartnerOrg: string
+  isFailsafeVolunteer: boolean
+  phone: string
+  favoriteAcademicSubject: string
+  availability: Availability
+  timezone: string
+  availabilityLastModifiedAt: Date
+  elapsedAvailability: number
+  certifications: Certifications
+  isApproved: boolean
+  isOnboarded: boolean
+  photoIdS3Key: string
+  photoIdStatus: string
+  references: Reference[]
+  occupation: string[]
+  company: string
   experience: {
-    collegeCounseling: string;
-    mentoring: string;
-    tutoring: string;
-  };
-  languages: string[];
-  country: string;
-  state: string;
-  city: string;
-  sentReadyToCoachEmail: boolean;
-  subjects: string[];
-  trainingCourses: TrainingCourses;
-  linkedInUrl: string;
-  hoursTutored: Types.Decimal128;
-  timeTutored: number;
-  sentHourSummaryIntroEmail: boolean;
+    collegeCounseling: string
+    mentoring: string
+    tutoring: string
+  }
+  languages: string[]
+  country: string
+  state: string
+  city: string
+  sentReadyToCoachEmail: boolean
+  subjects: string[]
+  trainingCourses: TrainingCourses
+  linkedInUrl: string
+  hoursTutored: Types.Decimal128
+  timeTutored: number
+  sentHourSummaryIntroEmail: boolean
 }
 
-export type VolunteerDocument = Volunteer & Document;
+export type VolunteerDocument = Volunteer & Document
 
 const weeksSince = (date): number => {
   // 604800000 = milliseconds in a week
-  return ((new Date().getTime() as number) - date) / 604800000;
-};
+  return ((new Date().getTime() as number) - date) / 604800000
+}
 
 const minsSince = (date): number => {
   // 60000 = milliseconds in a minute
-  return ((new Date().getTime() as number) - date) / 60000;
-};
+  return ((new Date().getTime() as number) - date) / 60000
+}
 
 const tallyVolunteerPoints = (volunteer): number => {
-  let points = 0;
+  let points = 0
 
   // +2 points if no past sessions
   if (!volunteer.pastSessions || !volunteer.pastSessions.length) {
-    points += 2;
+    points += 2
   }
 
   // +1 point if volunteer is from a partner org
   if (volunteer.volunteerPartnerOrg) {
-    points += 1;
+    points += 1
   }
 
   // +1 point per 1 week since last notification
   if (volunteer.volunteerLastNotification) {
-    points += weeksSince(new Date(volunteer.volunteerLastNotification.sentAt));
+    points += weeksSince(new Date(volunteer.volunteerLastNotification.sentAt))
   } else {
-    points += weeksSince(new Date(volunteer.createdAt));
+    points += weeksSince(new Date(volunteer.createdAt))
   }
 
   // +1 point per 2 weeks since last session
   if (volunteer.volunteerLastSession) {
     points +=
-      0.5 * weeksSince(new Date(volunteer.volunteerLastSession.createdAt));
+      0.5 * weeksSince(new Date(volunteer.volunteerLastSession.createdAt))
   } else {
-    points += weeksSince(new Date(volunteer.createdAt));
+    points += weeksSince(new Date(volunteer.createdAt))
   }
 
   // -10000 points if notified recently
@@ -205,11 +205,11 @@ const tallyVolunteerPoints = (volunteer): number => {
     volunteer.volunteerLastNotification &&
     minsSince(new Date(volunteer.volunteerLastNotification.sentAt)) < 5
   ) {
-    points -= 10000;
+    points -= 10000
   }
 
-  return parseFloat(points.toFixed(2));
-};
+  return parseFloat(points.toFixed(2))
+}
 
 // subdocument schema for each availability day
 const availabilityDaySchema = new Schema(
@@ -240,7 +240,7 @@ const availabilityDaySchema = new Schema(
     [HOURS['11PM']]: { type: Boolean, default: false }
   },
   { _id: false }
-);
+)
 
 const availabilitySchema = new Schema(
   {
@@ -274,7 +274,7 @@ const availabilitySchema = new Schema(
     }
   },
   { _id: false }
-);
+)
 
 const referenceSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
@@ -297,7 +297,7 @@ const referenceSchema = new Schema({
   trustworthyWithChildren: Number,
   rejectionReason: String,
   additionalInfo: String
-});
+})
 
 const trainingCourseSchema = new Schema({
   isComplete: {
@@ -312,7 +312,7 @@ const trainingCourseSchema = new Schema({
     type: [String],
     default: []
   }
-});
+})
 
 const volunteerSchemaOptions = {
   toJSON: {
@@ -321,7 +321,7 @@ const volunteerSchemaOptions = {
   toObject: {
     virtuals: true
   }
-};
+}
 
 const volunteerSchema = new Schema(
   {
@@ -687,12 +687,12 @@ const volunteerSchema = new Schema(
     }
   },
   volunteerSchemaOptions
-);
+)
 
 volunteerSchema.virtual('volunteerPointRank').get(function() {
-  if (!this.isVolunteer) return null;
-  return tallyVolunteerPoints(this);
-});
+  if (!this.isVolunteer) return null
+  return tallyVolunteerPoints(this)
+})
 
 // Virtual that gets all notifications that this user has been sent
 volunteerSchema.virtual('notifications', {
@@ -700,7 +700,7 @@ volunteerSchema.virtual('notifications', {
   localField: '_id',
   foreignField: 'volunteer',
   options: { sort: { sentAt: -1 } }
-});
+})
 
 volunteerSchema.virtual('volunteerLastSession', {
   ref: 'Session',
@@ -708,7 +708,7 @@ volunteerSchema.virtual('volunteerLastSession', {
   foreignField: 'volunteer',
   justOne: true,
   options: { sort: { createdAt: -1 } }
-});
+})
 
 volunteerSchema.virtual('volunteerLastNotification', {
   ref: 'Notification',
@@ -716,13 +716,13 @@ volunteerSchema.virtual('volunteerLastNotification', {
   foreignField: 'volunteer',
   justOne: true,
   options: { sort: { sentAt: -1 } }
-});
+})
 
 // Use the user schema as the base schema for Volunteer
 const VolunteerModel = UserModel.discriminator<VolunteerDocument>(
   'Volunteer',
   volunteerSchema
-);
+)
 
-module.exports = VolunteerModel;
-export default VolunteerModel;
+module.exports = VolunteerModel
+export default VolunteerModel

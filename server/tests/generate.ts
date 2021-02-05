@@ -1,9 +1,9 @@
-import moment from 'moment-timezone';
-import faker from 'faker';
-import { Test } from 'supertest';
-import { Types } from 'mongoose';
-import base64url from 'base64url';
-import { merge } from 'lodash';
+import moment from 'moment-timezone'
+import faker from 'faker'
+import { Test } from 'supertest'
+import { Types } from 'mongoose'
+import base64url from 'base64url'
+import { merge } from 'lodash'
 import {
   PHOTO_ID_STATUS,
   REFERENCE_STATUS,
@@ -13,41 +13,41 @@ import {
   COLLEGE_CERTS,
   COLLEGE_SUBJECTS,
   SAT_CERTS
-} from '../constants';
-import { Message } from '../models/Message';
-import { AvailabilitySnapshot } from '../models/Availability/Snapshot';
-import { AvailabilityHistory } from '../models/Availability/History';
-import { UserAction } from '../models/UserAction';
+} from '../constants'
+import { Message } from '../models/Message'
+import { AvailabilitySnapshot } from '../models/Availability/Snapshot'
+import { AvailabilityHistory } from '../models/Availability/History'
+import { UserAction } from '../models/UserAction'
 import {
   AvailabilityDay,
   Availability,
   DAYS,
   HOURS
-} from '../models/Availability/types';
+} from '../models/Availability/types'
 import {
   Volunteer,
   Reference,
   TrainingCourses,
   Certifications
-} from '../models/Volunteer';
-import { User } from '../models/User';
-import { Student } from '../models/Student';
-import { Session } from '../models/Session';
-import { StudentRegistrationForm, VolunteerRegistrationForm } from './types';
-export const getEmail = faker.internet.email;
-export const getFirstName = faker.name.firstName;
-export const getLastName = faker.name.lastName;
-export const getId = faker.random.uuid;
-export const generateSentence = (): string => faker.lorem.sentence();
+} from '../models/Volunteer'
+import { User } from '../models/User'
+import { Student } from '../models/Student'
+import { Session } from '../models/Session'
+import { StudentRegistrationForm, VolunteerRegistrationForm } from './types'
+export const getEmail = faker.internet.email
+export const getFirstName = faker.name.firstName
+export const getLastName = faker.name.lastName
+export const getId = faker.random.uuid
+export const generateSentence = (): string => faker.lorem.sentence()
 
 const generateReferralCode = (userId): string =>
-  base64url(Buffer.from(userId, 'hex'));
+  base64url(Buffer.from(userId, 'hex'))
 
 export const getDayOfWeek = (): string => {
   return moment()
     .tz('America/New_York')
-    .format('dddd');
-};
+    .format('dddd')
+}
 
 // @todo: Figure out how to use with MATH_CERTS, SCIENCE_CERTS
 export const buildCertifications = (overrides = {}): Certifications => {
@@ -78,10 +78,10 @@ export const buildCertifications = (overrides = {}): Certifications => {
     [TRAINING.COLLEGE_SKILLS]: { passed: false, tries: 0 },
     [TRAINING.SAT_STRATEGIES]: { passed: false, tries: 0 },
     ...overrides
-  };
+  }
 
-  return certifications;
-};
+  return certifications
+}
 
 export const buildTrainingCourses = (overrides = {}): TrainingCourses => {
   const trainingCourses = {
@@ -111,28 +111,28 @@ export const buildTrainingCourses = (overrides = {}): TrainingCourses => {
       completedMaterials: []
     },
     ...overrides
-  };
-  return trainingCourses;
-};
+  }
+  return trainingCourses
+}
 
 export const buildAvailability = (overrides = {}): Availability => {
-  const availability = {} as Availability;
+  const availability = {} as Availability
   for (const day in DAYS) {
-    availability[DAYS[day]] = {};
+    availability[DAYS[day]] = {}
     for (const hour in HOURS) {
-      availability[DAYS[day]][HOURS[hour]] = false;
+      availability[DAYS[day]][HOURS[hour]] = false
     }
   }
 
-  const mergedAvailability = merge(availability, overrides);
+  const mergedAvailability = merge(availability, overrides)
 
-  return mergedAvailability;
-};
+  return mergedAvailability
+}
 
 export const buildAvailabilitySnapshot = (
   overrides = {}
 ): AvailabilitySnapshot => {
-  const currentDate = new Date();
+  const currentDate = new Date()
   return {
     _id: Types.ObjectId(),
     onCallAvailability: buildAvailability(),
@@ -141,13 +141,13 @@ export const buildAvailabilitySnapshot = (
     timezone: 'America/New_York',
     volunteerId: Types.ObjectId(),
     ...overrides
-  };
-};
+  }
+}
 
 export const buildAvailabilityHistory = (
   overrides = {}
 ): AvailabilityHistory => {
-  const currentDate = new Date();
+  const currentDate = new Date()
   return {
     _id: Types.ObjectId(),
     availability: buildAvailability()[getDayOfWeek()],
@@ -157,13 +157,13 @@ export const buildAvailabilityHistory = (
     timezone: 'America/New_York',
     volunteerId: Types.ObjectId(),
     ...overrides
-  };
-};
+  }
+}
 
 export const buildStudent = (overrides = {}): Partial<Student> => {
-  const firstName = getFirstName();
-  const lastName = getLastName();
-  const _id = Types.ObjectId();
+  const firstName = getFirstName()
+  const lastName = getLastName()
+  const _id = Types.ObjectId()
   const student = {
     _id,
     email: getEmail().toLowerCase(),
@@ -180,15 +180,15 @@ export const buildStudent = (overrides = {}): Partial<Student> => {
     pastSessions: [],
     createdAt: new Date(),
     ...overrides
-  };
+  }
 
-  return student;
-};
+  return student
+}
 
 export const buildVolunteer = (overrides = {}): Partial<Volunteer> => {
-  const firstName = getFirstName();
-  const lastName = getLastName();
-  const _id = Types.ObjectId();
+  const firstName = getFirstName()
+  const lastName = getLastName()
+  const _id = Types.ObjectId()
   const volunteer = {
     _id,
     email: getEmail().toLowerCase(),
@@ -216,15 +216,15 @@ export const buildVolunteer = (overrides = {}): Partial<Volunteer> => {
     elapsedAvailability: 0,
     sentHourSummaryIntroEmail: false,
     ...overrides
-  };
+  }
 
-  return volunteer;
-};
+  return volunteer
+}
 
 export const buildStudentRegistrationForm = (
   overrides: Partial<StudentRegistrationForm> = {}
 ): StudentRegistrationForm => {
-  const student = buildStudent();
+  const student = buildStudent()
   const form = {
     zipCode: student.zipCode,
     firstName: student.firstname,
@@ -234,15 +234,15 @@ export const buildStudentRegistrationForm = (
     highSchoolId: '11111111',
     terms: true,
     ...overrides
-  };
+  }
 
-  return form;
-};
+  return form
+}
 
 export const buildVolunteerRegistrationForm = (
   overrides: Partial<VolunteerRegistrationForm> = {}
 ): VolunteerRegistrationForm => {
-  const volunteer = buildVolunteer();
+  const volunteer = buildVolunteer()
   const form = {
     firstName: volunteer.firstname,
     lastName: volunteer.lastname,
@@ -251,29 +251,29 @@ export const buildVolunteerRegistrationForm = (
     phone: volunteer.phone,
     terms: true,
     ...overrides
-  };
+  }
 
-  return form;
-};
+  return form
+}
 
 export const buildReference = (overrides = {}): Partial<Reference> => {
-  const referenceFirstName = getFirstName();
-  const referenceLastName = getLastName();
-  const referenceEmail = getEmail();
+  const referenceFirstName = getFirstName()
+  const referenceLastName = getLastName()
+  const referenceEmail = getEmail()
   const reference = {
     _id: Types.ObjectId(),
     firstName: referenceFirstName,
     lastName: referenceLastName,
     email: referenceEmail,
     ...overrides
-  };
+  }
 
-  return reference;
-};
+  return reference
+}
 
 export const buildReferenceForm = (overrides = {}): Partial<Reference> => {
-  const randomNumToSix = (): number => Math.floor(Math.random() * 6) + 1;
-  const randomNumToFive = (): number => Math.floor(Math.random() * 5) + 1;
+  const randomNumToSix = (): number => Math.floor(Math.random() * 6) + 1
+  const randomNumToFive = (): number => Math.floor(Math.random() * 5) + 1
   const form = {
     affiliation: faker.lorem.word(),
     relationshipLength: faker.lorem.word(),
@@ -286,30 +286,30 @@ export const buildReferenceForm = (overrides = {}): Partial<Reference> => {
     trustworthyWithChildren: randomNumToFive(),
     status: REFERENCE_STATUS.SUBMITTED,
     ...overrides
-  };
+  }
 
-  return form;
-};
+  return form
+}
 
 export const buildReferenceWithForm = (overrides = {}): Partial<Reference> => {
   const data = {
     ...buildReferenceForm(),
     ...buildReference(),
     ...overrides
-  };
+  }
 
-  return data;
-};
+  return data
+}
 
 export const buildPhotoIdData = (overrides = {}): Partial<Volunteer> => {
   const data = {
     photoIdS3Key: getId(),
     photoIdStatus: PHOTO_ID_STATUS.SUBMITTED,
     ...overrides
-  };
+  }
 
-  return data;
-};
+  return data
+}
 
 export const buildBackgroundInfo = (overrides = {}): Partial<Volunteer> => {
   const data = {
@@ -324,13 +324,13 @@ export const buildBackgroundInfo = (overrides = {}): Partial<Volunteer> => {
     state: 'New York',
     city: 'New York City',
     ...overrides
-  };
+  }
 
-  return data;
-};
+  return data
+}
 
 export const buildSession = (overrides = {}): Partial<Session> => {
-  const _id = Types.ObjectId();
+  const _id = Types.ObjectId()
   const session = {
     _id,
     student: null,
@@ -350,41 +350,41 @@ export const buildSession = (overrides = {}): Partial<Session> => {
     reportMessage: null,
     timeTutored: 0,
     ...overrides
-  };
+  }
 
-  return session;
-};
+  return session
+}
 
 export const buildMessage = (overrides = {}): Partial<Message> => {
-  const _id = Types.ObjectId();
+  const _id = Types.ObjectId()
   const message = {
     _id,
     user: null,
     contents: faker.lorem.sentence(),
     createdAt: new Date(),
     ...overrides
-  };
+  }
 
-  return message;
-};
+  return message
+}
 
 export const buildPastSessions = (): Types.ObjectId[] => {
-  const pastSession = buildSession();
-  const pastSessions = [pastSession._id];
+  const pastSession = buildSession()
+  const pastSessions = [pastSession._id]
 
-  return pastSessions;
-};
+  return pastSessions
+}
 
 /**
- * 
+ *
  * @todo: use Partial<Notification> instead of Partial<any>
  * Enums NotificationMethod & NotificationType do not exists at runtime, so
  * a type error like "Cannot read property 'SMS' of undefined" is thrown
- * 
+ *
  **/
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const buildNotification = (overrides = {}): Partial<any> => {
-  const _id = Types.ObjectId();
+  const _id = Types.ObjectId()
 
   const notification = {
     _id,
@@ -397,10 +397,10 @@ export const buildNotification = (overrides = {}): Partial<any> => {
     wasSuccessful: true,
     messageId: 'message123',
     ...overrides
-  };
+  }
 
-  return notification;
-};
+  return notification
+}
 
 export const buildUserAction = (
   overrides: Partial<UserAction> = {}
@@ -423,10 +423,10 @@ export const buildUserAction = (
     referenceEmail: null,
     banReason: null,
     ...overrides
-  };
+  }
 
-  return userAction;
-};
+  return userAction
+}
 
 export const buildAvailabilityDay = (overrides = {}): AvailabilityDay => {
   const availabilityDay = {
@@ -455,13 +455,13 @@ export const buildAvailabilityDay = (overrides = {}): AvailabilityDay => {
     '10p': false,
     '11p': false,
     ...overrides
-  };
+  }
 
-  return availabilityDay;
-};
+  return availabilityDay
+}
 
 export const authLogin = (agent, { email, password }: Partial<User>): Test =>
   agent
     .post('/auth/login')
     .set('Accept', 'application/json')
-    .send({ email, password });
+    .send({ email, password })

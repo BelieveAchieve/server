@@ -1,13 +1,13 @@
 jest.mock('redis', () => {
-  const redisMock = require('fakeredis');
+  const redisMock = require('fakeredis')
   return {
     __esModule: true,
     default: redisMock
-  };
-});
+  }
+})
 
-jest.mock('posthog-node');
-jest.mock('../services/AnalyticsService');
+jest.mock('posthog-node')
+jest.mock('../services/AnalyticsService')
 
 jest.mock('../config', () => {
   return {
@@ -54,11 +54,11 @@ jest.mock('../config', () => {
       }
     },
     bannedServiceProviders: ['Example']
-  };
-});
+  }
+})
 
 jest.mock('unleash-client', () => {
   return {
     isEnabled: (): boolean => true
-  };
-});
+  }
+})

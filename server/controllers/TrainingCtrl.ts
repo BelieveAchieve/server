@@ -1,10 +1,6 @@
-import _ from 'lodash';
-import {
-  unlockedSubject,
-  accountOnboarded
-} from './UserActionCtrl';
-import { captureEvent } from '../services/AnalyticsService';
-import QuestionModel, { QuestionDocument } from '../models/Question';
+import _ from 'lodash'
+import { captureEvent } from '../services/AnalyticsService'
+import QuestionModel, { QuestionDocument } from '../models/Question'
 import {
   CERT_UNLOCKING,
   COMPUTED_CERTS,
@@ -16,14 +12,15 @@ import {
   COLLEGE_CERTS,
   COLLEGE_SUBJECTS,
   EVENTS
-} from '../constants';
-import getSubjectType from '../utils/getSubjectType';
-import { createContact } from '../services/MailService';
+} from '../constants'
+import getSubjectType from '../utils/getSubjectType'
+import { createContact } from '../services/MailService'
 import VolunteerModel, {
   Certifications,
   Volunteer,
   VolunteerDocument
-} from '../models/Volunteer';
+} from '../models/Volunteer'
+import { unlockedSubject, accountOnboarded } from './UserActionCtrl'
 
 // change depending on how many of each subcategory are wanted
 const numQuestions = {
@@ -47,9 +44,9 @@ const numQuestions = {
   [TRAINING.UPCHIEVE_101]: 27,
   [SAT_CERTS.SAT_MATH]: 1,
   [SAT_CERTS.SAT_READING]: 1
-};
-const SUBJECT_THRESHOLD = 0.8;
-const TRAINING_THRESHOLD = 1.0;
+}
+const SUBJECT_THRESHOLD = 0.8
+const TRAINING_THRESHOLD = 1.0
 
 // Check if a user is certified in a given group of subject certs
 // @todo: understand these types
@@ -58,41 +55,41 @@ const isCertifiedIn = (
   certifications: Certifications
 ): boolean => {
   for (const cert in subjectCerts) {
-    const subject = subjectCerts[cert];
-    if (certifications[subject].passed) return true;
+    const subject = subjectCerts[cert]
+    if (certifications[subject].passed) return true
   }
 
-  return false;
-};
+  return false
+}
 
 interface GetQuestionsOptions {
-  category: string;
+  category: string
 }
 
 export async function getQuestions(
   options: GetQuestionsOptions
 ): Promise<QuestionDocument[]> {
-  const { category } = options;
-  const subcategories = QuestionModel.getSubcategories(category);
+  const { category } = options
+  const subcategories = QuestionModel.getSubcategories(category)
 
   if (!subcategories) {
-    throw new Error('No subcategories defined for category: ' + category);
+    throw new Error('No subcategories defined for category: ' + category)
   }
 
   const questions = await QuestionModel.find({
     category
-  });
+  })
 
   const questionsBySubcategory = _.groupBy(
     questions,
     question => question.subcategory
-  );
+  )
 
   return _.shuffle(
     Object.entries(questionsBySubcategory).flatMap(([, subQuestions]) =>
       _.sampleSize(subQuestions, numQuestions[category])
     )
-  );
+  )
 }
 
 // Check if a given cert has the required training completed
@@ -100,28 +97,28 @@ export function hasRequiredTraining(
   subjectCert: string,
   userCertifications: Certifications
 ): boolean {
-  const subjectCertType = getSubjectType(subjectCert).toLowerCase();
+  const subjectCertType = getSubjectType(subjectCert).toLowerCase()
 
   if (
     (subjectCertType === SUBJECT_TYPES.MATH ||
       subjectCertType === SUBJECT_TYPES.SCIENCE) &&
     userCertifications[TRAINING.TUTORING_SKILLS].passed
   )
-    return true;
+    return true
 
   if (
     subjectCertType === SUBJECT_TYPES.COLLEGE &&
     userCertifications[TRAINING.COLLEGE_COUNSELING].passed
   )
-    return true;
+    return true
 
   if (
     subjectCertType === SUBJECT_TYPES.SAT &&
     userCertifications[TRAINING.SAT_STRATEGIES].passed
   )
-    return true;
+    return true
 
-  return false;
+  return false
 }
 
 // Check if a required training cert has any associated passed certifications for it
@@ -130,24 +127,24 @@ export function hasCertForRequiredTraining(
   userCertifications: Certifications
 ): boolean {
   // UPchieve 101 doesn't need any associated certs
-  if (trainingCert === TRAINING.UPCHIEVE_101) return true;
+  if (trainingCert === TRAINING.UPCHIEVE_101) return true
 
   // College counseling unlocks Planning and Essays by default, meaning no requirements are needed to unlock the college related certifications besides completing the required training
-  if (trainingCert === TRAINING.COLLEGE_COUNSELING) return true;
+  if (trainingCert === TRAINING.COLLEGE_COUNSELING) return true
 
   if (
     trainingCert === TRAINING.TUTORING_SKILLS &&
     isCertifiedIn({ ...MATH_CERTS, ...SCIENCE_CERTS }, userCertifications)
   )
-    return true;
+    return true
 
   if (
     trainingCert === TRAINING.SAT_STRATEGIES &&
     isCertifiedIn(SAT_CERTS, userCertifications)
   )
-    return true;
+    return true
 
-  return false;
+  return false
 }
 
 export function getUnlockedSubjects(
@@ -161,29 +158,29 @@ export function getUnlockedSubjects(
     [TRAINING.TUTORING_SKILLS]: { passed: true },
     [TRAINING.COLLEGE_COUNSELING]: { passed: true },
     [TRAINING.SAT_STRATEGIES]: { passed: true }
-  });
+  })
 
   // UPchieve 101 must be completed before a volunteer can be onboarded
-  if (!userCertifications[TRAINING.UPCHIEVE_101].passed) return [];
+  if (!userCertifications[TRAINING.UPCHIEVE_101].passed) return []
 
-  const certType = getSubjectType(cert);
+  const certType = getSubjectType(cert)
 
   // Check if the user has a certification for the required training
   if (
     certType === SUBJECT_TYPES.TRAINING &&
     !hasCertForRequiredTraining(cert, userCertifications)
   )
-    return [];
+    return []
 
   // Check if the user has completed required training for this cert
   if (
     certType !== SUBJECT_TYPES.TRAINING &&
     !hasRequiredTraining(cert, userCertifications)
   )
-    return [];
+    return []
 
   // Add all the certifications that this completed cert unlocks into a Set
-  const currentSubjects = new Set<string>(CERT_UNLOCKING[cert]);
+  const currentSubjects = new Set<string>(CERT_UNLOCKING[cert])
 
   for (const cert in userCertifications) {
     // Check that the required training was completed for every certification that a user has
@@ -193,116 +190,116 @@ export function getUnlockedSubjects(
       hasRequiredTraining(cert, userCertifications) &&
       CERT_UNLOCKING[cert]
     )
-      CERT_UNLOCKING[cert].forEach(subject => currentSubjects.add(subject));
+      CERT_UNLOCKING[cert].forEach(subject => currentSubjects.add(subject))
   }
 
   // Check if the user has unlocked a new certification based on the current certifications they have
   for (const cert in COMPUTED_CERTS) {
-    const prerequisiteCerts = COMPUTED_CERTS[cert];
-    let meetsRequirements = true;
+    const prerequisiteCerts = COMPUTED_CERTS[cert]
+    let meetsRequirements = true
 
     for (let i = 0; i < prerequisiteCerts.length; i++) {
-      const prereqCert = prerequisiteCerts[i];
+      const prereqCert = prerequisiteCerts[i]
 
       if (!currentSubjects.has(prereqCert)) {
-        meetsRequirements = false;
-        break;
+        meetsRequirements = false
+        break
       }
     }
 
-    if (meetsRequirements) currentSubjects.add(cert);
+    if (meetsRequirements) currentSubjects.add(cert)
   }
 
-  return Array.from(currentSubjects);
+  return Array.from(currentSubjects)
 }
 
 export interface GetQuizScoreOptions {
-  user: Volunteer;
+  user: Volunteer
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  idAnswerMap: any;
-  category: TRAINING;
-  ip: string;
+  idAnswerMap: any
+  category: TRAINING
+  ip: string
 }
 
 export interface GetQuizScoreOutput {
-  tries: number;
-  passed: boolean;
-  score: number;
+  tries: number
+  passed: boolean
+  score: number
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  idCorrectAnswerMap: any;
+  idCorrectAnswerMap: any
 }
 
 export async function getQuizScore(
   options: GetQuizScoreOptions
 ): Promise<GetQuizScoreOutput> {
-  const { user, idAnswerMap, ip } = options;
-  const cert = options.category;
-  const objIDs = Object.keys(idAnswerMap);
-  const questions = await QuestionModel.find({ _id: { $in: objIDs } }).exec();
+  const { user, idAnswerMap, ip } = options
+  const cert = options.category
+  const objIDs = Object.keys(idAnswerMap)
+  const questions = await QuestionModel.find({ _id: { $in: objIDs } }).exec()
 
   const score = questions.filter(
     question => question.correctAnswer === idAnswerMap[question._id]
-  ).length;
+  ).length
 
-  const percent = score / questions.length;
+  const percent = score / questions.length
   const threshold = Object.values(TRAINING).includes(cert)
     ? TRAINING_THRESHOLD
-    : SUBJECT_THRESHOLD;
-  const passed = percent >= threshold;
+    : SUBJECT_THRESHOLD
+  const passed = percent >= threshold
 
-  const tries = user.certifications[cert]['tries'] + 1;
+  const tries = user.certifications[cert]['tries'] + 1
 
   const userUpdates: Partial<VolunteerDocument> & { $addToSet?: any } = {
     [`certifications.${cert}.passed`]: passed,
     [`certifications.${cert}.tries`]: tries,
     [`certifications.${cert}.lastAttemptedAt`]: new Date()
-  };
+  }
 
   if (passed) {
-    const unlockedSubjects = getUnlockedSubjects(cert, user.certifications);
+    const unlockedSubjects = getUnlockedSubjects(cert, user.certifications)
 
     // set custom field passedUpchieve101 in SendGrid
-    if (cert === TRAINING.UPCHIEVE_101) createContact(user);
+    if (cert === TRAINING.UPCHIEVE_101) createContact(user)
 
     // Create a user action for every subject unlocked
     for (const subject of unlockedSubjects) {
       if (!user.subjects.includes(subject)) {
-        unlockedSubject(user._id, subject, ip);
+        unlockedSubject(user._id, subject, ip)
         captureEvent(user._id, EVENTS.SUBJECT_UNLOCKED, {
           event: EVENTS.SUBJECT_UNLOCKED,
           subject
-        });
+        })
       }
     }
 
-    userUpdates.$addToSet = { subjects: unlockedSubjects };
+    userUpdates.$addToSet = { subjects: unlockedSubjects }
 
     if (
       !user.isOnboarded &&
       user.availabilityLastModifiedAt &&
       unlockedSubjects.length > 0
     ) {
-      userUpdates.isOnboarded = true;
-      accountOnboarded(user._id, ip);
+      userUpdates.isOnboarded = true
+      accountOnboarded(user._id, ip)
       captureEvent(user._id, EVENTS.ACCOUNT_ONBOARDED, {
         event: EVENTS.ACCOUNT_ONBOARDED
-      });
+      })
     }
   }
 
   await VolunteerModel.updateOne({ _id: user._id }, userUpdates, {
     runValidators: true
-  });
+  })
 
   const idCorrectAnswerMap = questions.reduce((correctAnswers, question) => {
-    correctAnswers[question._id] = question.correctAnswer;
-    return correctAnswers;
-  }, {});
+    correctAnswers[question._id] = question.correctAnswer
+    return correctAnswers
+  }, {})
 
   return {
     tries,
     passed,
     score,
     idCorrectAnswerMap
-  };
+  }
 }

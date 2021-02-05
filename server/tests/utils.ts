@@ -1,8 +1,8 @@
 export const convertObjectIdListToStringList = (objectIdList): string[] => {
-  const arr = [];
+  const arr = []
   for (let i = 0; i < objectIdList.length; i++) {
-    arr.push(objectIdList[i].toString());
+    arr.push(objectIdList[i].toString())
   }
 
-  return arr;
-};
+  return arr
+}

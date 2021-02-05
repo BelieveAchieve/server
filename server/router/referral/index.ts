@@ -1,11 +1,11 @@
-import express from 'express';
-import UserService from '../../services/UserService';
+import express from 'express'
+import UserService from '../../services/UserService'
 
 const referralRouter = function(app): void {
-  const router: any = express.Router(); // eslint-disable-line @typescript-eslint/no-explicit-any
+  const router: any = express.Router() // eslint-disable-line @typescript-eslint/no-explicit-any
 
   router.get('/:referralCode', async function(req, res, next) {
-    const { referralCode } = req.params;
+    const { referralCode } = req.params
 
     try {
       const user = await UserService.getUser(
@@ -13,15 +13,15 @@ const referralRouter = function(app): void {
         {
           firstname: 1
         }
-      );
-      res.json({ user });
+      )
+      res.json({ user })
     } catch (err) {
-      next(err);
+      next(err)
     }
-  });
+  })
 
-  app.use('/api-public/referral', router);
-};
+  app.use('/api-public/referral', router)
+}
 
-module.exports = referralRouter;
-export default referralRouter;
+module.exports = referralRouter
+export default referralRouter

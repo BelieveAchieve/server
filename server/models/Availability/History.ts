@@ -1,17 +1,17 @@
-import { Document, model, Schema, Types } from 'mongoose';
-import { AvailabilityDay, availabilityDaySchema } from './types';
+import { Document, model, Schema, Types } from 'mongoose'
+import { AvailabilityDay, availabilityDaySchema } from './types'
 
 export interface AvailabilityHistory {
-  _id: Types.ObjectId;
-  volunteerId: Types.ObjectId;
-  date: Date;
-  timezone: string;
-  availability: AvailabilityDay;
-  modifiedAt: Date;
-  createdAt: Date;
+  _id: Types.ObjectId
+  volunteerId: Types.ObjectId
+  date: Date
+  timezone: string
+  availability: AvailabilityDay
+  modifiedAt: Date
+  createdAt: Date
 }
 
-export type AvailabilityHistoryDocument = AvailabilityHistory & Document;
+export type AvailabilityHistoryDocument = AvailabilityHistory & Document
 
 const availabilityHistorySchema = new Schema({
   availability: {
@@ -35,12 +35,12 @@ const availabilityHistorySchema = new Schema({
     type: Date,
     default: Date.now
   }
-});
+})
 
 const AvailabilityHistoryModel = model<AvailabilityHistoryDocument>(
   'AvailabilityHistory',
   availabilityHistorySchema
-);
+)
 
-module.exports = AvailabilityHistoryModel;
-export default AvailabilityHistoryModel;
+module.exports = AvailabilityHistoryModel
+export default AvailabilityHistoryModel

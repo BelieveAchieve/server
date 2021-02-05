@@ -17,6 +17,8 @@
     "server/dbutils",
     "server/tests",
     "node_modules/",
-    "build/"
+    "build/",
+    "src/",
+    "tests/"
   ]
 }

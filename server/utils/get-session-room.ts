@@ -1,4 +1,4 @@
-const getSessionRoom = (sessionId): string => `sessions-${sessionId}`;
+const getSessionRoom = (sessionId): string => `sessions-${sessionId}`
 
-module.exports = getSessionRoom;
-export default getSessionRoom;
+module.exports = getSessionRoom
+export default getSessionRoom

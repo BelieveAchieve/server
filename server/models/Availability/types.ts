@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { Schema } from 'mongoose'
 
 export enum DAYS {
   SUNDAY = 'Sunday',
@@ -38,12 +38,12 @@ export enum HOURS {
 }
 
 export type AvailabilityDay = {
-  [hour in HOURS]: boolean;
-};
+  [hour in HOURS]: boolean
+}
 
 export type Availability = {
-  [day in DAYS]: AvailabilityDay;
-};
+  [day in DAYS]: AvailabilityDay
+}
 
 // subdocument schema for each availability day
 export const availabilityDaySchema = new Schema(
@@ -74,4 +74,4 @@ export const availabilityDaySchema = new Schema(
     [HOURS['11PM']]: { type: Boolean, default: false }
   },
   { _id: false }
-);
+)

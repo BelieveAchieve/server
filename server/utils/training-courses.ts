@@ -1,18 +1,18 @@
-import { find, chain } from 'lodash';
+import { find, chain } from 'lodash'
 
 interface TrainingCourse {
-  name: string;
-  courseKey: string;
-  description: string;
-  quizKey: string;
-  quizName: string;
-  modules: TrainingModule[];
+  name: string
+  courseKey: string
+  description: string
+  quizKey: string
+  quizName: string
+  modules: TrainingModule[]
 }
 
 interface TrainingModule {
-  name: string;
-  moduleKey: string;
-  materials: TrainingMaterial[];
+  name: string
+  moduleKey: string
+  materials: TrainingMaterial[]
 }
 
 enum MaterialType {
@@ -23,19 +23,19 @@ enum MaterialType {
 }
 
 interface TrainingMaterial {
-  name: string;
-  description?: string;
-  materialKey: string;
-  isRequired: boolean;
-  type: MaterialType;
-  resourceId?: string;
-  linkUrl?: string;
-  links?: TrainingMaterialLink[];
+  name: string
+  description?: string
+  materialKey: string
+  isRequired: boolean
+  type: MaterialType
+  resourceId?: string
+  linkUrl?: string
+  links?: TrainingMaterialLink[]
 }
 
 interface TrainingMaterialLink {
-  displayName: string;
-  url: string;
+  displayName: string
+  url: string
 }
 
 export const courses: TrainingCourse[] = [
@@ -305,30 +305,30 @@ export const courses: TrainingCourse[] = [
       }
     ]
   }
-];
+]
 
 export const getCourse = (courseKey: string): TrainingCourse => {
-  return find(courses, { courseKey });
-};
+  return find(courses, { courseKey })
+}
 
 const getRequiredMaterials = (courseKey: string): string[] => {
-  const course: TrainingCourse = getCourse(courseKey);
+  const course: TrainingCourse = getCourse(courseKey)
   return chain(course.modules)
     .map('materials')
     .flatten()
     .filter('isRequired')
     .map('materialKey')
-    .value();
-};
+    .value()
+}
 
 export const getProgress = (
   courseKey: string,
   userCompleted: string[]
 ): number => {
-  const requiredMaterials = getRequiredMaterials(courseKey);
+  const requiredMaterials = getRequiredMaterials(courseKey)
   const completedMaterials = requiredMaterials.filter(mat =>
     userCompleted.includes(mat)
-  );
-  const fraction = completedMaterials.length / requiredMaterials.length;
-  return Math.floor(fraction * 100);
-};
+  )
+  const fraction = completedMaterials.length / requiredMaterials.length
+  return Math.floor(fraction * 100)
+}

@@ -1,41 +1,41 @@
-import { values } from 'lodash';
-import { Document, model, Schema, Types } from 'mongoose';
-import bcrypt from 'bcrypt';
-import validator from 'validator';
-import config from '../config';
-import { USER_BAN_REASON } from '../constants';
-import { Session } from './Session';
-import { IpAddress } from './IpAddress';
+import { values } from 'lodash'
+import { Document, model, Schema, Types } from 'mongoose'
+import bcrypt from 'bcrypt'
+import validator from 'validator'
+import config from '../config'
+import { USER_BAN_REASON } from '../constants'
+import { Session } from './Session'
+import { IpAddress } from './IpAddress'
 
 export interface User {
-  _id: Types.ObjectId;
-  createdAt: Date;
-  email: string;
-  password: string;
-  verified: boolean;
-  verificationToken: string;
-  passwordResetToken: string;
-  firstname: string;
-  lastname: string;
-  college: string;
-  isVolunteer: boolean;
-  isAdmin: boolean;
-  isBanned: boolean;
-  banReason: USER_BAN_REASON;
-  isTestUser: boolean;
-  isFakeUser: boolean;
-  isDeactivated: boolean;
-  pastSessions: Session[];
-  partnerUserId: string;
-  lastActivityAt: Date;
-  referralCode: string;
-  referredBy: User;
-  ipAddresses: IpAddress[];
-  type: string;
-  hashPassword(password: string): string;
+  _id: Types.ObjectId
+  createdAt: Date
+  email: string
+  password: string
+  verified: boolean
+  verificationToken: string
+  passwordResetToken: string
+  firstname: string
+  lastname: string
+  college: string
+  isVolunteer: boolean
+  isAdmin: boolean
+  isBanned: boolean
+  banReason: USER_BAN_REASON
+  isTestUser: boolean
+  isFakeUser: boolean
+  isDeactivated: boolean
+  pastSessions: Session[]
+  partnerUserId: string
+  lastActivityAt: Date
+  referralCode: string
+  referredBy: User
+  ipAddresses: IpAddress[]
+  type: string
+  hashPassword(password: string): string
 }
 
-export type UserDocument = User & Document;
+export type UserDocument = User & Document
 
 const schemaOptions = {
   /**
@@ -53,7 +53,7 @@ const schemaOptions = {
   toObject: {
     virtuals: true
   }
-};
+}
 
 // baseUserSchema is a base schema that the Student and Volunteer schema inherit from
 const baseUserSchema = new Schema(
@@ -65,7 +65,7 @@ const baseUserSchema = new Schema(
       lowercase: true,
       validate: {
         validator: function(v): boolean {
-          return validator.isEmail(v);
+          return validator.isEmail(v)
         },
         message: '{VALUE} is not a valid email'
       }
@@ -171,19 +171,19 @@ const baseUserSchema = new Schema(
     }
   },
   schemaOptions
-);
+)
 
 baseUserSchema.methods.hashPassword = async function(
   password
 ): Promise<Error | string> {
   try {
-    const salt = await bcrypt.genSalt(config.saltRounds);
-    const hash = await bcrypt.hash(password, salt);
-    return hash;
+    const salt = await bcrypt.genSalt(config.saltRounds)
+    const hash = await bcrypt.hash(password, salt)
+    return hash
   } catch (error) {
-    throw new Error(error);
+    throw new Error(error)
   }
-};
+}
 
 baseUserSchema.statics.verifyPassword = (
   candidatePassword,
@@ -192,15 +192,15 @@ baseUserSchema.statics.verifyPassword = (
   return new Promise((resolve, reject) => {
     bcrypt.compare(candidatePassword, userPassword, (error, isMatch) => {
       if (error) {
-        return reject(error);
+        return reject(error)
       }
 
-      return resolve(isMatch);
-    });
-  });
-};
+      return resolve(isMatch)
+    })
+  })
+}
 
-const UserModel = model<UserDocument>('User', baseUserSchema);
+const UserModel = model<UserDocument>('User', baseUserSchema)
 
-module.exports = UserModel;
-export default UserModel;
+module.exports = UserModel
+export default UserModel

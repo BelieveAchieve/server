@@ -1,35 +1,35 @@
-import { FilterQuery } from 'mongoose';
-import QuestionModel, { Question, QuestionDocument } from '../models/Question';
+import { FilterQuery } from 'mongoose'
+import QuestionModel, { Question, QuestionDocument } from '../models/Question'
 
 export async function list(
   filters: FilterQuery<QuestionDocument>[]
 ): Promise<QuestionDocument[]> {
-  return QuestionModel.find(filters);
+  return QuestionModel.find(filters)
 }
 
 export async function create(question: Question): Promise<Question> {
-  return QuestionModel.create(question);
+  return QuestionModel.create(question)
 }
 
 export interface QuestionUpdateOptions {
-  id: string;
-  question: Partial<Question>;
+  id: string
+  question: Partial<Question>
 }
 
 export async function update(
   options: QuestionUpdateOptions
 ): Promise<QuestionDocument> {
-  const { id, question } = options;
+  const { id, question } = options
 
   return QuestionModel.findOneAndUpdate(
     { _id: id },
     { $set: question },
     { new: true, upsert: true }
-  );
+  )
 }
 
 export async function destroy(questionId: string): Promise<QuestionDocument> {
-  return QuestionModel.findByIdAndDelete(questionId);
+  return QuestionModel.findByIdAndDelete(questionId)
 }
 
 // Return an array of tuples, with each tuple containing a category and array of
@@ -88,12 +88,12 @@ export async function categories(): Promise<any[]> {
         subcategories: 1
       }
     }
-  ]);
+  ])
   // TODO: we are making this complex so we can reduce it on the other end,
   // refactor this to just be able to return categories
-  const tuples = [];
+  const tuples = []
   for (const category of categories) {
-    tuples.push([category.category, category.subcategories]);
+    tuples.push([category.category, category.subcategories])
   }
-  return tuples;
+  return tuples
 }

@@ -1,68 +1,68 @@
-import moment from 'moment-timezone';
-import mongoose, { Types } from 'mongoose';
-import _ from 'lodash';
-import User from '../models/User';
+import moment from 'moment-timezone'
+import mongoose, { Types } from 'mongoose'
+import _ from 'lodash'
+import User from '../models/User'
 import { studentPartnerManifests } from '../partnerManifests'
 
-const ObjectId = mongoose.Types.ObjectId;
+const ObjectId = mongoose.Types.ObjectId
 
 interface SessionReport {
-  Topic: string;
-  Subtopic: string;
-  'Created at': string | Date;
-  Messages: string;
-  Student: string;
-  Volunteer: string;
-  'Volunteer join date': string | Date;
-  'Ended at': string | Date;
-  'Wait time': string;
-  'Session rating': string;
+  Topic: string
+  Subtopic: string
+  'Created at': string | Date
+  Messages: string
+  Student: string
+  Volunteer: string
+  'Volunteer join date': string | Date
+  'Ended at': string | Date
+  'Wait time': string
+  'Session rating': string
 }
 
 interface UsageReport {
-  'First name': string;
-  'Last name': string;
-  Email: string;
-  'Minutes over date range': number;
-  'Total minutes': number;
-  'Join date': string | Date;
-  'Total sessions': number;
-  'Sessions over date range': number;
-  'Average session rating': number;
+  'First name': string
+  'Last name': string
+  Email: string
+  'Minutes over date range': number
+  'Total minutes': number
+  'Join date': string | Date
+  'Total sessions': number
+  'Sessions over date range': number
+  'Average session rating': number
 }
 
 const formatDate = (date): Date | string => {
-  if (!date) return '--';
+  if (!date) return '--'
   return moment(date)
     .tz('America/New_York')
-    .format('l h:mm a');
-};
+    .format('l h:mm a')
+}
 
 function calcAverageRating(allFeedback): number {
-  let ratingsSum = 0;
-  let ratingsCount = 0;
+  let ratingsSum = 0
+  let ratingsCount = 0
 
   for (let i = 0; i < allFeedback.length; i++) {
-    const feedback = allFeedback[i];
+    const feedback = allFeedback[i]
     const sessionRating = _.get(
       feedback,
       'responseData.rate-session.rating',
       null
-    );
+    )
     if (sessionRating) {
-      ratingsSum += sessionRating;
-      ratingsCount += 1;
+      ratingsSum += sessionRating
+      ratingsCount += 1
     }
   }
 
-  return Number((ratingsSum / (ratingsCount || 1)).toFixed(2));
+  return Number((ratingsSum / (ratingsCount || 1)).toFixed(2))
 }
 
 function getOffsetTime(date?): number {
-  if (!date) return new Date().getTime();
-  const estTimeOffset = 1000 * 60 * 60 * 4;
+  if (!date) return new Date().getTime()
+  const estTimeOffset = 1000 * 60 * 60 * 4
 
-  return new Date(date).getTime() + estTimeOffset;
+  return new Date(date).getTime() + estTimeOffset
 }
 
 export const sessionReport = async ({
@@ -73,23 +73,23 @@ export const sessionReport = async ({
   studentPartnerSite
 }): Promise<SessionReport[]> => {
   const query: {
-    approvedHighschool?: Types.ObjectId;
-    studentPartnerOrg?: string;
-    partnerSite?: string;
-  } = {};
+    approvedHighschool?: Types.ObjectId
+    studentPartnerOrg?: string
+    partnerSite?: string
+  } = {}
 
-  if (highSchoolId) query.approvedHighschool = ObjectId(highSchoolId);
-  if (studentPartnerOrg) query.studentPartnerOrg = studentPartnerOrg;
-  if (studentPartnerSite) query.partnerSite = studentPartnerSite;
+  if (highSchoolId) query.approvedHighschool = ObjectId(highSchoolId)
+  if (studentPartnerOrg) query.studentPartnerOrg = studentPartnerOrg
+  if (studentPartnerSite) query.partnerSite = studentPartnerSite
 
-  const oneMinuteInMs = 1000 * 60;
-  const roundDecimalPlace = 1;
-  const oneDayInMS = 1000 * 60 * 60 * 24;
+  const oneMinuteInMs = 1000 * 60
+  const roundDecimalPlace = 1
+  const oneDayInMS = 1000 * 60 * 60 * 24
 
-  sessionRangeFrom = getOffsetTime(sessionRangeFrom);
+  sessionRangeFrom = getOffsetTime(sessionRangeFrom)
   sessionRangeTo = sessionRangeTo
     ? getOffsetTime(sessionRangeTo) + oneDayInMS
-    : getOffsetTime() + oneDayInMS;
+    : getOffsetTime() + oneDayInMS
 
   const sessions = await User.aggregate([
     {
@@ -202,7 +202,7 @@ export const sessionReport = async ({
     {
       $sort: { createdAt: 1 }
     }
-  ]);
+  ])
 
   const formattedSessions = sessions.map(session => {
     return {
@@ -216,11 +216,11 @@ export const sessionReport = async ({
       'Ended at': formatDate(session.endedAt),
       'Wait time': session.waitTime && `${session.waitTime}mins`,
       'Session rating': session.sessionRating
-    };
-  });
+    }
+  })
 
-  return formattedSessions;
-};
+  return formattedSessions
+}
 
 export const usageReport = async ({
   joinedBefore,
@@ -232,34 +232,34 @@ export const usageReport = async ({
   studentPartnerSite
 }): Promise<UsageReport[]> => {
   const query: {
-    createdAt?: {};
-    approvedHighschool?: Types.ObjectId;
-    studentPartnerOrg?: string;
-    partnerSite?: string;
-  } = {};
-  const oneDayInMS = 1000 * 60 * 60 * 24;
+    createdAt?: {}
+    approvedHighschool?: Types.ObjectId
+    studentPartnerOrg?: string
+    partnerSite?: string
+  } = {}
+  const oneDayInMS = 1000 * 60 * 60 * 24
 
   if (joinedAfter) {
-    joinedAfter = getOffsetTime(joinedAfter);
-    query.createdAt = { $gte: new Date(joinedAfter) };
+    joinedAfter = getOffsetTime(joinedAfter)
+    query.createdAt = { $gte: new Date(joinedAfter) }
   }
   if (joinedBefore) {
-    joinedBefore = getOffsetTime(joinedBefore) + oneDayInMS;
+    joinedBefore = getOffsetTime(joinedBefore) + oneDayInMS
     query.createdAt = {
       $gte: new Date(joinedAfter),
       $lte: new Date(joinedBefore)
-    };
+    }
   }
 
-  if (highSchoolId) query.approvedHighschool = ObjectId(highSchoolId);
-  if (studentPartnerOrg) query.studentPartnerOrg = studentPartnerOrg;
-  if (studentPartnerSite) query.partnerSite = studentPartnerSite;
+  if (highSchoolId) query.approvedHighschool = ObjectId(highSchoolId)
+  if (studentPartnerOrg) query.studentPartnerOrg = studentPartnerOrg
+  if (studentPartnerSite) query.partnerSite = studentPartnerSite
 
   // select a range from date and to date or a range from date and today (inclusive)
-  sessionRangeFrom = getOffsetTime(sessionRangeFrom);
+  sessionRangeFrom = getOffsetTime(sessionRangeFrom)
   sessionRangeTo = sessionRangeTo
     ? getOffsetTime(sessionRangeTo) + oneDayInMS
-    : getOffsetTime() + oneDayInMS;
+    : getOffsetTime() + oneDayInMS
 
   const students = await User.aggregate([
     {
@@ -427,14 +427,14 @@ export const usageReport = async ({
         joinDate: 1
       }
     }
-  ]);
+  ])
 
   const partnerSites =
     studentPartnerManifests[studentPartnerOrg] &&
-    studentPartnerManifests[studentPartnerOrg].sites;
+    studentPartnerManifests[studentPartnerOrg].sites
 
   const studentUsage = students.map(student => {
-    const feedback = Array.from(student.feedback);
+    const feedback = Array.from(student.feedback)
 
     const dataFormat = {
       'First name': student.firstName,
@@ -446,20 +446,20 @@ export const usageReport = async ({
       'Average session rating': calcAverageRating(feedback),
       'Sessions over date range': student.sessionsOverDateRange,
       'Minutes over date range': student.minsOverDateRange
-    };
+    }
 
     if (partnerSites)
       dataFormat['Partner site'] = student.partnerSite
         ? student.partnerSite
-        : '-';
+        : '-'
 
     if (studentPartnerOrg) {
-      if (student.approvedHighschool) dataFormat['HS/College'] = 'High school';
-      else dataFormat['HS/College'] = 'College';
+      if (student.approvedHighschool) dataFormat['HS/College'] = 'High school'
+      else dataFormat['HS/College'] = 'College'
     }
 
-    return dataFormat;
-  });
+    return dataFormat
+  })
 
-  return studentUsage;
-};
+  return studentUsage
+}

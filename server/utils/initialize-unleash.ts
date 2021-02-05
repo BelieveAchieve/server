@@ -1,5 +1,5 @@
-import { initialize } from 'unleash-client';
-import config from '../config';
+import { initialize } from 'unleash-client'
+import config from '../config'
 
 const initializeUnleash = (): void => {
   if (config.unleashId)
@@ -7,7 +7,7 @@ const initializeUnleash = (): void => {
       url: config.unleashUrl,
       appName: config.unleashName,
       instanceId: config.unleashId
-    });
-};
+    })
+}
 
-export default initializeUnleash;
+export default initializeUnleash

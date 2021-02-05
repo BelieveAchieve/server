@@ -3,16 +3,16 @@
  * to send to users for push notifications
  *
  */
-import { Document, model, Schema, Types } from 'mongoose';
-import { User } from './User';
+import { Document, model, Schema, Types } from 'mongoose'
+import { User } from './User'
 
 export interface PushToken {
-  user: Types.ObjectId | User;
-  createdAt: Date;
-  token: string;
+  user: Types.ObjectId | User
+  createdAt: Date
+  token: string
 }
 
-export type PushTokenDocument = PushToken & Document;
+export type PushTokenDocument = PushToken & Document
 
 const pushTokenSchema = new Schema(
   {
@@ -33,9 +33,9 @@ const pushTokenSchema = new Schema(
       virtuals: true
     }
   }
-);
+)
 
-const PushTokenModel = model<PushTokenDocument>('PushToken', pushTokenSchema);
+const PushTokenModel = model<PushTokenDocument>('PushToken', pushTokenSchema)
 
-module.exports = PushTokenModel;
-export default PushTokenModel;
+module.exports = PushTokenModel
+export default PushTokenModel

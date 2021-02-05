@@ -1,10 +1,10 @@
-import Volunteer from '../models/Volunteer';
-const { getCourse, getProgress } = require('../utils/training-courses');
+import Volunteer from '../models/Volunteer'
+const { getCourse, getProgress } = require('../utils/training-courses')
 
 module.exports = {
   getCourse: (volunteer: any, courseKey: string) => {
-    const course = getCourse(courseKey);
-    if (!course) return;
+    const course = getCourse(courseKey)
+    if (!course) return
     const courseProgress = volunteer.trainingCourses[courseKey]
     course.isComplete = courseProgress.isComplete
     course.progress = courseProgress.progress
@@ -12,22 +12,26 @@ module.exports = {
       mod.materials.forEach(mat => {
         mat.isCompleted = courseProgress.completedMaterials.includes(
           mat.materialKey
-        );
-      });
-    });
-    return course;
+        )
+      })
+    })
+    return course
   },
 
-  recordProgress: async (volunteer: any, courseKey: string, materialKey: string) => {
-    const courseProgress = volunteer.trainingCourses[courseKey];
+  recordProgress: async (
+    volunteer: any,
+    courseKey: string,
+    materialKey: string
+  ) => {
+    const courseProgress = volunteer.trainingCourses[courseKey]
 
     // Early exit if already saved progress
-    if (courseProgress.completedMaterials.includes(materialKey)) return;
+    if (courseProgress.completedMaterials.includes(materialKey)) return
 
     // Mutate user object's completedMaterials
     courseProgress.completedMaterials.push(materialKey)
-    const progress = getProgress(courseKey, courseProgress.completedMaterials);
-    const isComplete = progress === 100;
+    const progress = getProgress(courseKey, courseProgress.completedMaterials)
+    const isComplete = progress === 100
 
     await Volunteer.updateOne(
       { _id: volunteer._id },
@@ -36,10 +40,12 @@ module.exports = {
           [`trainingCourses.${courseKey}.isComplete`]: isComplete,
           [`trainingCourses.${courseKey}.progress`]: progress
         },
-        $addToSet: { [`trainingCourses.${courseKey}.completedMaterials`]: materialKey }
+        $addToSet: {
+          [`trainingCourses.${courseKey}.completedMaterials`]: materialKey
+        }
       }
-    );
+    )
 
-    return { progress, isComplete };
+    return { progress, isComplete }
   }
 }

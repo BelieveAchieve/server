@@ -1,32 +1,32 @@
-import { log } from '../logger';
-import VolunteerModel, { Reference } from '../../models/Volunteer';
-import { REFERENCE_STATUS } from '../../constants';
-import MailService from '../../services/MailService';
+import { log } from '../logger'
+import VolunteerModel, { Reference } from '../../models/Volunteer'
+import { REFERENCE_STATUS } from '../../constants'
+import MailService from '../../services/MailService'
 
 // @note: uses firstName instead of firstname because of the $project aggregation stage
 // @todo: clean up Volunteer model to use firstName instead of firstname
 interface Volunteer {
-  firstName: string;
-  lastName: string;
+  firstName: string
+  lastName: string
 }
 
 interface ReferencesToEmail {
-  reference: Reference;
-  volunteer: Volunteer;
+  reference: Reference
+  volunteer: Volunteer
 }
 
 // Runs every day at 10am EST
 export default async (): Promise<void> => {
-  const oneDay = 1000 * 60 * 60 * 24 * 1;
-  const threeDaysAgo = Date.now() - oneDay * 3;
-  const fourDaysAgo = threeDaysAgo - oneDay;
+  const oneDay = 1000 * 60 * 60 * 24 * 1
+  const threeDaysAgo = Date.now() - oneDay * 3
+  const fourDaysAgo = threeDaysAgo - oneDay
   const query = {
     'references.status': REFERENCE_STATUS.SENT,
     'references.sentAt': {
       $gt: new Date(fourDaysAgo),
       $lt: new Date(threeDaysAgo)
     }
-  };
+  }
   const referencesToEmail: ReferencesToEmail[] = await VolunteerModel.aggregate(
     [
       {
@@ -55,21 +55,21 @@ export default async (): Promise<void> => {
         }
       }
     ]
-  );
+  )
 
-  let totalEmailed = 0;
+  let totalEmailed = 0
 
   if (referencesToEmail.length === 0)
-    return log('No references to email for a follow-up');
+    return log('No references to email for a follow-up')
 
   for (const ref of referencesToEmail) {
     try {
-      await MailService.sendReferenceFollowup(ref);
-      totalEmailed++;
+      await MailService.sendReferenceFollowup(ref)
+      totalEmailed++
     } catch (error) {
-      log(`Error notifying reference ${ref.reference._id}: ${error}`);
+      log(`Error notifying reference ${ref.reference._id}: ${error}`)
     }
   }
 
-  return log(`Emailed ${totalEmailed} references a follow-up`);
-};
+  return log(`Emailed ${totalEmailed} references a follow-up`)
+}

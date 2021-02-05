@@ -1,5 +1,5 @@
-import NotificationModel, { Notification } from '../models/Notification';
-import SessionService from './SessionService';
+import NotificationModel, { Notification } from '../models/Notification'
+import SessionService from './SessionService'
 
 export const getNotification = (
   query,
@@ -8,8 +8,8 @@ export const getNotification = (
   return NotificationModel.findOne(query)
     .select(projection)
     .lean()
-    .exec();
-};
+    .exec()
+}
 
 export const getNotificationWithVolunteer = async (
   notificationId
@@ -29,15 +29,15 @@ export const getNotificationWithVolunteer = async (
       }
     },
     { $unwind: '$volunteer' }
-  ]);
+  ])
 
-  return notification;
-};
+  return notification
+}
 
 export const getSessionNotifications = async (
   sessionId
 ): Promise<Notification[]> => {
-  const session = await SessionService.getSession(sessionId);
+  const session = await SessionService.getSession(sessionId)
   return NotificationModel.aggregate([
     {
       $match: {
@@ -55,5 +55,5 @@ export const getSessionNotifications = async (
       }
     },
     { $unwind: '$volunteer' }
-  ]).exec();
-};
+  ]).exec()
+}

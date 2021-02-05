@@ -1,2 +1,3 @@
 mongo-volume/*
+node_modules/
 server/**/*

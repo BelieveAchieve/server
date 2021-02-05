@@ -1,3 +1,3 @@
-const isSATSubject = (subtopic): boolean => subtopic.match(/^sat/i);
+const isSATSubject = (subtopic): boolean => subtopic.match(/^sat/i)
 
-export default isSATSubject;
+export default isSATSubject

@@ -6,7 +6,7 @@ export const DAYS = [
   'Thursday',
   'Friday',
   'Saturday'
-];
+]
 
 export const UTC_TO_HOUR_MAPPING = {
   0: '12a',
@@ -33,7 +33,7 @@ export const UTC_TO_HOUR_MAPPING = {
   21: '9p',
   22: '10p',
   23: '11p'
-};
+}
 
 export const USER_ACTION = {
   TYPE: {
@@ -74,7 +74,7 @@ export const USER_ACTION = {
     BANNED: 'BANNED',
     DEACTIVATED: 'DEACTIVATED'
   }
-};
+}
 
 // new format to move to from USER_ACTIONS
 // user events in a [noun][verb] format
@@ -89,7 +89,7 @@ export const EVENTS = {
   SESSION_REJOINED: 'SESSION_REJOINED',
   SUBJECT_UNLOCKED: 'SUBJECT_UNLOCKED',
   SESSION_REPLIED_YES_TO_TEXT: 'SESSION_REPLIED_YES_TO_TEXT' // @note: currently deprecated
-};
+}
 
 export enum USER_BAN_REASON {
   NON_US_SIGNUP = 'NON US SIGNUP',
@@ -109,35 +109,35 @@ export const INTEGRATED_MATH_MAPPING = {
   integratedmathtwo: 'integratedMathTwo',
   integratedmaththree: 'integratedMathThree',
   integratedmathfour: 'integratedMathFour'
-};
+}
 
 export const FORMAT_INTEGRATED_MATH = {
   integratedMathOne: 'Integrated Math 1',
   integratedMathTwo: 'Integrated Math 2',
   integratedMathThree: 'Integrated Math 3',
   integratedMathFour: 'Integrated Math 4'
-};
+}
 
 export const PHYSICS_MAPPING = {
   physicsone: 'physicsOne'
-};
+}
 
 export const FORMAT_PHYSICS = {
   physicsOne: 'Physics 1'
-};
+}
 
 export const STATUS = {
   SUBMITTED: 'SUBMITTED',
   REJECTED: 'REJECTED',
   APPROVED: 'APPROVED'
-};
+}
 
 export const PHOTO_ID_STATUS = {
   EMPTY: 'EMPTY',
   SUBMITTED: STATUS.SUBMITTED,
   REJECTED: STATUS.REJECTED,
   APPROVED: STATUS.APPROVED
-};
+}
 
 export const REFERENCE_STATUS = {
   UNSENT: 'UNSENT',
@@ -145,12 +145,12 @@ export const REFERENCE_STATUS = {
   SUBMITTED: STATUS.SUBMITTED,
   REJECTED: STATUS.REJECTED,
   APPROVED: STATUS.APPROVED
-};
+}
 
 export const SESSION_REPORT_REASON = {
   STUDENT_RUDE: 'Student was rude',
   STUDENT_MISUSE: 'Student was misusing platform'
-};
+}
 
 export enum TRAINING {
   UPCHIEVE_101 = 'upchieve101',
@@ -185,7 +185,7 @@ export const MATH_SUBJECTS = {
   INTEGRATED_MATH_TWO: 'integratedMathTwo',
   INTEGRATED_MATH_THREE: 'integratedMathThree',
   INTEGRATED_MATH_FOUR: 'integratedMathFour'
-};
+}
 
 export enum SCIENCE_CERTS {
   BIOLOGY = 'biology',
@@ -200,7 +200,7 @@ export const SCIENCE_SUBJECTS = {
   PHYSICS_ONE: 'physicsOne',
   PHYSICS_TWO: 'physicsTwo',
   ENVIRONMENTAL_SCIENCE: 'environmentalScience'
-};
+}
 
 export enum COLLEGE_CERTS {
   ESSAYS = 'essays',
@@ -224,14 +224,14 @@ export enum SAT_CERTS {
 export const SAT_SUBJECTS = {
   SAT_MATH: 'satMath',
   SAT_READING: 'satReading'
-};
+}
 
 export const SUBJECTS = {
   ...MATH_SUBJECTS,
   ...SCIENCE_SUBJECTS,
   ...COLLEGE_SUBJECTS,
   ...SAT_SUBJECTS
-};
+}
 
 export const CERT_UNLOCKING = {
   [MATH_CERTS.CALCULUS_BC]: [
@@ -285,7 +285,7 @@ export const CERT_UNLOCKING = {
   [SAT_CERTS.SAT_MATH]: [SAT_CERTS.SAT_MATH],
   [SAT_CERTS.SAT_READING]: [SAT_CERTS.SAT_READING],
   [TRAINING.COLLEGE_COUNSELING]: [SUBJECTS.PLANNING, SUBJECTS.APPLICATIONS]
-};
+}
 
 export const COMPUTED_CERTS = {
   [SUBJECTS.INTEGRATED_MATH_ONE]: [
@@ -308,7 +308,7 @@ export const COMPUTED_CERTS = {
   // @note: temporarily hide these computed certs for when the college counseling course is added
   // [SUBJECTS.PLANNING]: [TRAINING.COLLEGE_COUNSELING],
   // [SUBJECTS.APPLICATIONS]: [TRAINING.COLLEGE_COUNSELING]
-};
+}
 
 export enum SUBJECT_TYPES {
   MATH = 'math',
@@ -321,32 +321,32 @@ export enum SUBJECT_TYPES {
 export const CALCULUS_MAPPING = {
   calculusbc: MATH_SUBJECTS.CALCULUS_BC,
   calculusab: MATH_SUBJECTS.CALCULUS_AB
-};
+}
 
 export const FORMAT_CALCULUS = {
   [MATH_SUBJECTS.CALCULUS_BC]: 'Calculus BC',
   [MATH_SUBJECTS.CALCULUS_AB]: 'Calculus AB'
-};
+}
 
 export const ALGEBRA_MAPPING = {
   algebraone: MATH_SUBJECTS.ALGEBRA_ONE,
   algebratwo: MATH_SUBJECTS.ALGEBRA_TWO
-};
+}
 
 export const FORMAT_ALGEBRA = {
   [MATH_SUBJECTS.ALGEBRA_ONE]: 'Algebra 1',
   [MATH_SUBJECTS.ALGEBRA_TWO]: 'Algebra 2'
-};
+}
 
 export const SAT_MAPPING = {
   satmath: SAT_SUBJECTS.SAT_MATH,
   satreading: SAT_SUBJECTS.SAT_READING
-};
+}
 
 export const FORMAT_SAT = {
   [SAT_SUBJECTS.SAT_MATH]: 'SAT Math',
   [SAT_SUBJECTS.SAT_READING]: 'SAT Reading'
-};
+}
 
 export enum SURVEY_TYPES {
   STUDENT_PRESESSION = 'student pre-session',
@@ -366,4 +366,4 @@ export enum SESSION_FLAGS {
 }
 
 // amount of volunteers to text notifications to per session
-export const TOTAL_VOLUNTEERS_TO_TEXT_FOR_HELP = 20;
+export const TOTAL_VOLUNTEERS_TO_TEXT_FOR_HELP = 20

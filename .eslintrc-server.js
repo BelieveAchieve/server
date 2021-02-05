@@ -30,6 +30,9 @@ module.exports = {
         '@typescript-eslint/semi': ['error', 'never'],
         quotes: ['error', 'single'],
         'import/order': 'error',
+        '@typescript-eslint/explicit-function-return-type': 'off',
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-var-requires': 'off'
       },
       parserOptions: {
         ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features

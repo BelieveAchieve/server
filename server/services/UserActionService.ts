@@ -1,6 +1,6 @@
-import { Types } from 'mongoose';
-import { USER_ACTION } from '../constants';
-import UserActionModel from '../models/UserAction';
+import { Types } from 'mongoose'
+import { USER_ACTION } from '../constants'
+import UserActionModel from '../models/UserAction'
 
 export const getQuizzesPassedForDateRange = (
   volunteerId: Types.ObjectId | string,
@@ -18,4 +18,4 @@ export const getQuizzesPassedForDateRange = (
     action: USER_ACTION.QUIZ.PASSED
   })
     .lean()
-    .exec();
+    .exec()

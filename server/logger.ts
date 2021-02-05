@@ -1,15 +1,16 @@
-import pino from 'pino';
+import pino from 'pino'
 import config from './config'
 
 function newLogger() {
   let logger
 
   if (config.NODE_ENV === 'dev') {
-    logger = pino({ prettyPrint: {
-      colorize: true,
-    },
-    level: 'debug',
-  })
+    logger = pino({
+      prettyPrint: {
+        colorize: true
+      },
+      level: 'debug'
+    })
   } else {
     logger = pino({
       level: config.logLevel

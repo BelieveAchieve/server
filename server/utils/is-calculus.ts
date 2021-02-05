@@ -1,3 +1,3 @@
-const isCalculus = (subtopic): boolean => subtopic.match(/^calculus/i);
+const isCalculus = (subtopic): boolean => subtopic.match(/^calculus/i)
 
-export default isCalculus;
+export default isCalculus

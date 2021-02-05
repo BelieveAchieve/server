@@ -3,7 +3,7 @@ import { Types } from 'mongoose'
 
 // This interface feels cleaner than inlining it in the
 // sendToUser definition
-interface sendToUserData {
+interface SendToUserData {
   title: string
   text: string
   data: {
@@ -22,7 +22,7 @@ interface Session {
   _id: Types.ObjectId
 }
 
-const sendToUser = ({ title, text, data, tokens }: sendToUserData) => {
+const sendToUser = ({ title, text, data, tokens }: SendToUserData) => {
   return messaging().sendMulticast({
     tokens, // can also send to a topic (group of people)
     // ios and android process data a little differently, so setup separate objects for each
@@ -78,5 +78,5 @@ const service = {
   }
 }
 
-module.exports = service;
-export default service;
+module.exports = service
+export default service

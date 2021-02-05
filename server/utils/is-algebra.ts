@@ -1,3 +1,3 @@
-const isAlgebra = (subtopic): boolean => subtopic.match(/^algebra/i);
+const isAlgebra = (subtopic): boolean => subtopic.match(/^algebra/i)
 
-export default isAlgebra;
+export default isAlgebra

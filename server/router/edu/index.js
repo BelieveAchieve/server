@@ -20,7 +20,6 @@ edu.locals = {
     config.NODE_ENV === 'dev' ? new URL('http://localhost:3000') : null
 }
 
-
 // GET /edu
 edu.get('/', async (req, res) => {
   try {
@@ -32,7 +31,7 @@ edu.get('/', async (req, res) => {
       ],
       []
     )
-    
+
     res.render('edu/index', {
       adminPages: [
         { path: 'questions', label: 'All Questions' },

@@ -1,32 +1,32 @@
 // Server configuration
 
-import { Static } from 'runtypes';
-import { Config } from './config-type';
+import { Static } from 'runtypes'
+import { Config } from './config-type'
 
-const mongoHost = process.env.SUBWAY_DB_HOST || 'localhost';
-const mongoPort = process.env.SUBWAY_DB_PORT || '27017';
-const mongoName = process.env.SUBWAY_DB_NAME || 'upchieve';
-const mongoPass = process.env.SUBWAY_DB_PASS;
-const mongoUser = process.env.SUBWAY_DB_USER;
+const mongoHost = process.env.SUBWAY_DB_HOST || 'localhost'
+const mongoPort = process.env.SUBWAY_DB_PORT || '27017'
+const mongoName = process.env.SUBWAY_DB_NAME || 'upchieve'
+const mongoPass = process.env.SUBWAY_DB_PASS
+const mongoUser = process.env.SUBWAY_DB_USER
 
-let mongoConn;
+let mongoConn
 if (mongoPass) {
-  mongoConn = `mongodb+srv://${mongoUser}:${mongoPass}@${mongoHost}/${mongoName}`;
+  mongoConn = `mongodb+srv://${mongoUser}:${mongoPass}@${mongoHost}/${mongoName}`
 } else {
-  mongoConn = `mongodb://${mongoHost}:${mongoPort}/${mongoName}`;
+  mongoConn = `mongodb://${mongoHost}:${mongoPort}/${mongoName}`
 }
 
-const redisHost = process.env.SUBWAY_REDIS_HOST || 'localhost';
-const redisPort = process.env.SUBWAY_REDIS_PORT || '6379';
-const redisConn = `redis://${redisHost}:${redisPort}`;
+const redisHost = process.env.SUBWAY_REDIS_HOST || 'localhost'
+const redisPort = process.env.SUBWAY_REDIS_PORT || '6379'
+const redisConn = `redis://${redisHost}:${redisPort}`
 
 const bannedServiceProviderList =
-  process.env.SUBWAY_BANNED_SERVICE_PROVIDERS || 'Example';
-const bannedServiceProviders = bannedServiceProviderList.split(',');
+  process.env.SUBWAY_BANNED_SERVICE_PROVIDERS || 'Example'
+const bannedServiceProviders = bannedServiceProviderList.split(',')
 
-let nodeEnv = process.env.NODE_ENV;
+let nodeEnv = process.env.NODE_ENV
 if (nodeEnv !== 'dev' && nodeEnv !== 'staging' && nodeEnv !== 'production') {
-  nodeEnv = 'dev';
+  nodeEnv = 'dev'
 }
 
 const config: Static<typeof Config> = {
@@ -180,23 +180,28 @@ const config: Static<typeof Config> = {
   unleashUrl:
     process.env.SUBWAY_UNLEASH_URL ||
     'https://gitlab.com/api/v4/feature_flags/unleash/23285197',
-  vueAppUnleashUrl: process.env.VUE_APP_UNLEASH_URL || "https://gitlab.com/api/v4/feature_flags/unleash/23281505",
-  vueAppUnleashId: process.env.VUE_APP_UNLEASH_ID || "4ygySARxzu-yDxejd5sw",
-  vueAppUnleashName: process.env.VUE_APP_UNLEASH_NAME || "dev",
+  vueAppUnleashUrl:
+    process.env.VUE_APP_UNLEASH_URL ||
+    'https://gitlab.com/api/v4/feature_flags/unleash/23281505',
+  vueAppUnleashId: process.env.VUE_APP_UNLEASH_ID || '4ygySARxzu-yDxejd5sw',
+  vueAppUnleashName: process.env.VUE_APP_UNLEASH_NAME || 'dev',
   posthogToken: process.env.SUBWAY_POSTHOG_TOKEN || 'bogus',
-  zwibblerUrl: process.env.VUE_APP_ZWIBBLER_URL || '/static/js/zwibbler-demo.js',
+  zwibblerUrl:
+    process.env.VUE_APP_ZWIBBLER_URL || '/static/js/zwibbler-demo.js',
   websocketRoot: process.env.VUE_APP_WEBSOCKET_ROOT || 'ws://localhost:3000',
   serverRoot: process.env.VUE_APP_SERVER_ROOT || 'http://localhost:3000',
   socketAddress: process.env.VUE_APP_SOCKET_ADDRESS || 'http://localhost:3001',
-  mainWebsiteUrl: process.env.VUE_APP_MAIN_WEBSITE_URL || 'http://localhost:8080',
+  mainWebsiteUrl:
+    process.env.VUE_APP_MAIN_WEBSITE_URL || 'http://localhost:8080',
   newRelicBrowserAccountId: process.env.VUE_APP_NEW_RELIC_ACCOUNT_ID || 'bogus',
   newRelicBrowserTrustKey: process.env.VUE_APP_NEW_RELIC_TRUST_KEY || 'bogus',
-  newRelicBrowserAgentId: process.env.VUE_APP_NEW_RELIC_AGENT_ID  || 'bogus',
-  newRelicBrowserLicenseKey: process.env.VUE_APP_NEW_RELIC_LICENSE_KEY  || 'bogus',
-  newRelicBrowserAppId: process.env.VUE_APP_NEW_RELIC_APP_ID  || 'bogus',
+  newRelicBrowserAgentId: process.env.VUE_APP_NEW_RELIC_AGENT_ID || 'bogus',
+  newRelicBrowserLicenseKey:
+    process.env.VUE_APP_NEW_RELIC_LICENSE_KEY || 'bogus',
+  newRelicBrowserAppId: process.env.VUE_APP_NEW_RELIC_APP_ID || 'bogus',
   papercupsId: process.env.VUE_APP_PAPERCUPS_ID || 'bogus',
   vueDevtools: nodeEnv === 'dev'
-};
+}
 
-module.exports = config;
-export default config;
+module.exports = config
+export default config

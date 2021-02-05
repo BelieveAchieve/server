@@ -1,16 +1,16 @@
-import { Document, model, Schema, Types } from 'mongoose';
-import { Availability, availabilityDaySchema, DAYS } from './types';
+import { Document, model, Schema, Types } from 'mongoose'
+import { Availability, availabilityDaySchema, DAYS } from './types'
 
 export interface AvailabilitySnapshot {
-  _id: Types.ObjectId;
-  volunteerId: Types.ObjectId;
-  onCallAvailability: Availability;
-  modifiedAt: Date;
-  createdAt: Date;
-  timezone: string;
+  _id: Types.ObjectId
+  volunteerId: Types.ObjectId
+  onCallAvailability: Availability
+  modifiedAt: Date
+  createdAt: Date
+  timezone: string
 }
 
-export type AvailabilitySnapshotDocument = AvailabilitySnapshot & Document;
+export type AvailabilitySnapshotDocument = AvailabilitySnapshot & Document
 
 const availabilityWeekSchema = new Schema(
   {
@@ -44,7 +44,7 @@ const availabilityWeekSchema = new Schema(
     }
   },
   { _id: false }
-);
+)
 
 const availabilitySnapshotSchema = new Schema({
   volunteerId: {
@@ -57,12 +57,12 @@ const availabilitySnapshotSchema = new Schema({
   modifiedAt: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now },
   timezone: String
-});
+})
 
 const AvailabilitySnapshotModel = model<AvailabilitySnapshotDocument>(
   'AvailabilitySnapshot',
   availabilitySnapshotSchema
-);
+)
 
-module.exports = AvailabilitySnapshotModel;
-export default AvailabilitySnapshotModel;
+module.exports = AvailabilitySnapshotModel
+export default AvailabilitySnapshotModel

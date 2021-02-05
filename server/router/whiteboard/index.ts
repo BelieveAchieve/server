@@ -1,7 +1,7 @@
-import express from 'express';
-import ws from 'ws';
-import * as Sentry from '@sentry/node';
-import WhiteboardService from '../../services/WhiteboardService.js';
+import express from 'express'
+import ws from 'ws'
+import * as Sentry from '@sentry/node'
+import WhiteboardService from '../../services/WhiteboardService.js'
 import {
   decode,
   encode,
@@ -9,13 +9,13 @@ import {
   MessageType,
   DecodeError,
   CreationMode
-} from '../../utils/zwibblerDecoder';
+} from '../../utils/zwibblerDecoder'
 
 const captureUnimplemented = (sessionId: string, messageType: string): void => {
   Sentry.captureMessage(
     `Unimplemented Zwibbler message type ${messageType} called in session ${sessionId}`
-  );
-};
+  )
+}
 
 const messageHandlers: {
   [type in MessageType]: ({
@@ -24,15 +24,15 @@ const messageHandlers: {
     wsClient,
     route
   }: {
-    message: Message;
-    sessionId: string;
-    wsClient: ws;
+    message: Message
+    sessionId: string
+    wsClient: ws
     // @todo: figure out correct typing using @types/express-ws
-    route: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-  }) => void;
+    route: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  }) => void
 } = {
   [MessageType.INIT]: async ({ message, sessionId, wsClient }) => {
-    const document = await WhiteboardService.getDoc(sessionId);
+    const document = await WhiteboardService.getDoc(sessionId)
     if (message.creationMode === CreationMode.NEVER_CREATE && !document) {
       return wsClient.send(
         encode({
@@ -41,7 +41,7 @@ const messageHandlers: {
           more: 0,
           description: 'does not exist'
         })
-      );
+      )
     }
     if (message.creationMode === CreationMode.ALWAYS_CREATE && !document) {
       return wsClient.send(
@@ -51,17 +51,17 @@ const messageHandlers: {
           more: 0,
           description: 'already exists'
         })
-      );
+      )
     }
     if (
       (message.creationMode === CreationMode.ALWAYS_CREATE ||
         message.creationMode === CreationMode.POSSIBLY_CREATE) &&
       !document
     ) {
-      await WhiteboardService.createDoc(sessionId);
+      await WhiteboardService.createDoc(sessionId)
       if (message.data)
-        await WhiteboardService.appendToDoc(sessionId, message.data);
-      const docLength = await WhiteboardService.getDocLength(sessionId);
+        await WhiteboardService.appendToDoc(sessionId, message.data)
+      const docLength = await WhiteboardService.getDocLength(sessionId)
       return wsClient.send(
         encode({
           messageType: MessageType.APPEND,
@@ -69,7 +69,7 @@ const messageHandlers: {
           data: '',
           more: 0
         })
-      );
+      )
     }
     return wsClient.send(
       encode({
@@ -78,10 +78,10 @@ const messageHandlers: {
         data: document,
         more: 0
       })
-    );
+    )
   },
   [MessageType.APPEND]: async ({ message, sessionId, wsClient, route }) => {
-    const documentLength = await WhiteboardService.getDocLength(sessionId);
+    const documentLength = await WhiteboardService.getDocLength(sessionId)
     if (message.offset !== documentLength) {
       return wsClient.send(
         encode({
@@ -90,10 +90,10 @@ const messageHandlers: {
           offset: documentLength,
           more: 0
         })
-      );
+      )
     }
-    await WhiteboardService.appendToDoc(sessionId, message.data);
-    const newDocLength = await WhiteboardService.getDocLength(sessionId);
+    await WhiteboardService.appendToDoc(sessionId, message.data)
+    const newDocLength = await WhiteboardService.getDocLength(sessionId)
 
     // Ack unless this is the beginning of a continuation
     if (!message.more) {
@@ -104,7 +104,7 @@ const messageHandlers: {
           offset: newDocLength,
           more: 0
         })
-      );
+      )
     }
     route.broadcast(
       wsClient,
@@ -114,10 +114,10 @@ const messageHandlers: {
         data: message.data,
         more: message.more
       })
-    );
+    )
   },
   [MessageType.SET_KEY]: ({ wsClient, sessionId }) => {
-    captureUnimplemented(sessionId, 'SET_KEY');
+    captureUnimplemented(sessionId, 'SET_KEY')
     wsClient.send(
       encode({
         messageType: MessageType.ERROR,
@@ -125,10 +125,10 @@ const messageHandlers: {
         errorCode: DecodeError.UNIMPLEMENTED_ERROR,
         more: 0
       })
-    );
+    )
   },
   [MessageType.BROADCAST]: ({ wsClient, sessionId }) => {
-    captureUnimplemented(sessionId, 'BROADCAST');
+    captureUnimplemented(sessionId, 'BROADCAST')
     wsClient.send(
       encode({
         messageType: MessageType.ERROR,
@@ -136,10 +136,10 @@ const messageHandlers: {
         errorCode: DecodeError.UNIMPLEMENTED_ERROR,
         more: 0
       })
-    );
+    )
   },
   [MessageType.ERROR]: ({ wsClient, sessionId }) => {
-    captureUnimplemented(sessionId, 'ERROR');
+    captureUnimplemented(sessionId, 'ERROR')
     wsClient.send(
       encode({
         messageType: MessageType.ERROR,
@@ -147,10 +147,10 @@ const messageHandlers: {
         errorCode: DecodeError.UNIMPLEMENTED_ERROR,
         more: 0
       })
-    );
+    )
   },
   [MessageType.ACK_NACK]: ({ wsClient, sessionId }) => {
-    captureUnimplemented(sessionId, 'ACK_NACK');
+    captureUnimplemented(sessionId, 'ACK_NACK')
     wsClient.send(
       encode({
         messageType: MessageType.ERROR,
@@ -158,10 +158,10 @@ const messageHandlers: {
         errorCode: DecodeError.UNIMPLEMENTED_ERROR,
         more: 0
       })
-    );
+    )
   },
   [MessageType.KEY_INFORMATION]: ({ wsClient, sessionId }) => {
-    captureUnimplemented(sessionId, 'KEY_INFORMATION');
+    captureUnimplemented(sessionId, 'KEY_INFORMATION')
     wsClient.send(
       encode({
         messageType: MessageType.ERROR,
@@ -169,10 +169,10 @@ const messageHandlers: {
         errorCode: DecodeError.UNIMPLEMENTED_ERROR,
         more: 0
       })
-    );
+    )
   },
   [MessageType.SET_KEY_ACK_NACK]: ({ wsClient, sessionId }) => {
-    captureUnimplemented(sessionId, 'SET_KEY_ACK_NACK');
+    captureUnimplemented(sessionId, 'SET_KEY_ACK_NACK')
     wsClient.send(
       encode({
         messageType: MessageType.ERROR,
@@ -180,7 +180,7 @@ const messageHandlers: {
         errorCode: DecodeError.UNIMPLEMENTED_ERROR,
         more: 0
       })
-    );
+    )
   },
   [MessageType.CONTINUATION]: async ({
     message,
@@ -188,14 +188,14 @@ const messageHandlers: {
     sessionId,
     route
   }) => {
-    await WhiteboardService.appendToDoc(sessionId, message.data);
-    const newDocLength = await WhiteboardService.getDocLength(sessionId);
+    await WhiteboardService.appendToDoc(sessionId, message.data)
+    const newDocLength = await WhiteboardService.getDocLength(sessionId)
     const broadcastMessage = encode({
       messageType: MessageType.CONTINUATION,
       data: message.data,
       more: message.more
-    });
-    route.broadcast(wsClient, broadcastMessage);
+    })
+    route.broadcast(wsClient, broadcastMessage)
 
     // Ack if this is the end of a continuation
     if (!message.more) {
@@ -206,14 +206,14 @@ const messageHandlers: {
           offset: newDocLength,
           more: 0
         })
-      );
+      )
     }
   }
-};
+}
 
 const whiteboardRouter = function(app): void {
   // @todo: figure out correct typing using @types/express-ws
-  const router: any = express.Router(); // eslint-disable-line @typescript-eslint/no-explicit-any
+  const router: any = express.Router() // eslint-disable-line @typescript-eslint/no-explicit-any
 
   /**
    * This is a web socket Express route
@@ -222,39 +222,39 @@ const whiteboardRouter = function(app): void {
    * @small-tech/express-ws: https://github.com/aral/express-ws
    */
   router.ws('/room/:sessionId', function(wsClient, req, next) {
-    let initialized = false;
+    let initialized = false
 
     /**
      * On initial client connection, join room.
      * Room is determined by parsing request URL, which includes the unique session ID.
      */
-    wsClient.room = this.setRoom(req);
+    wsClient.room = this.setRoom(req)
 
-    const sessionId = req.params.sessionId;
+    const sessionId = req.params.sessionId
 
     setTimeout(() => {
       if (!initialized) {
         console.log(
           `closing whiteboard socket connection for session ${sessionId}`
-        );
-        wsClient.close();
+        )
+        wsClient.close()
       }
-    }, 30 * 1000);
+    }, 30 * 1000)
 
     wsClient.on('message', rawMessage => {
       if (rawMessage === 'p1ng') {
         // Respond to ping and exit early
-        wsClient.send('p0ng');
-        return;
+        wsClient.send('p0ng')
+        return
       }
-      let message = decode(rawMessage as Uint8Array);
+      let message = decode(rawMessage as Uint8Array)
       if (!message || !message.messageType) {
-        console.log(`unsupported zwibbler client in session ${sessionId}`);
+        console.log(`unsupported zwibbler client in session ${sessionId}`)
         message = {
           messageType: MessageType.ERROR
-        };
+        }
       }
-      if (message.messageType === MessageType.INIT) initialized = true;
+      if (message.messageType === MessageType.INIT) initialized = true
       messageHandlers[message.messageType]
         ? messageHandlers[message.messageType]({
             message,
@@ -262,24 +262,24 @@ const whiteboardRouter = function(app): void {
             wsClient,
             route: this
           })
-        : wsClient.send({ error: 'unsupported message type' });
-    });
+        : wsClient.send({ error: 'unsupported message type' })
+    })
 
-    next();
-  });
+    next()
+  })
 
   router.ws('/admin/:sessionId', function(wsClient, req) {
-    const sessionId = req.params.sessionId;
+    const sessionId = req.params.sessionId
 
     wsClient.on('message', async rawMessage => {
-      const message = decode(rawMessage as Uint8Array);
+      const message = decode(rawMessage as Uint8Array)
 
       if (message.messageType === MessageType.INIT) {
         // Active session's document
-        let document = await WhiteboardService.getDoc(sessionId);
+        let document = await WhiteboardService.getDoc(sessionId)
         // Completed session's document
         if (!document)
-          document = await WhiteboardService.getFinalDocState(sessionId);
+          document = await WhiteboardService.getFinalDocState(sessionId)
         return wsClient.send(
           encode({
             messageType: MessageType.APPEND,
@@ -287,27 +287,27 @@ const whiteboardRouter = function(app): void {
             data: document,
             more: 0
           })
-        );
+        )
       }
-    });
-  });
+    })
+  })
 
   router.route('/reset').post(async function(req, res, next) {
     const {
       body: { sessionId }
-    } = req;
+    } = req
 
     try {
-      await WhiteboardService.deleteDoc(sessionId);
-      res.sendStatus(200);
+      await WhiteboardService.deleteDoc(sessionId)
+      res.sendStatus(200)
     } catch (err) {
-      Sentry.captureException(err);
-      next(err);
+      Sentry.captureException(err)
+      next(err)
     }
-  });
+  })
 
-  app.use('/whiteboard', router);
-};
+  app.use('/whiteboard', router)
+}
 
-module.exports = whiteboardRouter;
-export default whiteboardRouter;
+module.exports = whiteboardRouter
+export default whiteboardRouter

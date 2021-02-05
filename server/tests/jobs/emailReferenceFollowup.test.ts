@@ -1,36 +1,36 @@
-import mongoose from 'mongoose';
-import emailReferenceFollowup from '../../worker/jobs/emailReferenceFollowup';
-import { insertVolunteer, resetDb } from '../db-utils';
-import { buildVolunteer, buildReference } from '../generate';
-import MailService from '../../services/MailService';
-import { REFERENCE_STATUS } from '../../constants';
-import { log } from '../../worker/logger';
-jest.mock('../../services/MailService');
-jest.mock('../../worker/logger');
+import mongoose from 'mongoose'
+import emailReferenceFollowup from '../../worker/jobs/emailReferenceFollowup'
+import { insertVolunteer, resetDb } from '../db-utils'
+import { buildVolunteer, buildReference } from '../generate'
+import MailService from '../../services/MailService'
+import { REFERENCE_STATUS } from '../../constants'
+import { log } from '../../worker/logger'
+jest.mock('../../services/MailService')
+jest.mock('../../worker/logger')
 
-const oneHour = 1000 * 60 * 60 * 1;
-const oneDay = oneHour * 24 * 1;
-const threeDays = oneDay * 3;
+const oneHour = 1000 * 60 * 60 * 1
+const oneDay = oneHour * 24 * 1
+const threeDays = oneDay * 3
 
 // db connection
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGO_URL, {
     useNewUrlParser: true
-  });
-});
+  })
+})
 
 afterAll(async () => {
-  await mongoose.connection.close();
-});
+  await mongoose.connection.close()
+})
 
 beforeEach(async () => {
-  await resetDb();
-});
+  await resetDb()
+})
 
 describe('Follow-up email to references', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-  });
+    jest.clearAllMocks()
+  })
 
   test('Should only send emails to reference with status SENT and sentAt 3 days ago', async () => {
     const references = [
@@ -41,19 +41,19 @@ describe('Follow-up email to references', () => {
       buildReference({
         status: REFERENCE_STATUS.UNSENT
       })
-    ];
-    await Promise.all([insertVolunteer(buildVolunteer({ references }))]);
-    await emailReferenceFollowup();
+    ]
+    await Promise.all([insertVolunteer(buildVolunteer({ references }))])
+    await emailReferenceFollowup()
 
-    const expectedEmailsSent = 1;
+    const expectedEmailsSent = 1
     expect(log).toHaveBeenCalledWith(
       `Emailed ${expectedEmailsSent} references a follow-up`
-    );
+    )
 
-    expect((MailService.sendReferenceFollowup as jest.Mock).mock.calls.length).toBe(
-      expectedEmailsSent
-    );
-  });
+    expect(
+      (MailService.sendReferenceFollowup as jest.Mock).mock.calls.length
+    ).toBe(expectedEmailsSent)
+  })
 
   test('Should not send emails to references with status SENT and sentAt not 3 days ago', async () => {
     const references = [
@@ -65,46 +65,46 @@ describe('Follow-up email to references', () => {
         status: REFERENCE_STATUS.SENT,
         sentAt: new Date(Date.now() - threeDays - oneDay - oneHour)
       })
-    ];
-    await Promise.all([insertVolunteer(buildVolunteer({ references }))]);
-    await emailReferenceFollowup();
+    ]
+    await Promise.all([insertVolunteer(buildVolunteer({ references }))])
+    await emailReferenceFollowup()
 
-    const expectedEmailsSent = 0;
-    expect(log).toHaveBeenCalledWith('No references to email for a follow-up');
-    expect((MailService.sendReferenceFollowup as jest.Mock).mock.calls.length).toBe(
-      expectedEmailsSent
-    );
-  });
+    const expectedEmailsSent = 0
+    expect(log).toHaveBeenCalledWith('No references to email for a follow-up')
+    expect(
+      (MailService.sendReferenceFollowup as jest.Mock).mock.calls.length
+    ).toBe(expectedEmailsSent)
+  })
 
   test('Should catch error when a problem with sending the email occurs', async () => {
     const referenceOne = buildReference({
       status: REFERENCE_STATUS.SENT,
       sentAt: new Date(Date.now() - threeDays - oneHour * 3)
-    });
+    })
     const references = [
       referenceOne,
       buildReference({
         status: REFERENCE_STATUS.SENT,
         sentAt: new Date(Date.now() - oneDay)
       })
-    ];
+    ]
 
-    const customErrorMessage = 'Unable to send';
+    const customErrorMessage = 'Unable to send'
 
     MailService.sendReferenceFollowup = jest.fn(() => {
-      throw new Error(customErrorMessage);
-    });
+      throw new Error(customErrorMessage)
+    })
 
-    await Promise.all([insertVolunteer(buildVolunteer({ references }))]);
-    await emailReferenceFollowup();
+    await Promise.all([insertVolunteer(buildVolunteer({ references }))])
+    await emailReferenceFollowup()
 
-    const expectedEmailsSent = 0;
+    const expectedEmailsSent = 0
     expect((log as jest.Mock).mock.calls[0][0]).toBe(
       `Error notifying reference ${referenceOne._id}: Error: ${customErrorMessage}`
-    );
+    )
     expect((log as jest.Mock).mock.calls[1][0]).toBe(
       `Emailed ${expectedEmailsSent} references a follow-up`
-    );
-    expect(log).toHaveBeenCalledTimes(2);
-  });
-});
+    )
+    expect(log).toHaveBeenCalledTimes(2)
+  })
+})

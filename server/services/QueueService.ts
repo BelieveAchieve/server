@@ -1,7 +1,7 @@
-import Queue from 'bull';
-import config from '../config';
+import Queue from 'bull'
+import config from '../config'
 
-const queue = new Queue(config.workerQueueName, config.redisConnectionString);
+const queue = new Queue(config.workerQueueName, config.redisConnectionString)
 
-module.exports = queue;
-export default queue;
+module.exports = queue
+export default queue

@@ -4,29 +4,29 @@
  * update their profile, etc.
  */
 
-import { Schema, Types, Document, model } from 'mongoose';
-import { USER_ACTION } from '../constants';
+import { Schema, Types, Document, model } from 'mongoose'
+import { USER_ACTION } from '../constants'
 
 export interface UserAction extends Document {
-  _id: Types.ObjectId;
-  user: Types.ObjectId;
-  session: Types.ObjectId;
-  createdAt: Date;
-  actionType: string;
-  action: string;
-  quizCategory: string;
-  quizSubcategory: string;
-  device: string;
-  browser: string;
-  browserVersion: string;
-  operatingSystem: string;
-  operatingSystemVersion: string;
-  ipAddress: string;
-  referenceEmail: string;
-  banReason: string;
+  _id: Types.ObjectId
+  user: Types.ObjectId
+  session: Types.ObjectId
+  createdAt: Date
+  actionType: string
+  action: string
+  quizCategory: string
+  quizSubcategory: string
+  device: string
+  browser: string
+  browserVersion: string
+  operatingSystem: string
+  operatingSystemVersion: string
+  ipAddress: string
+  referenceEmail: string
+  banReason: string
 }
 
-export type UserActionDocument = UserAction & Document;
+export type UserActionDocument = UserAction & Document
 
 const userActionSchema = new Schema({
   user: {
@@ -92,12 +92,12 @@ const userActionSchema = new Schema({
   ipAddress: String,
   referenceEmail: String,
   banReason: String
-});
+})
 
 const UserActionModel = model<UserActionDocument>(
   'UserAction',
   userActionSchema
-);
+)
 
-module.exports = UserActionModel;
-export default UserActionModel;
+module.exports = UserActionModel
+export default UserActionModel
