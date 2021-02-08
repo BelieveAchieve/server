@@ -137,19 +137,21 @@ describe('Notify tutors', () => {
   });
 
   test('Should notify a volunteer who has already been texted with a follow-up text once total volunteers to text has been passed', async () => {
-    const { notifications, volunteers } = await fillNotifications(26);
+    const currentNotificationAmount = 18;
+    const { notifications, volunteers } = await fillNotifications(
+      currentNotificationAmount
+    );
     const { session } = await insertSession({ notifications });
 
-    const notificationIndexPos = 26;
     const expectedVolunteerIndex =
-      notificationIndexPos % TOTAL_VOLUNTEERS_TO_TEXT_FOR_HELP;
+      currentNotificationAmount % TOTAL_VOLUNTEERS_TO_TEXT_FOR_HELP;
 
     // @todo: figure out how to properly type
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const job: any = {
       data: {
         sessionId: session._id,
-        notificationSchedule: [1000, 1000, 1000, 1000]
+        notificationSchedule: config.notificationSchedule
       },
       queue: {
         add: jest.fn()
