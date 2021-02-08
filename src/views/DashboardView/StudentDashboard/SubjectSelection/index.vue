@@ -23,33 +23,33 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
-import SubjectCard from "./SubjectCard";
-import MathSVG from "@/assets/subject_icons/math.svg";
-import CollegeSVG from "@/assets/subject_icons/college-counseling.svg";
-import ScienceSVG from "@/assets/subject_icons/science.svg";
-import calculateWaitingPeriodCountdown from "@/utils/calculate-waiting-period-countdown";
-import ReferralSVG from "@/assets/dashboard_icons/student/referral.svg";
-import LightBulbSVG from "@/assets/dashboard_icons/student/light-bulb.svg";
+import { mapState, mapGetters } from 'vuex'
+import SubjectCard from './SubjectCard'
+import MathSVG from '@/assets/subject_icons/math.svg'
+import CollegeSVG from '@/assets/subject_icons/college-counseling.svg'
+import ScienceSVG from '@/assets/subject_icons/science.svg'
+import calculateWaitingPeriodCountdown from '@/utils/calculate-waiting-period-countdown'
+import ReferralSVG from '@/assets/dashboard_icons/student/referral.svg'
+import LightBulbSVG from '@/assets/dashboard_icons/student/light-bulb.svg'
 
-import { topics } from "@/utils/topics";
+import { topics } from '@/utils/topics'
 
 export default {
-  name: "subject-selection",
+  name: 'subject-selection',
   components: { SubjectCard },
   beforeDestroy() {
-    clearTimeout(this.waitingPeriodTimeoutId);
+    clearTimeout(this.waitingPeriodTimeoutId)
   },
   data() {
     const svgs = {
       math: MathSVG,
       college: CollegeSVG,
       science: ScienceSVG
-    };
+    }
 
     const cards = Object.entries(topics)
       // @note: temporarily hide SAT card
-      .filter(([key]) => key !== "training" && key !== "sat")
+      .filter(([key]) => key !== 'training' && key !== 'sat')
       .map(([key, topicObj]) => {
         return {
           title: topicObj.displayName,
@@ -62,40 +62,40 @@ export default {
               subtopicObj.displayName
             ])
             .reduce((result, [subtopicKey, displayName]) => {
-              result[subtopicKey] = displayName;
-              return result;
+              result[subtopicKey] = displayName
+              return result
             }, {}),
           isTutoringCard: true
-        };
-      });
+        }
+      })
 
     // Temporarily hide Statistics and Calculus BC from students
     cards[0].subtopics = cards[0].subtopics.filter(subject => {
-      const temporarilyHiddenSubjects = ["calculusBC"];
-      return !temporarilyHiddenSubjects.includes(subject);
-    });
+      const temporarilyHiddenSubjects = ['calculusBC']
+      return !temporarilyHiddenSubjects.includes(subject)
+    })
 
     // Temporarily hide Physics subjects and Environmental Science from students
     cards[1].subtopics = cards[1].subtopics.filter(subject => {
-      const temporarilyHiddenSubjects = ["physicsTwo", "environmentalScience"];
-      return !temporarilyHiddenSubjects.includes(subject);
-    });
+      const temporarilyHiddenSubjects = ['physicsTwo', 'environmentalScience']
+      return !temporarilyHiddenSubjects.includes(subject)
+    })
 
     cards.push({
-      title: "Invite Your Friends",
-      subtitle: "Share UPchieve with a friend!",
+      title: 'Invite Your Friends',
+      subtitle: 'Share UPchieve with a friend!',
       svg: ReferralSVG,
-      buttonText: "Learn More"
-    });
+      buttonText: 'Learn More'
+    })
 
     cards.push({
-      title: "Give Feedback",
+      title: 'Give Feedback',
       subtitle:
-        "Help us improve by telling us what new subjects and features you want!",
+        'Help us improve by telling us what new subjects and features you want!',
       svg: LightBulbSVG,
-      buttonText: "Give feedback",
-      routeTo: "/contact"
-    });
+      buttonText: 'Give feedback',
+      routeTo: '/contact'
+    })
 
     return {
       cards,
@@ -103,47 +103,47 @@ export default {
       waitingPeriodTimeoutId: null,
       hasWaitingPeriod: false,
       waitingPeriodTimeLeft: 0
-    };
+    }
   },
   computed: {
     ...mapState({
       latestSession: state => state.user.latestSession
     }),
     ...mapGetters({
-      mobileMode: "app/mobileMode",
-      isSessionAlive: "user/isSessionAlive"
+      mobileMode: 'app/mobileMode',
+      isSessionAlive: 'user/isSessionAlive'
     }),
     waitingPeriodMessage() {
       const countdown = calculateWaitingPeriodCountdown(
         this.waitingPeriodTimeLeft
-      );
-      const minuteTextFormat = countdown === 1 ? "minute" : "minutes";
+      )
+      const minuteTextFormat = countdown === 1 ? 'minute' : 'minutes'
 
-      return `You must wait at least ${countdown} ${minuteTextFormat} before requesting a new session.`;
+      return `You must wait at least ${countdown} ${minuteTextFormat} before requesting a new session.`
     }
   },
   watch: {
     // This component mounts before the lastestSession and isSessionAlive
     // have a value in the store - watch for updates
     latestSession() {
-      this.checkOrEnforceWaitingPeriod();
+      this.checkOrEnforceWaitingPeriod()
     },
     isSessionAlive() {
-      this.checkOrEnforceWaitingPeriod();
+      this.checkOrEnforceWaitingPeriod()
     }
   },
   methods: {
     calculateTimeSinceLastSession() {
       const sessionCreatedAtInMS = new Date(
         this.latestSession.createdAt
-      ).getTime();
-      const currentDateInMS = new Date().getTime();
-      return currentDateInMS - sessionCreatedAtInMS;
+      ).getTime()
+      const currentDateInMS = new Date().getTime()
+      return currentDateInMS - sessionCreatedAtInMS
     },
     checkOrEnforceWaitingPeriod() {
-      const timeSinceLastSession = this.calculateTimeSinceLastSession();
-      const fiveMinutes = 1000 * 60 * 5;
-      const timeLeftUntilFiveMinutes = fiveMinutes - timeSinceLastSession;
+      const timeSinceLastSession = this.calculateTimeSinceLastSession()
+      const fiveMinutes = 1000 * 60 * 5
+      const timeLeftUntilFiveMinutes = fiveMinutes - timeSinceLastSession
 
       // Only show a waiting period message if there's no active session
       // and the latest session's created at has been within a timeframe of 5 minutes.
@@ -151,42 +151,42 @@ export default {
       if (timeSinceLastSession < fiveMinutes && !this.isSessionAlive) {
         // Show the waiting period message as a header if not in mobile mode
         if (!this.mobileMode) {
-          this.disableSubjectCard = true;
+          this.disableSubjectCard = true
           const headerData = {
-            component: "WaitingPeriodHeader",
+            component: 'WaitingPeriodHeader',
             data: {
               important: true,
               timeLeft: timeLeftUntilFiveMinutes
             }
-          };
-          this.$store.dispatch("app/header/show", headerData);
+          }
+          this.$store.dispatch('app/header/show', headerData)
 
           this.waitingPeriodTimeoutId = setTimeout(() => {
-            this.disableSubjectCard = false;
-            this.$store.dispatch("app/header/hide");
-          }, timeLeftUntilFiveMinutes);
+            this.disableSubjectCard = false
+            this.$store.dispatch('app/header/hide')
+          }, timeLeftUntilFiveMinutes)
         } else {
           // Show the waiting period message above the subject cards for mobile users
-          this.hasWaitingPeriod = true;
-          this.disableSubjectCard = true;
-          this.waitingPeriodTimeLeft = timeLeftUntilFiveMinutes;
+          this.hasWaitingPeriod = true
+          this.disableSubjectCard = true
+          this.waitingPeriodTimeLeft = timeLeftUntilFiveMinutes
 
           this.waitingPeriodTimeoutId = setTimeout(() => {
-            this.hasWaitingPeriod = false;
-            this.disableSubjectCard = false;
-          }, timeLeftUntilFiveMinutes);
+            this.hasWaitingPeriod = false
+            this.disableSubjectCard = false
+          }, timeLeftUntilFiveMinutes)
         }
       } else {
-        this.hasWaitingPeriod = false;
+        this.hasWaitingPeriod = false
       }
     },
     isCardDisabled(card) {
       return (
         card.isTutoringCard && (this.disableSubjectCard || this.isSessionAlive)
-      );
+      )
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -196,13 +196,13 @@ export default {
   margin-top: 40px;
 
   h2 {
-    @include font-category("heading");
+    @include font-category('heading');
     margin: 0;
     padding: 0;
     text-align: left;
   }
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     @include child-spacing(top, 0);
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -211,7 +211,7 @@ export default {
 }
 
 .waiting-period {
-  @include font-category("body");
+  @include font-category('body');
   color: white;
   margin-bottom: 40px;
   background: $c-warning-orange;
@@ -219,15 +219,15 @@ export default {
   border-radius: 8px;
   text-align: center;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin-bottom: initial;
   }
 
   // @note - temporary fix for if the mobile waiting period
   //         message happens to render on a large screen
-  @include breakpoint-above("large") {
+  @include breakpoint-above('large') {
     @include flex-container(row, center, center);
-    @include font-category("heading");
+    @include font-category('heading');
     margin-top: initial;
   }
 }

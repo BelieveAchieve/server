@@ -33,12 +33,12 @@
 </template>
 
 <script>
-import LargeButton from "@/components/LargeButton";
-import Modal from "@/components/Modal";
-import Separator from "@/components/Separator";
+import LargeButton from '@/components/LargeButton'
+import Modal from '@/components/Modal'
+import Separator from '@/components/Separator'
 
 export default {
-  name: "DeactivateAccountModal",
+  name: 'DeactivateAccountModal',
   components: { LargeButton, Modal, Separator },
   props: {
     closeModal: { type: Function, required: true },
@@ -46,11 +46,11 @@ export default {
   },
   methods: {
     deactivate() {
-      this.setIsAccountActive(false);
-      this.closeModal();
+      this.setIsAccountActive(false)
+      this.closeModal()
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -58,11 +58,11 @@ export default {
   @include flex-container(column);
 
   &__title {
-    @include font-category("display-small");
+    @include font-category('display-small');
   }
 
   &__message {
-    @include font-category("body");
+    @include font-category('body');
     margin: 0 0 35px;
     color: $c-secondary-grey;
     font-size: 15px;

@@ -23,13 +23,13 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
-import Modal from "@/components/Modal";
-import LargeButton from "@/components/LargeButton";
-import HeavyCrossIcon from "@/assets/heavy-cross.svg";
+import { mapState, mapGetters } from 'vuex'
+import Modal from '@/components/Modal'
+import LargeButton from '@/components/LargeButton'
+import HeavyCrossIcon from '@/assets/heavy-cross.svg'
 
 export default {
-  name: "volunteer-dashboard",
+  name: 'volunteer-dashboard',
   components: { Modal, LargeButton, HeavyCrossIcon },
   props: {
     closeModal: { type: Function, required: true }
@@ -38,17 +38,17 @@ export default {
     ...mapState({
       user: state => state.user.user
     }),
-    ...mapGetters({ mobileMode: "app/mobileMode" })
+    ...mapGetters({ mobileMode: 'app/mobileMode' })
   },
   mounted() {
-    window.localStorage.setItem("viewedFirstSessionCongratsModal", true);
+    window.localStorage.setItem('viewedFirstSessionCongratsModal', true)
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
 header {
-  background-image: url("~@/assets/confetti.png");
+  background-image: url('~@/assets/confetti.png');
   background-size: stretch;
   height: 250px;
   padding-top: 1em;
@@ -65,7 +65,7 @@ header {
 }
 
 .title {
-  @include font-category("display-large");
+  @include font-category('display-large');
   width: 80%;
   font-weight: 700;
   text-align: center;
@@ -77,14 +77,14 @@ header {
 }
 
 .subtitle {
-  @include font-category("display-small");
+  @include font-category('display-small');
   text-align: center;
   width: 70%;
   margin: 1em auto;
 }
 
 .additional-info {
-  @include font-category("body");
+  @include font-category('body');
   text-align: center;
   width: 80%;
   margin: 0 auto;

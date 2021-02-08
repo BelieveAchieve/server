@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import ButtonTemplate from "./ButtonTemplate";
+import ButtonTemplate from './ButtonTemplate'
 
 export default {
   components: { ButtonTemplate },
@@ -25,12 +25,12 @@ export default {
     buttonClasses() {
       return {
         HyperlinkButton: true,
-        "HyperlinkButton--dark": this.dark,
-        "HyperlinkButton--reverse": this.reverse
-      };
+        'HyperlinkButton--dark': this.dark,
+        'HyperlinkButton--reverse': this.reverse
+      }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

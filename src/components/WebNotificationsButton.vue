@@ -16,22 +16,22 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import WebNotificationsModal from "@/components/WebNotificationsModal";
-import getNotificationPermission from "@/utils/get-notification-permission";
-import LargeButton from "@/components/LargeButton.vue";
+import { mapState } from 'vuex'
+import WebNotificationsModal from '@/components/WebNotificationsModal'
+import getNotificationPermission from '@/utils/get-notification-permission'
+import LargeButton from '@/components/LargeButton.vue'
 
 export default {
-  name: "WebNotificationsButton",
+  name: 'WebNotificationsButton',
   components: { WebNotificationsModal, LargeButton },
   data() {
     return {
       showNotificationModal: false,
       isShowingNotificationButton: false
-    };
+    }
   },
   mounted() {
-    this.handleNotificationButton();
+    this.handleNotificationButton()
   },
   computed: {
     ...mapState({
@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     setShowNotificationModal(value) {
-      this.showNotificationModal = value;
+      this.showNotificationModal = value
     },
     handleNotificationButton() {
       // User is a volunteer who is not onboarded or approved
@@ -51,20 +51,20 @@ export default {
           (!this.user.isOnboarded || !this.user.isApproved)) ||
         this.isMobileApp
       )
-        return;
+        return
 
       this.isShowingNotificationButton =
-        getNotificationPermission() === "default";
+        getNotificationPermission() === 'default'
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
 .btn {
   background-color: $c-success-green;
   color: #fff;
-  @include font-category("helper-text");
+  @include font-category('helper-text');
   font-weight: 500;
   border: none;
 

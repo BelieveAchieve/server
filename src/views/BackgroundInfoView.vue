@@ -273,69 +273,69 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import NetworkService from "@/services/NetworkService";
-import AnalyticsService from "@/services/AnalyticsService";
-import { COUNTRIES, STATES, EVENTS } from "@/consts";
+import { mapState } from 'vuex'
+import NetworkService from '@/services/NetworkService'
+import AnalyticsService from '@/services/AnalyticsService'
+import { COUNTRIES, STATES, EVENTS } from '@/consts'
 
 export default {
-  name: "background-info-view",
+  name: 'background-info-view',
   data() {
     return {
       options: {
         occupations: [
-          "A high school student",
-          "An undergraduate student",
-          "A graduate student",
-          "Working full-time",
-          "Working part-time",
-          "Unemployed",
-          "Caregiver",
-          "Retired"
+          'A high school student',
+          'An undergraduate student',
+          'A graduate student',
+          'Working full-time',
+          'Working part-time',
+          'Unemployed',
+          'Caregiver',
+          'Retired'
         ],
         languages: [
-          "Spanish",
-          "Mandarin",
-          "Cantonese",
-          "Tagalog",
-          "Vietnamese",
-          "Arabic",
-          "French",
-          "Korean",
-          "Russian",
-          "German"
+          'Spanish',
+          'Mandarin',
+          'Cantonese',
+          'Tagalog',
+          'Vietnamese',
+          'Arabic',
+          'French',
+          'Korean',
+          'Russian',
+          'German'
         ]
       },
       showInputErrors: false,
-      formError: "",
+      formError: '',
       occupation: [],
-      linkedInUrl: "",
+      linkedInUrl: '',
       experience: {
-        tutoring: "",
-        collegeCounseling: "",
-        mentoring: ""
+        tutoring: '',
+        collegeCounseling: '',
+        mentoring: ''
       },
       languages: [],
       showAddLanguages: false,
-      addedLanguages: "",
+      addedLanguages: '',
       wasSubmitted: false,
-      country: "",
-      state: "",
-      city: "",
-      college: "",
-      company: "",
+      country: '',
+      state: '',
+      city: '',
+      college: '',
+      company: '',
       experienceRadioQuestion: {
         columnTitle: [
-          "No prior experience",
-          "0-1 years",
-          "1-2 years",
-          "2-5 years",
-          "5+ years"
+          'No prior experience',
+          '0-1 years',
+          '1-2 years',
+          '2-5 years',
+          '5+ years'
         ],
-        options: ["Tutoring", "College Counseling", "Mentoring"],
-        optionsAlias: ["tutoring", "collegeCounseling", "mentoring"]
+        options: ['Tutoring', 'College Counseling', 'Mentoring'],
+        optionsAlias: ['tutoring', 'collegeCounseling', 'mentoring']
       }
-    };
+    }
   },
   computed: {
     ...mapState({
@@ -346,59 +346,59 @@ export default {
         this.user.occupation &&
         this.user.occupation.length > 0 &&
         this.user.country
-      );
+      )
     },
     countries() {
-      return COUNTRIES;
+      return COUNTRIES
     },
     states() {
-      return STATES;
+      return STATES
     },
     isUnitedStatesSelected() {
-      return this.country === "United States of America";
+      return this.country === 'United States of America'
     },
     linkedInUrlPattern() {
-      return /https?:\/\/(www\.)?linkedin\.com.*\/in\/.{1,}$/;
+      return /https?:\/\/(www\.)?linkedin\.com.*\/in\/.{1,}$/
     },
     isValidLinkedInUrl() {
-      if (!this.linkedInUrl) return true;
-      return this.linkedInUrlPattern.test(this.linkedInUrl);
+      if (!this.linkedInUrl) return true
+      return this.linkedInUrlPattern.test(this.linkedInUrl)
     },
     isCollegeEducated() {
       return (
-        this.occupation.includes("An undergraduate student") ||
-        this.occupation.includes("A graduate student")
-      );
+        this.occupation.includes('An undergraduate student') ||
+        this.occupation.includes('A graduate student')
+      )
     },
     isWorkingFullTime() {
       return (
-        this.occupation.includes("Working full-time") &&
+        this.occupation.includes('Working full-time') &&
         !this.user.volunteerPartnerOrg
-      );
+      )
     }
   },
   methods: {
     async submitForm(event) {
-      event.preventDefault();
+      event.preventDefault()
 
-      this.showInputErrors = false;
-      this.formError = "";
+      this.showInputErrors = false
+      this.formError = ''
 
-      if (this.wasSubmitted) return;
+      if (this.wasSubmitted) return
       if (this.invalidForm()) {
-        this.showInputErrors = true;
-        this.formError = "Please answer the required fields above.";
-        return;
+        this.showInputErrors = true
+        this.formError = 'Please answer the required fields above.'
+        return
       }
-      this.wasSubmitted = true;
+      this.wasSubmitted = true
 
-      const { tutoring, collegeCounseling, mentoring } = this.experience;
-      const { columnTitle } = this.experienceRadioQuestion;
+      const { tutoring, collegeCounseling, mentoring } = this.experience
+      const { columnTitle } = this.experienceRadioQuestion
       const experience = {
         tutoring: columnTitle[tutoring - 1],
         collegeCounseling: columnTitle[collegeCounseling - 1],
         mentoring: columnTitle[mentoring - 1]
-      };
+      }
 
       const data = {
         occupation: this.occupation,
@@ -406,48 +406,48 @@ export default {
         languages: this.languages,
         linkedInUrl: this.linkedInUrl,
         country: this.country,
-        state: this.isUnitedStatesSelected ? this.state : "",
+        state: this.isUnitedStatesSelected ? this.state : '',
         city: this.city,
         college: this.college,
         company: this.company
-      };
+      }
 
       if (this.languages.length > 0) {
-        const languages = Array.from(this.languages);
-        if (this.addedLanguages) languages.push(this.addedLanguages);
-        data.languages = languages;
+        const languages = Array.from(this.languages)
+        if (this.addedLanguages) languages.push(this.addedLanguages)
+        data.languages = languages
       }
 
       try {
-        await NetworkService.addBackgroundInfo(data);
-        this.wasSubmitted = false;
+        await NetworkService.addBackgroundInfo(data)
+        this.wasSubmitted = false
         AnalyticsService.captureEvent(EVENTS.BACKGROUND_INFORMATION_COMPLETED, {
           event: EVENTS.BACKGROUND_INFORMATION_COMPLETED
-        });
+        })
 
         if (this.user.volunteerPartnerOrg)
           AnalyticsService.captureEvent(EVENTS.ACCOUNT_APPROVED, {
             event: EVENTS.ACCOUNT_APPROVED
-          });
+          })
 
         // mandatory fields: occupation, experience, country / state / city,
         // update is a subset of mandatory fields
         const update = {
           occupation: data.occupation,
           country: data.country
-        };
+        }
 
-        this.$store.dispatch("user/addToUser", update);
+        this.$store.dispatch('user/addToUser', update)
       } catch (error) {
-        this.formError = "Sorry, we had some trouble saving your information.";
-        this.wasSubmitted = false;
+        this.formError = 'Sorry, we had some trouble saving your information.'
+        this.wasSubmitted = false
       }
     },
     toggleAddLanguages() {
-      this.showAddLanguages = !this.showAddLanguages;
+      this.showAddLanguages = !this.showAddLanguages
     },
     invalidForm() {
-      const { tutoring, collegeCounseling, mentoring } = this.experience;
+      const { tutoring, collegeCounseling, mentoring } = this.experience
 
       return (
         this.occupation.length === 0 ||
@@ -460,10 +460,10 @@ export default {
         !this.isValidLinkedInUrl ||
         (this.isCollegeEducated && !this.college) ||
         (this.isWorkingFullTime && !this.company)
-      );
+      )
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -473,7 +473,7 @@ input:invalid {
 
 ol {
   padding-inline-start: 30px;
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     padding-inline-start: 40px;
   }
 }
@@ -482,7 +482,7 @@ ol {
   margin-bottom: 0.6em;
 
   & label {
-    @include font-category("body");
+    @include font-category('body');
   }
 }
 
@@ -504,20 +504,20 @@ textarea {
 }
 
 .background-info {
-  @include font-category("body");
+  @include font-category('body');
 
   &__wrapper {
     max-width: 100%;
     background-color: #fff;
     border-radius: 8px;
 
-    @include breakpoint-above("medium") {
+    @include breakpoint-above('medium') {
       padding: 40px;
       max-width: 90%;
       margin: 15px 15px 55px 40px;
     }
 
-    @include breakpoint-above("large") {
+    @include breakpoint-above('large') {
       max-width: 800px;
     }
   }
@@ -527,9 +527,9 @@ textarea {
     text-align: left;
     font-weight: 500;
     padding: 40px 20px 20px 20px;
-    @include font-category("display-small");
+    @include font-category('display-small');
 
-    @include breakpoint-above("medium") {
+    @include breakpoint-above('medium') {
       padding: 20px;
     }
   }
@@ -544,13 +544,13 @@ textarea {
     text-align: left;
     max-width: 95%;
 
-    @include breakpoint-above("large") {
+    @include breakpoint-above('large') {
       max-width: 80%;
     }
   }
 
   &__question-description {
-    @include font-category("helper-text");
+    @include font-category('helper-text');
     margin-top: 10px;
     color: $c-secondary-grey;
   }
@@ -572,7 +572,7 @@ textarea {
 .occupations-input {
   width: 90%;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     width: 80%;
   }
 }
@@ -595,7 +595,7 @@ textarea {
   display: inline-block;
   margin-bottom: 4em;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     width: 100%;
   }
 }
@@ -621,7 +621,7 @@ textarea {
   width: 100%;
   width: 100vw;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     width: 100%;
     padding: 4em;
   }
@@ -632,7 +632,7 @@ textarea {
   font-size: 13px;
   display: inline-block;
 
-  @include breakpoint-above("large") {
+  @include breakpoint-above('large') {
     display: table;
     font-size: 15px;
   }
@@ -661,11 +661,11 @@ textarea {
       box-shadow: none;
     }
 
-    @include breakpoint-above("medium") {
+    @include breakpoint-above('medium') {
       box-shadow: 5px 0 5px -1px #e0e0e0;
     }
 
-    @include breakpoint-above("large") {
+    @include breakpoint-above('large') {
       box-shadow: none;
     }
   }
@@ -698,7 +698,7 @@ textarea {
   &--shadow {
     box-shadow: 5px 0 5px -1px #ffffff;
 
-    @include breakpoint-above("medium") {
+    @include breakpoint-above('medium') {
       box-shadow: none;
     }
   }

@@ -44,20 +44,20 @@
 </template>
 
 <script>
-import NetworkService from "@/services/NetworkService";
-import SessionsList from "@/components/Admin/SessionsList";
-import PageControl from "@/components/Admin/PageControl";
+import NetworkService from '@/services/NetworkService'
+import SessionsList from '@/components/Admin/SessionsList'
+import PageControl from '@/components/Admin/PageControl'
 
 const getSessions = async filters => {
   const {
     body: { sessions, isLastPage }
-  } = await NetworkService.adminGetSessionsToReview(filters);
+  } = await NetworkService.adminGetSessionsToReview(filters)
 
-  return { sessions, isLastPage };
-};
+  return { sessions, isLastPage }
+}
 
 export default {
-  name: "AdminSessionReview",
+  name: 'AdminSessionReview',
   components: { SessionsList, PageControl },
   data() {
     return {
@@ -65,82 +65,81 @@ export default {
       sessions: [],
       isLastPage: false,
       filters: {
-        reviewStudent: "1",
-        reviewVolunteer: "1"
+        reviewStudent: '1',
+        reviewVolunteer: '1'
       }
-    };
+    }
   },
 
   async created() {
     const {
       query: { page: pageQuery, users }
-    } = this.$route;
-    const page = parseInt(pageQuery) || this.page;
+    } = this.$route
+    const page = parseInt(pageQuery) || this.page
 
     // set filters to match url users query
-    if (users === "students") {
-      this.filters.reviewStudent = "1";
-      this.filters.reviewVolunteer = "";
+    if (users === 'students') {
+      this.filters.reviewStudent = '1'
+      this.filters.reviewVolunteer = ''
     }
-    if (users === "volunteers") {
-      this.filters.reviewVolunteer = "1";
-      this.filters.reviewStudent = "";
+    if (users === 'volunteers') {
+      this.filters.reviewVolunteer = '1'
+      this.filters.reviewStudent = ''
     }
 
-    this.setPage(page);
+    this.setPage(page)
   },
 
   computed: {
     isFirstPage() {
-      return this.page === 1;
+      return this.page === 1
     }
   },
 
   methods: {
     setPage(page) {
-      this.page = page;
-      this.sessions = [];
-      this.getSessions();
+      this.page = page
+      this.sessions = []
+      this.getSessions()
     },
 
     nextPage() {
-      this.setPage(this.page + 1);
+      this.setPage(this.page + 1)
     },
 
     previousPage() {
-      this.setPage(this.page - 1);
+      this.setPage(this.page - 1)
     },
 
     async submitFilters() {
-      this.page = 1;
-      this.getSessions();
+      this.page = 1
+      this.getSessions()
     },
 
     async getSessions() {
-      let users = "";
-      if (this.filters.reviewStudent) users = "students";
-      if (this.filters.reviewVolunteer) users = "volunteers";
-      if (this.filters.reviewStudent && this.filters.reviewVolunteer)
-        users = "";
+      let users = ''
+      if (this.filters.reviewStudent) users = 'students'
+      if (this.filters.reviewVolunteer) users = 'volunteers'
+      if (this.filters.reviewStudent && this.filters.reviewVolunteer) users = ''
       const query = {
         page: this.page
-      };
-      if (users) query.users = users;
+      }
+      if (users) query.users = users
 
       this.$router.push({
-        path: "/admin/sessions/review",
+        path: '/admin/sessions/review',
         query
-      });
+      })
 
       const { sessions, isLastPage } = await getSessions({
         page: this.page,
         users
-      });
-      this.sessions = sessions;
-      this.isLastPage = isLastPage;
+      })
+      this.sessions = sessions
+      this.isLastPage = isLastPage
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -151,7 +150,7 @@ export default {
   border-radius: 8px;
   overflow: hidden;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin: 40px;
     padding: 40px;
   }

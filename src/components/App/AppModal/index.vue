@@ -22,17 +22,17 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import ModalTemplate from "./ModalTemplate";
-import RejoinSessionModal from "./RejoinSessionModal";
-import UpgradeAppModal from "./UpgradeAppModal";
-import SubjectSelectionModal from "@/views/DashboardView/StudentDashboard/SubjectSelection/SubjectSelectionModal";
-import NotificationsModal from "@/views/DashboardView/StudentDashboard/SubjectSelection/NotificationsModal";
-import ReferralModal from "@/views/DashboardView/StudentDashboard/ReferralModal";
-import SessionFulfilledModal from "@/views/SessionView/SessionFulfilledModal";
-import VolunteerOnboardingModal from "@/views/DashboardView/VolunteerDashboard/VolunteerOnboardingModal.vue";
-import StudentOnboardingModal from "@/views/DashboardView/StudentDashboard/StudentOnboardingModal";
-import ReportSessionModal from "@/views/SessionView/ReportSessionModal";
+import { mapState } from 'vuex'
+import ModalTemplate from './ModalTemplate'
+import RejoinSessionModal from './RejoinSessionModal'
+import UpgradeAppModal from './UpgradeAppModal'
+import SubjectSelectionModal from '@/views/DashboardView/StudentDashboard/SubjectSelection/SubjectSelectionModal'
+import NotificationsModal from '@/views/DashboardView/StudentDashboard/SubjectSelection/NotificationsModal'
+import ReferralModal from '@/views/DashboardView/StudentDashboard/ReferralModal'
+import SessionFulfilledModal from '@/views/SessionView/SessionFulfilledModal'
+import VolunteerOnboardingModal from '@/views/DashboardView/VolunteerDashboard/VolunteerOnboardingModal.vue'
+import StudentOnboardingModal from '@/views/DashboardView/StudentDashboard/StudentOnboardingModal'
+import ReportSessionModal from '@/views/SessionView/ReportSessionModal'
 
 export default {
   components: {
@@ -50,7 +50,7 @@ export default {
   data() {
     return {
       enableAccept: false
-    };
+    }
   },
   computed: {
     ...mapState({
@@ -60,20 +60,20 @@ export default {
   },
   mounted() {
     // enable the accept button by default if an alert modal
-    this.enableAccept = !!this.modalData.alertModal;
+    this.enableAccept = !!this.modalData.alertModal
   },
   methods: {
     onCancel() {
-      const child = this.$refs.AppModalChild;
-      if (child.onCancel) child.onCancel();
+      const child = this.$refs.AppModalChild
+      if (child.onCancel) child.onCancel()
     },
     onAccept() {
-      const child = this.$refs.AppModalChild;
-      if (child.onAccept) child.onAccept();
+      const child = this.$refs.AppModalChild
+      if (child.onAccept) child.onAccept()
     },
     onEnableAccept(value) {
-      this.enableAccept = value;
+      this.enableAccept = value
     }
   }
-};
+}
 </script>

@@ -174,30 +174,30 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
-import axios from "axios";
-import NetworkService from "@/services/NetworkService";
-import isOutdatedMobileAppVersion from "@/utils/is-outdated-mobile-app-version";
-import SelectionIcon from "@/assets/whiteboard_icons/selection.svg";
-import ClearIcon from "@/assets/whiteboard_icons/clear.svg";
-import ColorPickerIcon from "@/assets/whiteboard_icons/color_picker.svg";
-import PenIcon from "@/assets/whiteboard_icons/pen.svg";
-import UndoIcon from "@/assets/whiteboard_icons/undo.svg";
-import RedoIcon from "@/assets/whiteboard_icons/redo.svg";
-import DeleteSelectionIcon from "@/assets/whiteboard_icons/delete_selection.png";
-import RotateIcon from "@/assets/whiteboard_icons/rotate.png";
-import PhotoUploadIcon from "@/assets/whiteboard_icons/photo-upload.svg";
-import ShapesIcon from "@/assets/whiteboard_icons/shapes.svg";
-import TextIcon from "@/assets/whiteboard_icons/text.svg";
-import CircleIcon from "@/assets/whiteboard_icons/circle.svg";
-import RectangleIcon from "@/assets/whiteboard_icons/rectangle.svg";
-import TriangleIcon from "@/assets/whiteboard_icons/triangle.svg";
-import LineIcon from "@/assets/whiteboard_icons/line.svg";
-import ResetIcon from "@/assets/whiteboard_icons/reset.svg";
-import Loader from "@/components/Loader";
-import ResetWhiteboardModal from "./ResetWhiteboardModal";
-import * as Sentry from "@sentry/browser";
-import config from "../../config";
+import { mapState, mapGetters } from 'vuex'
+import axios from 'axios'
+import NetworkService from '@/services/NetworkService'
+import isOutdatedMobileAppVersion from '@/utils/is-outdated-mobile-app-version'
+import SelectionIcon from '@/assets/whiteboard_icons/selection.svg'
+import ClearIcon from '@/assets/whiteboard_icons/clear.svg'
+import ColorPickerIcon from '@/assets/whiteboard_icons/color_picker.svg'
+import PenIcon from '@/assets/whiteboard_icons/pen.svg'
+import UndoIcon from '@/assets/whiteboard_icons/undo.svg'
+import RedoIcon from '@/assets/whiteboard_icons/redo.svg'
+import DeleteSelectionIcon from '@/assets/whiteboard_icons/delete_selection.png'
+import RotateIcon from '@/assets/whiteboard_icons/rotate.png'
+import PhotoUploadIcon from '@/assets/whiteboard_icons/photo-upload.svg'
+import ShapesIcon from '@/assets/whiteboard_icons/shapes.svg'
+import TextIcon from '@/assets/whiteboard_icons/text.svg'
+import CircleIcon from '@/assets/whiteboard_icons/circle.svg'
+import RectangleIcon from '@/assets/whiteboard_icons/rectangle.svg'
+import TriangleIcon from '@/assets/whiteboard_icons/triangle.svg'
+import LineIcon from '@/assets/whiteboard_icons/line.svg'
+import ResetIcon from '@/assets/whiteboard_icons/reset.svg'
+import Loader from '@/components/Loader'
+import ResetWhiteboardModal from './ResetWhiteboardModal'
+import * as Sentry from '@sentry/browser'
+import config from '../../config'
 
 export default {
   components: {
@@ -243,9 +243,9 @@ export default {
   data() {
     return {
       zwibblerCtx: null,
-      selectedTool: "",
+      selectedTool: '',
       showColorPicker: false,
-      error: "",
+      error: '',
       showShapes: false,
       // used to determine the beginning and end node of a shape
       shapeNodes: [],
@@ -258,7 +258,7 @@ export default {
       showResetWhiteboardModal: false,
       shouldResetWhiteboard: false,
       resetWhiteboardError: false
-    };
+    }
   },
   computed: {
     ...mapState({
@@ -266,46 +266,46 @@ export default {
       isSessionConnectionAlive: state => state.user.isSessionConnectionAlive
     }),
     ...mapGetters({
-      mobileMode: "app/mobileMode",
-      isVolunteer: "user/isVolunteer"
+      mobileMode: 'app/mobileMode',
+      isVolunteer: 'user/isVolunteer'
     }),
     toolClass() {
-      if (this.selectedTool === "brush") return "zwib-wrapper--brush";
-      if (this.selectedTool === "pick") return "zwib-wrapper--pick";
-      if (this.selectedTool === "line") return "zwib-wrapper--line";
-      if (this.selectedTool === "circle") return "zwib-wrapper--circle";
-      if (this.selectedTool === "rectangle") return "zwib-wrapper--rectangle";
-      if (this.selectedTool === "polygon") return "zwib-wrapper--triangle";
-      if (this.selectedTool === "text") return "zwib-wrapper--text";
+      if (this.selectedTool === 'brush') return 'zwib-wrapper--brush'
+      if (this.selectedTool === 'pick') return 'zwib-wrapper--pick'
+      if (this.selectedTool === 'line') return 'zwib-wrapper--line'
+      if (this.selectedTool === 'circle') return 'zwib-wrapper--circle'
+      if (this.selectedTool === 'rectangle') return 'zwib-wrapper--rectangle'
+      if (this.selectedTool === 'polygon') return 'zwib-wrapper--triangle'
+      if (this.selectedTool === 'text') return 'zwib-wrapper--text'
 
-      return "zwib-wrapper--default";
+      return 'zwib-wrapper--default'
     },
     showPhotoUpload() {
       if (!this.isVolunteer) {
-        if (this.isMobileApp && isOutdatedMobileAppVersion()) return false;
-        return true;
+        if (this.isMobileApp && isOutdatedMobileAppVersion()) return false
+        return true
       }
 
-      return false;
+      return false
     },
     isShapeSelected() {
       return (
-        this.selectedTool === "line" ||
-        this.selectedTool === "circle" ||
-        this.selectedTool === "polygon" ||
-        this.selectedTool === "rectangle"
-      );
+        this.selectedTool === 'line' ||
+        this.selectedTool === 'circle' ||
+        this.selectedTool === 'polygon' ||
+        this.selectedTool === 'rectangle'
+      )
     }
   },
   updated() {
     if (this.error) {
       setTimeout(() => {
-        this.error = "";
-      }, 2000);
+        this.error = ''
+      }, 2000)
     }
   },
   mounted() {
-    this.loadZwibbler();
+    this.loadZwibbler()
   },
   methods: {
     resizeViewRectangle() {
@@ -314,19 +314,19 @@ export default {
         y: 0,
         width: this.canvasWidth,
         height: 1
-      });
+      })
     },
     handleOrientationChange() {
-      setTimeout(this.resizeViewRectangle, 100);
+      setTimeout(this.resizeViewRectangle, 100)
     },
     handleWindowResize() {
-      setTimeout(this.resizeViewRectangle, 100);
+      setTimeout(this.resizeViewRectangle, 100)
     },
     usePickTool() {
-      this.zwibblerCtx.usePickTool();
+      this.zwibblerCtx.usePickTool()
     },
     useBrushTool() {
-      this.zwibblerCtx.useBrushTool();
+      this.zwibblerCtx.useBrushTool()
     },
     useLineTool() {
       this.zwibblerCtx.useLineTool(
@@ -334,113 +334,113 @@ export default {
         {
           singleLine: true
         }
-      );
+      )
     },
     useCircleTool() {
-      this.zwibblerCtx.useCircleTool();
+      this.zwibblerCtx.useCircleTool()
     },
     useTriangleTool() {
-      this.zwibblerCtx.usePolygonTool(3, 0);
+      this.zwibblerCtx.usePolygonTool(3, 0)
     },
     useRectangleTool() {
-      this.zwibblerCtx.useRectangleTool();
+      this.zwibblerCtx.useRectangleTool()
     },
     useTextTool() {
-      this.zwibblerCtx.useTextTool();
+      this.zwibblerCtx.useTextTool()
     },
     toggleColorPicker() {
-      this.showColorPicker = !this.showColorPicker;
-      this.showShapes = false;
+      this.showColorPicker = !this.showColorPicker
+      this.showShapes = false
     },
     toggleShapes() {
-      this.showShapes = !this.showShapes;
-      this.showColorPicker = false;
+      this.showShapes = !this.showShapes
+      this.showColorPicker = false
     },
     undo() {
-      this.zwibblerCtx.undo();
-      this.hideHoveredToolbars();
+      this.zwibblerCtx.undo()
+      this.hideHoveredToolbars()
     },
     redo() {
-      this.zwibblerCtx.redo();
-      this.hideHoveredToolbars();
+      this.zwibblerCtx.redo()
+      this.hideHoveredToolbars()
     },
     hideHoveredToolbars() {
-      this.showColorPicker = false;
-      this.showShapes = false;
+      this.showColorPicker = false
+      this.showShapes = false
     },
     async uploadPhoto(event) {
-      const { files } = event.target;
-      const file = files[0];
-      const tenMegabytes = 10 * 1000000;
+      const { files } = event.target
+      const file = files[0]
+      const tenMegabytes = 10 * 1000000
 
-      if (!this.isWhiteboardOpen && this.mobileMode) this.toggleWhiteboard();
+      if (!this.isWhiteboardOpen && this.mobileMode) this.toggleWhiteboard()
 
       if (file.size > tenMegabytes) {
         this.error =
-          "The photo is too large. Please upload a photo less than 10mb.";
-        return;
+          'The photo is too large. Please upload a photo less than 10mb.'
+        return
       }
-      this.usePickTool();
+      this.usePickTool()
 
       const response = await NetworkService.getSessionPhotoUploadUrl(
         this.sessionId
-      );
+      )
       const {
         body: { uploadUrl, imageUrl }
-      } = response;
+      } = response
 
       if (uploadUrl) {
-        this.isLoading = true;
+        this.isLoading = true
         await axios.put(uploadUrl, file, {
           headers: {
-            "Content-Type": file.type
+            'Content-Type': file.type
           }
-        });
+        })
 
-        this.insertPhoto(imageUrl);
+        this.insertPhoto(imageUrl)
       }
 
       // Reset the file input
-      event.target.value = "";
+      event.target.value = ''
     },
     insertPhoto(imageUrl) {
-      const nodeId = this.zwibblerCtx.createNode("ImageNode", {
+      const nodeId = this.zwibblerCtx.createNode('ImageNode', {
         url: imageUrl,
         opacity: 0
-      });
+      })
 
-      this.zwibblerCtx.on("resource-loaded", () => {
-        const nodeDimensions = this.zwibblerCtx.getNodeRectangle(nodeId);
-        const whiteboard = document.querySelector("#zwib-div");
-        const whiteboardWidth = whiteboard.clientWidth;
-        const whiteboardHeight = whiteboard.clientHeight;
-        let scaleFactor = 1;
+      this.zwibblerCtx.on('resource-loaded', () => {
+        const nodeDimensions = this.zwibblerCtx.getNodeRectangle(nodeId)
+        const whiteboard = document.querySelector('#zwib-div')
+        const whiteboardWidth = whiteboard.clientWidth
+        const whiteboardHeight = whiteboard.clientHeight
+        let scaleFactor = 1
 
         // scale image below the whiteboard width and height
         if (nodeDimensions.width > whiteboardWidth) {
-          scaleFactor = 1 / (nodeDimensions.width / whiteboardWidth + 1);
-          this.zwibblerCtx.scaleNode(nodeId, scaleFactor, scaleFactor);
+          scaleFactor = 1 / (nodeDimensions.width / whiteboardWidth + 1)
+          this.zwibblerCtx.scaleNode(nodeId, scaleFactor, scaleFactor)
         } else if (nodeDimensions.height > whiteboardHeight) {
-          scaleFactor = 1 / (nodeDimensions.height / whiteboardHeight + 1);
-          this.zwibblerCtx.scaleNode(nodeId, scaleFactor, scaleFactor);
-        } else this.zwibblerCtx.scaleNode(nodeId, scaleFactor, scaleFactor);
+          scaleFactor = 1 / (nodeDimensions.height / whiteboardHeight + 1)
+          this.zwibblerCtx.scaleNode(nodeId, scaleFactor, scaleFactor)
+        } else this.zwibblerCtx.scaleNode(nodeId, scaleFactor, scaleFactor)
 
         // Keep opacity at 0 until image has been resized (avoids flashing full size)
-        this.zwibblerCtx.setNodeProperty(nodeId, "opacity", 1);
-        this.isLoading = false;
-      });
+        this.zwibblerCtx.setNodeProperty(nodeId, 'opacity', 1)
+        this.isLoading = false
+      })
     },
     clearWhiteboard() {
-      this.zwibblerCtx.deleteNodes(this.zwibblerCtx.getAllNodes());
+      this.zwibblerCtx.deleteNodes(this.zwibblerCtx.getAllNodes())
     },
     setColor(color) {
       // Second parameter indicates whether the colour should affect the fill or outline colour.
-      const useFill = true;
-      this.zwibblerCtx.setColour(color, useFill);
+      const useFill = true
+      this.zwibblerCtx.setColour(color, useFill)
     },
     setSelectionHandles() {
       // Remove all pre-defined selection handles.
-      this.zwibblerCtx.removeSelectionHandles();
+      this.zwibblerCtx.removeSelectionHandles()
 
       // Add custom selection handle for deleting selection,
       // positioned in the top-right of the selection.
@@ -451,7 +451,7 @@ export default {
         -30,
         DeleteSelectionIcon,
         () => this.zwibblerCtx.deleteSelection()
-      );
+      )
 
       // Add rotation handle with custom icon,
       // positioned in the top-middle of the selection.
@@ -461,50 +461,50 @@ export default {
         0,
         -30,
         RotateIcon,
-        "rotate"
-      );
+        'rotate'
+      )
 
       // Re-add default scaling handles.
 
       // Position scaling handles at all four corners of the selection.
-      this.zwibblerCtx.addSelectionHandle(0.0, 0.0, 0, 0, "", "scale");
-      this.zwibblerCtx.addSelectionHandle(1.0, 0.0, 0, 0, "", "scale");
-      this.zwibblerCtx.addSelectionHandle(1.0, 1.0, 0, 0, "", "scale");
-      this.zwibblerCtx.addSelectionHandle(0.0, 1.0, 0, 0, "", "scale");
+      this.zwibblerCtx.addSelectionHandle(0.0, 0.0, 0, 0, '', 'scale')
+      this.zwibblerCtx.addSelectionHandle(1.0, 0.0, 0, 0, '', 'scale')
+      this.zwibblerCtx.addSelectionHandle(1.0, 1.0, 0, 0, '', 'scale')
+      this.zwibblerCtx.addSelectionHandle(0.0, 1.0, 0, 0, '', 'scale')
 
       // Position more scaling handles at the midpoints of each side of the selection.
-      this.zwibblerCtx.addSelectionHandle(0.5, 0.0, 0, 0, "", "scale");
-      this.zwibblerCtx.addSelectionHandle(1.0, 0.5, 0, 0, "", "scale");
-      this.zwibblerCtx.addSelectionHandle(0.5, 1.0, 0, 0, "", "scale");
-      this.zwibblerCtx.addSelectionHandle(0.0, 0.5, 0, 0, "", "scale");
+      this.zwibblerCtx.addSelectionHandle(0.5, 0.0, 0, 0, '', 'scale')
+      this.zwibblerCtx.addSelectionHandle(1.0, 0.5, 0, 0, '', 'scale')
+      this.zwibblerCtx.addSelectionHandle(0.5, 1.0, 0, 0, '', 'scale')
+      this.zwibblerCtx.addSelectionHandle(0.0, 0.5, 0, 0, '', 'scale')
     },
     setShouldResetWhiteboard(value) {
-      this.shouldResetWhiteboard = value;
+      this.shouldResetWhiteboard = value
     },
     toggleResetWhiteboardModal() {
-      this.showResetWhiteboardModal = !this.showResetWhiteboardModal;
+      this.showResetWhiteboardModal = !this.showResetWhiteboardModal
     },
     async resetWhiteboard() {
       try {
-        await NetworkService.resetWhiteboard({ sessionId: this.sessionId });
+        await NetworkService.resetWhiteboard({ sessionId: this.sessionId })
       } catch (error) {
-        this.resetWhiteboardError = true;
+        this.resetWhiteboardError = true
         setTimeout(() => {
-          this.resetWhiteboardError = false;
-        }, 2000);
-        return;
+          this.resetWhiteboardError = false
+        }, 2000)
+        return
       }
 
-      window.clearInterval(this.pingPongInterval);
-      this.zwibblerCtx.destroy();
-      this.loadZwibbler();
-      this.$socket.emit("resetWhiteboard", {
+      window.clearInterval(this.pingPongInterval)
+      this.zwibblerCtx.destroy()
+      this.loadZwibbler()
+      this.$socket.emit('resetWhiteboard', {
         sessionId: this.sessionId
-      });
-      this.setShouldResetWhiteboard(false);
+      })
+      this.setShouldResetWhiteboard(false)
     },
     async loadZwibbler() {
-      const zwibblerCtx = window.Zwibbler.create("zwib-div", {
+      const zwibblerCtx = window.Zwibbler.create('zwib-div', {
         showToolbar: false,
         showColourPanel: false,
         autoPickTool: false,
@@ -514,99 +514,99 @@ export default {
         pageView: true,
         pageInflation: 0,
         pageShadow: false,
-        outsidePageColour: "#fff",
-        defaultSmoothness: "sharpest",
+        outsidePageColour: '#fff',
+        defaultSmoothness: 'sharpest',
         multilineText: true,
         scrollbars: true,
         defaultFontSize: 32,
-        background: "grid",
+        background: 'grid',
         collaborationServer: `${config.websocketRoot}/whiteboard/room/{name}`
-      });
+      })
 
-      this.zwibblerCtx = zwibblerCtx;
+      this.zwibblerCtx = zwibblerCtx
 
       // Set paper size
-      this.zwibblerCtx.setPaperSize(this.canvasWidth, this.canvasHeight);
+      this.zwibblerCtx.setPaperSize(this.canvasWidth, this.canvasHeight)
 
       // Zoom to full width
-      this.resizeViewRectangle();
+      this.resizeViewRectangle()
 
       // Join or create shared zwibbler session
       try {
-        await this.zwibblerCtx.joinSharedSession(this.sessionId, true);
+        await this.zwibblerCtx.joinSharedSession(this.sessionId, true)
       } catch (error) {
-        Sentry.captureException(error);
+        Sentry.captureException(error)
       }
 
       // Set up custom selection handles
-      this.setSelectionHandles();
+      this.setSelectionHandles()
 
       // disable showing hints on the canvas
-      this.zwibblerCtx.setConfig("showHints", false);
+      this.zwibblerCtx.setConfig('showHints', false)
 
       // read-only until connected
-      this.zwibblerCtx.setConfig("readOnly", true);
+      this.zwibblerCtx.setConfig('readOnly', true)
 
-      this.zwibblerCtx.on("connected", () => {
-        this.isConnected = true;
-        this.zwibblerCtx.setConfig("readOnly", false);
+      this.zwibblerCtx.on('connected', () => {
+        this.isConnected = true
+        this.zwibblerCtx.setConfig('readOnly', false)
 
         // @todo access the connection in a less sketchy way
-        const zwibblerWsConnection = this.zwibblerCtx.mc.Yb.Yb;
-        const zwibblerOnMessage = zwibblerWsConnection.onmessage;
+        const zwibblerWsConnection = this.zwibblerCtx.mc.Yb.Yb
+        const zwibblerOnMessage = zwibblerWsConnection.onmessage
         // Intercept Zwibbler's websocket message handler
         zwibblerWsConnection.onmessage = messageEvent => {
           // Forward message to Zwibbler unless it's our "pong" response
-          if (messageEvent.data !== "p0ng") zwibblerOnMessage(messageEvent);
-        };
+          if (messageEvent.data !== 'p0ng') zwibblerOnMessage(messageEvent)
+        }
 
         // Ping server every 45 seconds to keep the connection open
         this.pingPongInterval = window.setInterval(() => {
-          zwibblerWsConnection.send("p1ng");
-        }, 45 * 1000);
+          zwibblerWsConnection.send('p1ng')
+        }, 45 * 1000)
 
         // Set brush tool to default tool
-        this.useBrushTool();
+        this.useBrushTool()
 
-        this.resizeViewRectangle();
+        this.resizeViewRectangle()
 
         // Don't start setting selected tool until connected
-        this.zwibblerCtx.on("tool-changed", toolname => {
-          this.selectedTool = toolname;
-          this.hideHoveredToolbars();
-        });
-      });
+        this.zwibblerCtx.on('tool-changed', toolname => {
+          this.selectedTool = toolname
+          this.hideHoveredToolbars()
+        })
+      })
 
-      this.zwibblerCtx.on("connect-error", () => {
-        this.zwibblerCtx.stopSharing();
-        this.isConnected = false;
-        this.hadConnectionIssue = true;
-        window.clearInterval(this.pingPongInterval);
-        this.zwibblerCtx.setConfig("readOnly", true);
-      });
+      this.zwibblerCtx.on('connect-error', () => {
+        this.zwibblerCtx.stopSharing()
+        this.isConnected = false
+        this.hadConnectionIssue = true
+        window.clearInterval(this.pingPongInterval)
+        this.zwibblerCtx.setConfig('readOnly', true)
+      })
 
       // disallow dragging and pasting to the whiteboard
-      this.zwibblerCtx.on("paste", () => {
-        return false;
-      });
+      this.zwibblerCtx.on('paste', () => {
+        return false
+      })
 
-      this.zwibblerCtx.on("nodes-added", nodes => {
-        if (this.isShapeSelected) this.shapeNodes.push(nodes[0]);
-        if (this.selectedTool === "text") this.usePickTool();
-      });
+      this.zwibblerCtx.on('nodes-added', nodes => {
+        if (this.isShapeSelected) this.shapeNodes.push(nodes[0])
+        if (this.selectedTool === 'text') this.usePickTool()
+      })
 
       window.addEventListener(
-        "orientationchange",
+        'orientationchange',
         this.handleOrientationChange,
         false
-      );
+      )
 
-      window.addEventListener("resize", this.handleWindowResize, false);
+      window.addEventListener('resize', this.handleWindowResize, false)
 
-      this.zwibblerCtx.on("document-changed", info => {
-        const isRemoteChange = info && info.remote;
-        const isWhiteboardHidden = this.mobileMode && !this.isWhiteboardOpen;
-        const shouldResizeView = isRemoteChange && isWhiteboardHidden;
+      this.zwibblerCtx.on('document-changed', info => {
+        const isRemoteChange = info && info.remote
+        const isWhiteboardHidden = this.mobileMode && !this.isWhiteboardOpen
+        const shouldResizeView = isRemoteChange && isWhiteboardHidden
         /**
          * If mobile user is viewing chat when new whiteboard changes are made,
          * resize the view so they can see everything on the whiteboard
@@ -623,57 +623,57 @@ export default {
                 this.zwibblerCtx.getBoundingRectangle(
                   this.zwibblerCtx.getAllNodes()
                 )
-              );
+              )
             } catch (error) {
-              this.resizeViewRectangle();
+              this.resizeViewRectangle()
             }
-          }, 500);
+          }, 500)
         }
-      });
+      })
     }
   },
   beforeDestroy() {
     window.removeEventListener(
-      "orientationchange",
+      'orientationchange',
       this.handleOrientationChange,
       false
-    );
-    window.removeEventListener("resize", this.handleWindowResize, false);
-    window.clearInterval(this.pingPongInterval);
+    )
+    window.removeEventListener('resize', this.handleWindowResize, false)
+    window.clearInterval(this.pingPongInterval)
   },
   watch: {
     shapeNodes() {
       // Use the pick tool after the end node for a shape was added
       if (this.shapeNodes.length === 2 && this.isShapeSelected) {
-        this.usePickTool();
-        this.shapeNodes = [];
+        this.usePickTool()
+        this.shapeNodes = []
       }
     },
     isSessionOver(isSessionOver, oldIsSessionOver) {
       if (isSessionOver && !oldIsSessionOver)
-        this.zwibblerCtx.setConfig("readOnly", true);
+        this.zwibblerCtx.setConfig('readOnly', true)
     },
     isSessionConnectionAlive(newValue, oldValue) {
-      if (!this.hadConnectionIssue) return; // On initial connection, early exit
-      if (this.isConnected) return; // Already connected, so early exit
+      if (!this.hadConnectionIssue) return // On initial connection, early exit
+      if (this.isConnected) return // Already connected, so early exit
       if (newValue && !oldValue) {
         // Socket.io just reconnected, so try reconnecting Zwibbler (but first clear the document)
-        this.zwibblerCtx.newDocument();
-        this.zwibblerCtx.joinSharedSession(this.sessionId, false);
+        this.zwibblerCtx.newDocument()
+        this.zwibblerCtx.joinSharedSession(this.sessionId, false)
       }
     },
     shouldResetWhiteboard(currentValue) {
-      if (currentValue) this.resetWhiteboard();
+      if (currentValue) this.resetWhiteboard()
     }
   },
   sockets: {
     resetWhiteboard() {
-      window.clearInterval(this.pingPongInterval);
-      this.zwibblerCtx.destroy();
-      this.loadZwibbler();
+      window.clearInterval(this.pingPongInterval)
+      this.zwibblerCtx.destroy()
+      this.loadZwibbler()
     }
   }
-};
+}
 </script>
 
 <style lang="scss">
@@ -753,7 +753,7 @@ export default {
   border-radius: 8px;
   background-color: rgb(238, 238, 238);
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     position: absolute;
     bottom: 40px;
   }
@@ -778,7 +778,7 @@ export default {
   width: 100%;
   height: 100%;
 
-  @include breakpoint-below("tiny") {
+  @include breakpoint-below('tiny') {
     padding: 0;
   }
 
@@ -819,7 +819,7 @@ export default {
     }
 
     &--shapes {
-      @include breakpoint-below("medium") {
+      @include breakpoint-below('medium') {
         height: 22px;
         width: 22px;
       }
@@ -905,7 +905,7 @@ export default {
     border-radius: initial !important;
     padding: 0.5em;
 
-    @include breakpoint-below("tiny") {
+    @include breakpoint-below('tiny') {
       padding: 1em;
     }
   }

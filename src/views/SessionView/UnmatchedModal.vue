@@ -26,33 +26,33 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import NetworkService from "@/services/NetworkService";
-import AnalyticsService from "@/services/AnalyticsService";
-import { EVENTS } from "@/consts";
-import Modal from "@/components/Modal";
-import Separator from "@/components/Separator";
-import LargeButton from "@/components/LargeButton";
+import { mapGetters } from 'vuex'
+import NetworkService from '@/services/NetworkService'
+import AnalyticsService from '@/services/AnalyticsService'
+import { EVENTS } from '@/consts'
+import Modal from '@/components/Modal'
+import Separator from '@/components/Separator'
+import LargeButton from '@/components/LargeButton'
 
 export default {
-  name: "UnmatchedModal",
+  name: 'UnmatchedModal',
   components: { LargeButton, Modal, Separator },
   props: {
     sessionId: { type: String, required: true },
     endSession: { type: Function, required: true }
   },
   computed: {
-    ...mapGetters({ mobileMode: "app/mobileMode" })
+    ...mapGetters({ mobileMode: 'app/mobileMode' })
   },
   mounted() {
     // Session toggle buttons are rendered on a higher stacking context
     // than this modal in mobile. Hide the buttons when mounted
     if (this.mobileMode) {
       const sessionToggleButtons = Array.from(
-        document.querySelectorAll(".toggleButton")
-      );
+        document.querySelectorAll('.toggleButton')
+      )
       for (const element of sessionToggleButtons) {
-        element.style.position = "static";
+        element.style.position = 'static'
       }
     }
   },
@@ -60,15 +60,15 @@ export default {
     async end() {
       const data = {
         timeout: 45
-      };
-      await NetworkService.timedOutSession(this.sessionId, data);
+      }
+      await NetworkService.timedOutSession(this.sessionId, data)
       AnalyticsService.captureEvent(EVENTS.SESSION_TIMED_OUT_45_MINS, {
         event: EVENTS.SESSION_TIMED_OUT_45_MINS
-      });
-      this.endSession();
+      })
+      this.endSession()
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -76,11 +76,11 @@ export default {
   @include flex-container(column);
 
   &__title {
-    @include font-category("display-small");
+    @include font-category('display-small');
   }
 
   &__subtitle {
-    @include font-category("body");
+    @include font-category('body');
     margin: 0 0 35px;
     color: $c-secondary-grey;
     font-size: 15px;

@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import getOperatingSystem from "@/utils/get-operating-system";
+import { mapState } from 'vuex'
+import getOperatingSystem from '@/utils/get-operating-system'
 
 export default {
   props: {
@@ -18,8 +18,8 @@ export default {
     return {
       isMobileAppIOS: false,
       intervalTimeoutId: null,
-      animatedEllipsis: ""
-    };
+      animatedEllipsis: ''
+    }
   },
   computed: {
     ...mapState({
@@ -31,21 +31,21 @@ export default {
     // @note: animation for LoadingMessage when in the NotificationModal
     //        is being inconsistent with mobile app ios devices
     //        even with this workaround
-    if (getOperatingSystem() === "iOS" && this.isMobileApp) {
-      this.isMobileAppIOS = true;
+    if (getOperatingSystem() === 'iOS' && this.isMobileApp) {
+      this.isMobileAppIOS = true
       this.intervalTimeoutId = setInterval(() => {
         if (this.animatedEllipsis.length === 3) {
-          this.animatedEllipsis = "";
+          this.animatedEllipsis = ''
         } else {
-          this.animatedEllipsis += ".";
+          this.animatedEllipsis += '.'
         }
-      }, 500);
+      }, 500)
     }
   },
   beforeDestroy() {
-    clearInterval(this.intervalTimeoutId);
+    clearInterval(this.intervalTimeoutId)
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -59,7 +59,7 @@ export default {
   position: absolute;
 
   &:after {
-    content: "...";
+    content: '...';
     display: inline-block;
     width: 25px;
     overflow: hidden;

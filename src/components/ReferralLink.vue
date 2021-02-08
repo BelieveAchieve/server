@@ -8,26 +8,26 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import config from "@/config";
+import { mapState } from 'vuex'
+import config from '@/config'
 
 export default {
   data() {
     return {
-      selectedSubtopic: "",
-      copyMessage: "Copy"
-    };
+      selectedSubtopic: '',
+      copyMessage: 'Copy'
+    }
   },
   computed: {
     ...mapState({
       user: state => state.user.user
     }),
     referralLink() {
-      const { referralCode } = this.user;
-      if (process.env.NODE_ENV === "development") {
-        return `http://localhost:8080/referral/${referralCode}`;
+      const { referralCode } = this.user
+      if (process.env.NODE_ENV === 'development') {
+        return `http://localhost:8080/referral/${referralCode}`
       } else {
-        return `${config.serverRoot}/referral/${referralCode}`;
+        return `${config.serverRoot}/referral/${referralCode}`
       }
     }
   },
@@ -35,20 +35,20 @@ export default {
   methods: {
     async copyLink() {
       if (!navigator.clipboard) {
-        return;
+        return
       }
       try {
-        await navigator.clipboard.writeText(this.referralLink);
-        this.copyMessage = "Copied";
+        await navigator.clipboard.writeText(this.referralLink)
+        this.copyMessage = 'Copied'
         setTimeout(() => {
-          this.copyMessage = "Copy";
-        }, 3000);
+          this.copyMessage = 'Copy'
+        }, 3000)
       } catch (error) {
-        this.copyMessage = "Copy";
+        this.copyMessage = 'Copy'
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -61,7 +61,7 @@ export default {
   margin: 2.4em auto;
   width: 90%;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     width: 80%;
   }
 
@@ -72,9 +72,9 @@ export default {
     border: 0;
     width: 100%;
     background-color: transparent;
-    @include font-category("body");
+    @include font-category('body');
 
-    @include breakpoint-above("medium") {
+    @include breakpoint-above('medium') {
       text-overflow: initial;
       padding-right: 1em;
     }
@@ -85,7 +85,7 @@ export default {
     padding: 0;
     cursor: pointer;
     color: $c-success-green;
-    @include font-category("body");
+    @include font-category('body');
   }
 }
 </style>

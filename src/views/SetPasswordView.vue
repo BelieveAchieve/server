@@ -67,13 +67,13 @@
 </template>
 
 <script>
-import * as Sentry from "@sentry/browser";
-import { mapState } from "vuex";
+import * as Sentry from '@sentry/browser'
+import { mapState } from 'vuex'
 
-import AuthService from "@/services/AuthService";
-import FormPageTemplate from "@/components/FormPageTemplate";
-import LargeButton from "@/components/LargeButton";
-import Loader from "@/components/Loader";
+import AuthService from '@/services/AuthService'
+import FormPageTemplate from '@/components/FormPageTemplate'
+import LargeButton from '@/components/LargeButton'
+import Loader from '@/components/Loader'
 
 export default {
   components: {
@@ -82,41 +82,41 @@ export default {
     Loader
   },
   created() {
-    this.$store.dispatch("app/hideNavigation");
-    const { token } = this.$route.params;
+    this.$store.dispatch('app/hideNavigation')
+    const { token } = this.$route.params
     AuthService.verifyReset(this, { token }).catch(err => {
       if (err.status !== 404 && err.status !== 422) {
-        Sentry.captureException(err);
+        Sentry.captureException(err)
       }
-      this.msg = err.message;
-      this.isValidResetToken = false;
-    });
+      this.msg = err.message
+      this.isValidResetToken = false
+    })
   },
   data() {
     return {
-      msg: "",
+      msg: '',
       credentials: {
-        token: "",
-        email: "",
-        password: "",
-        newpassword: ""
+        token: '',
+        email: '',
+        password: '',
+        newpassword: ''
       },
       isValidResetToken: true,
       isResettingPassword: false,
       showSuccess: false
-    };
+    }
   },
   computed: {
     ...mapState({
       user: state => state.user.user
     }),
     redirectText() {
-      return this.user ? "Home" : "Log in";
+      return this.user ? 'Home' : 'Log in'
     }
   },
   methods: {
     submit() {
-      this.isResettingPassword = true;
+      this.isResettingPassword = true
 
       AuthService.confirmReset(this, {
         token: this.$route.params.token,
@@ -125,19 +125,19 @@ export default {
         newpassword: this.credentials.newpassword
       })
         .then(() => {
-          this.isResettingPassword = false;
-          this.showSuccess = true;
+          this.isResettingPassword = false
+          this.showSuccess = true
         })
         .catch(err => {
-          this.isResettingPassword = false;
-          this.msg = err.message || err;
+          this.isResettingPassword = false
+          this.msg = err.message || err
           if (err.status !== 422) {
-            Sentry.captureException(err);
+            Sentry.captureException(err)
           }
-        });
+        })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

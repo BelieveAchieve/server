@@ -43,15 +43,15 @@
 </template>
 
 <script>
-import SidebarLink from "./SidebarLink";
-import HouseIcon from "@/assets/sidebar_icons/house.svg";
-import GraduationCapIcon from "@/assets/sidebar_icons/graduation-cap.svg";
-import CalendarIcon from "@/assets/sidebar_icons/calendar.svg";
-import FolderIcon from "@/assets/sidebar_icons/folder.svg";
-import WordBubblesIcon from "@/assets/sidebar_icons/word-bubbles.svg";
-import EnvelopeIcon from "@/assets/sidebar_icons/envelope.svg";
-import ExclamationIcon from "@/assets/sidebar_icons/exclamation.svg";
-import PortraitIcon from "@/assets/sidebar_icons/portrait.svg";
+import SidebarLink from './SidebarLink'
+import HouseIcon from '@/assets/sidebar_icons/house.svg'
+import GraduationCapIcon from '@/assets/sidebar_icons/graduation-cap.svg'
+import CalendarIcon from '@/assets/sidebar_icons/calendar.svg'
+import FolderIcon from '@/assets/sidebar_icons/folder.svg'
+import WordBubblesIcon from '@/assets/sidebar_icons/word-bubbles.svg'
+import EnvelopeIcon from '@/assets/sidebar_icons/envelope.svg'
+import ExclamationIcon from '@/assets/sidebar_icons/exclamation.svg'
+import PortraitIcon from '@/assets/sidebar_icons/portrait.svg'
 
 export default {
   components: {
@@ -71,7 +71,7 @@ export default {
     isAdmin: Boolean,
     mobileMode: Boolean
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -80,7 +80,7 @@ export default {
   @include child-spacing(top, 16px);
 
   &-about {
-    @include font-category("body");
+    @include font-category('body');
     color: $c-secondary-grey;
     margin-top: 40px;
     text-align: left;

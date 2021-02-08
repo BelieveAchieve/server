@@ -17,10 +17,10 @@
 </template>
 
 <script>
-import moment from "moment";
+import moment from 'moment'
 
 export default {
-  name: "NotificationPreview",
+  name: 'NotificationPreview',
 
   props: {
     notification: Object
@@ -28,30 +28,29 @@ export default {
 
   computed: {
     volunteer() {
-      return this.notification ? this.notification.volunteer : {};
+      return this.notification ? this.notification.volunteer : {}
     },
 
     status() {
-      if (this.notification.wasSuccessful)
-        return `✅ ${this.notification.type}`;
-      return `❌ ${this.notification.type}`;
+      if (this.notification.wasSuccessful) return `✅ ${this.notification.type}`
+      return `❌ ${this.notification.type}`
     },
 
     sentAt() {
-      return moment(this.notification.sentAt).format("l, h:mm:ss a");
+      return moment(this.notification.sentAt).format('l, h:mm:ss a')
     },
 
     organization() {
-      return this.volunteer.volunteerPartnerOrg || "regular";
+      return this.volunteer.volunteerPartnerOrg || 'regular'
     },
 
     priorityGroup() {
       return this.notification.priorityGroup
         ? this.notification.priorityGroup
-        : "No priority group stored";
+        : 'No priority group stored'
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

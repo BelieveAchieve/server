@@ -82,13 +82,13 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex'
 
 export default {
   computed: {
     ...mapState({ user: state => state.user.user })
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -101,7 +101,7 @@ export default {
   flex-direction: column;
   align-items: flex-start;
 
-  @include breakpoint-above("large") {
+  @include breakpoint-above('large') {
     margin: 40px;
     padding: 40px;
   }

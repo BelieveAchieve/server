@@ -67,35 +67,35 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex'
 
-import LoadingMessage from "@/components/LoadingMessage";
-import TrainingService from "@/services/TrainingService";
+import LoadingMessage from '@/components/LoadingMessage'
+import TrainingService from '@/services/TrainingService'
 
-import QuizQuestions from "./QuizQuestions";
-import QuizResults from "./QuizResults";
-import QuizReview from "./QuizReview";
+import QuizQuestions from './QuizQuestions'
+import QuizResults from './QuizResults'
+import QuizReview from './QuizReview'
 
-import isPhysics from "@/utils/is-physics";
-import { PHYSICS_MAPPING, EVENTS } from "@/consts";
-import { allSubtopics } from "@/utils/topics";
-import AnalyticsService from "@/services/AnalyticsService";
+import isPhysics from '@/utils/is-physics'
+import { PHYSICS_MAPPING, EVENTS } from '@/consts'
+import { allSubtopics } from '@/utils/topics'
+import AnalyticsService from '@/services/AnalyticsService'
 
 export default {
   data() {
-    const subtopics = allSubtopics();
-    let { category } = this.$route.params;
-    let quizName;
+    const subtopics = allSubtopics()
+    let { category } = this.$route.params
+    let quizName
 
     // format physics from lowercase 'physicsone' -> 'physicsOne'
-    if (isPhysics(category)) category = PHYSICS_MAPPING[category];
+    if (isPhysics(category)) category = PHYSICS_MAPPING[category]
 
-    if (category === "esl") {
-      quizName = category.toUpperCase();
+    if (category === 'esl') {
+      quizName = category.toUpperCase()
     } else if (subtopics[category]) {
-      quizName = subtopics[category].displayName;
+      quizName = subtopics[category].displayName
     } else {
-      quizName = category.charAt(0).toUpperCase() + category.slice(1);
+      quizName = category.charAt(0).toUpperCase() + category.slice(1)
     }
 
     return {
@@ -111,7 +111,7 @@ export default {
       showQuizStart: false,
       quizResults: {},
       loadingQuizResults: false
-    };
+    }
   },
   components: {
     LoadingMessage,
@@ -124,50 +124,50 @@ export default {
       user: state => state.user.user
     }),
     tries() {
-      const { user } = this.$store.state.user;
-      const { tries } = user.certifications[this.category];
-      return tries || 0;
+      const { user } = this.$store.state.user
+      const { tries } = user.certifications[this.category]
+      return tries || 0
     },
     showNoQuiz() {
-      return !this.quizLength;
+      return !this.quizLength
     }
   },
   beforeMount() {
     TrainingService.loadQuiz(this, this.category).then(quizLength => {
-      this.quizLoading = false;
-      this.quizLength = quizLength;
-      this.showQuizStart = !!quizLength;
-    });
+      this.quizLoading = false
+      this.quizLength = quizLength
+      this.showQuizStart = !!quizLength
+    })
   },
   methods: {
     startQuiz() {
-      this.showQuizQuestions = true;
-      this.showQuizStart = false;
+      this.showQuizQuestions = true
+      this.showQuizStart = false
       AnalyticsService.captureEvent(EVENTS.QUIZ_STARTED, {
         event: EVENTS.QUIZ_STARTED,
         subject: this.category
-      });
+      })
     },
     submitQuiz() {
-      this.showQuizQuestions = false;
-      this.loadingQuizResults = true;
+      this.showQuizQuestions = false
+      this.loadingQuizResults = true
       TrainingService.submitQuiz(this).then(data => {
-        this.quizResults = data;
-        this.loadingQuizResults = false;
-        this.showQuizResults = true;
-        const quizEvent = data.passed ? EVENTS.QUIZ_PASSED : EVENTS.QUIZ_FAILED;
+        this.quizResults = data
+        this.loadingQuizResults = false
+        this.showQuizResults = true
+        const quizEvent = data.passed ? EVENTS.QUIZ_PASSED : EVENTS.QUIZ_FAILED
         AnalyticsService.captureEvent(quizEvent, {
           action: quizEvent,
           subject: this.category
-        });
-      });
+        })
+      })
     },
     showReview() {
-      this.showQuizResults = false;
-      this.showQuizReview = true;
+      this.showQuizResults = false
+      this.showQuizReview = true
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -183,7 +183,7 @@ export default {
   max-width: 1000px;
   padding-bottom: 8em;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin: 40px;
     padding: 40px;
     padding-bottom: 8em;

@@ -186,11 +186,11 @@
 </template>
 
 <script>
-import validator from "validator";
-import * as Sentry from "@sentry/browser";
-import AuthService from "@/services/AuthService";
-import VuePhoneNumberInput from "vue-phone-number-input";
-import Loader from "@/components/Loader";
+import validator from 'validator'
+import * as Sentry from '@sentry/browser'
+import AuthService from '@/services/AuthService'
+import VuePhoneNumberInput from 'vue-phone-number-input'
+import Loader from '@/components/Loader'
 
 export default {
   components: {
@@ -199,49 +199,49 @@ export default {
   },
   data() {
     return {
-      msg: "",
+      msg: '',
       errors: [],
       invalidInputs: [],
       credentials: {
-        email: "",
-        password: "",
+        email: '',
+        password: '',
         terms: false
       },
       profile: {
-        firstName: "",
-        lastName: "",
-        phone: ""
+        firstName: '',
+        lastName: '',
+        phone: ''
       },
-      step: "step-1",
+      step: 'step-1',
       phoneInputInfo: {},
       isRegistering: false
-    };
+    }
   },
   mounted() {
-    this.$router.push("/sign-up/volunteer/account");
+    this.$router.push('/sign-up/volunteer/account')
   },
   methods: {
     nextPage() {
       // validate input
-      this.errors = [];
-      this.invalidInputs = [];
+      this.errors = []
+      this.invalidInputs = []
       if (!this.credentials.email) {
-        this.errors.push("An email address is required.");
-        this.invalidInputs.push("inputEmail");
+        this.errors.push('An email address is required.')
+        this.invalidInputs.push('inputEmail')
       } else if (!validator.isEmail(this.credentials.email)) {
         // this is necessary because browsers ignore <input type="email"> until the
         // user actually tries to submit the form, which does not occur until step 2
         this.errors.push(
-          this.credentials.email + " is not a valid email address."
-        );
-        this.invalidInputs.push("inputEmail");
+          this.credentials.email + ' is not a valid email address.'
+        )
+        this.invalidInputs.push('inputEmail')
       }
       if (!this.credentials.password) {
-        this.errors.push("A password is required.");
-        this.invalidInputs.push("inputPassword");
+        this.errors.push('A password is required.')
+        this.invalidInputs.push('inputPassword')
       }
       if (this.errors.length) {
-        return;
+        return
       }
 
       // check credentials
@@ -250,47 +250,47 @@ export default {
         password: this.credentials.password
       })
         .then(() => {
-          this.step = "step-2";
-          this.$router.push("/sign-up/volunteer/about");
+          this.step = 'step-2'
+          this.$router.push('/sign-up/volunteer/about')
         })
         .catch(err => {
-          this.msg = err.message;
+          this.msg = err.message
           if (err.status !== 409 && err.status !== 422) {
-            Sentry.captureException(err);
+            Sentry.captureException(err)
           }
-        });
+        })
     },
     checkInputs() {
-      this.errors = [];
-      this.invalidInputs = [];
+      this.errors = []
+      this.invalidInputs = []
 
       // validate input
       if (!this.profile.firstName || !this.profile.lastName) {
-        this.errors.push("You must enter your first and last name.");
+        this.errors.push('You must enter your first and last name.')
       }
       if (!this.profile.firstName) {
-        this.invalidInputs.push("firstName");
+        this.invalidInputs.push('firstName')
       }
       if (!this.profile.lastName) {
-        this.invalidInputs.push("lastName");
+        this.invalidInputs.push('lastName')
       }
       if (!this.profile.phone) {
-        this.errors.push("You must enter a phone number.");
-        this.invalidInputs.push("phone");
+        this.errors.push('You must enter a phone number.')
+        this.invalidInputs.push('phone')
       } else if (!this.phoneInputInfo.isValid || !this.phoneInputInfo.e164) {
-        this.errors.push(this.profile.phone + " is not a valid phone number.");
-        this.invalidInputs.push("phone");
+        this.errors.push(this.profile.phone + ' is not a valid phone number.')
+        this.invalidInputs.push('phone')
       }
       if (!this.credentials.terms) {
-        this.errors.push("You must read and accept the user agreement.");
+        this.errors.push('You must read and accept the user agreement.')
       }
       if (!this.errors.length) {
-        this.submit();
+        this.submit()
       }
     },
     submit() {
-      if (this.isRegistering) return;
-      this.isRegistering = true;
+      if (this.isRegistering) return
+      this.isRegistering = true
       AuthService.registerOpenVolunteer(this, {
         email: this.credentials.email,
         password: this.credentials.password,
@@ -300,22 +300,22 @@ export default {
         phone: this.phoneInputInfo.e164
       })
         .then(() => {
-          this.isRegistering = false;
-          this.step = "success-message";
+          this.isRegistering = false
+          this.step = 'success-message'
         })
         .catch(err => {
-          this.isRegistering = false;
-          this.msg = err.message;
+          this.isRegistering = false
+          this.msg = err.message
           if (err.status !== 422) {
-            Sentry.captureException(err);
+            Sentry.captureException(err)
           }
-        });
+        })
     },
     onPhoneInputUpdate(phoneInputInfo) {
-      this.phoneInputInfo = phoneInputInfo;
+      this.phoneInputInfo = phoneInputInfo
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

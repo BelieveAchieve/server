@@ -14,8 +14,8 @@
 </template>
 
 <script>
-import Autocomplete from "@trevoreyre/autocomplete-vue";
-import NetworkService from "@/services/NetworkService";
+import Autocomplete from '@trevoreyre/autocomplete-vue'
+import NetworkService from '@/services/NetworkService'
 
 export default {
   props: {
@@ -33,24 +33,24 @@ export default {
 
   methods: {
     async autocompleteSchool(input) {
-      if (input.length < 3) return [];
+      if (input.length < 3) return []
 
       const response = await NetworkService.searchSchool(this, {
         query: input
-      });
+      })
       const {
         body: { results: schools }
-      } = response;
-      return schools;
+      } = response
+      return schools
     },
     getSchoolDisplayName(school) {
-      return `${school.name} (${school.city}, ${school.state})`;
+      return `${school.name} (${school.city}, ${school.state})`
     },
     handleSelectHighSchool(school) {
-      this.setHighSchool(school);
+      this.setHighSchool(school)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped></style>

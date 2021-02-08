@@ -14,33 +14,33 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import * as sessionUtils from "@/utils/session";
-import LargeButton from "@/components/LargeButton";
+import { mapGetters } from 'vuex'
+import * as sessionUtils from '@/utils/session'
+import LargeButton from '@/components/LargeButton'
 
 export default {
   components: { LargeButton },
   computed: {
     ...mapGetters({
-      mobileMode: "app/mobileMode",
-      sessionPath: "user/sessionPath"
+      mobileMode: 'app/mobileMode',
+      sessionPath: 'user/sessionPath'
     })
   },
   watch: {
     // Hide modal if mobileMode becomes false
     mobileMode(value) {
-      if (!value) this.$store.dispatch("app/modal/hide");
+      if (!value) this.$store.dispatch('app/modal/hide')
     }
   },
   methods: {
     rejoin() {
-      sessionUtils.rejoinSession(this.$router, this.sessionPath);
+      sessionUtils.rejoinSession(this.$router, this.sessionPath)
     },
     end() {
-      sessionUtils.endSession(this);
+      sessionUtils.endSession(this)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -57,11 +57,11 @@ p {
 }
 
 .RejoinSessionModal-title {
-  @include font-category("display-small");
+  @include font-category('display-small');
 }
 
 .RejoinSessionModal-subtitle {
-  @include font-category("body");
+  @include font-category('body');
   color: $c-secondary-grey;
 }
 

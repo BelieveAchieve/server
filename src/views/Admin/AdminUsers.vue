@@ -56,21 +56,21 @@
 </template>
 
 <script>
-import NetworkService from "@/services/NetworkService";
-import PageControl from "@/components/Admin/PageControl";
-import UserListItem from "@/components/Admin/UserListItem";
-import { isEmpty } from "lodash";
+import NetworkService from '@/services/NetworkService'
+import PageControl from '@/components/Admin/PageControl'
+import UserListItem from '@/components/Admin/UserListItem'
+import { isEmpty } from 'lodash'
 
 const getUsers = async data => {
   const {
     body: { users, isLastPage }
-  } = await NetworkService.adminGetUsers(data);
+  } = await NetworkService.adminGetUsers(data)
 
-  return { users, isLastPage };
-};
+  return { users, isLastPage }
+}
 
 export default {
-  name: "AdminUsers",
+  name: 'AdminUsers',
 
   components: { UserListItem, PageControl },
 
@@ -79,15 +79,15 @@ export default {
       page: 1,
       isLastPage: true,
       users: [],
-      userId: "",
-      firstName: "",
-      lastName: "",
-      email: "",
+      userId: '',
+      firstName: '',
+      lastName: '',
+      email: '',
       listedPartnerOrgs: [],
       partnerOrg: {},
-      partnerSite: "",
-      highSchool: ""
-    };
+      partnerSite: '',
+      highSchool: ''
+    }
   },
 
   async created() {
@@ -101,14 +101,14 @@ export default {
         partnerOrg,
         highSchool
       }
-    } = this.$route;
-    const page = parseInt(pageQuery);
-    this.page = page || this.page;
-    this.userId = userId || this.userId;
-    this.firstName = firstName || this.firstName;
-    this.lastName = lastName || this.lastName;
-    this.email = email || this.email;
-    this.highSchool = highSchool || this.highSchool;
+    } = this.$route
+    const page = parseInt(pageQuery)
+    this.page = page || this.page
+    this.userId = userId || this.userId
+    this.firstName = firstName || this.firstName
+    this.lastName = lastName || this.lastName
+    this.email = email || this.email
+    this.highSchool = highSchool || this.highSchool
 
     const [
       studentPartnersResponse,
@@ -116,30 +116,30 @@ export default {
     ] = await Promise.all([
       NetworkService.adminGetVolunteerPartners(),
       NetworkService.adminGetStudentPartners()
-    ]);
+    ])
 
     const {
       body: { partnerOrgs: studentPartnerOrgs }
-    } = studentPartnersResponse;
+    } = studentPartnersResponse
     const {
       body: { partnerOrgs: volunteerPartnerOrgs }
-    } = volunteerPartnersResponse;
+    } = volunteerPartnersResponse
 
-    this.listedPartnerOrgs = [...studentPartnerOrgs, ...volunteerPartnerOrgs];
+    this.listedPartnerOrgs = [...studentPartnerOrgs, ...volunteerPartnerOrgs]
     if (partnerOrg) {
       for (let org of this.listedPartnerOrgs) {
         if (org.key === partnerOrg) {
-          this.partnerOrg = org;
-          break;
+          this.partnerOrg = org
+          break
         }
       }
     }
 
     this.$nextTick(() => {
       document
-        .querySelector(".search-panel")
-        .addEventListener("keydown", this.keyboardListener);
-    });
+        .querySelector('.search-panel')
+        .addEventListener('keydown', this.keyboardListener)
+    })
   },
   mounted() {
     const anyFieldHasData =
@@ -148,28 +148,28 @@ export default {
       this.lastName ||
       this.email ||
       (this.partnerOrg.length && this.partnerOrg.length > 0) ||
-      this.highSchool;
-    if (anyFieldHasData) this.getUsers();
+      this.highSchool
+    if (anyFieldHasData) this.getUsers()
   },
   computed: {
     isFirstPage() {
-      return this.page === 1;
+      return this.page === 1
     }
   },
 
   methods: {
     setPage(page) {
-      this.page = page;
-      this.users = [];
-      this.getUsers();
+      this.page = page
+      this.users = []
+      this.getUsers()
     },
 
     nextPage() {
-      this.setPage(this.page + 1);
+      this.setPage(this.page + 1)
     },
 
     previousPage() {
-      this.setPage(this.page - 1);
+      this.setPage(this.page - 1)
     },
 
     async getUsers() {
@@ -178,32 +178,32 @@ export default {
         firstName: this.firstName,
         lastName: this.lastName,
         email: this.email,
-        partnerOrg: isEmpty(this.partnerOrg) ? "" : this.partnerOrg.key,
+        partnerOrg: isEmpty(this.partnerOrg) ? '' : this.partnerOrg.key,
         highSchool: this.highSchool
-      };
+      }
       this.$router.push({
-        path: "/admin/users",
+        path: '/admin/users',
         query: {
           ...data,
           page: this.page
         }
-      });
+      })
       const { users, isLastPage } = await getUsers({
         ...data,
         page: this.page
-      });
-      this.users = users;
-      this.isLastPage = isLastPage;
+      })
+      this.users = users
+      this.isLastPage = isLastPage
     },
     keyboardListener(event) {
-      const { key, target } = event;
-      const { tagName } = target;
-      if (key === "Enter" && tagName === "INPUT") {
-        this.getUsers();
+      const { key, target } = event
+      const { tagName } = target
+      if (key === 'Enter' && tagName === 'INPUT') {
+        this.getUsers()
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -220,7 +220,7 @@ input {
   padding: 10px;
   border-radius: 8px;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin: 40px;
     padding: 40px;
   }

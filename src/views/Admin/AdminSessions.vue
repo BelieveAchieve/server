@@ -163,21 +163,21 @@
 </template>
 
 <script>
-import NetworkService from "@/services/NetworkService";
-import SessionsList from "@/components/Admin/SessionsList";
-import PageControl from "@/components/Admin/PageControl";
-import moment from "moment";
+import NetworkService from '@/services/NetworkService'
+import SessionsList from '@/components/Admin/SessionsList'
+import PageControl from '@/components/Admin/PageControl'
+import moment from 'moment'
 
 const getSessions = async filters => {
   const {
     body: { sessions, isLastPage }
-  } = await NetworkService.adminGetSessions(filters);
+  } = await NetworkService.adminGetSessions(filters)
 
-  return { sessions, isLastPage };
-};
+  return { sessions, isLastPage }
+}
 
 export default {
-  name: "AdminSessions",
+  name: 'AdminSessions',
 
   components: { SessionsList, PageControl },
 
@@ -187,21 +187,21 @@ export default {
       sessions: [],
       isLastPage: false,
       filters: {
-        showBannedUsers: "",
-        showTestUsers: "",
+        showBannedUsers: '',
+        showTestUsers: '',
         sessionActivityFrom: moment()
-          .subtract(7, "days")
-          .format("YYYY-MM-DD"),
-        sessionActivityTo: moment().format("YYYY-MM-DD"),
+          .subtract(7, 'days')
+          .format('YYYY-MM-DD'),
+        sessionActivityTo: moment().format('YYYY-MM-DD'),
         minMessagesSent: 0,
         minSessionLength: 1, // in minutes,
-        studentRating: "",
-        volunteerRating: "",
-        firstTimeStudent: "",
-        firstTimeVolunteer: "",
-        isReported: ""
+        studentRating: '',
+        volunteerRating: '',
+        firstTimeStudent: '',
+        firstTimeVolunteer: '',
+        isReported: ''
       }
-    };
+    }
   },
 
   async created() {
@@ -220,74 +220,74 @@ export default {
         firstTimeVolunteer,
         isReported
       }
-    } = this.$route;
-    const page = parseInt(pageQuery) || this.page;
+    } = this.$route
+    const page = parseInt(pageQuery) || this.page
     this.filters.showBannedUsers =
-      showBannedUsers || this.filters.showBannedUsers;
-    this.filters.showTestUsers = showTestUsers || this.filters.showTestUsers;
+      showBannedUsers || this.filters.showBannedUsers
+    this.filters.showTestUsers = showTestUsers || this.filters.showTestUsers
     this.filters.sessionActivityFrom =
-      sessionActivityFrom || this.filters.sessionActivityFrom;
+      sessionActivityFrom || this.filters.sessionActivityFrom
     this.filters.sessionActivityTo =
-      sessionActivityTo || this.filters.sessionActivityTo;
+      sessionActivityTo || this.filters.sessionActivityTo
     this.filters.minMessagesSent =
-      parseInt(minMessagesSent) || this.filters.minMessagesSent;
+      parseInt(minMessagesSent) || this.filters.minMessagesSent
     this.filters.minSessionLength =
-      parseInt(minSessionLength) || this.filters.minSessionLength;
-    this.filters.studentRating = studentRating || this.filters.studentRating;
+      parseInt(minSessionLength) || this.filters.minSessionLength
+    this.filters.studentRating = studentRating || this.filters.studentRating
     this.filters.volunteerRating =
-      volunteerRating || this.filters.volunteerRating;
+      volunteerRating || this.filters.volunteerRating
     this.filters.firstTimeStudent =
-      firstTimeStudent || this.filters.firstTimeStudent;
+      firstTimeStudent || this.filters.firstTimeStudent
     this.filters.firstTimeVolunteer =
-      firstTimeVolunteer || this.filters.firstTimeVolunteer;
-    this.filters.isReported = isReported || this.filters.isReported;
-    this.setPage(page);
+      firstTimeVolunteer || this.filters.firstTimeVolunteer
+    this.filters.isReported = isReported || this.filters.isReported
+    this.setPage(page)
   },
 
   computed: {
     isFirstPage() {
-      return this.page === 1;
+      return this.page === 1
     }
   },
 
   methods: {
     setPage(page) {
-      this.page = page;
-      this.sessions = [];
-      this.getSessions();
+      this.page = page
+      this.sessions = []
+      this.getSessions()
     },
 
     nextPage() {
-      this.setPage(this.page + 1);
+      this.setPage(this.page + 1)
     },
 
     previousPage() {
-      this.setPage(this.page - 1);
+      this.setPage(this.page - 1)
     },
 
     async submitFilters() {
-      this.page = 1;
-      this.getSessions();
+      this.page = 1
+      this.getSessions()
     },
 
     async getSessions() {
       this.$router.push({
-        path: "/admin/sessions",
+        path: '/admin/sessions',
         query: {
           page: this.page,
           ...this.filters
         }
-      });
+      })
 
       const { sessions, isLastPage } = await getSessions({
         page: this.page,
         ...this.filters
-      });
-      this.sessions = sessions;
-      this.isLastPage = isLastPage;
+      })
+      this.sessions = sessions
+      this.isLastPage = isLastPage
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -298,13 +298,13 @@ export default {
   border-radius: 8px;
   overflow: hidden;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin: 40px;
     padding: 40px;
   }
 }
 
-input[type="number"],
+input[type='number'],
 .small-input {
   width: 60px;
 }

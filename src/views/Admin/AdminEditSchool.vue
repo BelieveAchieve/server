@@ -52,11 +52,11 @@
 </template>
 
 <script>
-import NetworkService from "@/services/NetworkService";
-import { STATES_WITH_ABBREVIATIONS } from "@/consts";
+import NetworkService from '@/services/NetworkService'
+import { STATES_WITH_ABBREVIATIONS } from '@/consts'
 
 export default {
-  name: "AdminEditSchool",
+  name: 'AdminEditSchool',
 
   props: {
     school: { type: Object, required: true },
@@ -66,26 +66,29 @@ export default {
 
   data() {
     return {
-      name: "",
-      city: "",
-      state: "",
-      zipCode: "",
+      name: '',
+      city: '',
+      state: '',
+      zipCode: '',
       isApproved: false,
-      options: [{ text: "False", value: false }, { text: "True", value: true }],
-      error: ""
-    };
+      options: [
+        { text: 'False', value: false },
+        { text: 'True', value: true }
+      ],
+      error: ''
+    }
   },
   async created() {
-    this.name = this.school.name;
-    this.city = this.school.city;
-    this.zipCode = this.school.zipCode;
-    this.state = this.school.state;
-    this.isApproved = this.school.isApproved;
+    this.name = this.school.name
+    this.city = this.school.city
+    this.zipCode = this.school.zipCode
+    this.state = this.school.state
+    this.isApproved = this.school.isApproved
   },
 
   methods: {
     async submitUpdate(event) {
-      event.preventDefault();
+      event.preventDefault()
 
       const data = {
         name: this.name,
@@ -93,27 +96,27 @@ export default {
         state: this.state,
         zipCode: this.zipCode,
         isApproved: this.isApproved
-      };
+      }
 
       try {
-        await NetworkService.adminUpdateSchool(this.school._id, data);
+        await NetworkService.adminUpdateSchool(this.school._id, data)
 
-        this.getSchool();
-        this.toggleEditMode();
+        this.getSchool()
+        this.toggleEditMode()
       } catch (error) {
-        this.error = "There was a problem updating the school.";
+        this.error = 'There was a problem updating the school.'
       }
     },
     goBack() {
-      this.toggleEditMode();
+      this.toggleEditMode()
     }
   },
   computed: {
     states() {
-      return STATES_WITH_ABBREVIATIONS;
+      return STATES_WITH_ABBREVIATIONS
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

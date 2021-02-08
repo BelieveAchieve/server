@@ -56,12 +56,12 @@
 </template>
 
 <script>
-import * as Sentry from "@sentry/browser";
-import { mapState } from "vuex";
+import * as Sentry from '@sentry/browser'
+import { mapState } from 'vuex'
 
-import AuthService from "@/services/AuthService";
-import FormPageTemplate from "@/components/FormPageTemplate";
-import Loader from "@/components/Loader";
+import AuthService from '@/services/AuthService'
+import FormPageTemplate from '@/components/FormPageTemplate'
+import Loader from '@/components/Loader'
 
 export default {
   components: {
@@ -69,15 +69,15 @@ export default {
     Loader
   },
   created() {
-    this.$store.dispatch("app/hideNavigation");
+    this.$store.dispatch('app/hideNavigation')
   },
   data() {
     return {
-      email: "",
-      msg: "",
-      error: "",
+      email: '',
+      msg: '',
+      error: '',
       isSendingEmail: false
-    };
+    }
   },
   computed: {
     ...mapState({
@@ -86,20 +86,20 @@ export default {
   },
   methods: {
     submit() {
-      this.isSendingEmail = true;
-      this.error = "";
+      this.isSendingEmail = true
+      this.error = ''
       AuthService.sendReset(this, this.email)
         .then(() => (this.isSendingEmail = false))
         .catch(err => {
-          this.error = err.message;
-          this.isSendingEmail = false;
+          this.error = err.message
+          this.isSendingEmail = false
           if (err.status !== 422) {
-            Sentry.captureException(err);
+            Sentry.captureException(err)
           }
-        });
+        })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -116,7 +116,7 @@ export default {
   }
 }
 
-@include breakpoint-below("tiny") {
+@include breakpoint-below('tiny') {
   .uc-form-header {
     @include flex-container(column, center, center);
   }

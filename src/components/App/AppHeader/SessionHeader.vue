@@ -15,14 +15,14 @@
 </template>
 
 <script>
-import LogoImageUrl from "@/assets/header_logo.png";
+import LogoImageUrl from '@/assets/header_logo.png'
 
 export default {
-  name: "session-header",
+  name: 'session-header',
   data() {
-    return { logoUrl: LogoImageUrl };
+    return { logoUrl: LogoImageUrl }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

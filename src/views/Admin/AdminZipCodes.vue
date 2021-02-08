@@ -35,58 +35,58 @@
 </template>
 
 <script>
-import NetworkService from "@/services/NetworkService";
+import NetworkService from '@/services/NetworkService'
 
 export default {
-  name: "AdminZipCodes",
+  name: 'AdminZipCodes',
 
   data() {
     return {
-      query: "",
+      query: '',
       zipCode: {},
-      error: ""
-    };
+      error: ''
+    }
   },
 
   async mounted() {
     this.$nextTick(() => {
       document
-        .querySelector(".search-panel")
-        .addEventListener("keydown", this.keyboardListener);
-    });
+        .querySelector('.search-panel')
+        .addEventListener('keydown', this.keyboardListener)
+    })
   },
 
   computed: {
     medianIncome() {
       if (this.zipCode.medianIncome)
-        return this.zipCode.medianIncome.toLocaleString();
-      return "";
+        return this.zipCode.medianIncome.toLocaleString()
+      return ''
     }
   },
 
   methods: {
     async getZipCodes() {
-      this.error = "";
+      this.error = ''
       try {
         const {
           body: { zipCode }
-        } = await NetworkService.adminGetZipCodes(this.query);
+        } = await NetworkService.adminGetZipCodes(this.query)
 
-        this.zipCode = zipCode;
+        this.zipCode = zipCode
       } catch (error) {
-        this.zipCode = {};
-        this.error = "Unable to find a matching zip code";
+        this.zipCode = {}
+        this.error = 'Unable to find a matching zip code'
       }
     },
     keyboardListener(event) {
-      const { key, target } = event;
-      const { tagName } = target;
-      if (key === "Enter" && tagName === "INPUT") {
-        this.getZipCodes();
+      const { key, target } = event
+      const { tagName } = target
+      if (key === 'Enter' && tagName === 'INPUT') {
+        this.getZipCodes()
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -107,7 +107,7 @@ p {
   padding: 10px;
   border-radius: 8px;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin: 40px;
     padding: 40px;
   }

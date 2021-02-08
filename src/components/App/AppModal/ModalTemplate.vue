@@ -42,18 +42,18 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import LargeButton from "@/components/LargeButton";
-import ArrowIcon from "@/assets/arrow.svg";
+import { mapGetters } from 'vuex'
+import LargeButton from '@/components/LargeButton'
+import ArrowIcon from '@/assets/arrow.svg'
 
 const FOCUSABLE_ELEMENT_SELECTOR =
-  'button:not([disabled]), [href], input:not([tabindex="-1"]), select, textarea, [tabindex]:not([tabindex="-1"])';
+  'button:not([disabled]), [href], input:not([tabindex="-1"]), select, textarea, [tabindex]:not([tabindex="-1"])'
 
 export default {
   components: { LargeButton, ArrowIcon },
   props: {
-    acceptText: { type: String, default: "Accept" },
-    backText: { type: String, default: "Back" },
+    acceptText: { type: String, default: 'Accept' },
+    backText: { type: String, default: 'Back' },
     enableAccept: Boolean,
     alertModal: Boolean,
     important: Boolean,
@@ -62,77 +62,77 @@ export default {
     modalComponentName: String
   },
   mounted() {
-    const body = document.querySelector("body");
-    body.classList.add("disable-scroll");
+    const body = document.querySelector('body')
+    body.classList.add('disable-scroll')
 
     // focus on first focusable child element, to put the focus in the trap
     this.$refs.modalTemplateContainer
       .querySelectorAll(FOCUSABLE_ELEMENT_SELECTOR)[0]
-      .focus();
+      .focus()
   },
   beforeDestroy() {
-    const body = document.querySelector("body");
-    body.classList.remove("disable-scroll");
+    const body = document.querySelector('body')
+    body.classList.remove('disable-scroll')
   },
   computed: {
-    ...mapGetters({ mobileMode: "app/mobileMode" }),
+    ...mapGetters({ mobileMode: 'app/mobileMode' }),
     isSessionFulfilledModal() {
-      return this.modalComponentName === "SessionFulfilledModal";
+      return this.modalComponentName === 'SessionFulfilledModal'
     }
   },
   methods: {
     handleCancel() {
-      this.$emit("cancel");
-      this.$store.dispatch("app/modal/hide");
+      this.$emit('cancel')
+      this.$store.dispatch('app/modal/hide')
     },
     closeModal(event) {
       // users must interact with the modal button to close session related modals
-      if (this.isSessionFulfilledModal) return;
-      const { key, target } = event;
-      if (key === "Escape" || target.classList.contains("ModalTemplate")) {
-        this.handleCancel();
+      if (this.isSessionFulfilledModal) return
+      const { key, target } = event
+      if (key === 'Escape' || target.classList.contains('ModalTemplate')) {
+        this.handleCancel()
       }
     },
     checkKeyEvent(event) {
       // based on tab key trap at:
       // https://gist.github.com/JimSchofield/ec06d1f209799f5cd279f5683b178da4
-      const { key } = event;
+      const { key } = event
 
-      if (key === "Escape") {
+      if (key === 'Escape') {
         // treat as a close event and exit early
-        this.closeModal(event);
-        return;
+        this.closeModal(event)
+        return
       }
 
       const focusableList = this.$refs.modalTemplateContainer.querySelectorAll(
         FOCUSABLE_ELEMENT_SELECTOR
-      );
+      )
 
       // escape early if only 1 or no elements to focus
-      if (focusableList.length < 2 && event.key === "Tab") {
-        event.preventDefault();
-        return;
+      if (focusableList.length < 2 && event.key === 'Tab') {
+        event.preventDefault()
+        return
       }
 
-      const last = focusableList.length - 1;
+      const last = focusableList.length - 1
       if (
-        event.key === "Tab" &&
+        event.key === 'Tab' &&
         event.shiftKey === false &&
         event.target === focusableList[last]
       ) {
-        event.preventDefault();
-        focusableList[0].focus();
+        event.preventDefault()
+        focusableList[0].focus()
       } else if (
-        event.key === "Tab" &&
+        event.key === 'Tab' &&
         event.shiftKey === true &&
         event.target === focusableList[0]
       ) {
-        event.preventDefault();
-        focusableList[last].focus();
+        event.preventDefault()
+        focusableList[last].focus()
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -148,16 +148,16 @@ $header-height: 80px;
   position: fixed;
   top: 0;
   left: 0;
-  z-index: get-z("modal");
+  z-index: get-z('modal');
 
   &--important {
     background: $c-warning-orange;
   }
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     animation: none;
     background: rgba(0, 0, 0, 0.4);
-    padding: (get-app-header-height("medium") + 20px) 40px;
+    padding: (get-app-header-height('medium') + 20px) 40px;
     display: flex;
     align-items: center;
   }
@@ -171,7 +171,7 @@ $header-height: 80px;
   &-close-button {
     @include flex-container(row, initial, baseline);
     @include child-spacing(left, 8px);
-    @include font-category("helper-text");
+    @include font-category('helper-text');
     color: white;
     cursor: pointer;
     align-items: center;
@@ -207,7 +207,7 @@ $header-height: 80px;
     padding-top: 20px;
   }
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     @include flex-container(column);
     @include child-spacing(top, 16px);
 

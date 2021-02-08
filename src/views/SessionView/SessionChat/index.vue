@@ -83,16 +83,16 @@
 </template>
 
 <script>
-import { setTimeout, clearTimeout } from "timers";
-import _ from "lodash";
-import { mapState, mapGetters } from "vuex";
+import { setTimeout, clearTimeout } from 'timers'
+import _ from 'lodash'
+import { mapState, mapGetters } from 'vuex'
 
-import ChatBot from "./ChatBot";
-import LoadingMessage from "@/components/LoadingMessage";
-import ModerationService from "@/services/ModerationService";
-import StudentAvatarUrl from "@/assets/defaultavatar3.png";
-import VolunteerAvatarUrl from "@/assets/defaultavatar4.png";
-import sendWebNotification from "@/utils/send-web-notification";
+import ChatBot from './ChatBot'
+import LoadingMessage from '@/components/LoadingMessage'
+import ModerationService from '@/services/ModerationService'
+import StudentAvatarUrl from '@/assets/defaultavatar3.png'
+import VolunteerAvatarUrl from '@/assets/defaultavatar4.png'
+import sendWebNotification from '@/utils/send-web-notification'
 
 /**
  * @todo {1} Use more descriptive names that comply with the coding standards.
@@ -100,7 +100,7 @@ import sendWebNotification from "@/utils/send-web-notification";
  *           router/sockets.js
  */
 export default {
-  name: "session-chat",
+  name: 'session-chat',
   components: { ChatBot, LoadingMessage },
   props: {
     setHasSeenNewMessage: { type: Function, required: true },
@@ -108,12 +108,12 @@ export default {
   },
   data() {
     return {
-      newMessage: "",
+      newMessage: '',
       moderationWarningIsShown: false,
       typingTimeout: null,
       typingIndicatorShown: false,
       isMessageError: false
-    };
+    }
   },
   computed: {
     ...mapState({
@@ -124,144 +124,144 @@ export default {
         (state.user.session.messages || []).map(message => {
           const {
             user: { user }
-          } = state;
+          } = state
           // Display an avatar in the chat for the other user
           const picture = user.isVolunteer
             ? StudentAvatarUrl
-            : VolunteerAvatarUrl;
-          message.avatarStyle = { backgroundImage: `url(${picture})` };
-          return message;
+            : VolunteerAvatarUrl
+          message.avatarStyle = { backgroundImage: `url(${picture})` }
+          return message
         }),
       isSessionConnectionAlive: state => state.user.isSessionConnectionAlive
     }),
     ...mapGetters({
-      sessionPartner: "user/sessionPartner",
-      isSessionWaitingForVolunteer: "user/isSessionWaitingForVolunteer",
-      isSessionAlive: "user/isSessionAlive"
+      sessionPartner: 'user/sessionPartner',
+      isSessionWaitingForVolunteer: 'user/isSessionWaitingForVolunteer',
+      isSessionAlive: 'user/isSessionAlive'
     }),
     isSessionConnectionFailure: function() {
-      return !this.isSessionConnectionAlive && this.isSessionAlive;
+      return !this.isSessionConnectionAlive && this.isSessionAlive
     }
   },
   methods: {
     showModerationWarning() {
-      this.moderationWarningIsShown = true;
+      this.moderationWarningIsShown = true
     },
     hideModerationWarning() {
-      this.moderationWarningIsShown = false;
+      this.moderationWarningIsShown = false
     },
     showNewMessage(message) {
-      this.$socket.emit("message", {
+      this.$socket.emit('message', {
         sessionId: this.currentSession._id,
         user: this.user,
         message
-      });
+      })
     },
     clearMessageInput() {
-      this.newMessage = "";
+      this.newMessage = ''
     },
     notTyping() {
       // Tell the server that the user is no longer typing
-      this.$socket.emit("notTyping", {
+      this.$socket.emit('notTyping', {
         sessionId: this.currentSession._id
-      });
+      })
     },
     handleMessage(event) {
       // If key pressed is Enter, send the message
-      if (event.key == "Enter") {
-        const message = this.newMessage.trim();
-        this.clearMessageInput();
+      if (event.key == 'Enter') {
+        const message = this.newMessage.trim()
+        this.clearMessageInput()
 
         // Early exit if message is blank
-        if (_.isEmpty(message)) return;
+        if (_.isEmpty(message)) return
 
         // Reset the chat warning
-        this.hideModerationWarning();
+        this.hideModerationWarning()
 
         // Check for personal info/profanity in message
         ModerationService.checkIfMessageIsClean(this, message).then(isClean => {
           if (isClean) {
-            this.showNewMessage(message);
+            this.showNewMessage(message)
           } else {
-            this.showModerationWarning();
+            this.showModerationWarning()
           }
-        });
+        })
 
         // Disregard typing handler for enter
-        this.notTyping();
-        return;
+        this.notTyping()
+        return
 
         // Disregard typing handler for backspace
-      } else if (event.key == "Backspace") return;
+      } else if (event.key == 'Backspace') return
 
       // Typing handler for when non-Enter/Backspace keys are pressed
-      this.$socket.emit("typing", {
+      this.$socket.emit('typing', {
         sessionId: this.currentSession._id
-      });
+      })
 
       /** Every time a key is pressed, set an inactive timer
           If another key is pressed within 2 seconds, reset timer**/
-      clearTimeout(this.typingTimeout);
+      clearTimeout(this.typingTimeout)
       this.typingTimeout = setTimeout(() => {
-        this.notTyping();
-      }, 2000);
+        this.notTyping()
+      }, 2000)
     },
     async triggerAlert(data) {
       try {
         const receiveMessageAudio = document.querySelector(
-          ".audio__receive-message"
-        );
+          '.audio__receive-message'
+        )
         // Unmuting the audio allows us to bypass the need for user interaction with the DOM before playing a sound
-        receiveMessageAudio.muted = false;
-        await receiveMessageAudio.play();
+        receiveMessageAudio.muted = false
+        await receiveMessageAudio.play()
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log("Unable to play audio");
+        console.log('Unable to play audio')
       }
 
       sendWebNotification(
         `${this.sessionPartner.firstname} has sent a message`,
         { body: data.contents }
-      );
-      return;
+      )
+      return
     }
   },
 
   sockets: {
-    "is-typing"() {
-      this.typingIndicatorShown = true;
+    'is-typing'() {
+      this.typingIndicatorShown = true
     },
-    "not-typing"() {
-      this.typingIndicatorShown = false;
+    'not-typing'() {
+      this.typingIndicatorShown = false
     },
     async messageSend(data) {
-      const { userId } = data;
+      const { userId } = data
       // If the chat is hidden show visual indicator that a new message has arrived
       if (this.shouldHideChatSection) {
-        this.setHasSeenNewMessage(false);
-        this.triggerAlert(data);
+        this.setHasSeenNewMessage(false)
+        this.triggerAlert(data)
       }
 
       // Only allow audio when a user does not have the web page in view
       if (userId !== this.user._id && this.isWebPageHidden)
-        this.triggerAlert(data);
+        this.triggerAlert(data)
 
-      this.$store.dispatch("user/addMessage", data);
+      this.$store.dispatch('user/addMessage', data)
     },
     messageError() {
-      if (this.isMessageError) return;
-      this.isMessageError = true;
+      if (this.isMessageError) return
+      this.isMessageError = true
       setTimeout(() => {
-        this.isMessageError = false;
-      }, 1000);
+        this.isMessageError = false
+      }, 1000)
     }
   },
 
   updated() {
-    const msgBox = document.querySelector(".messages");
-    msgBox.scrollTop = msgBox.scrollHeight;
+    const msgBox = document.querySelector('.messages')
+    msgBox.scrollTop = msgBox.scrollHeight
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -280,7 +280,7 @@ export default {
   position: relative;
   padding-bottom: 20px;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin-top: 70px;
     padding-bottom: 0;
   }
@@ -426,7 +426,7 @@ span {
   position: relative;
   background-color: #fff;
 
-  @include breakpoint-below("medium") {
+  @include breakpoint-below('medium') {
     height: 66px;
     padding: 0 140px 40px 20px;
     display: flex;
@@ -443,7 +443,7 @@ span {
   font-weight: 300;
   transition: 0.25s;
 
-  @include breakpoint-below("medium") {
+  @include breakpoint-below('medium') {
     bottom: 75px;
     left: 35px;
   }
@@ -461,7 +461,7 @@ span {
     outline: none;
   }
 
-  @include breakpoint-below("medium") {
+  @include breakpoint-below('medium') {
     height: 40px;
     border: 1px solid #d6e0ef;
     border-radius: 20px;

@@ -11,23 +11,23 @@
 </template>
 
 <script>
-import moment from "moment";
+import moment from 'moment'
 
 export default {
-  name: "PendingVolunteerListItem",
+  name: 'PendingVolunteerListItem',
   props: {
     volunteer: { type: Object, required: true }
   },
   computed: {
     readyForReviewAt() {
-      return moment(this.volunteer.readyForReviewAt).format("l, h:mm a");
+      return moment(this.volunteer.readyForReviewAt).format('l, h:mm a')
     },
 
     fullName() {
-      return `${this.volunteer.firstname} ${this.volunteer.lastname}`;
+      return `${this.volunteer.firstname} ${this.volunteer.lastname}`
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

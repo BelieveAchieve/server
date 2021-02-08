@@ -62,7 +62,7 @@
               class="reference__form-link"
               >{{ reference.firstName }} {{ reference.lastName }}</span
             >
-            {{ " " }}
+            {{ ' ' }}
             <span
               class="user-detail__account-notice user-detail__status"
               :class="statusColor(referencesStatus[index])"
@@ -83,7 +83,7 @@
               statusColor(hasCompletedBackgroundInfo ? 'APPROVED' : 'SUBMITTED')
             "
             >{{
-              statusText(hasCompletedBackgroundInfo ? "COMPLETED" : "PENDING")
+              statusText(hasCompletedBackgroundInfo ? 'COMPLETED' : 'PENDING')
             }}</span
           >
         </div>
@@ -98,14 +98,14 @@
 </template>
 
 <script>
-import moment from "moment";
-import NetworkService from "@/services/NetworkService";
-import AdminReferenceView from "@/views/Admin/AdminReferenceView";
-import LargeButton from "@/components/LargeButton";
-import BackgroundInfo from "@/components/Admin/BackgroundInfo";
+import moment from 'moment'
+import NetworkService from '@/services/NetworkService'
+import AdminReferenceView from '@/views/Admin/AdminReferenceView'
+import LargeButton from '@/components/LargeButton'
+import BackgroundInfo from '@/components/Admin/BackgroundInfo'
 
 export default {
-  name: "AdminPendingVolunteerDetail",
+  name: 'AdminPendingVolunteerDetail',
   components: { AdminReferenceView, LargeButton, BackgroundInfo },
   props: {
     volunteer: { type: Object, required: true },
@@ -113,74 +113,74 @@ export default {
   },
   data() {
     return {
-      error: "",
-      photoIdStatus: "",
+      error: '',
+      photoIdStatus: '',
       showReferenceForm: false,
       chosenReferenceIndex: 0,
       referencesStatus: []
-    };
+    }
   },
   async created() {
-    this.photoIdStatus = this.volunteer.photoIdStatus;
+    this.photoIdStatus = this.volunteer.photoIdStatus
     this.referencesStatus = this.volunteer.references.map(
       reference => reference.status
-    );
+    )
   },
   methods: {
     async handleSubmit() {
-      this.error = "";
+      this.error = ''
 
       const data = {
         photoIdStatus: this.photoIdStatus,
         referencesStatus: this.referencesStatus,
         volunteerId: this.volunteer._id
-      };
+      }
       try {
         await NetworkService.adminReviewPendingVolunteer({
           volunteerId: this.volunteer._id,
           data
-        });
+        })
       } catch (error) {
-        this.error = "There was an error updating the volunteer's status.";
+        this.error = "There was an error updating the volunteer's status."
       }
     },
     toggleReferenceView(referenceIndex) {
-      this.chosenReferenceIndex = referenceIndex;
-      this.showReferenceForm = !this.showReferenceForm;
+      this.chosenReferenceIndex = referenceIndex
+      this.showReferenceForm = !this.showReferenceForm
     },
     updateReferenceStatus(event) {
       const {
         target: { value }
-      } = event;
+      } = event
       this.referencesStatus = this.referencesStatus.map((status, index) => {
-        if (index === this.chosenReferenceIndex) return value;
-        else return status;
-      });
+        if (index === this.chosenReferenceIndex) return value
+        else return status
+      })
     },
     statusText(status) {
-      if (status === "SUBMITTED") return "WAITING FOR REVIEW";
-      return status;
+      if (status === 'SUBMITTED') return 'WAITING FOR REVIEW'
+      return status
     },
     statusColor(status) {
-      if (status === "SUBMITTED" || status === "PENDING")
-        return "user-detail__status--pending";
-      if (status === "APPROVED") return "user-detail__status--approved";
-      if (status === "REJECTED") return "user-detail__status--rejected";
+      if (status === 'SUBMITTED' || status === 'PENDING')
+        return 'user-detail__status--pending'
+      if (status === 'APPROVED') return 'user-detail__status--approved'
+      if (status === 'REJECTED') return 'user-detail__status--rejected'
     }
   },
   computed: {
     createdAt() {
-      return moment(this.volunteer.createdAt).format("l, h:mm a");
+      return moment(this.volunteer.createdAt).format('l, h:mm a')
     },
     hasCompletedBackgroundInfo() {
       return (
         this.volunteer.occupation &&
         this.volunteer.occupation.length > 0 &&
         this.volunteer.country
-      );
+      )
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -190,7 +190,7 @@ export default {
   border-radius: 8px;
   overflow: hidden;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin: 40px;
   }
 
@@ -200,7 +200,7 @@ export default {
     align-items: flex-start;
     padding: 20px 15px;
 
-    @include breakpoint-above("medium") {
+    @include breakpoint-above('medium') {
       padding: 40px;
     }
   }
@@ -259,7 +259,7 @@ export default {
 
   &__photo-container {
     width: 100%;
-    @include breakpoint-above("medium") {
+    @include breakpoint-above('medium') {
       width: 400px;
     }
   }
@@ -303,7 +303,7 @@ export default {
 }
 
 .edit-btn {
-  @include font-category("body");
+  @include font-category('body');
   background-color: $c-success-green;
   border-radius: 30px;
   width: 120px;

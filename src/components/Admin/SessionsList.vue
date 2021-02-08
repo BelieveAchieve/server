@@ -11,17 +11,17 @@
 </template>
 
 <script>
-import SessionListItem from "./SessionListItem";
+import SessionListItem from './SessionListItem'
 
 export default {
-  name: "SessionsList",
+  name: 'SessionsList',
 
   props: {
     sessions: Array[Object]
   },
 
   components: { SessionListItem }
-};
+}
 </script>
 
 <style lang="scss" scoped>

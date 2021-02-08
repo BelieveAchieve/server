@@ -38,11 +38,11 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
-import AuthService from "@/services/AuthService";
-import SidebarInfo from "./SidebarInfo";
-import SidebarLinks from "./SidebarLinks";
-import config from "../../../config";
+import { mapState, mapGetters } from 'vuex'
+import AuthService from '@/services/AuthService'
+import SidebarInfo from './SidebarInfo'
+import SidebarLinks from './SidebarLinks'
+import config from '../../../config'
 
 export default {
   components: { SidebarInfo, SidebarLinks },
@@ -53,26 +53,26 @@ export default {
       isSidebarCollapsed: state => state.app.sidebar.isCollapsed
     }),
     ...mapGetters({
-      isAuthenticated: "user/isAuthenticated",
-      isVolunteer: "user/isVolunteer",
-      mobileMode: "app/mobileMode"
+      isAuthenticated: 'user/isAuthenticated',
+      isVolunteer: 'user/isVolunteer',
+      mobileMode: 'app/mobileMode'
     }),
     finalLinkClass() {
       return {
-        "AppSidebar-final-link": true,
-        "AppSidebar-final-link--desktop": !this.mobileMode
-      };
+        'AppSidebar-final-link': true,
+        'AppSidebar-final-link--desktop': !this.mobileMode
+      }
     }
   },
   methods: {
     logout() {
-      AuthService.logout(this);
+      AuthService.logout(this)
     },
     backToWebsite() {
-      window.location = config.mainWebsiteUrl;
+      window.location = config.mainWebsiteUrl
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -88,7 +88,7 @@ $transition: transform 700ms;
   position: fixed;
   top: 0;
   left: 0;
-  z-index: get-z("sidebar");
+  z-index: get-z('sidebar');
 
   // transition: $transition ease-out;
 
@@ -107,23 +107,23 @@ $transition: transform 700ms;
   padding: 40px 20px 40px 30px;
   position: relative;
 
-  @media screen and (min-width: get-breakpoint("medium")) and (max-width: get-breakpoint("huge")) and (orientation: landscape) {
+  @media screen and (min-width: get-breakpoint('medium')) and (max-width: get-breakpoint('huge')) and (orientation: landscape) {
     padding-left: 2em;
     height: initial;
   }
 }
 
 .AppSidebar-final-link {
-  @include font-category("display-small");
+  @include font-category('display-small');
   cursor: pointer;
   margin: 40px 0 20px;
   bottom: 40px;
   text-align: left;
 
   &--desktop {
-    @include font-category("button");
+    @include font-category('button');
 
-    @media screen and (min-width: get-breakpoint("medium")) and (max-width: get-breakpoint("huge")) and (orientation: landscape) {
+    @media screen and (min-width: get-breakpoint('medium')) and (max-width: get-breakpoint('huge')) and (orientation: landscape) {
       position: initial;
       text-align: left;
       margin: 4em 0 1em;

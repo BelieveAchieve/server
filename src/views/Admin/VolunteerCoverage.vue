@@ -98,32 +98,32 @@
 </template>
 
 <script>
-import UserService from "@/services/UserService";
+import UserService from '@/services/UserService'
 
-import { allSubtopicNames } from "@/utils/topics";
+import { allSubtopicNames } from '@/utils/topics'
 
 export default {
   data() {
     return {
       // colors for calendar heat map
-      mainColor: "255, 0, 0",
-      lessThanColor: "255, 255, 0", // highlighting color for < metric
-      greaterThanColor: "0, 255, 0", // highlighting color for > metric
-      lessAndGreaterThanColor: "255, 0, 255", // highlighting color for intersection between < and >
-      errorMsg: "",
+      mainColor: '255, 0, 0',
+      lessThanColor: '255, 255, 0', // highlighting color for < metric
+      greaterThanColor: '0, 255, 0', // highlighting color for > metric
+      lessAndGreaterThanColor: '255, 0, 255', // highlighting color for intersection between < and >
+      errorMsg: '',
       // user inputted values
-      lessThan: "",
-      greaterThan: "",
+      lessThan: '',
+      greaterThan: '',
       // dropdown menu options
-      selected: "algebraOne", // default
+      selected: 'algebraOne', // default
       topics: allSubtopicNames(),
       // availability objects
       availabilityTable: {}
-    };
+    }
   },
 
   created() {
-    this.getAvailability(this.selected);
+    this.getAvailability(this.selected)
   },
 
   methods: {
@@ -131,18 +131,18 @@ export default {
         the number of volunteers available at that day and hour block who are certified
         in the "certifiedSubject". */
     getAvailability(certifiedSubject) {
-      let cert = certifiedSubject;
-      if (certifiedSubject.match(/^algebra/i)) cert = "algebra";
+      let cert = certifiedSubject
+      if (certifiedSubject.match(/^algebra/i)) cert = 'algebra'
       UserService.getVolunteersAvailability(this, cert)
         .then(availability => {
-          this.availabilityTable = availability;
+          this.availabilityTable = availability
           //flattening table makes the implementation of css grid cleaner
-          this.availabilityTable.table = availability.table.flat();
-          return this.availabilityTable;
+          this.availabilityTable.table = availability.table.flat()
+          return this.availabilityTable
         })
         .catch(err => {
-          this.errorMsg = err.message;
-        });
+          this.errorMsg = err.message
+        })
     },
 
     /* Helper function that finds the total number of hours where the number of 
@@ -150,8 +150,8 @@ export default {
         lessThan represents if we are calculating for less than (true) or greater 
         than (false)*/
     getNumHours(lessThan) {
-      const totalHours = 0;
-      const compareNumber = lessThan ? this.lessThan : this.greaterThan;
+      const totalHours = 0
+      const compareNumber = lessThan ? this.lessThan : this.greaterThan
       if (
         this.availabilityTable.table &&
         this.availabilityTable.table.length != 0
@@ -165,14 +165,14 @@ export default {
               (!lessThan && currentValue > compareNumber) ||
               (lessThan && currentValue < compareNumber)
             ) {
-              totalHours++;
+              totalHours++
             }
-            return totalHours;
+            return totalHours
           },
-          totalHours);
+          totalHours)
         }
       }
-      return totalHours;
+      return totalHours
     },
 
     /**
@@ -188,13 +188,13 @@ export default {
         this.lessThan.length != 0 &&
         cell < this.lessThan
       ) {
-        return this.lessAndGreaterThanColor;
+        return this.lessAndGreaterThanColor
       } else if (this.lessThan.length != 0 && cell < this.lessThan) {
-        return this.lessThanColor;
+        return this.lessThanColor
       } else if (this.greaterThan.length != 0 && cell > this.greaterThan) {
-        return this.greaterThanColor;
+        return this.greaterThanColor
       } else {
-        return this.mainColor;
+        return this.mainColor
       }
     },
 
@@ -212,11 +212,11 @@ export default {
           (this.availabilityTable.max - this.availabilityTable.min)) *
           70 +
           20) +
-        "%"
-      );
+        '%'
+      )
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -290,8 +290,8 @@ export default {
 .table-layout {
   display: grid;
   grid-template-areas:
-    ". days"
-    "times data";
+    '. days'
+    'times data';
   grid-template-columns: auto 1fr;
 }
 

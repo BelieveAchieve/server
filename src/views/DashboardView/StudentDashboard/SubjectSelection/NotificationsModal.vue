@@ -24,14 +24,14 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex";
-import { startSession } from "@/utils/session";
-import LargeButton from "@/components/LargeButton";
-import PortalService from "@/services/PortalService";
-import NetworkService from "@/services/NetworkService";
-import LoadingMessage from "@/components/LoadingMessage";
-import setCookie from "@/utils/set-cookie";
-import * as Sentry from "@sentry/browser";
+import { mapGetters, mapState } from 'vuex'
+import { startSession } from '@/utils/session'
+import LargeButton from '@/components/LargeButton'
+import PortalService from '@/services/PortalService'
+import NetworkService from '@/services/NetworkService'
+import LoadingMessage from '@/components/LoadingMessage'
+import setCookie from '@/utils/set-cookie'
+import * as Sentry from '@sentry/browser'
 
 export default {
   components: { LargeButton, LoadingMessage },
@@ -40,51 +40,51 @@ export default {
   },
   data() {
     return {
-      selectedSubtopic: "",
+      selectedSubtopic: '',
       isLoadingSession: false
-    };
+    }
   },
   computed: {
     ...mapState({
       isMobileApp: state => state.app.isMobileApp
     }),
-    ...mapGetters({ mobileMode: "app/mobileMode" }),
+    ...mapGetters({ mobileMode: 'app/mobileMode' }),
     title() {
       return this.modalData.topic
         ? `Choose a ${this.modalData.topic} subject`
-        : "Choose a subject";
+        : 'Choose a subject'
     }
   },
   methods: {
     async handlePushNotification() {
-      const { topic, selectedSubtopic } = this.modalData;
-      setCookie("hasSentPushTokenRegister", true);
+      const { topic, selectedSubtopic } = this.modalData
+      setCookie('hasSentPushTokenRegister', true)
 
       try {
-        this.isLoadingSession = true;
+        this.isLoadingSession = true
 
-        const { token } = await PortalService.call("push.register");
-        await NetworkService.savePushToken(this, { token });
+        const { token } = await PortalService.call('push.register')
+        await NetworkService.savePushToken(this, { token })
 
-        startSession(this.$router, topic, selectedSubtopic);
+        startSession(this.$router, topic, selectedSubtopic)
       } catch (error) {
         if (error.status !== 422) {
-          Sentry.captureException(error);
+          Sentry.captureException(error)
         }
 
-        startSession(this.$router, topic, selectedSubtopic);
+        startSession(this.$router, topic, selectedSubtopic)
       }
     },
     async onClose() {
-      this.$emit("cancel");
-      this.$store.dispatch("app/modal/hide");
-      setCookie("hasSentPushTokenRegister", true);
+      this.$emit('cancel')
+      this.$store.dispatch('app/modal/hide')
+      setCookie('hasSentPushTokenRegister', true)
 
-      const { topic, selectedSubtopic } = this.modalData;
-      startSession(this.$router, topic, selectedSubtopic);
+      const { topic, selectedSubtopic } = this.modalData
+      startSession(this.$router, topic, selectedSubtopic)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -100,7 +100,7 @@ p {
   height: 100%;
 
   // set a min-height for when loading message shows
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     min-height: 200px;
   }
 }
@@ -112,14 +112,14 @@ p {
 }
 
 .NotificationsModal-title {
-  @include font-category("display-small");
-  @include breakpoint-above("medium") {
+  @include font-category('display-small');
+  @include breakpoint-above('medium') {
     margin-top: 24px;
   }
 }
 
 .NotificationsModal-subtitle {
-  @include font-category("heading");
+  @include font-category('heading');
   color: $c-secondary-grey;
 }
 
@@ -134,7 +134,7 @@ p {
     padding: 1em 0;
   }
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     @include child-spacing(top, 0);
 
     flex-direction: row;
@@ -149,7 +149,7 @@ p {
 }
 
 .LoadingContainer {
-  @include font-category("display-small");
+  @include font-category('display-small');
   margin: 0 auto;
   align-self: center;
 }

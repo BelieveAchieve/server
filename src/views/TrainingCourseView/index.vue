@@ -22,13 +22,13 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import NetworkService from "@/services/NetworkService";
-import Module from "./Module";
-import QuizLink from "./QuizLink";
+import { mapState } from 'vuex'
+import NetworkService from '@/services/NetworkService'
+import Module from './Module'
+import QuizLink from './QuizLink'
 
 export default {
-  name: "TrainingCourseView",
+  name: 'TrainingCourseView',
   components: {
     Module,
     QuizLink
@@ -36,21 +36,21 @@ export default {
   data() {
     return {
       course: null
-    };
+    }
   },
   async created() {
-    const courseKey = this.$route.params.courseKey;
+    const courseKey = this.$route.params.courseKey
     const {
       body: { course }
-    } = await NetworkService.getTrainingCourse(courseKey);
-    this.course = course;
+    } = await NetworkService.getTrainingCourse(courseKey)
+    this.course = course
   },
   computed: {
     ...mapState({
       certifications: state => state.user.user.certifications
     }),
     quizCertification() {
-      return this.certifications[this.course.quizKey];
+      return this.certifications[this.course.quizKey]
     }
   },
   methods: {
@@ -58,23 +58,23 @@ export default {
       this.course.modules.forEach(mod => {
         mod.materials.forEach(mat => {
           if (mat.materialKey === materialKey) {
-            mat.isCompleted = true;
+            mat.isCompleted = true
           }
-        });
-      });
+        })
+      })
 
       const {
         body: { progress, isComplete }
       } = await NetworkService.recordTrainingCourseProgress(
         this.course.courseKey,
         materialKey
-      );
+      )
 
-      this.course.progress = progress;
-      this.course.isComplete = isComplete;
+      this.course.progress = progress
+      this.course.isComplete = isComplete
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -82,7 +82,7 @@ export default {
   padding: 10px;
   width: 100%;
 
-  @include breakpoint-above("large") {
+  @include breakpoint-above('large') {
     padding: 40px;
   }
 
@@ -91,11 +91,11 @@ export default {
     border-radius: 8px;
     padding: 20px 10px;
 
-    @include breakpoint-above("medium") {
+    @include breakpoint-above('medium') {
       padding: 20px;
     }
 
-    @include breakpoint-above("large") {
+    @include breakpoint-above('large') {
       padding: 40px;
     }
   }
@@ -111,7 +111,7 @@ export default {
     color: $c-secondary-grey;
     margin: 20px 0 30px;
 
-    @include breakpoint-above("large") {
+    @include breakpoint-above('large') {
       margin: 30px 0 40px;
     }
   }

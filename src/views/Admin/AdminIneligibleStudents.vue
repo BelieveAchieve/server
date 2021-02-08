@@ -28,19 +28,19 @@
 </template>
 
 <script>
-import NetworkService from "@/services/NetworkService";
-import IneligibleStudentListItem from "@/components/Admin/IneligibleStudentListItem";
-import PageControl from "@/components/Admin/PageControl";
+import NetworkService from '@/services/NetworkService'
+import IneligibleStudentListItem from '@/components/Admin/IneligibleStudentListItem'
+import PageControl from '@/components/Admin/PageControl'
 
 const getIneligibleStudents = async page => {
   const {
     body: { ineligibleStudents, isLastPage }
-  } = await NetworkService.adminGetIneligibleStudents(page);
-  return { ineligibleStudents, isLastPage };
-};
+  } = await NetworkService.adminGetIneligibleStudents(page)
+  return { ineligibleStudents, isLastPage }
+}
 
 export default {
-  name: "AdminIneligibleStudents",
+  name: 'AdminIneligibleStudents',
   components: { PageControl, IneligibleStudentListItem },
 
   data() {
@@ -48,43 +48,43 @@ export default {
       page: 1,
       ineligibleStudents: [],
       isLastPage: false
-    };
+    }
   },
 
   async created() {
-    const page = parseInt(this.$route.query.page) || this.page;
-    this.setPage(page);
+    const page = parseInt(this.$route.query.page) || this.page
+    this.setPage(page)
   },
 
   computed: {
     isFirstPage() {
-      return this.page === 1;
+      return this.page === 1
     }
   },
 
   methods: {
     async setPage(page) {
-      this.page = page;
+      this.page = page
       this.$router.push({
-        path: "/admin/ineligible-students",
+        path: '/admin/ineligible-students',
         query: { page }
-      });
+      })
       const { ineligibleStudents, isLastPage } = await getIneligibleStudents(
         page
-      );
-      this.ineligibleStudents = ineligibleStudents;
-      this.isLastPage = isLastPage;
+      )
+      this.ineligibleStudents = ineligibleStudents
+      this.isLastPage = isLastPage
     },
 
     nextPage() {
-      this.setPage(this.page + 1);
+      this.setPage(this.page + 1)
     },
 
     previousPage() {
-      this.setPage(this.page - 1);
+      this.setPage(this.page - 1)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -108,7 +108,7 @@ th {
   border-radius: 8px;
   overflow: hidden;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin: 40px;
   }
 }

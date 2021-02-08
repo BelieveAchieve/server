@@ -142,48 +142,48 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
-import NetworkService from "@/services/NetworkService";
-import Modal from "@/components/Modal";
-import Separator from "@/components/Separator";
-import LargeButton from "@/components/LargeButton";
-import validator from "validator";
-import TrashIcon from "@/assets/trash.svg";
-import CrossIcon from "@/assets/cross.svg";
-import AnalyticsService from "@/services/AnalyticsService";
-import { EVENTS } from "@/consts";
+import { mapState, mapGetters } from 'vuex'
+import NetworkService from '@/services/NetworkService'
+import Modal from '@/components/Modal'
+import Separator from '@/components/Separator'
+import LargeButton from '@/components/LargeButton'
+import validator from 'validator'
+import TrashIcon from '@/assets/trash.svg'
+import CrossIcon from '@/assets/cross.svg'
+import AnalyticsService from '@/services/AnalyticsService'
+import { EVENTS } from '@/consts'
 
 export default {
-  name: "reference-modal",
+  name: 'reference-modal',
   components: { Modal, Separator, LargeButton, TrashIcon, CrossIcon },
   props: {
     closeModal: { type: Function, required: true }
   },
   data() {
     return {
-      addReferenceError: "",
+      addReferenceError: '',
       references: [],
-      newReferenceFirstName: "",
-      newReferenceLastName: "",
-      newReferenceEmail: "",
+      newReferenceFirstName: '',
+      newReferenceLastName: '',
+      newReferenceEmail: '',
       isAddReferenceMode: false
-    };
+    }
   },
   mounted() {
-    this.references = this.user.references.slice();
+    this.references = this.user.references.slice()
   },
   computed: {
     ...mapState({
       user: state => state.user.user
     }),
-    ...mapGetters({ mobileMode: "app/mobileMode" })
+    ...mapGetters({ mobileMode: 'app/mobileMode' })
   },
   methods: {
     toggleAddReferenceMode() {
-      this.newReferenceFirstName = "";
-      this.newReferenceLastName = "";
-      this.newReferenceEmail = "";
-      this.isAddReferenceMode = !this.isAddReferenceMode;
+      this.newReferenceFirstName = ''
+      this.newReferenceLastName = ''
+      this.newReferenceEmail = ''
+      this.isAddReferenceMode = !this.isAddReferenceMode
     },
     addReference() {
       if (
@@ -191,73 +191,71 @@ export default {
         !this.newReferenceLastName ||
         !this.newReferenceEmail
       ) {
-        this.addReferenceError = "Please fill out all fields.";
-        return;
+        this.addReferenceError = 'Please fill out all fields.'
+        return
       }
       if (!validator.isEmail(this.newReferenceEmail)) {
-        this.addReferenceError = "Please enter a valid email address.";
-        return;
+        this.addReferenceError = 'Please enter a valid email address.'
+        return
       }
 
       if (!this.isUniqueEmail(this.newReferenceEmail)) {
         this.addReferenceError =
-          "Looks like you've used this reference already.";
-        return;
+          "Looks like you've used this reference already."
+        return
       }
 
       if (this.user.email === this.newReferenceEmail) {
         this.addReferenceError =
-          "Your reference cannot have the same email address as you.";
-        return;
+          'Your reference cannot have the same email address as you.'
+        return
       }
 
-      this.addReferenceError = "";
+      this.addReferenceError = ''
 
       const newReference = {
         firstName: this.newReferenceFirstName,
         lastName: this.newReferenceLastName,
         email: this.newReferenceEmail,
-        status: "UNSENT"
-      };
-      this.references.push(newReference);
+        status: 'UNSENT'
+      }
+      this.references.push(newReference)
       NetworkService.addReference({
         referenceFirstName: this.newReferenceFirstName,
         referenceLastName: this.newReferenceLastName,
         referenceEmail: this.newReferenceEmail
-      });
+      })
       AnalyticsService.captureEvent(EVENTS.REFERENCE_ADDED, {
         event: EVENTS.REFERENCE_ADDED,
         referenceFirstName: newReference.firstName,
         referenceEmail: newReference.email
-      });
-      this.toggleAddReferenceMode();
-      this.$store.dispatch("user/addToUser", {
+      })
+      this.toggleAddReferenceMode()
+      this.$store.dispatch('user/addToUser', {
         references: this.references
-      });
+      })
     },
     removeReference(position) {
       NetworkService.deleteReference({
         referenceEmail: this.references[position].email
-      });
-      this.references = this.references.filter(
-        (_, index) => position !== index
-      );
-      this.$store.dispatch("user/addToUser", {
+      })
+      this.references = this.references.filter((_, index) => position !== index)
+      this.$store.dispatch('user/addToUser', {
         references: this.references
-      });
+      })
     },
     isUniqueEmail(email) {
-      let isUnique = true;
+      let isUnique = true
       for (const reference of this.references) {
         if (reference.email === email) {
-          isUnique = false;
-          break;
+          isUnique = false
+          break
         }
       }
-      return isUnique;
+      return isUnique
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -288,7 +286,7 @@ input {
 }
 
 label {
-  @include font-category("body");
+  @include font-category('body');
   margin: 0.6em 0;
 }
 
@@ -297,12 +295,12 @@ label {
 }
 
 .title {
-  @include font-category("display-small");
+  @include font-category('display-small');
   @include child-spacing(bottom, 18px);
 }
 
 .subtitle {
-  @include font-category("body");
+  @include font-category('body');
   font-weight: 500;
 }
 
@@ -346,7 +344,7 @@ label {
 }
 
 .reference {
-  @include font-category("body");
+  @include font-category('body');
   border-radius: $border-radius;
   padding: 1em;
   box-shadow: 0px 0px 5px 0px rgba(166, 166, 166, 0.77);
@@ -360,7 +358,7 @@ label {
 .reference-header {
   @include flex-container(row, space-between, center);
   color: $c-secondary-grey;
-  @include font-category("body");
+  @include font-category('body');
 }
 
 .reference-name-container {
@@ -403,7 +401,7 @@ label {
 }
 
 .add-reference-btn {
-  @include font-category("body");
+  @include font-category('body');
   width: 160px;
   padding: 0.6em 0;
   background-color: $c-information-blue;

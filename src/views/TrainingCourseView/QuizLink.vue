@@ -14,8 +14,8 @@
 </template>
 
 <script>
-import CheckMark from "@/components/CheckMark";
-import RightCaret from "@/assets/right-caret.svg";
+import CheckMark from '@/components/CheckMark'
+import RightCaret from '@/assets/right-caret.svg'
 
 export default {
   components: {
@@ -30,31 +30,31 @@ export default {
   },
   computed: {
     isCompleted() {
-      return this.certification.passed;
+      return this.certification.passed
     },
     isStarted() {
-      return this.certification.tries > 0;
+      return this.certification.tries > 0
     },
     statusClass() {
-      if (this.isDisabled) return "quiz-link--disabled";
-      else if (this.isCompleted) return "quiz-link--completed";
-      else if (this.isStarted) return "quiz-link--started";
-      return "quiz-link--not-started";
+      if (this.isDisabled) return 'quiz-link--disabled'
+      else if (this.isCompleted) return 'quiz-link--completed'
+      else if (this.isStarted) return 'quiz-link--started'
+      return 'quiz-link--not-started'
     },
     statusText() {
-      if (this.isDisabled) return "Locked";
-      else if (this.isCompleted) return "Completed";
-      else if (this.isStarted) return "In progress";
-      return "Not started";
+      if (this.isDisabled) return 'Locked'
+      else if (this.isCompleted) return 'Completed'
+      else if (this.isStarted) return 'In progress'
+      return 'Not started'
     }
   },
   methods: {
     onClick() {
-      if (this.isDisabled || this.isCompleted) return;
-      else this.$router.push(`/training/${this.quizKey}/quiz`);
+      if (this.isDisabled || this.isCompleted) return
+      else this.$router.push(`/training/${this.quizKey}/quiz`)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

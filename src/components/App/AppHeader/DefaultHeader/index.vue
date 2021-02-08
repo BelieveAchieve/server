@@ -18,24 +18,24 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import LogoImageUrl from "@/assets/header_logo.png";
-import HamburgerButton from "./HamburgerButton";
+import { mapGetters } from 'vuex'
+import LogoImageUrl from '@/assets/header_logo.png'
+import HamburgerButton from './HamburgerButton'
 
 export default {
-  name: "default-header",
+  name: 'default-header',
   components: { HamburgerButton },
   data() {
-    return { logoUrl: LogoImageUrl };
+    return { logoUrl: LogoImageUrl }
   },
   computed: {
     ...mapGetters({
-      avatarUrl: "user/avatarUrl",
-      mobileMode: "app/mobileMode",
-      name: "user/firstName"
+      avatarUrl: 'user/avatarUrl',
+      mobileMode: 'app/mobileMode',
+      name: 'user/firstName'
     })
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -43,7 +43,7 @@ export default {
   @include flex-container(row, space-between, center);
   flex: 1;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     justify-content: center;
   }
 }
@@ -64,7 +64,7 @@ export default {
   }
 
   &-name {
-    @include font-category("heading");
+    @include font-category('heading');
   }
 }
 </style>

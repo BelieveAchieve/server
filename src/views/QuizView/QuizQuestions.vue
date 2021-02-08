@@ -60,105 +60,105 @@
 </template>
 
 <script>
-import TrainingService from "@/services/TrainingService";
+import TrainingService from '@/services/TrainingService'
 
-import ProgressBar from "./ProgressBar";
+import ProgressBar from './ProgressBar'
 
 export default {
-  props: ["quizLength"],
+  props: ['quizLength'],
   data() {
     return {
-      picked: "",
+      picked: '',
       showPrevious: false,
       showNext: false,
       showSubmit: false,
       questionNumber: 0,
       barWidth: 0,
-      questionText: "",
+      questionText: '',
       items: [],
       imageStyle: {},
-      errorMsg: ""
-    };
+      errorMsg: ''
+    }
   },
   components: {
     ProgressBar
   },
   mounted() {
-    this.getFirstQuestion();
+    this.getFirstQuestion()
   },
   beforeUpdate() {
     // manually set questionText since MathJax's generated DOM elements interfere
     // with Vue's template engine when changing the text
-    document.querySelector(".questionText").innerHTML = this.questionText;
+    document.querySelector('.questionText').innerHTML = this.questionText
   },
   updated() {
-    this.rerenderMathJaxElements();
+    this.rerenderMathJaxElements()
   },
   methods: {
     clearMathJaxElements() {
-      const quizBody = document.querySelector(".quiz-body");
+      const quizBody = document.querySelector('.quiz-body')
 
       // Remove any MathJax-rendered elements from the DOM.
       // Do this before updating to avoid rendering artifacts being left behind
       const mathJaxElements = Array.from(
-        quizBody.querySelectorAll("[class*=mjx],[class*=MathJax],[id*=MathJax]")
-      );
+        quizBody.querySelectorAll('[class*=mjx],[class*=MathJax],[id*=MathJax]')
+      )
 
       const mathJaxParentElements = Array.from(
-        quizBody.querySelectorAll(".MathJax_Preview")
-      ).map(e => e.parentElement);
+        quizBody.querySelectorAll('.MathJax_Preview')
+      ).map(e => e.parentElement)
 
-      mathJaxElements.forEach(e => e.remove());
+      mathJaxElements.forEach(e => e.remove())
 
       // MathJax slices up the DOM nodes it renders as math formulas. We need to
       // rejoin these under the first child's data attribute to avoid artifacts
       // being left behind
       mathJaxParentElements.forEach(parentEl => {
-        if (!(parentEl && parentEl.firstChild)) return;
+        if (!(parentEl && parentEl.firstChild)) return
 
-        parentEl.firstChild.data = parentEl.innerText;
+        parentEl.firstChild.data = parentEl.innerText
 
         // Remove all child nodes but the first
         Array.from(parentEl.childNodes)
           .slice(1)
-          .forEach(e => e.remove());
-      });
+          .forEach(e => e.remove())
+      })
     },
 
     rerenderMathJaxElements() {
-      const quiz = document.querySelector(".quiz-body");
-      const questionText = quiz.querySelector(".questionText");
-      const answerChoices = quiz.querySelectorAll(".possible-answers div");
+      const quiz = document.querySelector('.quiz-body')
+      const questionText = quiz.querySelector('.questionText')
+      const answerChoices = quiz.querySelectorAll('.possible-answers div')
 
       if (!questionText || !answerChoices || !answerChoices.length) {
-        return;
+        return
       }
       window.MathJax.Hub.Queue([
-        "Typeset",
+        'Typeset',
         window.MathJax.Hub,
         [
           questionText,
           ...Array.from(answerChoices).map(answerChoice =>
-            answerChoice.querySelector(".options label")
+            answerChoice.querySelector('.options label')
           )
         ]
-      ]);
+      ])
     },
     updateProgressBar() {
       // When switching to a new question, clear any mathjax elements so they
       // can be re-rendered
-      this.clearMathJaxElements();
+      this.clearMathJaxElements()
 
-      const index = TrainingService.getIndex(this);
-      this.questionNumber = TrainingService.getIndex(this) + 1;
-      this.barWidth = (100 / (this.quizLength - 1)) * index;
+      const index = TrainingService.getIndex(this)
+      this.questionNumber = TrainingService.getIndex(this) + 1
+      this.barWidth = (100 / (this.quizLength - 1)) * index
       for (let i = 1; i < this.quizLength + 1; i++) {
-        const element = document.getElementById(`circle-${i}`);
+        const element = document.getElementById(`circle-${i}`)
         if (element) {
           if (i < index + 2) {
-            element.style.background = "#16D2AA";
+            element.style.background = '#16D2AA'
           } else {
-            element.style.background = "#EEEEEE";
+            element.style.background = '#EEEEEE'
           }
         }
       }
@@ -167,71 +167,71 @@ export default {
       if (imageSrc) {
         this.imageStyle = {
           backgroundImage: `url(${imageSrc})`,
-          width: "300px",
-          height: "300px",
-          display: "flex",
-          backgroundSize: "100%",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center"
-        };
+          width: '300px',
+          height: '300px',
+          display: 'flex',
+          backgroundSize: '100%',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center'
+        }
       } else {
-        this.imageStyle = {};
+        this.imageStyle = {}
       }
     },
     getFirstQuestion() {
-      const question = TrainingService.getFirstQuestion();
-      this.questionText = question.questionText;
-      this.styleImage(question.imageSrc);
-      this.items = question.possibleAnswers;
-      this.showNext = true;
-      this.questionNumber = TrainingService.getIndex(this) + 1;
+      const question = TrainingService.getFirstQuestion()
+      this.questionText = question.questionText
+      this.styleImage(question.imageSrc)
+      this.items = question.possibleAnswers
+      this.showNext = true
+      this.questionNumber = TrainingService.getIndex(this) + 1
     },
     previous() {
-      TrainingService.saveAnswer(this, this.picked);
-      this.picked = "";
-      const data = TrainingService.getPreviousQuestion(this);
-      const { question } = data;
-      this.picked = data.picked;
-      this.questionText = question.questionText;
-      this.updateProgressBar();
-      this.styleImage(question.imageSrc);
-      this.items = question.possibleAnswers;
+      TrainingService.saveAnswer(this, this.picked)
+      this.picked = ''
+      const data = TrainingService.getPreviousQuestion(this)
+      const { question } = data
+      this.picked = data.picked
+      this.questionText = question.questionText
+      this.updateProgressBar()
+      this.styleImage(question.imageSrc)
+      this.items = question.possibleAnswers
       if (!TrainingService.hasPrevious(this)) {
-        this.showPrevious = false;
+        this.showPrevious = false
       }
       if (this.errorMsg) {
-        this.errorMsg = "";
+        this.errorMsg = ''
       }
-      this.showSubmit = false;
-      this.showNext = true;
+      this.showSubmit = false
+      this.showNext = true
     },
     next() {
-      TrainingService.saveAnswer(this, this.picked);
-      this.picked = "";
-      const data = TrainingService.getNextQuestion(this);
-      const { question } = data;
-      this.picked = data.picked;
-      this.questionText = question.questionText;
-      this.updateProgressBar();
-      this.styleImage(question.imageSrc);
-      this.items = question.possibleAnswers;
+      TrainingService.saveAnswer(this, this.picked)
+      this.picked = ''
+      const data = TrainingService.getNextQuestion(this)
+      const { question } = data
+      this.picked = data.picked
+      this.questionText = question.questionText
+      this.updateProgressBar()
+      this.styleImage(question.imageSrc)
+      this.items = question.possibleAnswers
       if (!TrainingService.hasNext(this)) {
-        this.showNext = false;
-        this.showSubmit = true;
+        this.showNext = false
+        this.showSubmit = true
       }
-      this.showPrevious = true;
+      this.showPrevious = true
     },
     submit() {
-      TrainingService.saveAnswer(this, this.picked);
+      TrainingService.saveAnswer(this, this.picked)
       if (!TrainingService.hasCompleted()) {
         this.errorMsg =
-          "You must answer all questions before submitting the quiz!";
+          'You must answer all questions before submitting the quiz!'
       } else {
-        this.$emit("submitQuiz");
+        this.$emit('submitQuiz')
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -252,7 +252,7 @@ export default {
   margin: 0 auto;
 }
 
-input[type="radio"]:checked {
+input[type='radio']:checked {
   background-color: #16d2aa;
 }
 

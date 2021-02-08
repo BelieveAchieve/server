@@ -33,10 +33,10 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import LargeButton from "@/components/LargeButton";
-import getOperatingSystem from "@/utils/get-operating-system";
-import { GOOGLE_PLAY_STORE_LINK, APP_STORE_LINK } from "@/consts";
+import { mapGetters } from 'vuex'
+import LargeButton from '@/components/LargeButton'
+import getOperatingSystem from '@/utils/get-operating-system'
+import { GOOGLE_PLAY_STORE_LINK, APP_STORE_LINK } from '@/consts'
 
 export default {
   components: { LargeButton },
@@ -45,34 +45,34 @@ export default {
   },
   data() {
     return {
-      appStoreLink: ""
-    };
+      appStoreLink: ''
+    }
   },
   mounted() {
-    const device = getOperatingSystem();
-    if (device === "Android") {
-      this.appStoreLink = GOOGLE_PLAY_STORE_LINK;
+    const device = getOperatingSystem()
+    if (device === 'Android') {
+      this.appStoreLink = GOOGLE_PLAY_STORE_LINK
     }
-    if (device === "iOS") {
-      this.appStoreLink = APP_STORE_LINK;
+    if (device === 'iOS') {
+      this.appStoreLink = APP_STORE_LINK
     }
   },
   computed: {
-    ...mapGetters({ mobileMode: "app/mobileMode" }),
+    ...mapGetters({ mobileMode: 'app/mobileMode' }),
     newReleaseNotes() {
       return [
-        "Take + send photos to your coaches",
-        "Share photos from your phone’s library"
-      ];
+        'Take + send photos to your coaches',
+        'Share photos from your phone’s library'
+      ]
     }
   },
   methods: {
     onClose() {
-      this.$emit("cancel");
-      this.$store.dispatch("app/modal/hide");
+      this.$emit('cancel')
+      this.$store.dispatch('app/modal/hide')
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -93,7 +93,7 @@ p {
     margin-top: 2em;
 
     &__header {
-      @include font-category("heading");
+      @include font-category('heading');
     }
 
     &__list {
@@ -101,21 +101,21 @@ p {
     }
 
     &__note {
-      @include font-category("body");
+      @include font-category('body');
       text-align: left;
     }
   }
 }
 
 .UpgradeAppModal-title {
-  @include font-category("display-small");
-  @include breakpoint-above("medium") {
+  @include font-category('display-small');
+  @include breakpoint-above('medium') {
     margin-top: 24px;
   }
 }
 
 .UpgradeAppModal-subtitle {
-  @include font-category("heading");
+  @include font-category('heading');
   color: $c-secondary-grey;
 }
 
@@ -130,7 +130,7 @@ p {
     padding: 1em 0;
   }
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     @include child-spacing(top, 0);
 
     flex-direction: row;

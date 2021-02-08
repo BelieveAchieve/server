@@ -57,152 +57,149 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex'
 
-import _ from "lodash";
-import moment from "moment-timezone";
+import _ from 'lodash'
+import moment from 'moment-timezone'
 
-import CalendarService from "@/services/CalendarService";
-import AnalyticsService from "@/services/AnalyticsService";
-import { EVENTS } from "@/consts";
+import CalendarService from '@/services/CalendarService'
+import AnalyticsService from '@/services/AnalyticsService'
+import { EVENTS } from '@/consts'
 
 const saveStates = {
-  SAVED: "saved",
-  UNSAVED: "unsaved",
-  ERROR: "error",
-  SAVING: "saving"
-};
+  SAVED: 'saved',
+  UNSAVED: 'unsaved',
+  ERROR: 'error',
+  SAVING: 'saving'
+}
 
 export default {
   data() {
     const timeRange = [
-      "12 am",
-      "1 am",
-      "2 am",
-      "3 am",
-      "4 am",
-      "5 am",
-      "6 am",
-      "7 am",
-      "8 am",
-      "9 am",
-      "10 am",
-      "11 am",
-      "12 pm",
-      "1 pm",
-      "2 pm",
-      "3 pm",
-      "4 pm",
-      "5 pm",
-      "6 pm",
-      "7 pm",
-      "8 pm",
-      "9 pm",
-      "10 pm",
-      "11 pm"
-    ];
+      '12 am',
+      '1 am',
+      '2 am',
+      '3 am',
+      '4 am',
+      '5 am',
+      '6 am',
+      '7 am',
+      '8 am',
+      '9 am',
+      '10 am',
+      '11 am',
+      '12 pm',
+      '1 pm',
+      '2 pm',
+      '3 pm',
+      '4 pm',
+      '5 pm',
+      '6 pm',
+      '7 pm',
+      '8 pm',
+      '9 pm',
+      '10 pm',
+      '11 pm'
+    ]
     return {
       availability: {},
       timeRange,
       tzList: moment.tz.names(),
-      selectedTz: "",
+      selectedTz: '',
       saveState: saveStates.UNSAVED
-    };
+    }
   },
   computed: {
     ...mapState({
       user: state => state.user.user
     }),
     saveButtonClass() {
-      return ["save-button", "save-button--" + this.saveState];
+      return ['save-button', 'save-button--' + this.saveState]
     },
     saveLabel() {
       switch (this.saveState) {
         case saveStates.SAVED:
-          return "Saved &#x2714;";
+          return 'Saved &#x2714;'
         case saveStates.SAVING:
-          return "Saving...";
+          return 'Saving...'
         default:
-          return "Save";
+          return 'Save'
       }
     },
     sortedTimes() {
-      return this.sortTimes();
+      return this.sortTimes()
     },
     hasUserSchedule() {
-      return !_.isEmpty(this.availability);
+      return !_.isEmpty(this.availability)
     }
   },
   created() {
-    this.initScheduleData();
+    this.initScheduleData()
   },
   methods: {
     someThingChanged() {
-      this.saveState = saveStates.UNSAVED;
+      this.saveState = saveStates.UNSAVED
     },
     initScheduleData() {
-      const userTimezone = this.user.timezone;
-      const hasValidTimezone = userTimezone && this.userTzInList(userTimezone);
-      this.selectedTz = hasValidTimezone ? userTimezone : moment.tz.guess();
+      const userTimezone = this.user.timezone
+      const hasValidTimezone = userTimezone && this.userTzInList(userTimezone)
+      this.selectedTz = hasValidTimezone ? userTimezone : moment.tz.guess()
 
-      const originalAvailability = this.user.availability;
-      var estUtcOffset = moment.tz.zone("America/New_York").parse(Date.now());
-      var userUtcOffset = moment.tz.zone(this.selectedTz).parse(Date.now());
-      var offset = (estUtcOffset - userUtcOffset) / 60;
-      this.availability = this.convertAvailability(
-        originalAvailability,
-        offset
-      );
+      const originalAvailability = this.user.availability
+      var estUtcOffset = moment.tz.zone('America/New_York').parse(Date.now())
+      var userUtcOffset = moment.tz.zone(this.selectedTz).parse(Date.now())
+      var offset = (estUtcOffset - userUtcOffset) / 60
+      this.availability = this.convertAvailability(originalAvailability, offset)
     },
     sortTimes() {
-      const keysMap = {};
+      const keysMap = {}
       for (const day in this.availability) {
-        if (this.availability.hasOwnProperty(day)) {
-          const times = this.availability[day];
-          const keys = [];
+        if (Object.prototype.hasOwnProperty.call(this.availability, day)) {
+          const times = this.availability[day]
+          const keys = []
           for (const time in times) {
-            if (times.hasOwnProperty(time)) {
-              keys.push(time);
+            if (Object.prototype.hasOwnProperty.call(times, time)) {
+              keys.push(time)
             }
           }
-          if (keys[0] !== "12a") {
-            keys.reverse();
+          if (keys[0] !== '12a') {
+            keys.reverse()
           }
-          keysMap[day] = keys;
+          keysMap[day] = keys
         }
       }
-      return keysMap;
+      return keysMap
     },
     userTzInList(tz) {
-      return this.tzList.includes(tz);
+      return this.tzList.includes(tz)
     },
     convertAMPMtoTwentyFourHrs(hour) {
-      const hourRegex = /^(\d{1,2})([ap])$/;
+      const hourRegex = /^(\d{1,2})([ap])$/
       // capture the hour and the 'a/p' string
-      let [, hr, apm] = hour.match(hourRegex);
+      let [, hr, apm] = hour.match(hourRegex)
 
-      if (apm === "a") {
-        if (hr === "12") {
-          return 0;
+      if (apm === 'a') {
+        if (hr === '12') {
+          return 0
         }
-        return parseInt(hr);
+        return parseInt(hr)
       }
-      if (hr === "12") {
-        return 12;
+      if (hr === '12') {
+        return 12
       }
-      return parseInt(hr) + 12;
+      return parseInt(hr) + 12
     },
     convertTwentyFourHrsToAMPM(hour) {
       if (hour == 0) {
-        return "12a";
+        return '12a'
       }
       if (hour == 12) {
-        return "12p";
+        return '12p'
       }
       if (hour > 12) {
-        return hour - 12 + "p";
+        return hour - 12 + 'p'
       }
-      return hour + "a";
+      return hour + 'a'
     },
     /**
      * Converts an availability to another timezone offset from America/New_York.
@@ -213,86 +210,86 @@ export default {
      */
     convertAvailability(availability, rawOffset) {
       // Round down fractional offsets
-      const offset = Math.floor(rawOffset);
+      const offset = Math.floor(rawOffset)
 
       const succWeekday = {
-        Sunday: "Monday",
-        Monday: "Tuesday",
-        Tuesday: "Wednesday",
-        Wednesday: "Thursday",
-        Thursday: "Friday",
-        Friday: "Saturday",
-        Saturday: "Sunday"
-      };
+        Sunday: 'Monday',
+        Monday: 'Tuesday',
+        Tuesday: 'Wednesday',
+        Wednesday: 'Thursday',
+        Thursday: 'Friday',
+        Friday: 'Saturday',
+        Saturday: 'Sunday'
+      }
       const predWeekday = {
-        Sunday: "Saturday",
-        Monday: "Sunday",
-        Tuesday: "Monday",
-        Wednesday: "Tuesday",
-        Thursday: "Wednesday",
-        Friday: "Thursday",
-        Saturday: "Friday"
-      };
-      var convertedAvailability = {};
+        Sunday: 'Saturday',
+        Monday: 'Sunday',
+        Tuesday: 'Monday',
+        Wednesday: 'Tuesday',
+        Thursday: 'Wednesday',
+        Friday: 'Thursday',
+        Saturday: 'Friday'
+      }
+      var convertedAvailability = {}
       for (const day in availability) {
-        const times = availability[day];
-        convertedAvailability[day] = {};
+        const times = availability[day]
+        convertedAvailability[day] = {}
         for (const time in times) {
-          convertedAvailability[day][time] = false;
+          convertedAvailability[day][time] = false
         }
       }
       for (const day in availability) {
-        const times = availability[day];
+        const times = availability[day]
         for (const time in times) {
           if (availability[day][time] == true) {
-            let newDay = day;
-            let numericHour = this.convertAMPMtoTwentyFourHrs(time);
-            let newHour = numericHour + offset;
+            let newDay = day
+            let numericHour = this.convertAMPMtoTwentyFourHrs(time)
+            let newHour = numericHour + offset
             if (newHour >= 24) {
-              newHour -= 24;
-              newDay = succWeekday[day];
+              newHour -= 24
+              newDay = succWeekday[day]
             } else if (newHour < 0) {
-              newHour += 24;
-              newDay = predWeekday[day];
+              newHour += 24
+              newDay = predWeekday[day]
             }
             convertedAvailability[newDay][
               this.convertTwentyFourHrsToAMPM(newHour)
-            ] = true;
+            ] = true
           }
         }
       }
-      return convertedAvailability;
+      return convertedAvailability
     },
     save() {
-      this.saveState = saveStates.SAVING;
-      const estUtcOffset = moment.tz.zone("America/New_York").parse(Date.now());
-      const userUtcOffset = moment.tz.zone(this.selectedTz).parse(Date.now());
+      this.saveState = saveStates.SAVING
+      const estUtcOffset = moment.tz.zone('America/New_York').parse(Date.now())
+      const userUtcOffset = moment.tz.zone(this.selectedTz).parse(Date.now())
       // offsets returned by zone.utcOffset() are returned in minutes and inverted for POSIX compatibility
-      const offset = (userUtcOffset - estUtcOffset) / 60;
+      const offset = (userUtcOffset - estUtcOffset) / 60
       CalendarService.updateSchedule(
         this,
         this.convertAvailability(this.availability, offset),
         this.selectedTz
       ).then(response => {
         if (response.status == 200) {
-          this.saveState = saveStates.SAVED;
+          this.saveState = saveStates.SAVED
           AnalyticsService.captureEvent(EVENTS.AVAILABILITY_UPDATED, {
             event: EVENTS.AVAILABILITY_UPDATED
-          });
+          })
         } else {
-          this.saveState = saveStates.ERROR;
+          this.saveState = saveStates.ERROR
         }
-      });
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
 .calendar-container {
   padding: 10px;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     padding: 40px;
   }
 }
@@ -304,7 +301,7 @@ export default {
   color: #343440;
   padding: 20px 15px;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     padding: 40px;
   }
 }
@@ -386,7 +383,7 @@ export default {
   height: 40px;
 }
 
-input[type="checkbox"] {
+input[type='checkbox'] {
   position: absolute;
   display: block;
   opacity: 0;
@@ -400,7 +397,7 @@ label {
   margin: 0;
 }
 
-input[type="checkbox"]:checked + label {
+input[type='checkbox']:checked + label {
   background-color: rgba(22, 210, 170, 0.5);
 }
 
@@ -438,14 +435,14 @@ input[type="checkbox"]:checked + label {
     overflow-x: hidden;
   }
 
-  input[type="checkbox"] {
+  input[type='checkbox'] {
     position: relative;
     margin-top: 0;
     margin-bottom: -40px;
   }
 }
 
-@media screen and (max-width: get-breakpoint("medium")) {
+@media screen and (max-width: get-breakpoint('medium')) {
   .btn {
     padding-top: 0em !important;
     padding-bottom: 0em !important;

@@ -8,16 +8,16 @@
 </template>
 
 <script>
-import ReferenceForm from "@/components/ReferenceForm";
+import ReferenceForm from '@/components/ReferenceForm'
 
 export default {
-  name: "ReferenceView",
+  name: 'ReferenceView',
   components: { ReferenceForm },
   mounted() {
-    this.$store.dispatch("app/sidebar/hide");
-    this.$store.dispatch("app/header/hide");
+    this.$store.dispatch('app/sidebar/hide')
+    this.$store.dispatch('app/header/hide')
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -40,7 +40,7 @@ export default {
   background-color: white;
   border-radius: 5px;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     max-width: 900px;
     box-shadow: -9px 9px $c-information-blue;
   }

@@ -8,27 +8,27 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import calculateWaitingPeriodCountdown from "@/utils/calculate-waiting-period-countdown";
+import { mapGetters } from 'vuex'
+import calculateWaitingPeriodCountdown from '@/utils/calculate-waiting-period-countdown'
 
 export default {
-  name: "waiting-period-header",
+  name: 'waiting-period-header',
   props: {
     headerData: Object
   },
   computed: {
     ...mapGetters({
-      mobileMode: "app/mobileMode"
+      mobileMode: 'app/mobileMode'
     }),
     message() {
-      const { timeLeft } = this.headerData;
-      const countdown = calculateWaitingPeriodCountdown(timeLeft);
-      const minuteTextFormat = countdown === 1 ? "minute" : "minutes";
+      const { timeLeft } = this.headerData
+      const countdown = calculateWaitingPeriodCountdown(timeLeft)
+      const minuteTextFormat = countdown === 1 ? 'minute' : 'minutes'
 
-      return `You must wait at least ${countdown} ${minuteTextFormat} before requesting a new session.`;
+      return `You must wait at least ${countdown} ${minuteTextFormat} before requesting a new session.`
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -38,10 +38,10 @@ export default {
 }
 
 .WaitingPeriod-message {
-  @include font-category("display-small");
+  @include font-category('display-small');
 
   &--mobile {
-    @include font-category("body");
+    @include font-category('body');
   }
 }
 </style>

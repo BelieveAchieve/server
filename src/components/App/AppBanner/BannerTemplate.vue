@@ -12,19 +12,19 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import CrossIcon from "@/assets/cross.svg";
+import { mapGetters } from 'vuex'
+import CrossIcon from '@/assets/cross.svg'
 
 export default {
-  name: "BannerTemplate",
+  name: 'BannerTemplate',
   components: { CrossIcon },
   computed: {
-    ...mapGetters({ mobileMode: "app/mobileMode" })
+    ...mapGetters({ mobileMode: 'app/mobileMode' })
   },
   props: {
     onCancel: Function
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -33,7 +33,7 @@ export default {
   height: 100vh;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.3);
-  z-index: get-z("banner");
+  z-index: get-z('banner');
 }
 
 .banner-template {

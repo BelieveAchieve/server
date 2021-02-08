@@ -73,29 +73,29 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
-import * as Sentry from "@sentry/browser";
-import NetworkService from "@/services/NetworkService";
-import SessionService from "@/services/SessionService";
-import AnalyticsService from "@/services/AnalyticsService";
-import SessionHeader from "./SessionHeader";
-import SessionChat from "./SessionChat";
-import Whiteboard from "./Whiteboard";
-import DocumentEditor from "./DocumentEditor";
-import SessionFulfilledModal from "./SessionFulfilledModal";
-import ConnectionTroubleModal from "./ConnectionTroubleModal";
-import PhotoUploadIcon from "@/assets/whiteboard_icons/photo-upload.svg";
-import isOutdatedMobileAppVersion from "@/utils/is-outdated-mobile-app-version";
-import WebNotificationsModal from "@/components/WebNotificationsModal";
-import getNotificationPermission from "@/utils/get-notification-permission";
-import { EVENTS } from "@/consts";
+import { mapState, mapGetters } from 'vuex'
+import * as Sentry from '@sentry/browser'
+import NetworkService from '@/services/NetworkService'
+import SessionService from '@/services/SessionService'
+import AnalyticsService from '@/services/AnalyticsService'
+import SessionHeader from './SessionHeader'
+import SessionChat from './SessionChat'
+import Whiteboard from './Whiteboard'
+import DocumentEditor from './DocumentEditor'
+import SessionFulfilledModal from './SessionFulfilledModal'
+import ConnectionTroubleModal from './ConnectionTroubleModal'
+import PhotoUploadIcon from '@/assets/whiteboard_icons/photo-upload.svg'
+import isOutdatedMobileAppVersion from '@/utils/is-outdated-mobile-app-version'
+import WebNotificationsModal from '@/components/WebNotificationsModal'
+import getNotificationPermission from '@/utils/get-notification-permission'
+import { EVENTS } from '@/consts'
 
 const headerData = {
-  component: "SessionHeader"
-};
+  component: 'SessionHeader'
+}
 
 export default {
-  name: "session-view",
+  name: 'session-view',
   components: {
     SessionHeader,
     SessionChat,
@@ -106,21 +106,21 @@ export default {
   },
   created() {
     if (this.mobileMode) {
-      this.$store.dispatch("app/hideNavigation");
+      this.$store.dispatch('app/hideNavigation')
     } else {
-      this.$store.dispatch("app/header/show", headerData);
-      this.$store.dispatch("app/sidebar/hide");
+      this.$store.dispatch('app/header/show', headerData)
+      this.$store.dispatch('app/sidebar/hide')
     }
 
-    window.addEventListener("resize", this.handleResize);
+    window.addEventListener('resize', this.handleResize)
   },
   beforeDestroy() {
-    window.removeEventListener("resize", this.handleResize);
+    window.removeEventListener('resize', this.handleResize)
     if (this.mobileMode) {
       const papercupsToggle = document.querySelector(
-        ".Papercups-toggleButtonContainer"
-      );
-      if (papercupsToggle) papercupsToggle.style.display = "initial";
+        '.Papercups-toggleButtonContainer'
+      )
+      if (papercupsToggle) papercupsToggle.style.display = 'initial'
     }
   },
   /*
@@ -134,12 +134,12 @@ export default {
       sessionId: null,
       hasSeenNewMessage: true,
       showNotificationModal: false
-    };
+    }
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.prevRoute = from;
-    });
+      vm.prevRoute = from
+    })
   },
   computed: {
     ...mapState({
@@ -150,245 +150,245 @@ export default {
       presessionSurvey: state => state.user.presessionSurvey
     }),
     ...mapGetters({
-      mobileMode: "app/mobileMode",
-      isAuthenticated: "user/isAuthenticated",
-      isVolunteer: "user/isVolunteer",
-      isSessionOver: "user/isSessionOver"
+      mobileMode: 'app/mobileMode',
+      isAuthenticated: 'user/isAuthenticated',
+      isVolunteer: 'user/isVolunteer',
+      isSessionOver: 'user/isSessionOver'
     }),
 
     auxiliaryType() {
       const documentEditorSubTopics = [
-        "planning",
-        "essays",
-        "applications",
-        "satReading"
-      ];
+        'planning',
+        'essays',
+        'applications',
+        'satReading'
+      ]
       if (documentEditorSubTopics.includes(this.session.subTopic))
-        return "DOCUMENT";
-      else return "WHITEBOARD";
+        return 'DOCUMENT'
+      else return 'WHITEBOARD'
     },
 
     toggleIconSrc() {
-      if (this.auxiliaryOpen) return require(`@/assets/Chat.png`);
-      else if (this.auxiliaryType === "WHITEBOARD")
-        return require(`@/assets/Pencil.png`);
-      else return require(`@/assets/doc_editor_icon.png`);
+      if (this.auxiliaryOpen) return require(`@/assets/Chat.png`)
+      else if (this.auxiliaryType === 'WHITEBOARD')
+        return require(`@/assets/Pencil.png`)
+      else return require(`@/assets/doc_editor_icon.png`)
     },
 
     shouldHideAuxiliarySection() {
       // Never hide auxiliary section (whiteboard/document) on desktop
       if (!this.mobileMode) {
-        return false;
+        return false
       }
 
-      return !this.auxiliaryOpen;
+      return !this.auxiliaryOpen
     },
     shouldHideChatSection() {
       // Never hide chat section on desktop
       if (!this.mobileMode) {
-        return false;
+        return false
       }
 
-      return this.auxiliaryOpen;
+      return this.auxiliaryOpen
     },
     showPhotoUpload() {
-      if (this.auxiliaryType !== "WHITEBOARD") return false;
+      if (this.auxiliaryType !== 'WHITEBOARD') return false
 
       if (!this.isVolunteer && this.mobileMode) {
-        if (this.isMobileApp && isOutdatedMobileAppVersion()) return false;
-        return true;
+        if (this.isMobileApp && isOutdatedMobileAppVersion()) return false
+        return true
       }
 
-      return false;
+      return false
     }
   },
   mounted() {
     if (this.mobileMode) {
       const papercupsToggle = document.querySelector(
-        ".Papercups-toggleButtonContainer"
-      );
-      if (papercupsToggle) papercupsToggle.style.display = "none";
+        '.Papercups-toggleButtonContainer'
+      )
+      if (papercupsToggle) papercupsToggle.style.display = 'none'
     }
 
-    const id = this.$route.params.sessionId;
+    const id = this.$route.params.sessionId
 
-    let promise;
+    let promise
 
     if (!id) {
-      let type = this.$route.params.topic;
+      let type = this.$route.params.topic
       promise = SessionService.newSession(
         this,
         type,
         this.$route.params.subTopic,
         {
           onRetry: (res, abort) => {
-            this.showTroubleStartingModal(abort);
+            this.showTroubleStartingModal(abort)
           }
         }
-      );
+      )
     } else {
       promise = SessionService.useExistingSession(this, id, {
         onRetry: (res, abort) => {
-          this.showTroubleJoiningModal(abort);
+          this.showTroubleJoiningModal(abort)
         }
-      });
+      })
     }
 
     promise
       .then(async sessionId => {
-        this.sessionId = sessionId;
+        this.sessionId = sessionId
         if (!id && !this.isVolunteer)
           AnalyticsService.captureEvent(EVENTS.SESSION_REQUESTED, {
             event: EVENTS.SESSION_REQUESTED,
             sessionId,
             subject: this.$route.params.subTopic
-          });
+          })
 
         // If we have a pre-session survey, submit it now
         if (Object.keys(this.presessionSurvey).length) {
           NetworkService.submitPresessionSurvey(
             sessionId,
             this.presessionSurvey
-          );
-          this.$store.dispatch("user/clearPresessionSurvey");
+          )
+          this.$store.dispatch('user/clearPresessionSurvey')
         }
 
         // ensure we restore user when we get a successful response
         if (!this.isAuthenticated) {
-          this.$store.dispatch("user/fetchUser");
+          this.$store.dispatch('user/fetchUser')
         }
 
-        if (!this.$socket.connected) await this.$socket.connect();
-        this.joinSession(sessionId);
-        this.$store.dispatch("user/sessionConnected");
+        if (!this.$socket.connected) await this.$socket.connect()
+        this.joinSession(sessionId)
+        this.$store.dispatch('user/sessionConnected')
 
         if (
           (this.user.isVolunteer &&
             (!this.user.isOnboarded || !this.user.isApproved)) ||
           this.isMobileApp
         )
-          this.showNotificationModal = false;
+          this.showNotificationModal = false
 
-        if (getNotificationPermission() === "default")
-          this.showNotificationModal = true;
+        if (getNotificationPermission() === 'default')
+          this.showNotificationModal = true
       })
       .catch(err => {
-        if (err.status !== 0 && err.code !== "EUSERABORTED") {
-          window.alert("Could not start new help session");
-          Sentry.captureException(err);
+        if (err.status !== 0 && err.code !== 'EUSERABORTED') {
+          window.alert('Could not start new help session')
+          Sentry.captureException(err)
         }
-        this.$router.replace("/");
-      });
+        this.$router.replace('/')
+      })
   },
   sockets: {
     bump: function(data) {
-      this.$store.dispatch("app/modal/show", {
+      this.$store.dispatch('app/modal/show', {
         component: SessionFulfilledModal,
         data: {
-          acceptText: "Return to Dashboard",
+          acceptText: 'Return to Dashboard',
           alertModal: true,
           isSessionEnded: !!data.endedAt,
           volunteerJoined: !!data.volunteer,
           isSessionVolunteer: this.user._id === data.volunteer,
           isSessionStudent: this.user._id === data.student
         }
-      });
+      })
     },
     reconnect_attempt() {
-      this.$store.dispatch("user/sessionDisconnected");
+      this.$store.dispatch('user/sessionDisconnected')
       if (!this.session || !this.session._id) {
-        const abort = () => this.$router.push("/");
-        this.showTroubleStartingModal(abort);
+        const abort = () => this.$router.push('/')
+        this.showTroubleStartingModal(abort)
       }
     },
     connect() {
-      this.$store.dispatch("user/sessionConnected");
+      this.$store.dispatch('user/sessionConnected')
     }
   },
   methods: {
     handleResize() {
       if (this.mobileMode) {
-        this.$store.dispatch("app/hideNavigation");
+        this.$store.dispatch('app/hideNavigation')
       } else {
-        this.$store.dispatch("app/header/show", headerData);
-        this.$store.dispatch("app/sidebar/hide");
+        this.$store.dispatch('app/header/show', headerData)
+        this.$store.dispatch('app/sidebar/hide')
       }
     },
     toggleAuxiliary() {
       if (!this.auxiliaryOpen) {
-        document.getElementById("toggleButton").classList.add("back");
-        this.auxiliaryOpen = true;
+        document.getElementById('toggleButton').classList.add('back')
+        this.auxiliaryOpen = true
       } else {
-        document.getElementById("toggleButton").classList.remove("back");
-        this.auxiliaryOpen = false;
+        document.getElementById('toggleButton').classList.remove('back')
+        this.auxiliaryOpen = false
       }
 
-      if (this.shouldHideAuxiliarySection) this.hasSeenNewMessage = true;
+      if (this.shouldHideAuxiliarySection) this.hasSeenNewMessage = true
     },
     async joinSession(sessionId) {
       // await nextTick to get access to this.prevRoute and avoid a race condition
-      await this.$nextTick();
+      await this.$nextTick()
       this.$queuedSocket.emit(
-        "join",
+        'join',
         {
           sessionId,
           user: this.user,
           // helps track where volunteers are joining a session from
           // if a volunteer joins using a URL from a text notification, resolve to an empty string
           joinedFrom:
-            this.prevRoute && this.prevRoute.name ? this.prevRoute.name : ""
+            this.prevRoute && this.prevRoute.name ? this.prevRoute.name : ''
         },
         1
-      );
+      )
     },
     showTroubleStartingModal(abort) {
       const TROUBLE_STARTING_MESSAGE = `
         The system seems to be having a problem starting your new session.
         Please check your Internet connection.
-      `;
+      `
 
-      this.showConnectionTroubleModal(abort, TROUBLE_STARTING_MESSAGE);
+      this.showConnectionTroubleModal(abort, TROUBLE_STARTING_MESSAGE)
     },
     showTroubleJoiningModal(abort) {
       const TROUBLE_JOINING_MESSAGE = `
         The system seems to be having a problem joining your session.
         Please check your Internet connection.
-      `;
+      `
 
-      this.showConnectionTroubleModal(abort, TROUBLE_JOINING_MESSAGE);
+      this.showConnectionTroubleModal(abort, TROUBLE_JOINING_MESSAGE)
     },
     showConnectionTroubleModal(abort, message) {
-      this.$store.dispatch("app/modal/show", {
+      this.$store.dispatch('app/modal/show', {
         component: ConnectionTroubleModal,
         data: {
           message,
-          acceptText: "Abort Session",
+          acceptText: 'Abort Session',
           alertModal: true,
           abortFunction: abort
         }
-      });
+      })
     },
     tryClicked() {
-      this.sessionReconnecting = true;
+      this.sessionReconnecting = true
     },
     openFileDialog() {
-      document.querySelector(".upload-photo").click();
+      document.querySelector('.upload-photo').click()
     },
     setHasSeenNewMessage(value) {
-      this.hasSeenNewMessage = value;
+      this.hasSeenNewMessage = value
     },
     setShowNotificationModal(value) {
-      this.showNotificationModal = value;
+      this.showNotificationModal = value
     }
   },
   watch: {
     isSessionConnectionAlive(newValue, oldValue) {
       if (newValue && !oldValue) {
-        this.$store.dispatch("app/modal/hide");
+        this.$store.dispatch('app/modal/hide')
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -417,7 +417,7 @@ export default {
   width: 100%;
   background: #fff;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     position: absolute;
     top: 20px;
     left: unset;
@@ -430,7 +430,7 @@ export default {
     overflow: hidden;
   }
 
-  @include breakpoint-above("large") {
+  @include breakpoint-above('large') {
     width: 400px;
   }
 }
@@ -441,25 +441,25 @@ export default {
   display: flex;
   background: $c-background-grey;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     padding: 20px;
     @include child-spacing(right, 15px);
   }
 
-  @include breakpoint-below("medium") {
+  @include breakpoint-below('medium') {
     padding-top: 80px;
   }
 }
 
 .auxiliary-container,
 .chat-container {
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     height: 100%;
     border-radius: 8px;
     overflow: hidden;
   }
 
-  @include breakpoint-below("medium") {
+  @include breakpoint-below('medium') {
     width: 100%;
     height: 100%;
   }
@@ -489,13 +489,13 @@ export default {
     display: none;
   }
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     min-width: 300px;
     flex-basis: 300px;
     position: relative;
   }
 
-  @include breakpoint-above("large") {
+  @include breakpoint-above('large') {
     min-width: 400px;
     flex-basis: 400px;
   }
@@ -513,7 +513,7 @@ export default {
   height: 40px;
   transition: 0.4s;
 
-  @include breakpoint-below("medium") {
+  @include breakpoint-below('medium') {
     bottom: 33px;
   }
 

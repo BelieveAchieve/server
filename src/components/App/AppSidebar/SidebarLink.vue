@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -30,33 +30,33 @@ export default {
   },
   computed: {
     ...mapState({ isCollapsed: state => state.app.sidebar.isCollapsed }),
-    ...mapGetters({ mobileMode: "app/mobileMode" }),
+    ...mapGetters({ mobileMode: 'app/mobileMode' }),
     size() {
-      return this.mobileMode ? "1em" : "1.5em";
+      return this.mobileMode ? '1em' : '1.5em'
     },
     parentClass() {
       return {
         SidebarLink: true,
-        "SidebarLink--desktop": !this.mobileMode
-      };
+        'SidebarLink--desktop': !this.mobileMode
+      }
     }
   },
   methods: {
     navigate() {
-      this.$store.dispatch("app/sidebar/collapse");
+      this.$store.dispatch('app/sidebar/collapse')
 
       // necessary because router-link doesn't provide a way to set modifiers, like
       // keydown.enter.native, in the event prop
-      this.$router.push(this.to);
+      this.$router.push(this.to)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
 .SidebarLink {
   @include flex-container(row, initial, center);
-  @include font-category("display-small");
+  @include font-category('display-small');
 
   cursor: pointer;
 
@@ -72,7 +72,7 @@ export default {
   }
 
   &--desktop {
-    @include font-category("button");
+    @include font-category('button');
   }
 }
 

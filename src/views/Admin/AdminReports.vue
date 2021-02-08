@@ -93,200 +93,199 @@
 </template>
 
 <script>
-import NetworkService from "@/services/NetworkService";
-import SchoolList from "@/components/SchoolList";
-import Loader from "@/components/Loader";
-import moment from "moment";
+import NetworkService from '@/services/NetworkService'
+import SchoolList from '@/components/SchoolList'
+import Loader from '@/components/Loader'
+import moment from 'moment'
 
 export default {
-  name: "AdminReports",
+  name: 'AdminReports',
   components: { SchoolList, Loader },
 
   data() {
     return {
-      joinedBefore: "",
-      joinedAfter: "",
-      sessionRangeFrom: "",
-      sessionRangeTo: "",
-      highSchool: "",
+      joinedBefore: '',
+      joinedAfter: '',
+      sessionRangeFrom: '',
+      sessionRangeTo: '',
+      highSchool: '',
       studentPartnerOrg: {},
-      studentPartnerSite: "",
+      studentPartnerSite: '',
       listedPartnerOrgs: [],
-      error: "",
+      error: '',
       isGeneratingReport: false
-    };
+    }
   },
   async mounted() {
-    const response = await NetworkService.adminGetStudentPartners();
+    const response = await NetworkService.adminGetStudentPartners()
     const {
       body: { partnerOrgs }
-    } = response;
-    this.listedPartnerOrgs = partnerOrgs;
+    } = response
+    this.listedPartnerOrgs = partnerOrgs
   },
   methods: {
     async generateSessionReport() {
-      if (this.isGeneratingReport) return;
-      this.isGeneratingReport = true;
-      this.error = "";
+      if (this.isGeneratingReport) return
+      this.isGeneratingReport = true
+      this.error = ''
 
       const data = {
         joinedBefore: this.joinedBefore,
         joinedAfter: this.joinedAfter,
         sessionRangeFrom: this.sessionRangeFrom,
         sessionRangeTo: this.sessionRangeTo,
-        highSchoolId: this.highSchool._id ? this.highSchool._id : "",
+        highSchoolId: this.highSchool._id ? this.highSchool._id : '',
         // partner org can be "null" from clearing the v-select, check for if exists and then get the partnerOrg
         studentPartnerOrg: this.isValidStudentPartnerOrg
           ? this.studentPartnerOrg.key
-          : "",
+          : '',
         studentPartnerSite: this.isValidPartnerSite
           ? this.studentPartnerSite
-          : ""
-      };
+          : ''
+      }
 
       try {
-        const response = await NetworkService.adminGetSessionReport(data);
+        const response = await NetworkService.adminGetSessionReport(data)
         const {
           body: { sessions }
-        } = response;
+        } = response
 
         if (sessions.length === 0) {
-          this.error = "No sessions meet the criteria";
+          this.error = 'No sessions meet the criteria'
         } else {
           this.exportToCsv(
             `${this.fileTitle} ${this.todaysDate} Session Report`,
             sessions
-          );
+          )
         }
 
-        this.isGeneratingReport = false;
+        this.isGeneratingReport = false
       } catch (error) {
-        this.isGeneratingReport = false;
+        this.isGeneratingReport = false
       }
     },
 
     async generateUsageReport() {
-      if (this.isGeneratingReport) return;
-      this.isGeneratingReport = true;
-      this.error = "";
+      if (this.isGeneratingReport) return
+      this.isGeneratingReport = true
+      this.error = ''
 
       const data = {
         joinedBefore: this.joinedBefore,
         joinedAfter: this.joinedAfter,
         sessionRangeFrom: this.sessionRangeFrom,
         sessionRangeTo: this.sessionRangeTo,
-        highSchoolId: this.highSchool._id ? this.highSchool._id : "",
+        highSchoolId: this.highSchool._id ? this.highSchool._id : '',
         // partner org can be "null" from clearing the v-select, check for if exists and then get the partnerOrg
         studentPartnerOrg: this.isValidStudentPartnerOrg
           ? this.studentPartnerOrg.key
-          : "",
+          : '',
         studentPartnerSite: this.isValidPartnerSite
           ? this.studentPartnerSite
-          : ""
-      };
+          : ''
+      }
 
       try {
-        const response = await NetworkService.adminGetUsageReport(data);
+        const response = await NetworkService.adminGetUsageReport(data)
         const {
           body: { students }
-        } = response;
+        } = response
 
         if (students.length === 0) {
-          this.error = "No students meet the criteria";
+          this.error = 'No students meet the criteria'
         } else {
           this.exportToCsv(
             `${this.fileTitle} ${this.todaysDate} Usage Report`,
             students
-          );
+          )
         }
-        this.isGeneratingReport = false;
+        this.isGeneratingReport = false
       } catch (error) {
-        this.isGeneratingReport = false;
+        this.isGeneratingReport = false
       }
     },
 
     // https://gist.github.com/changhuixu/de092ee55a9e115abba988910bd68d41#file-csv-data-service-ts
     exportToCsv(filename, rows) {
       if (!rows || !rows.length) {
-        return;
+        return
       }
-      const separator = ",";
-      const keys = Object.keys(rows[0]);
+      const separator = ','
+      const keys = Object.keys(rows[0])
       const csvContent =
         keys.join(separator) +
-        "\n" +
+        '\n' +
         rows
           .map(row => {
             return keys
               .map(k => {
-                let cell =
-                  row[k] === null || row[k] === undefined ? "" : row[k];
+                let cell = row[k] === null || row[k] === undefined ? '' : row[k]
                 cell =
                   cell instanceof Date
                     ? cell.toLocaleString()
-                    : cell.toString().replace(/"/g, '""');
+                    : cell.toString().replace(/"/g, '""')
                 if (cell.search(/("|,|\n)/g) >= 0) {
-                  cell = `"${cell}"`;
+                  cell = `"${cell}"`
                 }
-                return cell;
+                return cell
               })
-              .join(separator);
+              .join(separator)
           })
-          .join("\n");
+          .join('\n')
 
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
       if (navigator.msSaveBlob) {
         // IE 10+
-        navigator.msSaveBlob(blob, filename);
+        navigator.msSaveBlob(blob, filename)
       } else {
-        const link = document.createElement("a");
+        const link = document.createElement('a')
         if (link.download !== undefined) {
           // Browsers that support HTML5 download attribute
-          const url = URL.createObjectURL(blob);
-          link.setAttribute("href", url);
-          link.setAttribute("download", filename);
-          link.style.visibility = "hidden";
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+          const url = URL.createObjectURL(blob)
+          link.setAttribute('href', url)
+          link.setAttribute('download', filename)
+          link.style.visibility = 'hidden'
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
         }
       }
     },
 
     setHighSchool(highSchool) {
-      this.highSchool = highSchool;
+      this.highSchool = highSchool
     }
   },
   computed: {
     todaysDate() {
-      return moment().format("MMMM D");
+      return moment().format('MMMM D')
     },
     fileTitle() {
-      let title = "";
-      if (this.highSchool.name) title = this.highSchool.name;
+      let title = ''
+      if (this.highSchool.name) title = this.highSchool.name
       if (this.studentPartnerOrg && this.studentPartnerOrg.displayName)
-        title = this.studentPartnerOrg.displayName;
-      if (this.isValidPartnerSite) title = this.studentPartnerSite;
+        title = this.studentPartnerOrg.displayName
+      if (this.isValidPartnerSite) title = this.studentPartnerSite
 
-      return title;
+      return title
     },
     partnerSites() {
       if (this.studentPartnerOrg && this.studentPartnerOrg.sites)
-        return ["All sites", ...this.studentPartnerOrg.sites];
-      return [];
+        return ['All sites', ...this.studentPartnerOrg.sites]
+      return []
     },
     isValidPartnerSite() {
       return (
         this.studentPartnerOrg &&
         this.studentPartnerOrg.sites &&
         this.studentPartnerOrg.sites.includes(this.studentPartnerSite)
-      );
+      )
     },
     isValidStudentPartnerOrg() {
-      return this.studentPartnerOrg && this.studentPartnerOrg.key;
+      return this.studentPartnerOrg && this.studentPartnerOrg.key
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -296,7 +295,7 @@ export default {
   padding: 10px;
   border-radius: 8px;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin: 40px;
     padding: 40px;
   }
@@ -324,7 +323,7 @@ export default {
 .col {
   @include flex-container(column, flex-start, flex-start);
   margin: 0.4em 0;
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin-right: 10px;
   }
 }

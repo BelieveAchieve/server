@@ -29,14 +29,14 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import Modal from "@/components/Modal";
-import Separator from "@/components/Separator";
-import LargeButton from "@/components/LargeButton";
-import setNotificationPermission from "@/utils/set-notification-permission";
+import { mapState } from 'vuex'
+import Modal from '@/components/Modal'
+import Separator from '@/components/Separator'
+import LargeButton from '@/components/LargeButton'
+import setNotificationPermission from '@/utils/set-notification-permission'
 
 export default {
-  name: "WebNotificationsModal",
+  name: 'WebNotificationsModal',
   components: { LargeButton, Modal, Separator },
   props: {
     closeModal: { type: Function, required: true },
@@ -48,31 +48,31 @@ export default {
     }),
     description() {
       if (this.isVolunteerDashboardView)
-        return "Turning on browser notifications will help ensure you never miss a student request while the dashboard is open. We’ll also notify you during the session if the student sends a message while you’re not looking. You can change this setting any time via your profile.";
+        return 'Turning on browser notifications will help ensure you never miss a student request while the dashboard is open. We’ll also notify you during the session if the student sends a message while you’re not looking. You can change this setting any time via your profile.'
       if (this.user.isVolunteer)
-        return "Turning on browser notifications will help ensure you never miss a message from a student during your session. We’ll also notify you if a new student request comes in while you have the dashboard open. You can change this setting any time via your profile.";
-      return "Turning on notifications will help you get support faster by making sure you don’t miss when your coach joins the session. We’ll also notify you during the session if they send you a message while you’re not looking.";
+        return 'Turning on browser notifications will help ensure you never miss a message from a student during your session. We’ll also notify you if a new student request comes in while you have the dashboard open. You can change this setting any time via your profile.'
+      return 'Turning on notifications will help you get support faster by making sure you don’t miss when your coach joins the session. We’ll also notify you during the session if they send you a message while you’re not looking.'
     },
     isVolunteerDashboardView() {
-      return this.$route.name === "DashboardView" && this.user.isVolunteer;
+      return this.$route.name === 'DashboardView' && this.user.isVolunteer
     }
   },
   methods: {
     async requestNotificationPermission() {
-      document.querySelector(".upc-modal-form").remove();
-      this.isSelectionNotificationPermission = true;
+      document.querySelector('.upc-modal-form').remove()
+      this.isSelectionNotificationPermission = true
 
-      if (!("Notification" in window)) return;
-      if (Notification.permission == "default") {
-        const result = await Notification.requestPermission();
-        setNotificationPermission(result);
-        this.isSelectionNotificationPermission = false;
+      if (!('Notification' in window)) return
+      if (Notification.permission == 'default') {
+        const result = await Notification.requestPermission()
+        setNotificationPermission(result)
+        this.isSelectionNotificationPermission = false
       }
-      if (this.handleNotificationButton) this.handleNotificationButton();
-      this.closeModal();
+      if (this.handleNotificationButton) this.handleNotificationButton()
+      this.closeModal()
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -80,11 +80,11 @@ export default {
   @include flex-container(column);
 
   &__title {
-    @include font-category("display-small");
+    @include font-category('display-small');
   }
 
   &__subtitle {
-    @include font-category("body");
+    @include font-category('body');
     margin: 0 0 35px;
     color: $c-secondary-grey;
     font-size: 15px;

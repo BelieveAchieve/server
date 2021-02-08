@@ -257,116 +257,116 @@
 </template>
 
 <script>
-import validator from "validator";
-import * as Sentry from "@sentry/browser";
-import Autocomplete from "@trevoreyre/autocomplete-vue";
+import validator from 'validator'
+import * as Sentry from '@sentry/browser'
+import Autocomplete from '@trevoreyre/autocomplete-vue'
 
-import FormPageTemplate from "@/components/FormPageTemplate";
-import AuthService from "@/services/AuthService";
-import NetworkService from "@/services/NetworkService";
+import FormPageTemplate from '@/components/FormPageTemplate'
+import AuthService from '@/services/AuthService'
+import NetworkService from '@/services/NetworkService'
 
 export default {
-  name: "student-partner-signup-view",
+  name: 'student-partner-signup-view',
   components: {
     FormPageTemplate,
     Autocomplete
   },
   beforeRouteEnter(to, from, next) {
-    const partnerId = to.params.partnerId;
+    const partnerId = to.params.partnerId
 
     NetworkService.getStudentPartner(partnerId)
       .then(data => {
-        const studentPartner = data.body.studentPartner;
-        if (!studentPartner) return next("/sign-up");
-        return next(_this => _this.setStudentPartner(studentPartner));
+        const studentPartner = data.body.studentPartner
+        if (!studentPartner) return next('/sign-up')
+        return next(_this => _this.setStudentPartner(studentPartner))
       })
       .catch(err => {
         if (err.status !== 404) {
           // we shouldn't get 422 here, since semantics of GET request are expected
           // to be correct regardless of user input
-          Sentry.captureException(err);
+          Sentry.captureException(err)
         }
-        return next("/sign-up");
-      });
+        return next('/sign-up')
+      })
   },
   created() {
-    this.$store.dispatch("app/hideNavigation");
+    this.$store.dispatch('app/hideNavigation')
   },
   data() {
     return {
       studentPartner: {
-        name: "",
+        name: '',
         highSchoolSignup: false,
         collegeSignup: false,
         schoolSignupRequired: false,
         sites: []
       },
-      formStep: "step-1",
+      formStep: 'step-1',
       isHighSchoolStudent: false,
       isCollegeStudent: false,
       noHighSchoolResults: false,
       formData: {
         partnerSite: undefined,
-        email: "",
-        password: "",
-        firstName: "",
-        lastName: "",
-        highSchoolUpchieveId: "",
-        college: "",
+        email: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+        highSchoolUpchieveId: '',
+        college: '',
         terms: false
       },
       errors: [],
       invalidInputs: [],
-      serverErrorMsg: ""
-    };
+      serverErrorMsg: ''
+    }
   },
   computed: {
     showHighSchoolCheckbox() {
       // Don't show if high school input is disabled
-      if (!this.studentPartner.highSchoolSignup) return false;
+      if (!this.studentPartner.highSchoolSignup) return false
 
       // Don't show if high school input is required
-      if (this.onlyHighSchoolRequired) return false;
+      if (this.onlyHighSchoolRequired) return false
 
       // Only show if high school input is enabled but not required, i.e. optional
-      return true;
+      return true
     },
 
     showHighSchoolSelector() {
       // No high school input
-      if (!this.studentPartner.highSchoolSignup) return false;
+      if (!this.studentPartner.highSchoolSignup) return false
 
       // Require high school input
-      if (this.onlyHighSchoolRequired) return true;
+      if (this.onlyHighSchoolRequired) return true
 
       // Optional high school input, so show if the checkbox is selected
-      return this.isHighSchoolStudent;
+      return this.isHighSchoolStudent
     },
 
     showCollegeCheckbox() {
       // Don't show if high school input is disabled
-      if (!this.studentPartner.collegeSignup) return false;
+      if (!this.studentPartner.collegeSignup) return false
 
       // Don't show if high school input is required
-      if (this.onlyCollegeRequired) return false;
+      if (this.onlyCollegeRequired) return false
 
       // Only show if high school input is enabled but not required, i.e. optional
-      return true;
+      return true
     },
 
     showCollegeInput() {
       // Don't show if college input is disabled
-      if (!this.studentPartner.collegeSignup) return false;
+      if (!this.studentPartner.collegeSignup) return false
 
       // Show if college input is required
-      if (this.onlyCollegeRequired) return true;
+      if (this.onlyCollegeRequired) return true
 
       // Only show if high school input is enabled but not required, i.e. optional
-      return this.isCollegeStudent;
+      return this.isCollegeStudent
     },
 
     requirePartnerSite() {
-      return !!this.studentPartner.sites;
+      return !!this.studentPartner.sites
     },
 
     onlyHighSchoolRequired() {
@@ -374,7 +374,7 @@ export default {
         this.studentPartner.highSchoolSignup &&
         !this.studentPartner.collegeSignup &&
         this.studentPartner.schoolSignupRequired
-      );
+      )
     },
 
     onlyCollegeRequired() {
@@ -382,71 +382,69 @@ export default {
         this.studentPartner.collegeSignup &&
         !this.studentPartner.highSchoolSignup &&
         this.studentPartner.schoolSignupRequired
-      );
+      )
     }
   },
   methods: {
     setStudentPartner(studentPartner) {
-      this.studentPartner = studentPartner;
+      this.studentPartner = studentPartner
     },
 
     autocompleteSchool(input) {
-      this.formData.highSchoolUpchieveId = "";
+      this.formData.highSchoolUpchieveId = ''
 
       return new Promise(resolve => {
         if (input.length < 3) {
-          this.noHighSchoolResults = false;
-          return resolve([]);
+          this.noHighSchoolResults = false
+          return resolve([])
         }
 
         NetworkService.searchSchool(this, { query: input })
           .then(response => response.body.results)
           .then(schools => {
-            this.noHighSchoolResults = schools.length === 0;
-            resolve(schools);
-          });
-      });
+            this.noHighSchoolResults = schools.length === 0
+            resolve(schools)
+          })
+      })
     },
 
     getSchoolDisplayName(school) {
-      return `${school.name} (${school.city}, ${school.state})`;
+      return `${school.name} (${school.city}, ${school.state})`
     },
 
     handleSelectHighSchool(school) {
-      this.formData.highSchoolUpchieveId = school.upchieveId;
-      this.noHighSchoolResults = false;
+      this.formData.highSchoolUpchieveId = school.upchieveId
+      this.noHighSchoolResults = false
     },
 
     formStepTwo() {
       // validate input
-      this.errors = [];
-      this.invalidInputs = [];
+      this.errors = []
+      this.invalidInputs = []
 
       if (this.requirePartnerSite && !this.formData.partnerSite) {
-        this.errors.push("You must select your site");
-        this.invalidInputs.push("inputSite");
+        this.errors.push('You must select your site')
+        this.invalidInputs.push('inputSite')
       }
 
       if (!this.formData.email) {
-        this.errors.push("An email address is required.");
-        this.invalidInputs.push("inputEmail");
+        this.errors.push('An email address is required.')
+        this.invalidInputs.push('inputEmail')
       } else if (!validator.isEmail(this.formData.email)) {
         // this is necessary because browsers ignore <input type="email"> until the
         // user actually tries to submit the form, which does not occur until step 2
-        this.errors.push(
-          this.formData.email + " is not a valid email address."
-        );
+        this.errors.push(this.formData.email + ' is not a valid email address.')
 
-        this.invalidInputs.push("inputEmail");
+        this.invalidInputs.push('inputEmail')
       }
 
       if (!this.formData.password) {
-        this.errors.push("A password is required.");
-        this.invalidInputs.push("inputPassword");
+        this.errors.push('A password is required.')
+        this.invalidInputs.push('inputPassword')
       }
 
       if (this.errors.length) {
-        return;
+        return
       }
 
       // Check credentials
@@ -455,38 +453,38 @@ export default {
         password: this.formData.password
       })
         .then(() => {
-          this.formStep = "step-2";
-          this.serverErrorMsg = "";
+          this.formStep = 'step-2'
+          this.serverErrorMsg = ''
         })
         .catch(err => {
-          this.serverErrorMsg = err.message;
+          this.serverErrorMsg = err.message
           if (err.status !== 409 && err.status !== 422) {
-            Sentry.captureException(err);
+            Sentry.captureException(err)
           }
-        });
+        })
     },
 
     submitSignupForm() {
-      this.errors = [];
-      this.invalidInputs = [];
+      this.errors = []
+      this.invalidInputs = []
 
       // validate input
       if (!this.formData.firstName || !this.formData.lastName) {
-        this.errors.push("You must enter your first and last name.");
+        this.errors.push('You must enter your first and last name.')
       }
       if (!this.formData.firstName) {
-        this.invalidInputs.push("firstName");
+        this.invalidInputs.push('firstName')
       }
       if (!this.formData.lastName) {
-        this.invalidInputs.push("lastName");
+        this.invalidInputs.push('lastName')
       }
       if (this.onlyHighSchoolRequired && !this.formData.highSchoolUpchieveId) {
-        this.errors.push("You must select your high school.");
-        this.invalidInputs.push("inputHighschool");
+        this.errors.push('You must select your high school.')
+        this.invalidInputs.push('inputHighschool')
       }
       if (this.onlyCollegeRequired && !this.formData.college) {
-        this.errors.push("You must enter a college.");
-        this.invalidInputs.push("college");
+        this.errors.push('You must enter a college.')
+        this.invalidInputs.push('college')
       }
 
       // If school sign up is required and both student and college options are true the student must select one
@@ -499,24 +497,24 @@ export default {
       )
         this.errors.push(
           "You must select if you're a high school or college student."
-        );
+        )
 
       if (this.isHighSchoolStudent && !this.formData.highSchoolUpchieveId) {
-        this.errors.push("You must select your high school.");
-        this.invalidInputs.push("inputHighschool");
+        this.errors.push('You must select your high school.')
+        this.invalidInputs.push('inputHighschool')
       }
 
       if (this.isCollegeStudent && !this.formData.college) {
-        this.errors.push("You must enter a college.");
-        this.invalidInputs.push("college");
+        this.errors.push('You must enter a college.')
+        this.invalidInputs.push('college')
       }
 
       if (!this.formData.terms) {
-        this.errors.push("You must read and accept the user agreement.");
+        this.errors.push('You must read and accept the user agreement.')
       }
 
       if (!this.errors.length) {
-        this.register();
+        this.register()
       }
     },
 
@@ -534,17 +532,17 @@ export default {
         terms: this.formData.terms
       })
         .then(() => {
-          this.$router.push("/dashboard");
+          this.$router.push('/dashboard')
         })
         .catch(err => {
-          this.serverErrorMsg = err.message;
+          this.serverErrorMsg = err.message
           if (err.status !== 422) {
-            Sentry.captureException(err);
+            Sentry.captureException(err)
           }
-        });
+        })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

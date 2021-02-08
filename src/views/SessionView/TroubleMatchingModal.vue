@@ -26,16 +26,16 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import NetworkService from "@/services/NetworkService";
-import Modal from "@/components/Modal";
-import Separator from "@/components/Separator";
-import LargeButton from "@/components/LargeButton";
-import AnalyticsService from "@/services/AnalyticsService";
-import { EVENTS } from "@/consts";
+import { mapGetters } from 'vuex'
+import NetworkService from '@/services/NetworkService'
+import Modal from '@/components/Modal'
+import Separator from '@/components/Separator'
+import LargeButton from '@/components/LargeButton'
+import AnalyticsService from '@/services/AnalyticsService'
+import { EVENTS } from '@/consts'
 
 export default {
-  name: "TroubleMatchingModal",
+  name: 'TroubleMatchingModal',
   components: { LargeButton, Modal, Separator },
   props: {
     sessionId: { type: String, required: true },
@@ -43,37 +43,37 @@ export default {
     closeModal: { type: Function, required: true }
   },
   computed: {
-    ...mapGetters({ mobileMode: "app/mobileMode" })
+    ...mapGetters({ mobileMode: 'app/mobileMode' })
   },
   mounted() {
     // Session toggle buttons are rendered on a higher stacking context
     // than this modal in mobile. Hide the buttons when mounted
-    if (this.mobileMode) this.displaySessionToggleButtons(false);
+    if (this.mobileMode) this.displaySessionToggleButtons(false)
   },
   beforeDestroy() {
-    if (this.mobileMode) this.displaySessionToggleButtons(true);
+    if (this.mobileMode) this.displaySessionToggleButtons(true)
   },
   methods: {
     displaySessionToggleButtons(show) {
       const toggleElements = Array.from(
-        document.querySelectorAll(".toggleButton")
-      );
+        document.querySelectorAll('.toggleButton')
+      )
       for (const element of toggleElements) {
-        element.style.position = show ? "fixed" : "static";
+        element.style.position = show ? 'fixed' : 'static'
       }
     },
     async end() {
       const data = {
         timeout: 15
-      };
-      await NetworkService.timedOutSession(this.sessionId, data);
+      }
+      await NetworkService.timedOutSession(this.sessionId, data)
       AnalyticsService.captureEvent(EVENTS.SESSION_TIMED_OUT_15_MINS, {
         event: EVENTS.SESSION_TIMED_OUT_15_MINS
-      });
-      this.endSession();
+      })
+      this.endSession()
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -81,11 +81,11 @@ export default {
   @include flex-container(column);
 
   &__title {
-    @include font-category("display-small");
+    @include font-category('display-small');
   }
 
   &__subtitle {
-    @include font-category("body");
+    @include font-category('body');
     margin: 0 0 35px;
     color: $c-secondary-grey;
     font-size: 15px;
@@ -96,7 +96,7 @@ export default {
     @include flex-container(row, flex-end);
     @include child-spacing(left, 16px);
 
-    @include breakpoint-below("tiny") {
+    @include breakpoint-below('tiny') {
       @include flex-container(column, flex-start);
       @include child-spacing(left, 0);
       @include child-spacing(bottom, 20px);

@@ -22,40 +22,40 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import * as sessionUtils from "@/utils/session";
-import HyperlinkButton from "@/components/HyperlinkButton";
-import LargeButton from "@/components/LargeButton";
+import { mapGetters } from 'vuex'
+import * as sessionUtils from '@/utils/session'
+import HyperlinkButton from '@/components/HyperlinkButton'
+import LargeButton from '@/components/LargeButton'
 
 export default {
-  name: "rejoin-session-header",
+  name: 'rejoin-session-header',
   components: { HyperlinkButton, LargeButton },
   computed: {
     ...mapGetters({
-      mobileMode: "app/mobileMode",
-      avatarUrl: "user/avatarUrl",
-      name: "user/firstName",
-      sessionPath: "user/sessionPath"
+      mobileMode: 'app/mobileMode',
+      avatarUrl: 'user/avatarUrl',
+      name: 'user/firstName',
+      sessionPath: 'user/sessionPath'
     }),
     message() {
-      return `You have a chat in session${this.mobileMode ? "" : "."}`;
+      return `You have a chat in session${this.mobileMode ? '' : '.'}`
     }
   },
   methods: {
     showModal() {
-      this.$store.dispatch("app/modal/show", {
-        component: "RejoinSessionModal",
-        data: { backText: "Dashboard", important: true }
-      });
+      this.$store.dispatch('app/modal/show', {
+        component: 'RejoinSessionModal',
+        data: { backText: 'Dashboard', important: true }
+      })
     },
     rejoin() {
-      sessionUtils.rejoinSession(this.$router, this.sessionPath);
+      sessionUtils.rejoinSession(this.$router, this.sessionPath)
     },
     end() {
-      sessionUtils.endSession(this);
+      sessionUtils.endSession(this)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -63,7 +63,7 @@ export default {
   @include flex-container(row, center, center);
   flex: 1;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     justify-content: space-around;
   }
 }
@@ -71,21 +71,21 @@ export default {
 .RejoinSessionHeader-left {
   display: none;
 
-  @include breakpoint-above("large") {
+  @include breakpoint-above('large') {
     display: block;
     flex: 1;
   }
 }
 
 .RejoinSessionHeader-message {
-  @include font-category("display-small");
+  @include font-category('display-small');
   color: white;
 }
 
 .RejoinSessionHeader-buttons {
   @include flex-container(row, flex-end, center);
   @include child-spacing(left, 20px);
-  @include breakpoint-above("large") {
+  @include breakpoint-above('large') {
     flex: 1;
   }
 }

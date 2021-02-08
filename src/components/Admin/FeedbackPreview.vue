@@ -35,10 +35,10 @@
 </template>
 
 <script>
-import { get, isEmpty } from "lodash";
+import { get, isEmpty } from 'lodash'
 
 export default {
-  name: "FeedbackPreview",
+  name: 'FeedbackPreview',
 
   props: {
     feedback: Object
@@ -46,51 +46,51 @@ export default {
 
   computed: {
     sessionRating() {
-      return get(this.feedback, "responseData.rate-session.rating", null);
+      return get(this.feedback, 'responseData.rate-session.rating', null)
     },
 
     writtenFeedback() {
-      return get(this.feedback, "responseData.other-feedback", null);
+      return get(this.feedback, 'responseData.other-feedback', null)
     },
 
     coachFeedback() {
-      return get(this.feedback, "responseData.coach-feedback", null);
+      return get(this.feedback, 'responseData.coach-feedback', null)
     },
 
     subjectUnderstanding() {
       const subjectUnderstandingDisplay = [
-        "I don’t know how to do this at all.",
-        "I think I know how to do it, but I need help.",
-        "I can do this with help.",
-        "I can do this on my own.",
-        "I’m very confident"
-      ];
+        'I don’t know how to do this at all.',
+        'I think I know how to do it, but I need help.',
+        'I can do this with help.',
+        'I can do this on my own.',
+        'I’m very confident'
+      ]
       const path = get(
         this.feedback,
-        "responseData.subject-understanding",
+        'responseData.subject-understanding',
         null
-      );
-      if (path) return subjectUnderstandingDisplay[path];
-      return "";
+      )
+      if (path) return subjectUnderstandingDisplay[path]
+      return ''
     },
 
     partnerRatings() {
-      const isStudent = get(this.feedback, "userType") === "student";
+      const isStudent = get(this.feedback, 'userType') === 'student'
       let path = isStudent
-        ? "responseData.coach-ratings"
-        : "responseData.session-experience";
-      let ratings = get(this.feedback, path, {});
+        ? 'responseData.coach-ratings'
+        : 'responseData.session-experience'
+      let ratings = get(this.feedback, path, {})
 
       if (isStudent && isEmpty(ratings))
-        ratings = get(this.feedback, "responseData", {});
+        ratings = get(this.feedback, 'responseData', {})
 
       return Object.keys(ratings).map(r => ({
         name: r,
         value: ratings[r]
-      }));
+      }))
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

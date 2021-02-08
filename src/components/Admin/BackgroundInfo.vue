@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { chain, map, isEmpty } from "lodash";
+import { chain, map, isEmpty } from 'lodash'
 
 export default {
   props: {
@@ -24,45 +24,45 @@ export default {
   computed: {
     backgroundInfoItems() {
       const backgroundKeys = [
-        "occupation",
-        "experience",
-        "country",
-        "state",
-        "city",
-        "company",
-        "college",
-        "languages",
-        "linkedInUrl"
-      ];
+        'occupation',
+        'experience',
+        'country',
+        'state',
+        'city',
+        'company',
+        'college',
+        'languages',
+        'linkedInUrl'
+      ]
       return chain(backgroundKeys)
         .map(bgKey => {
-          let bgValue = this.user[bgKey];
-          if (isEmpty(bgValue)) return null;
+          let bgValue = this.user[bgKey]
+          if (isEmpty(bgValue)) return null
           if (Array.isArray(bgValue))
             return {
               name: bgKey,
-              value: bgValue.join(", ")
-            };
-          if (typeof bgValue === "object")
+              value: bgValue.join(', ')
+            }
+          if (typeof bgValue === 'object')
             return map(Object.keys(bgValue), subKey => ({
               name: `${subKey} ${bgKey}`,
               value: bgValue[subKey]
-            }));
+            }))
           return {
             name: bgKey,
             value: bgValue
-          };
+          }
         })
         .filter(item => !!item)
         .flatten()
         .map(item => ({
           ...item,
-          isLink: item.value.indexOf("http") !== -1
+          isLink: item.value.indexOf('http') !== -1
         }))
-        .value();
+        .value()
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

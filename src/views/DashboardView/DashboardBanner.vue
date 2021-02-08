@@ -15,16 +15,16 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters } from 'vuex'
 
 export default {
   computed: {
     ...mapGetters({
-      mobileMode: "app/mobileMode",
-      name: "user/firstName"
+      mobileMode: 'app/mobileMode',
+      name: 'user/firstName'
     })
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -40,16 +40,16 @@ export default {
 }
 
 .DashboardBanner-greeting {
-  @include font-category("display-small");
-  @include breakpoint-above("medium") {
-    @include font-category("display-large");
+  @include font-category('display-small');
+  @include breakpoint-above('medium') {
+    @include font-category('display-large');
     color: white;
   }
 }
 
 .DashboardBanner-banner {
   @include flex-container(column, flex-end, flex-start);
-  background: url("~@/assets/dashboardHeader@2x.png");
+  background: url('~@/assets/dashboardHeader@2x.png');
   background-position: 25%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -59,7 +59,7 @@ export default {
   width: 100%;
   height: 225px;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     @include flex-container(column, center, center);
     @include child-spacing(top, 16px);
     height: 400px;

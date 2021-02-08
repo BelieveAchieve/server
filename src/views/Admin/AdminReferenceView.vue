@@ -19,11 +19,11 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
-import ReferenceForm from "@/components/ReferenceForm";
+import { mapState, mapGetters } from 'vuex'
+import ReferenceForm from '@/components/ReferenceForm'
 
 export default {
-  name: "AdminReferenceView",
+  name: 'AdminReferenceView',
   props: {
     reference: { type: Object, required: true },
     closeReferenceView: { type: Function, required: true },
@@ -34,25 +34,25 @@ export default {
   data() {
     return {
       hideReferenceForm: false
-    };
+    }
   },
   created() {
-    this.referenceValue = this.referenceStatusText;
+    this.referenceValue = this.referenceStatusText
   },
   computed: {
     ...mapState({
       user: state => state.user.user
     }),
     ...mapGetters({
-      mobileMode: "app/mobileMode"
+      mobileMode: 'app/mobileMode'
     })
   },
   methods: {
     testing() {
-      this.hideReferenceForm = true;
+      this.hideReferenceForm = true
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -72,7 +72,7 @@ export default {
   @include flex-container(row, space-between);
   padding: 1em;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     padding: 4em 4em 1em;
   }
 }
@@ -81,7 +81,7 @@ export default {
   padding: 1em;
   width: 100%;
   width: 100vw;
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     width: 100%;
     padding: 4em;
   }

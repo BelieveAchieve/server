@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import moment from "moment";
+import moment from 'moment'
 
 export default {
   props: {
@@ -24,17 +24,17 @@ export default {
   },
   computed: {
     userIcon() {
-      return this.user.isVolunteer ? "🍎" : "🎓";
+      return this.user.isVolunteer ? '🍎' : '🎓'
     },
     userSince() {
-      return moment(this.user.createdAt).fromNow();
+      return moment(this.user.createdAt).fromNow()
     },
     sessions() {
-      const count = this.user.pastSessions ? this.user.pastSessions.length : 0;
-      return `${count} session${count === 1 ? "" : "s"}`;
+      const count = this.user.pastSessions ? this.user.pastSessions.length : 0
+      return `${count} session${count === 1 ? '' : 's'}`
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

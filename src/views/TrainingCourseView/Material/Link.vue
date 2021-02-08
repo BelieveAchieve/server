@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import ArrowIcon from "@/assets/arrow.svg";
+import ArrowIcon from '@/assets/arrow.svg'
 
 export default {
   components: {
@@ -15,7 +15,7 @@ export default {
     linkUrl: String,
     label: String
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

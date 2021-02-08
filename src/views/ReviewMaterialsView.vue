@@ -39,138 +39,138 @@
 </template>
 
 <script>
-import NetworkService from "@/services/NetworkService";
-import AnalyticsService from "@/services/AnalyticsService";
-import isPhysics from "@/utils/is-physics";
-import { PHYSICS_MAPPING, EVENTS } from "@/consts";
-import { allSubtopics } from "@/utils/topics";
+import NetworkService from '@/services/NetworkService'
+import AnalyticsService from '@/services/AnalyticsService'
+import isPhysics from '@/utils/is-physics'
+import { PHYSICS_MAPPING, EVENTS } from '@/consts'
+import { allSubtopics } from '@/utils/topics'
 
 export default {
   components: {},
   data() {
     return {
       reviewMaterials: [],
-      category: "",
+      category: '',
       error: false,
       hostPath: `https://upchievecdn.blob.core.windows.net/review-materials`
-    };
+    }
   },
   mounted() {
-    const { params } = this.$route;
-    const { category } = params;
-    this.category = category;
+    const { params } = this.$route
+    const { category } = params
+    this.category = category
     AnalyticsService.captureEvent(EVENTS.REVIEW_MATERIALS_VIEWED, {
       event: EVENTS.REVIEW_MATERIALS_VIEWED,
       subject: this.category
-    });
+    })
 
     // format physics from lowercase 'physicsone' -> 'physicsOne'
-    if (isPhysics(category)) this.category = PHYSICS_MAPPING[category];
+    if (isPhysics(category)) this.category = PHYSICS_MAPPING[category]
 
-    this.getCategoryMaterials();
+    this.getCategoryMaterials()
     if (!this.error) {
-      this.getReviewMaterials();
+      this.getReviewMaterials()
     }
   },
   methods: {
     getCategoryMaterials() {
       switch (this.category) {
-        case "prealgebra":
-        case "algebra":
-        case "geometry":
-        case "trigonometry":
-        case "statistics":
-        case "precalculus":
-        case "biology":
-        case "physicsOne":
-        case "physicsTwo":
-        case "calculusAB":
-        case "calculusBC":
-        case "chemistry":
+        case 'prealgebra':
+        case 'algebra':
+        case 'geometry':
+        case 'trigonometry':
+        case 'statistics':
+        case 'precalculus':
+        case 'biology':
+        case 'physicsOne':
+        case 'physicsTwo':
+        case 'calculusAB':
+        case 'calculusBC':
+        case 'chemistry':
           this.reviewMaterials = [
             {
-              title: "Topics & Resources",
-              pdf: this.getTopicsAndResourcePath("pdf"),
-              image: this.getTopicsAndResourcePath("png")
+              title: 'Topics & Resources',
+              pdf: this.getTopicsAndResourcePath('pdf'),
+              image: this.getTopicsAndResourcePath('png')
             },
             {
-              title: "Concept Review",
-              pdf: this.getConceptReviewPath("pdf"),
-              image: this.getConceptReviewPath("png")
+              title: 'Concept Review',
+              pdf: this.getConceptReviewPath('pdf'),
+              image: this.getConceptReviewPath('png')
             }
-          ];
-          break;
-        case "planning":
+          ]
+          break
+        case 'planning':
           this.reviewMaterials = [
             {
-              title: "College Planning Review",
+              title: 'College Planning Review',
               pdf: `${this.hostPath}/college-planning-review.pdf`,
               image: `${this.hostPath}/college-planning-review.png`
             }
-          ];
-          break;
-        case "essays":
+          ]
+          break
+        case 'essays':
           this.reviewMaterials = [
             {
-              title: "College Essays Review",
+              title: 'College Essays Review',
               pdf: `${this.hostPath}/college-essays-review.pdf`,
               image: `${this.hostPath}/college-essays-review.png`
             }
-          ];
-          break;
-        case "applications":
+          ]
+          break
+        case 'applications':
           this.reviewMaterials = [
             {
-              title: "College Applications Review",
+              title: 'College Applications Review',
               pdf: `${this.hostPath}/college-applications-review.pdf`,
               image: `${this.hostPath}/college-applications-review.png`
             }
-          ];
-          break;
-        case "satReading":
+          ]
+          break
+        case 'satReading':
           this.reviewMaterials = [
             {
-              title: "SAT Reading Review Guide",
+              title: 'SAT Reading Review Guide',
               pdf: `${this.hostPath}/sat-reading-review-guide.pdf`,
               image: `${this.hostPath}/sat-reading-review-guide.png`
             }
-          ];
-          break;
-        case "environmentalScience":
-        case "satMath":
-          this.reviewMaterials = [];
-          break;
+          ]
+          break
+        case 'environmentalScience':
+        case 'satMath':
+          this.reviewMaterials = []
+          break
         // case for a user entering a subject that we do not support
         default:
-          this.error = true;
-          break;
+          this.error = true
+          break
       }
     },
     getReviewMaterials() {
       // Receives no content - used for tracking user actions
-      NetworkService.getReviewMaterials(this, this.category);
+      NetworkService.getReviewMaterials(this, this.category)
     },
     getConceptReviewPath(ext) {
       return `${
         this.hostPath
-      }/${this.category.toLowerCase()}-concept-review.${ext}`;
+      }/${this.category.toLowerCase()}-concept-review.${ext}`
     },
     getTopicsAndResourcePath(ext) {
       return `${
         this.hostPath
-      }/${this.category.toLowerCase()}-topics-and-resources.${ext}`;
+      }/${this.category.toLowerCase()}-topics-and-resources.${ext}`
     }
   },
   computed: {
     categoryDisplayName() {
-      const subtopics = allSubtopics();
-      if (this.category === "algebra") return "Algebra";
-      if (this.category) return subtopics[this.category].displayName;
+      const subtopics = allSubtopics()
+      if (this.category === 'algebra') return 'Algebra'
+      if (this.category) return subtopics[this.category].displayName
 
-      return "";
+      return ''
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

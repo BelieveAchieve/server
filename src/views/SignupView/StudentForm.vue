@@ -411,14 +411,14 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import validator from "validator";
-import Autocomplete from "@trevoreyre/autocomplete-vue";
-import * as Sentry from "@sentry/browser";
-import AuthService from "@/services/AuthService";
-import NetworkService from "@/services/NetworkService";
-import VerificationBadge from "@/assets/verification.svg";
-import ErrorBadge from "@/assets/error_badge.svg";
+import { mapState } from 'vuex'
+import validator from 'validator'
+import Autocomplete from '@trevoreyre/autocomplete-vue'
+import * as Sentry from '@sentry/browser'
+import AuthService from '@/services/AuthService'
+import NetworkService from '@/services/NetworkService'
+import VerificationBadge from '@/assets/verification.svg'
+import ErrorBadge from '@/assets/error_badge.svg'
 
 export default {
   components: {
@@ -428,34 +428,34 @@ export default {
   },
   data() {
     return {
-      partnerSignupCode: "",
+      partnerSignupCode: '',
       showSignupCodeDecision: true,
-      msg: "",
+      msg: '',
       errors: [],
       invalidInputs: [],
       eligibility: {
         noSchoolResults: false,
         highSchool: {},
-        zipCode: "",
-        email: ""
+        zipCode: '',
+        email: ''
       },
       credentials: {
-        email: "",
-        password: "",
+        email: '',
+        password: '',
         terms: false
       },
       profile: {
-        firstName: "",
-        lastName: ""
+        firstName: '',
+        lastName: ''
       },
-      step: ""
-    };
+      step: ''
+    }
   },
   mounted() {
-    this.isReferred = !!window.localStorage.getItem("upcReferredByCode");
-    if (this.isReferred) this.step = "referred";
-    else if (this.isMobileApp) this.partnerCodePage();
-    else this.eligibilityPage();
+    this.isReferred = !!window.localStorage.getItem('upcReferredByCode')
+    if (this.isReferred) this.step = 'referred'
+    else if (this.isMobileApp) this.partnerCodePage()
+    else this.eligibilityPage()
   },
   computed: {
     ...mapState({
@@ -464,168 +464,168 @@ export default {
   },
   methods: {
     partnerCodePage() {
-      this.step = "partner-signup-code";
-      this.$router.push("/sign-up/student/partner-code");
+      this.step = 'partner-signup-code'
+      this.$router.push('/sign-up/student/partner-code')
     },
 
     eligibilityPage() {
-      this.step = "eligibility";
-      this.$router.push("/sign-up/student/eligibility");
+      this.step = 'eligibility'
+      this.$router.push('/sign-up/student/eligibility')
     },
 
     signupCodeYes() {
-      this.showSignupCodeDecision = false;
+      this.showSignupCodeDecision = false
     },
 
     backToSignupCodeDecision() {
-      this.errors = [];
-      this.invalidInputs = [];
-      this.showSignupCodeDecision = true;
+      this.errors = []
+      this.invalidInputs = []
+      this.showSignupCodeDecision = true
     },
 
     submitPartnerSignupCode() {
-      this.errors = [];
-      this.invalidInputs = [];
+      this.errors = []
+      this.invalidInputs = []
 
       NetworkService.checkStudentPartnerSignupCode(this.partnerSignupCode)
         .then(res => {
-          const studentPartnerKey = res.body.studentPartnerKey;
-          const studentPartnerRoute = `/signup/student/${studentPartnerKey}`;
+          const studentPartnerKey = res.body.studentPartnerKey
+          const studentPartnerRoute = `/signup/student/${studentPartnerKey}`
 
           // Redirect to student partner signup page
-          this.$router.push(studentPartnerRoute);
+          this.$router.push(studentPartnerRoute)
         })
         .catch(() => {
-          this.errors.push("Invalid sign-up code");
-        });
+          this.errors.push('Invalid sign-up code')
+        })
     },
 
     checkEligibilityErrors() {
       // validate input
-      this.errors = [];
-      this.invalidInputs = [];
+      this.errors = []
+      this.invalidInputs = []
 
       if (!this.eligibility.highSchool.upchieveId) {
-        this.errors.push("You must select your high school.");
+        this.errors.push('You must select your high school.')
       }
 
-      const zipCodeRegex = /^\d{5}$/;
-      const zipCode = this.eligibility.zipCode;
+      const zipCodeRegex = /^\d{5}$/
+      const zipCode = this.eligibility.zipCode
 
       if (!zipCode || !zipCodeRegex.test(zipCode)) {
-        this.errors.push("You must enter a valid zip code");
-        this.invalidInputs.push("inputZipCode");
+        this.errors.push('You must enter a valid zip code')
+        this.invalidInputs.push('inputZipCode')
       }
 
       if (!this.eligibility.email) {
-        this.errors.push("An email address is required.");
-        this.invalidInputs.push("inputEligibilityEmail");
+        this.errors.push('An email address is required.')
+        this.invalidInputs.push('inputEligibilityEmail')
       } else if (!validator.isEmail(this.eligibility.email)) {
         this.errors.push(
-          this.eligibility.email + " is not a valid email address."
-        );
-        this.invalidInputs.push("inputEligibilityEmail");
+          this.eligibility.email + ' is not a valid email address.'
+        )
+        this.invalidInputs.push('inputEligibilityEmail')
       }
     },
 
     continueToAccountPage() {
-      this.checkEligibilityErrors();
-      if (this.errors.length) return;
+      this.checkEligibilityErrors()
+      if (this.errors.length) return
 
       // autofill the user's email
-      this.credentials.email = this.eligibility.email;
-      this.step = "account";
+      this.credentials.email = this.eligibility.email
+      this.step = 'account'
     },
 
     submitEligibility() {
       if (this.isReferred) {
-        this.step = "eligible";
-        this.$router.push("/sign-up/student/eligible");
-        return;
+        this.step = 'eligible'
+        this.$router.push('/sign-up/student/eligible')
+        return
       }
 
       // reset error msg from server
-      this.msg = "";
+      this.msg = ''
 
-      this.checkEligibilityErrors();
-      if (this.errors.length) return;
+      this.checkEligibilityErrors()
+      if (this.errors.length) return
 
       NetworkService.checkStudentEligibility(this, {
         schoolUpchieveId: this.eligibility.highSchool.upchieveId,
         zipCode: this.eligibility.zipCode,
         email: this.eligibility.email,
-        referredByCode: window.localStorage.getItem("upcReferredByCode")
+        referredByCode: window.localStorage.getItem('upcReferredByCode')
       })
         .then(response => {
-          const isEligible = response.body.isEligible;
+          const isEligible = response.body.isEligible
 
           if (isEligible) {
-            this.step = "eligible";
-            this.$router.push("/sign-up/student/eligible");
+            this.step = 'eligible'
+            this.$router.push('/sign-up/student/eligible')
             // autofill the user's email
-            this.credentials.email = this.eligibility.email;
+            this.credentials.email = this.eligibility.email
           } else {
-            this.step = "ineligible";
-            this.$router.push("/sign-up/student/ineligible");
+            this.step = 'ineligible'
+            this.$router.push('/sign-up/student/ineligible')
           }
         })
         .catch(res => {
-          this.errors.push(res.body.message);
-        });
+          this.errors.push(res.body.message)
+        })
     },
     accountPage() {
-      this.step = "account";
-      this.$router.push("/sign-up/student/account");
+      this.step = 'account'
+      this.$router.push('/sign-up/student/account')
     },
     ineligibleContinue() {
-      window.location = "https://upchieve.org/request-access";
+      window.location = 'https://upchieve.org/request-access'
     },
     autocompleteSchool(input) {
-      this.eligibility.highSchool = {};
+      this.eligibility.highSchool = {}
 
       return new Promise(resolve => {
         if (input.length < 3) {
-          this.eligibility.noSchoolResults = false;
-          return resolve([]);
+          this.eligibility.noSchoolResults = false
+          return resolve([])
         }
 
         NetworkService.searchSchool(this, { query: input })
           .then(response => response.body.results)
           .then(schools => {
-            this.eligibility.noSchoolResults = schools.length === 0;
-            resolve(schools);
-          });
-      });
+            this.eligibility.noSchoolResults = schools.length === 0
+            resolve(schools)
+          })
+      })
     },
     getSchoolDisplayName(school) {
-      return `${school.name} (${school.city}, ${school.state})`;
+      return `${school.name} (${school.city}, ${school.state})`
     },
     handleSelectHighSchool(school) {
-      this.eligibility.highSchool = school || {};
+      this.eligibility.highSchool = school || {}
     },
     submitAccountForm() {
-      this.errors = [];
-      this.invalidInputs = [];
+      this.errors = []
+      this.invalidInputs = []
 
       if (!this.profile.firstName || !this.profile.lastName) {
-        this.errors.push("You must enter your first and last name.");
+        this.errors.push('You must enter your first and last name.')
       }
       if (!this.profile.firstName) {
-        this.invalidInputs.push("firstName");
+        this.invalidInputs.push('firstName')
       }
       if (!this.profile.lastName) {
-        this.invalidInputs.push("lastName");
+        this.invalidInputs.push('lastName')
       }
       if (!this.credentials.terms) {
         // necessary because the CSS hides the browser's validation message
-        this.errors.push("You must read and accept the user agreement.");
+        this.errors.push('You must read and accept the user agreement.')
       }
       if (!this.credentials.password) {
-        this.errors.push("A password is required.");
-        this.invalidInputs.push("inputPassword");
+        this.errors.push('A password is required.')
+        this.invalidInputs.push('inputPassword')
       }
 
-      if (!this.errors.length) this.submit();
+      if (!this.errors.length) this.submit()
     },
     submit() {
       AuthService.registerStudent(this, {
@@ -636,22 +636,22 @@ export default {
         lastName: this.profile.lastName,
         highSchoolId: this.eligibility.highSchool.upchieveId,
         zipCode: this.eligibility.zipCode,
-        referredByCode: window.localStorage.getItem("upcReferredByCode")
+        referredByCode: window.localStorage.getItem('upcReferredByCode')
       })
         .then(() => {
-          window.localStorage.removeItem("upcReferredByCode");
-          this.$store.dispatch("user/firstDashboardVisit", true);
-          this.$router.push("/dashboard");
+          window.localStorage.removeItem('upcReferredByCode')
+          this.$store.dispatch('user/firstDashboardVisit', true)
+          this.$router.push('/dashboard')
         })
         .catch(err => {
-          this.errors.push(err.message);
+          this.errors.push(err.message)
           if (err.status !== 422) {
-            Sentry.captureException(err);
+            Sentry.captureException(err)
           }
-        });
+        })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -676,7 +676,7 @@ export default {
   color: #777;
 
   &:before {
-    content: "←";
+    content: '←';
     padding-right: 5px;
   }
 }

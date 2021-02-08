@@ -24,7 +24,7 @@
 
 <script>
 export default {
-  name: "PageControl",
+  name: 'PageControl',
 
   props: {
     page: Number,
@@ -35,13 +35,13 @@ export default {
 
   methods: {
     nextPage() {
-      this.$emit("nextPage");
+      this.$emit('nextPage')
     },
     previousPage() {
-      this.$emit("previousPage");
+      this.$emit('previousPage')
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -51,7 +51,7 @@ export default {
   align-items: center;
   padding: 15px 5px;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     padding: 15px 25px;
   }
 

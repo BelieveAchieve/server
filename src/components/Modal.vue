@@ -24,35 +24,35 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import ArrowIcon from "@/assets/arrow.svg";
+import { mapGetters } from 'vuex'
+import ArrowIcon from '@/assets/arrow.svg'
 
 export default {
   components: { ArrowIcon },
   props: {
     closeModal: { type: Function, required: true },
     important: Boolean,
-    backText: { type: String, default: "Back" },
+    backText: { type: String, default: 'Back' },
     useDefaultPadding: { type: Boolean, default: true, required: false }
   },
   mounted() {
-    const body = document.querySelector("body");
-    body.classList.add("disable-scroll");
+    const body = document.querySelector('body')
+    body.classList.add('disable-scroll')
   },
   beforeDestroy() {
-    const body = document.querySelector("body");
-    body.classList.remove("disable-scroll");
+    const body = document.querySelector('body')
+    body.classList.remove('disable-scroll')
   },
   computed: {
-    ...mapGetters({ mobileMode: "app/mobileMode" })
+    ...mapGetters({ mobileMode: 'app/mobileMode' })
   },
   methods: {
     handleClose(event) {
-      const { target } = event;
-      if (target.classList.contains("upc-modal")) this.closeModal();
+      const { target } = event
+      if (target.classList.contains('upc-modal')) this.closeModal()
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped></style>

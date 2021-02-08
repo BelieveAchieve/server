@@ -13,9 +13,9 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex";
-import StudentAvatarUrl from "@/assets/defaultavatar3.png";
-import VolunteerAvatarUrl from "@/assets/defaultavatar4.png";
+import { mapGetters, mapState } from 'vuex'
+import StudentAvatarUrl from '@/assets/defaultavatar3.png'
+import VolunteerAvatarUrl from '@/assets/defaultavatar4.png'
 
 export default {
   props: {
@@ -26,51 +26,48 @@ export default {
   data() {
     return {
       avatarUrl: this.isVolunteer ? VolunteerAvatarUrl : StudentAvatarUrl
-    };
+    }
   },
   computed: {
     ...mapState({
       user: state => state.user.user
     }),
     ...mapGetters({
-      isSessionAlive: "user/isSessionAlive"
+      isSessionAlive: 'user/isSessionAlive'
     }),
     type() {
-      return this.isVolunteer ? "Volunteer" : "Student";
+      return this.isVolunteer ? 'Volunteer' : 'Student'
     },
     sessionStatus() {
-      const inSession = this.isSessionAlive;
+      const inSession = this.isSessionAlive
 
       const status = {
-        text: "Ready to chat"
-      };
+        text: 'Ready to chat'
+      }
 
       if (this.isVolunteer) {
-        status.text = "Ready to help";
+        status.text = 'Ready to help'
       }
 
       if (inSession) {
-        status.class = "SidebarInfo-status-circle--session";
-        status.text = "Chat in session";
+        status.class = 'SidebarInfo-status-circle--session'
+        status.text = 'Chat in session'
       }
 
       if (this.isVolunteer && !this.user.isOnboarded) {
-        status.class = "SidebarInfo-status-circle--onboarding";
-        status.text = "Onboarding";
+        status.class = 'SidebarInfo-status-circle--onboarding'
+        status.text = 'Onboarding'
       }
 
-      if (
-        this.isVolunteer &&
-        (this.user.isOnboarded && !this.user.isApproved)
-      ) {
-        status.class = "SidebarInfo-status-circle--onboarding";
-        status.text = "Pending approval";
+      if (this.isVolunteer && this.user.isOnboarded && !this.user.isApproved) {
+        status.class = 'SidebarInfo-status-circle--onboarding'
+        status.text = 'Pending approval'
       }
 
-      return status;
+      return status
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -87,19 +84,19 @@ export default {
   }
 
   &-name {
-    @include font-category("display-small");
+    @include font-category('display-small');
     margin-top: $spacing * 2;
   }
 
   &-type {
-    @include font-category("body");
+    @include font-category('body');
     color: $c-secondary-grey;
   }
 
   &-status {
     @include flex-container(row, center, baseline);
     @include child-spacing(left, 8px);
-    @include font-category("body");
+    @include font-category('body');
 
     &-circle {
       $size: 8px;

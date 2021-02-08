@@ -14,7 +14,7 @@ export default {
   props: {
     overlay: Boolean
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

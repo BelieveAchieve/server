@@ -9,19 +9,19 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import LargeButton from "@/components/LargeButton";
+import { mapGetters } from 'vuex'
+import LargeButton from '@/components/LargeButton'
 
 export default {
-  name: "SessionFulfilledModal",
+  name: 'SessionFulfilledModal',
   components: { LargeButton },
   props: {
     modalData: { type: Object, required: true }
   },
   computed: {
     ...mapGetters({
-      mobileMode: "app/mobileMode",
-      isVolunteer: "user/isVolunteer"
+      mobileMode: 'app/mobileMode',
+      isVolunteer: 'user/isVolunteer'
     }),
     message() {
       const {
@@ -29,60 +29,60 @@ export default {
         volunteerJoined,
         isSessionVolunteer,
         isSessionStudent
-      } = this.modalData;
-      const thankYouMessage = "Thanks for trying, we really appreciate it!";
-      let text = "";
+      } = this.modalData
+      const thankYouMessage = 'Thanks for trying, we really appreciate it!'
+      let text = ''
 
       if (isSessionEnded && !volunteerJoined) {
         if (isSessionStudent) {
-          text = "You have canceled your request.";
+          text = 'You have canceled your request.'
         }
         if (this.isVolunteer) {
-          text = `The student has canceled their request. ${thankYouMessage}`;
+          text = `The student has canceled their request. ${thankYouMessage}`
         }
       } else if (volunteerJoined && !isSessionVolunteer && this.isVolunteer) {
-        text = `Another volunteer has already joined this session. ${thankYouMessage}`;
+        text = `Another volunteer has already joined this session. ${thankYouMessage}`
       } else {
-        text = "This session has already finished.";
+        text = 'This session has already finished.'
       }
 
-      return text;
+      return text
     },
     title() {
-      const { isSessionEnded, volunteerJoined } = this.modalData;
+      const { isSessionEnded, volunteerJoined } = this.modalData
 
       if (isSessionEnded && !volunteerJoined) {
-        return "Session Canceled";
+        return 'Session Canceled'
       } else {
-        return "Session Fulfilled";
+        return 'Session Fulfilled'
       }
     }
   },
   methods: {
     onAccept() {
-      this.$router.push("/");
+      this.$router.push('/')
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
 .SessionFulfilledModal {
   @include flex-container(column);
   @include child-spacing(top, 24px);
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     @include child-spacing(top, 16px);
   }
 }
 
 .SessionFulfilledModal-title {
-  @include font-category("display-small");
-  @include breakpoint-above("medium") {
+  @include font-category('display-small');
+  @include breakpoint-above('medium') {
     margin-top: 24px;
   }
 }
 
 .SessionFulfilledModal-message {
-  @include font-category("body");
+  @include font-category('body');
 }
 </style>

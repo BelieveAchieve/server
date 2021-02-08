@@ -75,13 +75,13 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import CheckMark from "@/components/CheckMark";
-import LargeButton from "@/components/LargeButton";
-import ArrowIcon from "@/assets/arrow.svg";
+import { mapState } from 'vuex'
+import CheckMark from '@/components/CheckMark'
+import LargeButton from '@/components/LargeButton'
+import ArrowIcon from '@/assets/arrow.svg'
 
 export default {
-  name: "TrainingDropDown",
+  name: 'TrainingDropDown',
   components: {
     CheckMark,
     LargeButton,
@@ -107,36 +107,36 @@ export default {
       windowWidth: state => state.app.windowWidth
     }),
     isLargeDevice() {
-      const largeScreenBreakpoint = 992;
+      const largeScreenBreakpoint = 992
 
-      return this.windowWidth <= largeScreenBreakpoint;
+      return this.windowWidth <= largeScreenBreakpoint
     }
   },
 
   methods: {
     isComplete(cert) {
-      return this.user.certifications[cert].passed;
+      return this.user.certifications[cert].passed
     },
     progressStatus(cert) {
-      const { progress } = this.user.trainingCourses[cert];
-      if (progress === 0) return "Not started";
-      if (this.isComplete(cert)) return "Completed";
-      return "In progress";
+      const { progress } = this.user.trainingCourses[cert]
+      if (progress === 0) return 'Not started'
+      if (this.isComplete(cert)) return 'Completed'
+      return 'In progress'
     },
     progressBarNumber(cert) {
-      const { progress, isComplete } = this.user.trainingCourses[cert];
+      const { progress, isComplete } = this.user.trainingCourses[cert]
       // If user has not completed the course quiz show 99% in the progress bar
-      if (isComplete && !this.isComplete(cert)) return 99;
-      else return progress;
+      if (isComplete && !this.isComplete(cert)) return 99
+      else return progress
     },
     actionButtonText(cert) {
-      const { progress } = this.user.trainingCourses[cert];
-      if (progress === 0) return "Start course";
-      if (this.isComplete(cert)) return "Completed";
-      return "Resume course";
+      const { progress } = this.user.trainingCourses[cert]
+      if (progress === 0) return 'Start course'
+      if (this.isComplete(cert)) return 'Completed'
+      return 'Resume course'
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

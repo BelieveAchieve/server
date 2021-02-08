@@ -13,7 +13,7 @@
 </template>
 
 <script>
-export default {};
+export default {}
 </script>
 
 <style lang="scss" scoped>
@@ -34,7 +34,7 @@ export default {};
     text-transform: uppercase;
   }
 
-  @include breakpoint-above("tiny") {
+  @include breakpoint-above('tiny') {
     flex-direction: row;
     min-height: 50px;
   }

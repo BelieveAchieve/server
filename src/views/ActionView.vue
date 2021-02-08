@@ -8,10 +8,10 @@
 </template>
 
 <script>
-import OnboardingService from "@/services/OnboardingService";
-import router from "@/router";
-import AnalyticsService from "@/services/AnalyticsService";
-import { EVENTS } from "@/consts";
+import OnboardingService from '@/services/OnboardingService'
+import router from '@/router'
+import AnalyticsService from '@/services/AnalyticsService'
+import { EVENTS } from '@/consts'
 
 /**
  * @todo UserService to choose starting onboarding step based on user state
@@ -20,27 +20,27 @@ export default {
   data() {
     return {
       isValidVerificationToken: true
-    };
+    }
   },
   mounted() {
-    const { action } = this.$route.params;
-    const { data } = this.$route.params;
+    const { action } = this.$route.params
+    const { data } = this.$route.params
 
-    if (action === "verify") {
+    if (action === 'verify') {
       OnboardingService.confirmVerification(this, data)
         .then(() => {
-          this.$store.dispatch("user/firstDashboardVisit", true);
-          this.$router.replace("/");
+          this.$store.dispatch('user/firstDashboardVisit', true)
+          this.$router.replace('/')
           AnalyticsService.captureEvent(EVENTS.ACCOUNT_VERIFIED, {
             event: EVENTS.ACCOUNT_VERIFIED
-          });
+          })
         })
-        .catch(() => (this.isValidVerificationToken = false));
+        .catch(() => (this.isValidVerificationToken = false))
     } else {
-      router.replace("/");
+      router.replace('/')
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

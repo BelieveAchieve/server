@@ -28,10 +28,10 @@
 </template>
 
 <script>
-import moment from "moment";
+import moment from 'moment'
 
 export default {
-  name: "IneligibleStudentListItem",
+  name: 'IneligibleStudentListItem',
 
   props: {
     student: Object
@@ -39,16 +39,16 @@ export default {
 
   computed: {
     createdAt() {
-      return moment(this.student.createdAt).format("l, h:mm a");
+      return moment(this.student.createdAt).format('l, h:mm a')
     },
     email() {
-      return this.student.email || "--";
+      return this.student.email || '--'
     },
     schoolApprovalStatus() {
-      return this.student.isApproved ? "Approved" : "Not approved";
+      return this.student.isApproved ? 'Approved' : 'Not approved'
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

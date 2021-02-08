@@ -18,40 +18,40 @@
 </template>
 
 <script>
-import LogoImageUrl from "@/assets/header_logo.png";
-import getOperatingSystem from "@/utils/get-operating-system";
-import AppStoreLogo from "@/assets/app-store-logo.svg";
-import { GOOGLE_PLAY_STORE_LINK, APP_STORE_LINK } from "@/consts";
+import LogoImageUrl from '@/assets/header_logo.png'
+import getOperatingSystem from '@/utils/get-operating-system'
+import AppStoreLogo from '@/assets/app-store-logo.svg'
+import { GOOGLE_PLAY_STORE_LINK, APP_STORE_LINK } from '@/consts'
 
 export default {
-  name: "mobile-app-notice-banner",
+  name: 'mobile-app-notice-banner',
   components: { AppStoreLogo },
   data() {
-    return { logoUrl: LogoImageUrl };
+    return { logoUrl: LogoImageUrl }
   },
   computed: {
     mobileAppStoreLink() {
-      if (this.mobileAppStore === "Google Play Store") {
-        return GOOGLE_PLAY_STORE_LINK;
+      if (this.mobileAppStore === 'Google Play Store') {
+        return GOOGLE_PLAY_STORE_LINK
       }
-      if (this.mobileAppStore === "App Store") {
-        return APP_STORE_LINK;
+      if (this.mobileAppStore === 'App Store') {
+        return APP_STORE_LINK
       }
-      return "";
+      return ''
     },
     mobileAppStore() {
-      const device = getOperatingSystem();
+      const device = getOperatingSystem()
 
-      if (device === "Android") {
-        return "Google Play Store";
+      if (device === 'Android') {
+        return 'Google Play Store'
       }
-      if (device === "iOS") {
-        return "App Store";
+      if (device === 'iOS') {
+        return 'App Store'
       }
-      return "";
+      return ''
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

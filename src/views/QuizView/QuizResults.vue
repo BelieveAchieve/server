@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { topics } from "@/utils/topics";
+import { topics } from '@/utils/topics'
 
 export default {
   props: {
@@ -28,67 +28,65 @@ export default {
   },
   data() {
     return {
-      scoreMsg: "",
+      scoreMsg: '',
       showRetakeQuiz: false,
-      headerMsg: "",
-      instructionMsg: "",
-      category: "",
-      rightBtn: { text: "", route: "" },
+      headerMsg: '',
+      instructionMsg: '',
+      category: '',
+      rightBtn: { text: '', route: '' },
       popUpBorderStyle: {},
       scoreStyle: {}
-    };
+    }
   },
   mounted() {
-    const { category } = this.$route.params;
-    this.category = category;
+    const { category } = this.$route.params
+    this.category = category
     const isTrainingCategory = Object.keys(topics.training.subtopics).includes(
       category
-    );
+    )
 
     if (this.quizResults.passed) {
-      this.headerMsg = "What a rockstar! You passed!";
+      this.headerMsg = 'What a rockstar! You passed!'
       this.instructionMsg = isTrainingCategory
         ? "Now that you have this certification, you're one step closer to being able to help students!"
-        : "Now that you have this certification, you'll be notified of student requests for help in this subject. If you want to help students with even more subjects, just pass more quizzes!";
+        : "Now that you have this certification, you'll be notified of student requests for help in this subject. If you want to help students with even more subjects, just pass more quizzes!"
       this.popUpBorderStyle = {
-        borderBottom: "5px solid #16D2AA",
-        borderLeft: "5px solid #16D2AA"
-      };
-      this.scoreStyle = { color: "#16D2AA" };
+        borderBottom: '5px solid #16D2AA',
+        borderLeft: '5px solid #16D2AA'
+      }
+      this.scoreStyle = { color: '#16D2AA' }
       this.rightBtn = {
-        text: "Take another quiz",
-        route: "/training"
-      };
+        text: 'Take another quiz',
+        route: '/training'
+      }
     } else {
-      this.headerMsg = "You failed this time, but don't give up!";
+      this.headerMsg = "You failed this time, but don't give up!"
       this.instructionMsg = isTrainingCategory
-        ? "Please try taking this quiz again after reviewing your incorrect answers and checking out the training course materials again."
-        : "Please try taking this quiz again after reviewing your incorrect answers and checking out the subject-specific review materials we provide on the Training page.";
+        ? 'Please try taking this quiz again after reviewing your incorrect answers and checking out the training course materials again.'
+        : 'Please try taking this quiz again after reviewing your incorrect answers and checking out the subject-specific review materials we provide on the Training page.'
       this.popUpBorderStyle = {
-        borderBottom: "5px solid #F44747",
-        borderLeft: "5px solid #F44747"
-      };
-      this.scoreStyle = { color: "#F44747" };
-      this.leftBtn = { text: "Review answers", route: "" };
+        borderBottom: '5px solid #F44747',
+        borderLeft: '5px solid #F44747'
+      }
+      this.scoreStyle = { color: '#F44747' }
+      this.leftBtn = { text: 'Review answers', route: '' }
       this.rightBtn = {
-        text: "Keep studying",
+        text: 'Keep studying',
         route: `/training/review/${this.category}`
-      };
+      }
     }
 
-    this.scoreMsg = `Score: ${this.quizResults.score} out of ${
-      this.quizLength
-    } correct.`;
+    this.scoreMsg = `Score: ${this.quizResults.score} out of ${this.quizLength} correct.`
   },
   methods: {
     reload() {
-      this.$router.go(this.$router.currentRoute);
+      this.$router.go(this.$router.currentRoute)
     },
     showReview() {
-      this.$emit("showReview");
+      this.$emit('showReview')
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

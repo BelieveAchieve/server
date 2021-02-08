@@ -11,16 +11,16 @@
 
 <script>
 export default {
-  name: "SchoolListItem",
+  name: 'SchoolListItem',
   props: {
     school: Object
   },
   computed: {
     approvalStatus() {
-      return this.school.isApproved ? "Approved" : "Not approved";
+      return this.school.isApproved ? 'Approved' : 'Not approved'
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

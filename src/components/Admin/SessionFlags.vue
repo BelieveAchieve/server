@@ -12,36 +12,36 @@
 </template>
 
 <script>
-import { capitalize } from "lodash";
+import { capitalize } from 'lodash'
 
 const SESSION_FLAGS_CLASS = {
-  ABSENT_USER: "flags-item--absent-user",
-  COMMENT: "flags-item--comment",
-  FIRST_TIME_VOLUNTEER: "flags-item--first-time-volunteer",
-  FIRST_TIME_STUDENT: "flags-item--first-time-student",
-  LOW_MESSAGES: "flags-item--low-messages",
-  REPORTED: "flags-item--reported",
-  STUDENT_RATING: "flags-item--student-rating",
-  VOLUNTEER_RATING: "flags-item--volunteer-rating",
-  UNMATCHED: "flags-item--unmatched"
-};
+  ABSENT_USER: 'flags-item--absent-user',
+  COMMENT: 'flags-item--comment',
+  FIRST_TIME_VOLUNTEER: 'flags-item--first-time-volunteer',
+  FIRST_TIME_STUDENT: 'flags-item--first-time-student',
+  LOW_MESSAGES: 'flags-item--low-messages',
+  REPORTED: 'flags-item--reported',
+  STUDENT_RATING: 'flags-item--student-rating',
+  VOLUNTEER_RATING: 'flags-item--volunteer-rating',
+  UNMATCHED: 'flags-item--unmatched'
+}
 
 export default {
-  name: "SessionFlags",
+  name: 'SessionFlags',
 
   props: {
     flags: Array
   },
   methods: {
     formatFlag(flag) {
-      const delimiter = /_/gi;
-      return capitalize(flag.replace(delimiter, " ").toLowerCase());
+      const delimiter = /_/gi
+      return capitalize(flag.replace(delimiter, ' ').toLowerCase())
     },
     getFlagColor(flag) {
-      return SESSION_FLAGS_CLASS[flag] || "";
+      return SESSION_FLAGS_CLASS[flag] || ''
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

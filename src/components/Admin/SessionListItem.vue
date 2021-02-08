@@ -21,16 +21,16 @@
 </template>
 
 <script>
-import moment from "moment";
-import { topics } from "@/utils/topics";
-import SessionFlags from "./SessionFlags";
+import moment from 'moment'
+import { topics } from '@/utils/topics'
+import SessionFlags from './SessionFlags'
 
 const pluralize = num => {
-  return num === 1 ? "" : "s";
-};
+  return num === 1 ? '' : 's'
+}
 
 export default {
-  name: "SessionListItem",
+  name: 'SessionListItem',
   props: {
     session: Object
   },
@@ -40,36 +40,36 @@ export default {
 
   computed: {
     createdAt() {
-      return moment(this.session.createdAt).format("l, h:mm a");
+      return moment(this.session.createdAt).format('l, h:mm a')
     },
 
     status() {
       if (!this.session.endedAt) {
-        if (!this.session.volunteer) return "⌛ Student waiting";
-        else return "✅ Paired, in progress";
+        if (!this.session.volunteer) return '⌛ Student waiting'
+        else return '✅ Paired, in progress'
       } else {
-        if (!this.session.volunteer) return "❌ Not paired";
-        else return "✅ Paired, ended";
+        if (!this.session.volunteer) return '❌ Not paired'
+        else return '✅ Paired, ended'
       }
     },
 
     messages() {
       const numMsgs = this.session.messages
         ? this.session.messages.length
-        : this.session.totalMessages;
-      return `${numMsgs} message${pluralize(numMsgs)}`;
+        : this.session.totalMessages
+      return `${numMsgs} message${pluralize(numMsgs)}`
     },
 
     subTopicDisplayName() {
-      const { type, subTopic } = this.session;
-      return topics[type].subtopics[subTopic].displayName;
+      const { type, subTopic } = this.session
+      return topics[type].subtopics[subTopic].displayName
     },
 
     studentRating() {
-      return this.session.studentRating ? this.session.studentRating : "-";
+      return this.session.studentRating ? this.session.studentRating : '-'
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

@@ -44,9 +44,7 @@
         Are you having trouble viewing the document?
         <a
           :href="
-            `https://upc-training-materials.s3.us-east-2.amazonaws.com/${
-              material.resourceId
-            }.pdf`
+            `https://upc-training-materials.s3.us-east-2.amazonaws.com/${material.resourceId}.pdf`
           "
           target="_blank"
           rel="noopener noreferrer"
@@ -67,14 +65,14 @@
 </template>
 
 <script>
-import LinkMaterial from "./Link";
-import ResourcesMaterial from "./Resources";
-import DocumentMaterial from "./Document";
-import VideoMaterial from "./Video";
-import RightCaret from "@/assets/right-caret.svg";
-import BookIcon from "@/assets/sidebar_icons/book.svg";
-import VideoIcon from "@/assets/video.svg";
-import LinkIcon from "@/assets/link.svg";
+import LinkMaterial from './Link'
+import ResourcesMaterial from './Resources'
+import DocumentMaterial from './Document'
+import VideoMaterial from './Video'
+import RightCaret from '@/assets/right-caret.svg'
+import BookIcon from '@/assets/sidebar_icons/book.svg'
+import VideoIcon from '@/assets/video.svg'
+import LinkIcon from '@/assets/link.svg'
 
 export default {
   components: {
@@ -93,26 +91,26 @@ export default {
   },
   computed: {
     statusClass() {
-      if (!this.material.isRequired) return "material--optional";
-      else if (this.material.isCompleted) return "material--completed";
-      else return "material--not-started";
+      if (!this.material.isRequired) return 'material--optional'
+      else if (this.material.isCompleted) return 'material--completed'
+      else return 'material--not-started'
     },
 
     statusText() {
-      if (!this.material.isRequired) return "Optional";
-      else if (this.material.isCompleted) return "Completed";
-      else return "Not started";
+      if (!this.material.isRequired) return 'Optional'
+      else if (this.material.isCompleted) return 'Completed'
+      else return 'Not started'
     }
   },
   methods: {
     toggleMaterial() {
-      this.$emit("material-toggled", this.material.materialKey);
+      this.$emit('material-toggled', this.material.materialKey)
     },
     materialClicked() {
-      this.$emit("material-completed", this.material.materialKey);
+      this.$emit('material-completed', this.material.materialKey)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -192,7 +190,7 @@ export default {
     font-weight: 500;
     padding: 40px 10px;
 
-    @include breakpoint-above("large") {
+    @include breakpoint-above('large') {
       padding: 40px 60px;
     }
   }

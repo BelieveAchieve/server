@@ -26,12 +26,12 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
-import ArrowIcon from "@/assets/arrow.svg";
-import Modal from "@/components/Modal";
+import { mapState, mapGetters } from 'vuex'
+import ArrowIcon from '@/assets/arrow.svg'
+import Modal from '@/components/Modal'
 
 export default {
-  name: "volunteer-welcome-modal",
+  name: 'volunteer-welcome-modal',
   components: { Modal, ArrowIcon },
   props: {
     closeModal: { type: Function, required: true }
@@ -41,22 +41,22 @@ export default {
       user: state => state.user.user
     }),
     ...mapGetters({
-      mobileMode: "app/mobileMode"
+      mobileMode: 'app/mobileMode'
     }),
     message() {
       if (this.user.isApproved)
-        return "We’re so glad you’re here! Before you can start tutoring, you’ll need to set up your account.";
+        return 'We’re so glad you’re here! Before you can start tutoring, you’ll need to set up your account.'
       else
-        return "We’re so glad you’re here! Before you can start tutoring, you’ll need to set up your account and get verified as a volunteer";
+        return 'We’re so glad you’re here! Before you can start tutoring, you’ll need to set up your account and get verified as a volunteer'
     }
   },
   methods: {
     handleCloseModal() {
-      this.$store.dispatch("user/firstDashboardVisit", false);
-      this.closeModal();
+      this.$store.dispatch('user/firstDashboardVisit', false)
+      this.closeModal()
     }
   }
-};
+}
 </script>
 
 <style lang="scss">
@@ -68,13 +68,13 @@ export default {
 .volunteer-welcome-modal {
   @include flex-container(column);
   @include child-spacing(top, 24px);
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     @include child-spacing(top, 16px);
   }
 
   &-title {
-    @include font-category("display-small");
-    @include breakpoint-above("medium") {
+    @include font-category('display-small');
+    @include breakpoint-above('medium') {
       margin-top: 24px;
     }
   }
@@ -111,7 +111,7 @@ export default {
     border: 1px solid rgba(0, 0, 0, 0);
     border-radius: 20px;
     padding: 9px 23px;
-    @include font-category("body");
+    @include font-category('body');
     border: none;
 
     &:hover {
@@ -119,7 +119,7 @@ export default {
       color: $c-background-grey;
     }
 
-    @include breakpoint-above("medium") {
+    @include breakpoint-above('medium') {
       width: 200px;
     }
   }

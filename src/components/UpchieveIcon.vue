@@ -18,16 +18,16 @@ const icons = {
   envelope: true,
   exclamation: true,
   folder: true,
-  "graduation-cap": true,
+  'graduation-cap': true,
   hamburger: true,
   house: true,
   logout: true,
-  "math-symbols": true,
+  'math-symbols': true,
   padlock: true,
   pencil: true,
   portrait: true,
   search: true,
-  "word-bubbles": true,
+  'word-bubbles': true,
 
   // Whiteboard
   drop: true,
@@ -35,7 +35,7 @@ const icons = {
   pen: true,
   trash: true,
   undo: true
-};
+}
 
 export default {
   props: {
@@ -50,10 +50,10 @@ export default {
     },
     size: {
       type: String,
-      default: "1em"
+      default: '1em'
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

@@ -10,7 +10,7 @@
 </template>
 
 <script>
-export default {};
+export default {}
 </script>
 
 <style lang="scss" scoped>
@@ -23,7 +23,7 @@ export default {};
     width: 100%;
   }
 
-  background: url("~@/assets/onboarding_background.png") no-repeat center;
+  background: url('~@/assets/onboarding_background.png') no-repeat center;
   background-size: cover;
 
   min-width: 300px;
@@ -31,7 +31,7 @@ export default {};
 
   padding: 20px;
 
-  @include breakpoint-below("medium") {
+  @include breakpoint-below('medium') {
     padding: 20px 10px;
   }
 

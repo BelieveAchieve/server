@@ -94,24 +94,24 @@
 </template>
 
 <script>
-import moment from "moment";
-import NetworkService from "@/services/NetworkService";
-import SessionsList from "@/components/Admin/SessionsList";
-import BackgroundInfo from "@/components/Admin/BackgroundInfo";
-import AdminPendingVolunteerDetail from "@/views/Admin/AdminPendingVolunteerDetail";
-import AdminEditUser from "@/views/Admin/AdminEditUser";
-import PageControl from "@/components/Admin/PageControl";
+import moment from 'moment'
+import NetworkService from '@/services/NetworkService'
+import SessionsList from '@/components/Admin/SessionsList'
+import BackgroundInfo from '@/components/Admin/BackgroundInfo'
+import AdminPendingVolunteerDetail from '@/views/Admin/AdminPendingVolunteerDetail'
+import AdminEditUser from '@/views/Admin/AdminEditUser'
+import PageControl from '@/components/Admin/PageControl'
 
 const getUser = async (userId, page) => {
   const {
     body: { user }
-  } = await NetworkService.adminGetUser(userId, page);
+  } = await NetworkService.adminGetUser(userId, page)
 
-  return user;
-};
+  return user
+}
 
 export default {
-  name: "AdminUserDetail",
+  name: 'AdminUserDetail',
 
   components: {
     AdminPendingVolunteerDetail,
@@ -126,81 +126,81 @@ export default {
       user: {},
       isEditMode: false,
       page: 1
-    };
+    }
   },
 
   async created() {
-    window.addEventListener("keyup", this.goBack);
-    const { page } = this.$route.query;
-    this.page = parseInt(page) || this.page;
-    this.getUser();
+    window.addEventListener('keyup', this.goBack)
+    const { page } = this.$route.query
+    this.page = parseInt(page) || this.page
+    this.getUser()
   },
 
   beforeDestroy() {
-    window.removeEventListener("keyup", this.goBack);
+    window.removeEventListener('keyup', this.goBack)
   },
 
   computed: {
     createdAt() {
-      return moment(this.user.createdAt).format("l, h:mm a");
+      return moment(this.user.createdAt).format('l, h:mm a')
     },
 
     partnerOrg() {
-      if (this.user.isVolunteer) return this.user.volunteerPartnerOrg;
-      else return this.user.studentPartnerOrg;
+      if (this.user.isVolunteer) return this.user.volunteerPartnerOrg
+      else return this.user.studentPartnerOrg
     },
 
     schoolName() {
-      const school = this.user.approvedHighschool;
-      if (!school) return null;
+      const school = this.user.approvedHighschool
+      if (!school) return null
 
-      return school.nameStored ? school.nameStored : school.SCH_NAME;
+      return school.nameStored ? school.nameStored : school.SCH_NAME
     },
     isFirstPage() {
-      return this.page === 1;
+      return this.page === 1
     },
     sortedPastSessions() {
-      const descendingPastSessions = [];
+      const descendingPastSessions = []
       for (let i = this.user.pastSessions.length - 1; i >= 0; i--) {
-        const session = this.user.pastSessions[i];
-        descendingPastSessions.push(session);
+        const session = this.user.pastSessions[i]
+        descendingPastSessions.push(session)
       }
 
-      return descendingPastSessions;
+      return descendingPastSessions
     }
   },
   methods: {
     toggleEditMode() {
-      this.isEditMode = !this.isEditMode;
+      this.isEditMode = !this.isEditMode
     },
     setPage(page) {
-      this.page = page;
-      this.getUser();
+      this.page = page
+      this.getUser()
     },
     nextPage() {
-      this.setPage(this.page + 1);
+      this.setPage(this.page + 1)
     },
     previousPage() {
-      this.setPage(this.page - 1);
+      this.setPage(this.page - 1)
     },
     goBack(event) {
       // If backspace button is pressed go back
-      if (event.keyCode === 8) this.$router.go(-1);
+      if (event.keyCode === 8) this.$router.go(-1)
     },
     async getUser() {
-      const pageLimit = 10;
-      this.user = await getUser(this.$route.params.userId, this.page);
-      this.isLastPage = pageLimit * this.page >= this.user.numPastSessions;
+      const pageLimit = 10
+      this.user = await getUser(this.$route.params.userId, this.page)
+      this.isLastPage = pageLimit * this.page >= this.user.numPastSessions
 
       // show page query in the url if the user has had past sessions
       if (this.user.numPastSessions > 0)
         this.$router.push({
           path: `/admin/users/${this.user._id}`,
           query: { page: this.page }
-        });
+        })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -211,7 +211,7 @@ export default {
   overflow: hidden;
   max-width: 800px;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin: 40px;
   }
 
@@ -221,7 +221,7 @@ export default {
     align-items: flex-start;
     padding: 20px 15px;
 
-    @include breakpoint-above("medium") {
+    @include breakpoint-above('medium') {
       padding: 40px;
     }
   }
@@ -284,7 +284,7 @@ export default {
 }
 
 .edit-btn {
-  @include font-category("body");
+  @include font-category('body');
   background-color: $c-success-green;
   border-radius: 30px;
   width: 120px;

@@ -5,15 +5,15 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import HeaderTemplate from "./HeaderTemplate";
-import DefaultHeader from "./DefaultHeader";
-import SessionHeader from "./SessionHeader";
-import RejoinSessionHeader from "./RejoinSessionHeader";
-import WaitingPeriodHeader from "./WaitingPeriodHeader";
+import { mapState } from 'vuex'
+import HeaderTemplate from './HeaderTemplate'
+import DefaultHeader from './DefaultHeader'
+import SessionHeader from './SessionHeader'
+import RejoinSessionHeader from './RejoinSessionHeader'
+import WaitingPeriodHeader from './WaitingPeriodHeader'
 
 export default {
-  name: "app-header",
+  name: 'app-header',
   components: {
     HeaderTemplate,
     DefaultHeader,
@@ -23,9 +23,9 @@ export default {
   },
   computed: {
     ...mapState({
-      headerComponent: state => state.app.header.component || "DefaultHeader",
+      headerComponent: state => state.app.header.component || 'DefaultHeader',
       headerData: state => state.app.header.data
     })
   }
-};
+}
 </script>

@@ -21,11 +21,11 @@
 </template>
 
 <script>
-import RightCaret from "@/assets/right-caret.svg";
-import CheckIcon from "@/assets/check.svg";
+import RightCaret from '@/assets/right-caret.svg'
+import CheckIcon from '@/assets/check.svg'
 
 export default {
-  name: "account-action",
+  name: 'account-action',
   components: {
     RightCaret,
     CheckIcon
@@ -36,7 +36,7 @@ export default {
     status: String,
     icon: Object
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

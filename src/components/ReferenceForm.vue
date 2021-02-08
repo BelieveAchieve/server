@@ -200,104 +200,104 @@
 </template>
 
 <script>
-import NetworkService from "@/services/NetworkService";
-import AnalyticsService from "@/services/AnalyticsService";
-import { EVENTS } from "@/consts";
-import { mapState, mapGetters } from "vuex";
+import NetworkService from '@/services/NetworkService'
+import AnalyticsService from '@/services/AnalyticsService'
+import { EVENTS } from '@/consts'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
-  name: "ReferenceForm",
+  name: 'ReferenceForm',
   props: {
     isAdminReview: { type: Boolean, default: false },
     reference: { type: Object }
   },
   data() {
     return {
-      error: "",
+      error: '',
       didSubmit: false,
       isNoLongerReference: false,
-      affiliation: "",
-      relationshipLength: "",
-      rejectionReason: "",
-      additionalInfo: "",
+      affiliation: '',
+      relationshipLength: '',
+      rejectionReason: '',
+      additionalInfo: '',
       multipleRadioQuestions: [
         {
-          qid: "1",
-          qtype: "multiple-radio",
-          title: "The applicant is...",
-          secondary_title: "",
+          qid: '1',
+          qtype: 'multiple-radio',
+          title: 'The applicant is...',
+          secondary_title: '',
           tableTitle: [
-            "Strongly Disagree",
-            "Somewhat Disagree",
-            "Neither Agree or Disagree",
-            "Somewhat Agree",
-            "Strongly Agree",
+            'Strongly Disagree',
+            'Somewhat Disagree',
+            'Neither Agree or Disagree',
+            'Somewhat Agree',
+            'Strongly Agree',
             "I cannot speak to this aspect of the applicant's character"
           ],
           options: [
-            "patient",
-            "a positive role model",
-            "agreeable and approachable",
-            "able to communicate effectively"
+            'patient',
+            'a positive role model',
+            'agreeable and approachable',
+            'able to communicate effectively'
           ],
           optionsAlias: [
-            "patient",
-            "positiveRoleModel",
-            "agreeableAndApproachable",
-            "communicatesEffectively"
+            'patient',
+            'positiveRoleModel',
+            'agreeableAndApproachable',
+            'communicatesEffectively'
           ]
         },
         {
-          qid: "2",
-          qtype: "multiple-radio",
-          title: "",
-          secondary_title: "",
+          qid: '2',
+          qtype: 'multiple-radio',
+          title: '',
+          secondary_title: '',
           tableTitle: [
-            "Strongly Disagree",
-            "Somewhat Disagree",
-            "Neither",
-            "Somewhat Agree",
-            "Strongly Agree"
+            'Strongly Disagree',
+            'Somewhat Disagree',
+            'Neither',
+            'Somewhat Agree',
+            'Strongly Agree'
           ],
           options: [
-            "I would trust the applicant to spend time with a child alone."
+            'I would trust the applicant to spend time with a child alone.'
           ],
-          optionsAlias: ["trustworthyWithChildren"]
+          optionsAlias: ['trustworthyWithChildren']
         }
       ],
       multipleRadioResponse: {
-        patient: "",
-        positiveRoleModel: "",
-        agreeableAndApproachable: "",
-        communicatesEffectively: "",
-        trustworthyWithChildren: ""
+        patient: '',
+        positiveRoleModel: '',
+        agreeableAndApproachable: '',
+        communicatesEffectively: '',
+        trustworthyWithChildren: ''
       }
-    };
+    }
   },
   computed: {
     ...mapState({
       user: state => state.user.user
     }),
     ...mapGetters({
-      mobileMode: "app/mobileMode"
+      mobileMode: 'app/mobileMode'
     })
   },
   async mounted() {
     if (this.isAdminReview) {
-      this.affiliation = this.reference.affiliation;
-      this.relationshipLength = this.reference.relationshipLength;
-      this.rejectionReason = this.reference.rejectionReason;
-      this.additionalInfo = this.reference.additionalInfo;
-      this.multipleRadioResponse.patient = this.reference.patient;
-      this.multipleRadioResponse.positiveRoleModel = this.reference.positiveRoleModel;
-      this.multipleRadioResponse.agreeableAndApproachable = this.reference.agreeableAndApproachable;
-      this.multipleRadioResponse.communicatesEffectively = this.reference.communicatesEffectively;
-      this.multipleRadioResponse.trustworthyWithChildren = this.reference.trustworthyWithChildren;
+      this.affiliation = this.reference.affiliation
+      this.relationshipLength = this.reference.relationshipLength
+      this.rejectionReason = this.reference.rejectionReason
+      this.additionalInfo = this.reference.additionalInfo
+      this.multipleRadioResponse.patient = this.reference.patient
+      this.multipleRadioResponse.positiveRoleModel = this.reference.positiveRoleModel
+      this.multipleRadioResponse.agreeableAndApproachable = this.reference.agreeableAndApproachable
+      this.multipleRadioResponse.communicatesEffectively = this.reference.communicatesEffectively
+      this.multipleRadioResponse.trustworthyWithChildren = this.reference.trustworthyWithChildren
     } else {
       try {
-        await NetworkService.checkReference(this.$route.params.referenceId);
+        await NetworkService.checkReference(this.$route.params.referenceId)
       } catch (error) {
-        this.isNoLongerReference = true;
+        this.isNoLongerReference = true
       }
     }
   },
@@ -305,8 +305,8 @@ export default {
   methods: {
     submitForm() {
       if (!this.isValidForm()) {
-        this.error = "Please answer all of the questions.";
-        return;
+        this.error = 'Please answer all of the questions.'
+        return
       }
 
       const {
@@ -315,7 +315,7 @@ export default {
         agreeableAndApproachable,
         communicatesEffectively,
         trustworthyWithChildren
-      } = this.multipleRadioResponse;
+      } = this.multipleRadioResponse
 
       const data = {
         affiliation: this.affiliation,
@@ -327,21 +327,21 @@ export default {
         agreeableAndApproachable,
         communicatesEffectively,
         trustworthyWithChildren
-      };
-      const referenceId = this.$route.params.referenceId;
+      }
+      const referenceId = this.$route.params.referenceId
 
       NetworkService.saveReferenceForm(referenceId, data)
         .then(() => {
-          this.didSubmit = true;
+          this.didSubmit = true
           AnalyticsService.captureEvent(EVENTS.REFERENCE_FORM_SUBMITTED, {
             event: EVENTS.REFERENCE_FORM_SUBMITTED,
             userId: this.user._id,
             referenceId: referenceId
-          });
+          })
         })
         .catch(() => {
-          this.error = "Error submitting form, please try again.";
-        });
+          this.error = 'Error submitting form, please try again.'
+        })
     },
     isValidForm() {
       const {
@@ -350,7 +350,7 @@ export default {
         agreeableAndApproachable,
         communicatesEffectively,
         trustworthyWithChildren
-      } = this.multipleRadioResponse;
+      } = this.multipleRadioResponse
 
       const requiredInputs = {
         affiliation: this.affiliation,
@@ -362,22 +362,22 @@ export default {
         agreeableAndApproachable,
         communicatesEffectively,
         trustworthyWithChildren
-      };
+      }
 
-      const requiredInputValues = Object.values(requiredInputs);
-      const isValidForm = requiredInputValues.every(input => !!input);
+      const requiredInputValues = Object.values(requiredInputs)
+      const isValidForm = requiredInputValues.every(input => !!input)
 
-      return isValidForm;
+      return isValidForm
     },
     referenceResponseText(question, index) {
-      const optionAlias = question.optionsAlias[index];
-      const referenceResponse = this.multipleRadioResponse[optionAlias];
+      const optionAlias = question.optionsAlias[index]
+      const referenceResponse = this.multipleRadioResponse[optionAlias]
       // Ratings recorded from a reference are 1-based indexed, subtract 1 to make 0-based indexed
-      const responseRating = question.tableTitle[referenceResponse - 1];
-      return responseRating;
+      const responseRating = question.tableTitle[referenceResponse - 1]
+      return responseRating
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -429,7 +429,7 @@ textarea.uc-form-input {
   background-color: white;
   border-radius: 5px;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     max-width: 900px;
     box-shadow: -9px 9px $c-information-blue;
   }
@@ -442,7 +442,7 @@ textarea.uc-form-input {
   display: inline-block;
   margin-bottom: 4em;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     width: 100%;
   }
 }
@@ -468,7 +468,7 @@ textarea.uc-form-input {
   width: 100%;
   width: 100vw;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     width: 100%;
     padding: 4em;
   }

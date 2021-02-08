@@ -117,9 +117,7 @@
               >
                 <input
                   :id="
-                    `radio-list-option_${
-                      question.options_alias[subquestion_index]
-                    }`
+                    `radio-list-option_${question.options_alias[subquestion_index]}`
                   "
                   class="radio-list__option-input"
                   v-model="userResponse[question.alias]"
@@ -130,9 +128,7 @@
                 <label
                   class="radio-list__option-label"
                   :for="
-                    `radio-list-option_${
-                      question.options_alias[subquestion_index]
-                    }`
+                    `radio-list-option_${question.options_alias[subquestion_index]}`
                   "
                 >
                   {{ subquestion }}
@@ -328,143 +324,143 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex'
 
-import NetworkService from "@/services/NetworkService";
+import NetworkService from '@/services/NetworkService'
 // import AnalyticsService from "@/services/AnalyticsService";
-import LargeButton from "@/components/LargeButton";
-import { topics } from "@/utils/topics";
-import moment from "moment";
-import { formatSurveyAnswers } from "@/utils/survey";
+import LargeButton from '@/components/LargeButton'
+import { topics } from '@/utils/topics'
+import moment from 'moment'
+import { formatSurveyAnswers } from '@/utils/survey'
 
 export default {
-  name: "FeedbackView",
+  name: 'FeedbackView',
   components: { LargeButton },
   data() {
     return {
-      sessionId: "",
-      topic: "",
-      subTopic: "",
-      userType: "",
-      studentId: "",
-      volunteerId: "",
+      sessionId: '',
+      topic: '',
+      subTopic: '',
+      userType: '',
+      studentId: '',
+      volunteerId: '',
       session: {},
       presessionSurvey: {},
       student_questions: [
         {
-          qid: "1",
-          qtype: "star-rating",
-          alias: "rate-session",
-          title: "Rate your session",
-          secondary_title: "",
-          options: ["Rating"],
-          options_alias: ["rating"]
+          qid: '1',
+          qtype: 'star-rating',
+          alias: 'rate-session',
+          title: 'Rate your session',
+          secondary_title: '',
+          options: ['Rating'],
+          options_alias: ['rating']
         },
         {
-          qid: "2",
-          qtype: "radio-list",
-          alias: "session-goal",
-          title: "What was your primary goal today?",
-          secondary_title: "",
+          qid: '2',
+          qtype: 'radio-list',
+          alias: 'session-goal',
+          title: 'What was your primary goal today?',
+          secondary_title: '',
           options: [
-            "Improve my understanding",
-            "Check my answers",
-            "Finish a homework assignment",
-            "Get advice",
-            "Prepare for a test",
-            "Other"
+            'Improve my understanding',
+            'Check my answers',
+            'Finish a homework assignment',
+            'Get advice',
+            'Prepare for a test',
+            'Other'
           ],
           options_alias: [
-            "improve-understanding",
-            "check-answers",
-            "finish-homework",
-            "get-advice",
-            "test-prep",
-            "other"
+            'improve-understanding',
+            'check-answers',
+            'finish-homework',
+            'get-advice',
+            'test-prep',
+            'other'
           ]
         },
         {
-          qid: "3",
-          qtype: "multiple-radio",
-          alias: "coach-ratings",
-          title: "Please tell us about your coach.",
-          secondary_title: "",
+          qid: '3',
+          qtype: 'multiple-radio',
+          alias: 'coach-ratings',
+          title: 'Please tell us about your coach.',
+          secondary_title: '',
           table_title: [
-            "Strongly Disagree",
-            "Somewhat Disagree",
-            "Neither",
-            "Somewhat Agree",
-            "Strongly Agree"
+            'Strongly Disagree',
+            'Somewhat Disagree',
+            'Neither',
+            'Somewhat Agree',
+            'Strongly Agree'
           ],
           options: [
-            "My coach was knowedgable about the topic.",
-            "My coach was friendly and approachable.",
-            "I would like to receive help from this coach again."
+            'My coach was knowedgable about the topic.',
+            'My coach was friendly and approachable.',
+            'I would like to receive help from this coach again.'
           ],
           options_alias: [
-            "coach-knowedgable",
-            "coach-friendly",
-            "coach-help-again"
+            'coach-knowedgable',
+            'coach-friendly',
+            'coach-help-again'
           ]
         },
         {
-          qid: "4",
-          qtype: "text",
-          alias: "other-feedback",
+          qid: '4',
+          qtype: 'text',
+          alias: 'other-feedback',
           title:
             "(Optional) Do you have any other feedback you'd like to share?",
           secondary_title:
-            "This can be about the web app, the Academic Coach who helped you, the services UPchieve offers, etc.",
+            'This can be about the web app, the Academic Coach who helped you, the services UPchieve offers, etc.',
           table_title: [],
           options: []
         }
       ],
       volunteer_questions: [
         {
-          qid: "1",
-          qtype: "star-rating",
-          alias: "rate-session",
-          title: "Rate your session",
-          secondary_title: "",
-          options: ["Rating"],
-          options_alias: ["rating"]
+          qid: '1',
+          qtype: 'star-rating',
+          alias: 'rate-session',
+          title: 'Rate your session',
+          secondary_title: '',
+          options: ['Rating'],
+          options_alias: ['rating']
         },
         {
-          qid: "2",
-          qtype: "multiple-radio",
-          alias: "session-experience",
-          title: "Please tell us about your experience.",
-          secondary_title: "",
+          qid: '2',
+          qtype: 'multiple-radio',
+          alias: 'session-experience',
+          title: 'Please tell us about your experience.',
+          secondary_title: '',
           table_title: [
-            "Strongly Disagree",
-            "Somewhat Disagree",
-            "Neither",
-            "Somewhat Agree",
-            "Strongly Agree"
+            'Strongly Disagree',
+            'Somewhat Disagree',
+            'Neither',
+            'Somewhat Agree',
+            'Strongly Agree'
           ],
           options: [
-            "I feel like I helped the student.",
-            "I found it easy to answer the student’s question(s).",
-            "I feel like this was a good use of my time.",
-            "I feel more fulfilled as a result of this volunteer experience.",
-            "I plan on volunteering with UPchieve again."
+            'I feel like I helped the student.',
+            'I found it easy to answer the student’s question(s).',
+            'I feel like this was a good use of my time.',
+            'I feel more fulfilled as a result of this volunteer experience.',
+            'I plan on volunteering with UPchieve again.'
           ],
           options_alias: [
-            "feel-like-helped-student",
-            "easy-to-answer-questions",
-            "good-use-of-time",
-            "feel-more-fulfilled",
-            "plan-on-volunteering-again"
+            'feel-like-helped-student',
+            'easy-to-answer-questions',
+            'good-use-of-time',
+            'feel-more-fulfilled',
+            'plan-on-volunteering-again'
           ]
         },
         {
-          qid: "3",
-          qtype: "text",
-          alias: "other-feedback",
+          qid: '3',
+          qtype: 'text',
+          alias: 'other-feedback',
           title:
-            "(Optional) Do you have any other feedback you’d like to share?",
+            '(Optional) Do you have any other feedback you’d like to share?',
           secondary_title:
-            "This can be about any technical issues you encountered, features you would have liked, concepts or topics you felt unprepared for, or the experience of volunteering with UPchieve in general.",
+            'This can be about any technical issues you encountered, features you would have liked, concepts or topics you felt unprepared for, or the experience of volunteering with UPchieve in general.',
           table_title: [],
           options: []
         }
@@ -475,81 +471,81 @@ export default {
       completedFeedback: false,
       studentOptions: [
         {
-          options: ["Not at all", "", "Kind of", "", "Yes, completely!"],
-          alias: "session-goal"
+          options: ['Not at all', '', 'Kind of', '', 'Yes, completely!'],
+          alias: 'session-goal'
         },
         {
           options: [
             "I don't know how to do this at all.",
-            "I think I know how to do it, but I need help.",
+            'I think I know how to do it, but I need help.',
             "I can do this on my own, but I don't fully understand it.",
-            "I am very comfortable with this topic."
+            'I am very comfortable with this topic.'
           ],
-          alias: "subject-understanding"
+          alias: 'subject-understanding'
         },
         {
-          options: ["Terrible", "", "Decent", "", "Amazing"],
-          alias: "coach-rating"
+          options: ['Terrible', '', 'Decent', '', 'Amazing'],
+          alias: 'coach-rating'
         }
       ]
-    };
+    }
   },
   computed: {
     ...mapState({
       user: state => state.user.user
     }),
     sessionSubject() {
-      const { type, subTopic } = this.session;
-      return topics[type].subtopics[subTopic].displayName;
+      const { type, subTopic } = this.session
+      return topics[type].subtopics[subTopic].displayName
     },
     sessionTime() {
       return moment(this.session.createdAt)
         .local()
-        .format("LT");
+        .format('LT')
     },
     sessionDate() {
       return moment(this.session.createdAt)
         .local()
-        .format("MMMM Do, YYYY");
+        .format('MMMM Do, YYYY')
     },
     isCollegeSubject() {
-      return this.topic === "college";
+      return this.topic === 'college'
     },
     isStudentTutoringSession() {
-      return !this.user.isVolunteer && !this.isCollegeSubject;
+      return !this.user.isVolunteer && !this.isCollegeSubject
     },
     sessionGoal() {
       if (this.presessionSurvey && this.presessionSurvey.createdAt) {
         if (
-          this.presessionSurvey.responseData["primary-goal"].answer === "other"
+          this.presessionSurvey.responseData['primary-goal'].answer === 'other'
         ) {
-          if (this.presessionSurvey.responseData["primary-goal"].other)
+          if (this.presessionSurvey.responseData['primary-goal'].other)
             return this.presessionSurvey.responseData[
-              "primary-goal"
-            ].other.toLowerCase();
-          else return "get help";
+              'primary-goal'
+            ].other.toLowerCase()
+          else return 'get help'
         }
         return formatSurveyAnswers(
-          this.presessionSurvey.responseData["primary-goal"].answer
-        ).toLowerCase();
+          this.presessionSurvey.responseData['primary-goal'].answer
+        ).toLowerCase()
       }
 
-      return "get help";
+      return 'get help'
     }
   },
   async beforeMount() {
-    this.sessionId = this.$route.params.sessionId;
-    this.topic = this.$route.params.topic;
-    this.subTopic = this.$route.params.subTopic;
-    this.userType = this.$route.params.userType;
-    this.studentId = this.$route.params.studentId;
-    this.volunteerId = this.$route.params.volunteerId;
+    this.sessionId = this.$route.params.sessionId
+    this.topic = this.$route.params.topic
+    this.subTopic = this.$route.params.subTopic
+    this.userType = this.$route.params.userType
+    this.studentId = this.$route.params.studentId
+    this.volunteerId = this.$route.params.volunteerId
 
     if (this.isStudentTutoringSession) {
-      this.$store.dispatch("app/sidebar/hide");
-      this.$store.dispatch("app/header/show", {
-        component: "SessionHeader"
-      });
+      this.$store.dispatch('app/sidebar/hide')
+      this.$store.dispatch('app/header/show', {
+        component: 'SessionHeader'
+      })
     }
 
     const [
@@ -563,59 +559,62 @@ export default {
       }),
       NetworkService.getSession(this.sessionId),
       NetworkService.getPresessionSurvey(this.sessionId)
-    ]);
+    ])
 
     const {
       body: { feedback }
-    } = feedbackResponse;
+    } = feedbackResponse
     const {
       body: { session }
-    } = sessionResponse;
+    } = sessionResponse
     const {
       body: { survey }
-    } = presessionResponse;
+    } = presessionResponse
 
-    this.session = session;
-    this.presessionSurvey = survey;
+    this.session = session
+    this.presessionSurvey = survey
 
     if (feedback) {
-      this.completedFeedback = true;
-      return;
+      this.completedFeedback = true
+      return
     }
 
-    if (this.userType === "student" && this.isCollegeSubject)
-      this.questions = this.student_questions;
-    else if (this.userType === "volunteer")
-      this.questions = this.volunteer_questions;
+    if (this.userType === 'student' && this.isCollegeSubject)
+      this.questions = this.student_questions
+    else if (this.userType === 'volunteer')
+      this.questions = this.volunteer_questions
 
     if (this.questions.length > 0)
       this.questions.map(question => {
         if (
-          question.qtype === "multiple-radio" ||
-          question.qtype === "star-rating"
+          question.qtype === 'multiple-radio' ||
+          question.qtype === 'star-rating'
         )
-          this.userResponse[question.alias] = {};
-      });
+          this.userResponse[question.alias] = {}
+      })
 
     if (this.isStudentTutoringSession)
       this.userResponse = {
-        "session-goal": "",
-        "subject-understanding": "",
-        "coach-rating": "",
-        "coach-feedback": "",
-        "other-feedback": ""
-      };
+        'session-goal': '',
+        'subject-understanding': '',
+        'coach-rating': '',
+        'coach-feedback': '',
+        'other-feedback': ''
+      }
   },
   methods: {
     submitFeedback() {
-      if (this.isSubmittingFeedback) return;
+      if (this.isSubmittingFeedback) return
       // analytics: tracking feedback response data
       // AnalyticsService.trackFeedback(this, this.user.isFakeUser);
 
-      const responseData = this.userResponse;
+      const responseData = this.userResponse
       for (const key in responseData) {
-        if (responseData.hasOwnProperty(key) && responseData[key] === "")
-          delete responseData[key];
+        if (
+          Object.prototype.hasOwnProperty.call(responseData, key) &&
+          responseData[key] === ''
+        )
+          delete responseData[key]
       }
 
       NetworkService.feedback(this, {
@@ -626,12 +625,12 @@ export default {
         userType: this.userType,
         studentId: this.studentId,
         volunteerId: this.volunteerId
-      });
-      this.isSubmittingFeedback = false;
-      this.$router.push("/");
+      })
+      this.isSubmittingFeedback = false
+      this.$router.push('/')
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -642,7 +641,7 @@ ul {
 
 label {
   font-weight: 400;
-  @include font-category("helper-text");
+  @include font-category('helper-text');
 }
 
 .feedback {
@@ -651,7 +650,7 @@ label {
   }
 
   &__header {
-    @include font-category("display-small");
+    @include font-category('display-small');
   }
   &__subheader {
     font-size: 22px;
@@ -664,7 +663,7 @@ label {
 
   &__question {
     text-align: left;
-    @include font-category("heading");
+    @include font-category('heading');
 
     &-number {
       margin-right: 5px;
@@ -672,7 +671,7 @@ label {
   }
   &__subtext {
     text-align: left;
-    @include font-category("helper-text");
+    @include font-category('helper-text');
     color: $c-secondary-grey;
   }
 
@@ -694,7 +693,7 @@ label {
     flex-direction: column;
     margin-top: 1.4em;
 
-    @include breakpoint-above("medium") {
+    @include breakpoint-above('medium') {
       flex-direction: row;
       justify-content: space-around;
     }
@@ -707,7 +706,7 @@ label {
   &__radio-list-row {
     margin-top: 1.4em;
 
-    @include breakpoint-above("medium") {
+    @include breakpoint-above('medium') {
       margin-left: 4em;
     }
   }
@@ -721,7 +720,7 @@ label {
     align-items: center;
     margin-bottom: 1em;
 
-    @include breakpoint-above("medium") {
+    @include breakpoint-above('medium') {
       flex-direction: column;
       align-items: center;
       margin-bottom: 0;
@@ -733,7 +732,7 @@ label {
     text-align: left;
     margin: 0;
 
-    @include breakpoint-above("medium") {
+    @include breakpoint-above('medium') {
       text-align: center;
     }
 
@@ -741,7 +740,7 @@ label {
       padding-left: 0.5em;
       padding-right: 1em;
 
-      @include breakpoint-above("medium") {
+      @include breakpoint-above('medium') {
         padding: 0;
       }
     }
@@ -771,7 +770,7 @@ label {
 
   &__radio-input + label:before,
   &__radio-row-input + label:before {
-    content: "";
+    content: '';
     display: inline-block;
     width: 24px;
     height: 24px;
@@ -803,7 +802,7 @@ label {
   border-radius: 5px;
   text-align: left;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     max-width: 800px;
   }
 }

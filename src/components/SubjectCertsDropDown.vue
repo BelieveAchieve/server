@@ -75,13 +75,13 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import CheckMark from "@/components/CheckMark";
-import LargeButton from "@/components/LargeButton";
-import ArrowIcon from "@/assets/arrow.svg";
+import { mapState } from 'vuex'
+import CheckMark from '@/components/CheckMark'
+import LargeButton from '@/components/LargeButton'
+import ArrowIcon from '@/assets/arrow.svg'
 
 export default {
-  name: "SubjectCertsDropDown",
+  name: 'SubjectCertsDropDown',
   components: {
     CheckMark,
     LargeButton,
@@ -107,32 +107,32 @@ export default {
       windowWidth: state => state.app.windowWidth
     }),
     isLargeDevice() {
-      const largeScreenBreakpoint = 992;
+      const largeScreenBreakpoint = 992
 
-      return this.windowWidth <= largeScreenBreakpoint;
+      return this.windowWidth <= largeScreenBreakpoint
     }
   },
 
   methods: {
     isComplete(cert) {
-      return this.user.certifications[cert].passed;
+      return this.user.certifications[cert].passed
     },
     hasUnlockedSubject(cert) {
-      if (cert === "algebra") return this.user.subjects.includes("algebraOne");
-      return this.user.subjects.includes(cert);
+      if (cert === 'algebra') return this.user.subjects.includes('algebraOne')
+      return this.user.subjects.includes(cert)
     },
     progressStatus(cert) {
-      if (this.isComplete(cert)) return "Completed";
-      if (this.hasUnlockedSubject(cert)) return "Unlocked";
-      else return "Not started";
+      if (this.isComplete(cert)) return 'Completed'
+      if (this.hasUnlockedSubject(cert)) return 'Unlocked'
+      else return 'Not started'
     },
     actionButtonText(cert) {
       if (this.isComplete(cert) || this.hasUnlockedSubject(cert))
-        return "Completed";
-      else return "Start quiz";
+        return 'Completed'
+      else return 'Start quiz'
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

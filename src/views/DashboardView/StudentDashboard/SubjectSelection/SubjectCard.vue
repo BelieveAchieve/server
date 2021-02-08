@@ -57,21 +57,21 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex";
-import DropdownList from "@/components/DropdownList";
-import HyperlinkButton from "@/components/HyperlinkButton";
-import LargeButton from "@/components/LargeButton";
-import getCookie from "@/utils/get-cookie";
+import { mapGetters, mapState } from 'vuex'
+import DropdownList from '@/components/DropdownList'
+import HyperlinkButton from '@/components/HyperlinkButton'
+import LargeButton from '@/components/LargeButton'
+import getCookie from '@/utils/get-cookie'
 
 export default {
   components: { DropdownList, HyperlinkButton, LargeButton },
   data() {
     return {
-      selectedSubtopic: ""
-    };
+      selectedSubtopic: ''
+    }
   },
   beforeDestroy() {
-    clearTimeout(this.timeoutId);
+    clearTimeout(this.timeoutId)
   },
   props: {
     title: {
@@ -80,7 +80,7 @@ export default {
     },
     subtitle: {
       type: String,
-      default: "Join a chat room to start."
+      default: 'Join a chat room to start.'
     },
     svg: {
       type: Object,
@@ -91,7 +91,7 @@ export default {
     subtopicDisplayNames: Object,
     buttonText: {
       type: String,
-      default: "Start a chat"
+      default: 'Start a chat'
     },
     routeTo: String,
     disableSubjectCard: Boolean
@@ -103,58 +103,58 @@ export default {
       user: state => state.user.user
     }),
     ...mapGetters({
-      mobileMode: "app/mobileMode",
-      isSessionAlive: "user/isSessionAlive"
+      mobileMode: 'app/mobileMode',
+      isSessionAlive: 'user/isSessionAlive'
     }),
     disabled() {
-      return this.disableSubjectCard;
+      return this.disableSubjectCard
     }
   },
   methods: {
     handleClick() {
-      const hasSentPushTokenRegister = getCookie("hasSentPushTokenRegister");
+      const hasSentPushTokenRegister = getCookie('hasSentPushTokenRegister')
 
       // show the notifications modal for tablet users on the mobile app
       if (
         this.isMobileApp &&
-        this.selectedSubtopic !== "" &&
+        this.selectedSubtopic !== '' &&
         !hasSentPushTokenRegister
       ) {
-        this.$store.dispatch("app/modal/show", {
-          component: "NotificationsModal",
+        this.$store.dispatch('app/modal/show', {
+          component: 'NotificationsModal',
           data: {
-            backText: "Dashboard",
-            acceptText: "Yes, please notify me!",
+            backText: 'Dashboard',
+            acceptText: 'Yes, please notify me!',
             selectedSubtopic: this.selectedSubtopic,
             topic: this.topic,
             showTemplateButtons: false
           }
-        });
-      } else if (this.title === "Invite Your Friends") {
-        this.$store.dispatch("app/modal/show", {
-          component: "ReferralModal",
+        })
+      } else if (this.title === 'Invite Your Friends') {
+        this.$store.dispatch('app/modal/show', {
+          component: 'ReferralModal',
           data: {
             svg: this.svg,
             showAccept: false
           }
-        });
+        })
       } else {
-        this.$store.dispatch("app/modal/show", {
-          component: "SubjectSelectionModal",
+        this.$store.dispatch('app/modal/show', {
+          component: 'SubjectSelectionModal',
           data: {
-            backText: "Dashboard",
-            acceptText: this.topic === "college" ? "Start a chat" : "Continue",
+            backText: 'Dashboard',
+            acceptText: this.topic === 'college' ? 'Start a chat' : 'Continue',
             topic: this.topic,
             subtopics: this.subtopics,
             subtopicDisplayNames: this.subtopicDisplayNames,
             svg: this.svg,
             preSelectedSubtopic: this.selectedSubtopic
           }
-        });
+        })
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -166,7 +166,7 @@ export default {
   border-radius: 8px;
   padding: 16px;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     @include flex-container(column, space-between, center);
     @include child-spacing(left, 0);
     @include child-spacing(top, 32px);
@@ -181,19 +181,19 @@ export default {
 }
 
 .SubjectCard-title {
-  @include font-category("heading");
+  @include font-category('heading');
   margin: 0;
   padding: 0;
   text-align: left;
 
-  @include breakpoint-above("medium") {
-    @include font-category("display-small");
+  @include breakpoint-above('medium') {
+    @include font-category('display-small');
     white-space: nowrap;
   }
 }
 
 .SubjectCard-subtitle {
-  @include font-category("body");
+  @include font-category('body');
   color: $c-secondary-grey;
   margin: 0;
   padding: 0;

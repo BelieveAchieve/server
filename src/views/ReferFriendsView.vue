@@ -62,34 +62,34 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import ReferralLink from "@/components/ReferralLink.vue";
-import NetworkService from "@/services/NetworkService";
+import { mapGetters } from 'vuex'
+import ReferralLink from '@/components/ReferralLink.vue'
+import NetworkService from '@/services/NetworkService'
 
 export default {
-  name: "ReferFriends",
+  name: 'ReferFriends',
   components: { ReferralLink },
   data() {
     return {
-      selectedSubtopic: "",
-      copyMessage: "Copy",
+      selectedSubtopic: '',
+      copyMessage: 'Copy',
       referredFriends: []
-    };
+    }
   },
   async mounted() {
     const {
       data: { referredFriends }
-    } = await NetworkService.getReferredFriends();
-    this.referredFriends = referredFriends;
+    } = await NetworkService.getReferredFriends()
+    this.referredFriends = referredFriends
   },
   computed: {
-    ...mapGetters({ mobileMode: "app/mobileMode" }),
+    ...mapGetters({ mobileMode: 'app/mobileMode' }),
     referredFriendsBarLength() {
-      if (this.referredFriends.length > 5) return 5;
-      else return this.referredFriends.length;
+      if (this.referredFriends.length > 5) return 5
+      else return this.referredFriends.length
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -101,7 +101,7 @@ p {
 }
 
 p {
-  @include font-category("body");
+  @include font-category('body');
 }
 
 .refer-friends {
@@ -111,26 +111,26 @@ p {
   margin: 1em;
   text-align: left;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     max-width: 1000px;
     margin: 3em 3em 0 3em;
   }
 
   &__title {
-    @include font-category("display-small");
-    @include breakpoint-above("medium") {
+    @include font-category('display-small');
+    @include breakpoint-above('medium') {
       margin-top: 24px;
     }
     color: initial;
   }
 
   &__instructions {
-    @include font-category("heading");
+    @include font-category('heading');
     font-weight: 700;
   }
 
   &__subtitle {
-    @include font-category("body");
+    @include font-category('body');
     margin-bottom: 2em;
     margin-top: 1em;
   }
@@ -157,19 +157,19 @@ p {
   }
 
   &__money-bag {
-    @include font-category("display-small");
+    @include font-category('display-small');
   }
 
   &__progress {
     margin: 2em 0;
     @include flex-container(column);
 
-    @include breakpoint-above("medium") {
+    @include breakpoint-above('medium') {
       @include flex-container(row, flex-start, center);
     }
 
     &-title {
-      @include breakpoint-above("medium") {
+      @include breakpoint-above('medium') {
         margin-left: 4em;
       }
 
@@ -186,11 +186,11 @@ p {
       background-color: $c-background-grey;
       margin: 1em 0;
 
-      @include breakpoint-above("small") {
+      @include breakpoint-above('small') {
         width: 30%;
       }
 
-      @include breakpoint-above("medium") {
+      @include breakpoint-above('medium') {
         width: 20%;
         margin: 0 2em;
       }

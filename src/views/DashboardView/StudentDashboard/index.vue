@@ -24,56 +24,56 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex";
-import DashboardBanner from "../DashboardBanner";
-import SubjectSelection from "./SubjectSelection";
-import FirstSessionCongratsModal from "./FirstSessionCongratsModal";
-import moment from "moment-timezone";
-import { isEnabled } from "unleash-client";
+import { mapGetters, mapState } from 'vuex'
+import DashboardBanner from '../DashboardBanner'
+import SubjectSelection from './SubjectSelection'
+import FirstSessionCongratsModal from './FirstSessionCongratsModal'
+import moment from 'moment-timezone'
+import { isEnabled } from 'unleash-client'
 
 const headerData = {
-  component: "RejoinSessionHeader",
+  component: 'RejoinSessionHeader',
   data: { important: true }
-};
+}
 
 export default {
-  name: "student-dashboard",
+  name: 'student-dashboard',
   components: { DashboardBanner, SubjectSelection, FirstSessionCongratsModal },
   created() {
     if (this.isSessionAlive) {
-      this.$store.dispatch("app/header/show", headerData);
+      this.$store.dispatch('app/header/show', headerData)
     }
 
     if (this.isFirstDashboardVisit) {
-      this.$store.dispatch("app/modal/show", {
-        component: "StudentOnboardingModal",
+      this.$store.dispatch('app/modal/show', {
+        component: 'StudentOnboardingModal',
         data: {
           showTemplateButtons: false
         }
-      });
+      })
     }
 
     if (this.hasSeenFirstSessionCongratsModal)
-      this.toggleFirstSessionCongratsModal();
+      this.toggleFirstSessionCongratsModal()
 
     this.currentHour = moment()
-      .tz("America/New_York")
-      .hour();
+      .tz('America/New_York')
+      .hour()
   },
   data() {
     return {
       currentHour: 0,
       showFirstSessionCongratsModal: false
-    };
+    }
   },
   computed: {
     ...mapState({
       user: state => state.user.user,
       isFirstDashboardVisit: state => state.user.isFirstDashboardVisit
     }),
-    ...mapGetters({ isSessionAlive: "user/isSessionAlive" }),
+    ...mapGetters({ isSessionAlive: 'user/isSessionAlive' }),
     isLowCoachHour() {
-      return this.currentHour < 12;
+      return this.currentHour < 12
     },
     noticeMessage() {
       // if (this.currentHour >= 12 && this.currentHour <= 23)
@@ -86,48 +86,48 @@ export default {
       // )
       //   return "Heads up: we have less coaches available than normal right now. Try making requests between 12pm-12am ET when possible!";
 
-      return "";
+      return ''
     },
     downtimeMessage() {
-      const downtimeStartDate = moment.utc("2021-01-16 21:30:00");
-      const localStartDate = moment(downtimeStartDate).local();
-      const downtimeEndDate = moment.utc("2021-01-17 00:30:00");
-      const localEndDate = moment(downtimeEndDate).local();
-      if (isEnabled("downtime-banner-1-16")) {
+      const downtimeStartDate = moment.utc('2021-01-16 21:30:00')
+      const localStartDate = moment(downtimeStartDate).local()
+      const downtimeEndDate = moment.utc('2021-01-17 00:30:00')
+      const localEndDate = moment(downtimeEndDate).local()
+      if (isEnabled('downtime-banner-1-16')) {
         return `UPchieve will be down for maintenance ${localStartDate.format(
-          "LT"
-        )} - ${localEndDate.format("LT")} on ${localStartDate.format(
-          "dddd"
-        )}, ${localStartDate.format("LL")}`;
+          'LT'
+        )} - ${localEndDate.format('LT')} on ${localStartDate.format(
+          'dddd'
+        )}, ${localStartDate.format('LL')}`
       } else {
-        return "";
+        return ''
       }
     },
     hasSeenFirstSessionCongratsModal() {
       return (
         this.user &&
         this.user.pastSessions.length === 1 &&
-        !localStorage.getItem("viewedFirstSessionCongratsModal")
-      );
+        !localStorage.getItem('viewedFirstSessionCongratsModal')
+      )
     }
   },
   methods: {
     toggleFirstSessionCongratsModal() {
-      this.showFirstSessionCongratsModal = !this.showFirstSessionCongratsModal;
+      this.showFirstSessionCongratsModal = !this.showFirstSessionCongratsModal
     }
   },
   watch: {
     isSessionAlive(isAlive, prevIsAlive) {
       if (!isAlive) {
-        this.$store.dispatch("app/header/show");
+        this.$store.dispatch('app/header/show')
         if (prevIsAlive && this.hasSeenFirstSessionCongratsModal)
-          this.toggleFirstSessionCongratsModal();
+          this.toggleFirstSessionCongratsModal()
       } else {
-        this.$store.dispatch("app/header/show", headerData);
+        this.$store.dispatch('app/header/show', headerData)
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -135,7 +135,7 @@ export default {
   @include flex-container(column);
   padding: 40px 20px;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     display: inline-flex;
     min-width: 100%;
     padding: 40px;

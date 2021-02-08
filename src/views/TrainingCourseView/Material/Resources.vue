@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import LinkMaterial from "./Link";
+import LinkMaterial from './Link'
 
 export default {
   components: {
@@ -19,7 +19,7 @@ export default {
   props: {
     links: Array
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

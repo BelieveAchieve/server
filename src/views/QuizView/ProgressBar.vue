@@ -31,10 +31,10 @@ export default {
   },
   computed: {
     hasManyQuestions() {
-      return this.quizLength > 16;
+      return this.quizLength > 16
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

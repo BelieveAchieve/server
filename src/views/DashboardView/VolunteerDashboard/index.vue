@@ -137,37 +137,37 @@
 </template>
 
 <script>
-import _ from "lodash";
-import { mapState, mapGetters } from "vuex";
-import ListSessions from "./ListSessions";
-import DashboardBanner from "../DashboardBanner";
-import AccountAction from "./AccountAction";
-import PhotoUploadModal from "./PhotoUploadModal";
-import ReferencesModal from "./ReferencesModal";
-import VolunteerWelcomeModal from "@/views/DashboardView/VolunteerDashboard/VolunteerWelcomeModal.vue";
-import PersonCardIcon from "@/assets/person-card.svg";
-import PersonIcon from "@/assets/person.svg";
-import ReferencesIcon from "@/assets/references-icon.svg";
-import CalendarIcon from "@/assets/calendar.svg";
-import CertificationIcon from "@/assets/certification.svg";
-import VerificationIcon from "@/assets/verification.svg";
-import OnboardingIcon from "@/assets/onboarding.svg";
-import TrainingIcon from "@/assets/training_icon.svg";
-import { allSubtopicNames } from "@/utils/topics";
-import WebNotificationsButton from "@/components/WebNotificationsButton.vue";
-import ArrowIcon from "@/assets/arrow.svg";
-import moment from "moment-timezone";
-import { isEnabled } from "unleash-client";
+import _ from 'lodash'
+import { mapState, mapGetters } from 'vuex'
+import ListSessions from './ListSessions'
+import DashboardBanner from '../DashboardBanner'
+import AccountAction from './AccountAction'
+import PhotoUploadModal from './PhotoUploadModal'
+import ReferencesModal from './ReferencesModal'
+import VolunteerWelcomeModal from '@/views/DashboardView/VolunteerDashboard/VolunteerWelcomeModal.vue'
+import PersonCardIcon from '@/assets/person-card.svg'
+import PersonIcon from '@/assets/person.svg'
+import ReferencesIcon from '@/assets/references-icon.svg'
+import CalendarIcon from '@/assets/calendar.svg'
+import CertificationIcon from '@/assets/certification.svg'
+import VerificationIcon from '@/assets/verification.svg'
+import OnboardingIcon from '@/assets/onboarding.svg'
+import TrainingIcon from '@/assets/training_icon.svg'
+import { allSubtopicNames } from '@/utils/topics'
+import WebNotificationsButton from '@/components/WebNotificationsButton.vue'
+import ArrowIcon from '@/assets/arrow.svg'
+import moment from 'moment-timezone'
+import { isEnabled } from 'unleash-client'
 
 const headerData = {
-  component: "RejoinSessionHeader",
+  component: 'RejoinSessionHeader',
   data: { important: true }
-};
+}
 
-const upchieveTopics = allSubtopicNames();
+const upchieveTopics = allSubtopicNames()
 
 export default {
-  name: "volunteer-dashboard",
+  name: 'volunteer-dashboard',
   components: {
     ListSessions,
     DashboardBanner,
@@ -184,19 +184,19 @@ export default {
   watch: {
     isSessionAlive(isAlive) {
       if (!isAlive) {
-        this.$store.dispatch("app/header/show");
+        this.$store.dispatch('app/header/show')
       } else {
-        this.$store.dispatch("app/header/show", headerData);
+        this.$store.dispatch('app/header/show', headerData)
       }
     }
   },
   created() {
     if (this.isSessionAlive) {
-      this.$store.dispatch("app/header/show", headerData);
+      this.$store.dispatch('app/header/show', headerData)
     }
 
     if (this.isFirstDashboardVisit) {
-      this.toggleWelcomeModal();
+      this.toggleWelcomeModal()
     }
   },
   data() {
@@ -204,7 +204,7 @@ export default {
       showPhotoUploadModal: false,
       showReferencesModal: false,
       showWelcomeModal: false
-    };
+    }
   },
   computed: {
     ...mapState({
@@ -212,168 +212,168 @@ export default {
       isFirstDashboardVisit: state => state.user.isFirstDashboardVisit
     }),
     ...mapGetters({
-      isSessionAlive: "user/isSessionAlive",
-      sessionPath: "user/sessionPath",
-      hasCertification: "user/hasCertification",
-      hasSelectedAvailability: "user/hasSelectedAvailability"
+      isSessionAlive: 'user/isSessionAlive',
+      sessionPath: 'user/sessionPath',
+      hasCertification: 'user/hasCertification',
+      hasSelectedAvailability: 'user/hasSelectedAvailability'
     }),
 
     downtimeMessage() {
-      const downtimeStartDate = moment.utc("2021-01-16 21:30:00");
-      const localStartDate = moment(downtimeStartDate).local();
-      const downtimeEndDate = moment.utc("2021-01-17 00:30:00");
-      const localEndDate = moment(downtimeEndDate).local();
-      if (isEnabled("downtime-banner-1-16")) {
+      const downtimeStartDate = moment.utc('2021-01-16 21:30:00')
+      const localStartDate = moment(downtimeStartDate).local()
+      const downtimeEndDate = moment.utc('2021-01-17 00:30:00')
+      const localEndDate = moment(downtimeEndDate).local()
+      if (isEnabled('downtime-banner-1-16')) {
         return `UPchieve will be down for maintenance ${localStartDate.format(
-          "LT"
-        )} - ${localEndDate.format("LT")} on ${localStartDate.format(
-          "dddd"
-        )}, ${localStartDate.format("LL")}`;
+          'LT'
+        )} - ${localEndDate.format('LT')} on ${localStartDate.format(
+          'dddd'
+        )}, ${localStartDate.format('LL')}`
       } else {
-        return "";
+        return ''
       }
     },
 
     isNewVolunteer() {
-      return !this.user.pastSessions || !this.user.pastSessions.length;
+      return !this.user.pastSessions || !this.user.pastSessions.length
     },
 
     showUpchieve101Notice() {
-      if (!this.user.isApproved || !this.user.isOnboarded) return false;
-      if (this.user.certifications.upchieve101.passed) return false;
-      return new Date(this.user.createdAt) < new Date("9/18/20");
+      if (!this.user.isApproved || !this.user.isOnboarded) return false
+      if (this.user.certifications.upchieve101.passed) return false
+      return new Date(this.user.createdAt) < new Date('9/18/20')
     },
 
     photoIdAction() {
       switch (this.user.photoIdStatus) {
-        case "EMPTY":
+        case 'EMPTY':
           return {
-            subtitle: "Upload a photo ID",
-            status: "DEFAULT"
-          };
-        case "SUBMITTED":
+            subtitle: 'Upload a photo ID',
+            status: 'DEFAULT'
+          }
+        case 'SUBMITTED':
           return {
-            subtitle: "Pending review",
-            status: "PENDING"
-          };
-        case "APPROVED":
+            subtitle: 'Pending review',
+            status: 'PENDING'
+          }
+        case 'APPROVED':
           return {
-            subtitle: "Completed",
-            status: "COMPLETED"
-          };
-        case "REJECTED":
+            subtitle: 'Completed',
+            status: 'COMPLETED'
+          }
+        case 'REJECTED':
           return {
-            subtitle: "Please upload a different photo",
-            status: "ERROR"
-          };
+            subtitle: 'Please upload a different photo',
+            status: 'ERROR'
+          }
         default:
           return {
-            subtitle: "Upload a photo ID",
-            status: "DEFAULT"
-          };
+            subtitle: 'Upload a photo ID',
+            status: 'DEFAULT'
+          }
       }
     },
 
     referenceAction() {
-      const statuses = this.user.references.map(r => r.status);
+      const statuses = this.user.references.map(r => r.status)
 
       if (statuses.length === 0)
         return {
-          subtitle: "Provide 2 references",
-          status: "DEFAULT"
-        };
+          subtitle: 'Provide 2 references',
+          status: 'DEFAULT'
+        }
 
-      if (statuses.some(s => s === "REJECTED"))
+      if (statuses.some(s => s === 'REJECTED'))
         return {
-          subtitle: "Provide new reference(s)",
-          status: "ERROR"
-        };
+          subtitle: 'Provide new reference(s)',
+          status: 'ERROR'
+        }
 
       if (statuses.length === 1)
         return {
-          subtitle: "In progress: provide 1 additional reference",
-          status: "PROGRESS"
-        };
+          subtitle: 'In progress: provide 1 additional reference',
+          status: 'PROGRESS'
+        }
 
-      if (statuses[0] === "APPROVED" && statuses[1] === "APPROVED")
+      if (statuses[0] === 'APPROVED' && statuses[1] === 'APPROVED')
         return {
-          subtitle: "Completed",
-          status: "COMPLETED"
-        };
+          subtitle: 'Completed',
+          status: 'COMPLETED'
+        }
 
-      if (statuses[0] === "SUBMITTED" && statuses[1] === "SUBMITTED")
+      if (statuses[0] === 'SUBMITTED' && statuses[1] === 'SUBMITTED')
         return {
-          subtitle: "Pending review",
-          status: "PENDING"
-        };
+          subtitle: 'Pending review',
+          status: 'PENDING'
+        }
 
       return {
-        subtitle: "Waiting on references to submit",
-        status: "PENDING"
-      };
+        subtitle: 'Waiting on references to submit',
+        status: 'PENDING'
+      }
     },
 
     availabilityAction() {
       if (this.hasSelectedAvailability)
         return {
-          subtitle: "Completed",
-          status: "COMPLETED"
-        };
+          subtitle: 'Completed',
+          status: 'COMPLETED'
+        }
 
       return {
-        subtitle: "Select at least one hour",
-        status: "DEFAULT"
-      };
+        subtitle: 'Select at least one hour',
+        status: 'DEFAULT'
+      }
     },
 
     certificationAction() {
       for (let cert in this.user.certifications) {
         // skip certification for check for required training
-        if (cert === "upchieve101") continue;
+        if (cert === 'upchieve101') continue
         if (this.user.certifications[cert].passed)
           return {
-            subtitle: "Completed",
-            status: "COMPLETED"
-          };
+            subtitle: 'Completed',
+            status: 'COMPLETED'
+          }
       }
       return {
-        subtitle: "Pass at least one quiz",
-        status: "DEFAULT"
-      };
+        subtitle: 'Pass at least one quiz',
+        status: 'DEFAULT'
+      }
     },
 
     trainingAction() {
-      const passedQuiz = this.user.certifications.upchieve101.passed;
+      const passedQuiz = this.user.certifications.upchieve101.passed
       if (passedQuiz)
         return {
-          subtitle: "Completed",
-          status: "COMPLETED"
-        };
+          subtitle: 'Completed',
+          status: 'COMPLETED'
+        }
 
-      const startedCourse = this.user.trainingCourses.upchieve101.progress > 0;
+      const startedCourse = this.user.trainingCourses.upchieve101.progress > 0
       if (startedCourse)
         return {
-          subtitle: "In progress",
-          status: "PENDING"
-        };
+          subtitle: 'In progress',
+          status: 'PENDING'
+        }
 
       return {
-        subtitle: "Go through our training",
-        status: "DEFAULT"
-      };
+        subtitle: 'Go through our training',
+        status: 'DEFAULT'
+      }
     },
 
     backgroundInfoAction() {
       if (this.hasCompletedBackgroundInfo)
         return {
-          subtitle: "Completed",
-          status: "COMPLETED"
-        };
+          subtitle: 'Completed',
+          status: 'COMPLETED'
+        }
 
       return {
-        subtitle: "Fill out form",
-        status: "DEFAULT"
-      };
+        subtitle: 'Fill out form',
+        status: 'DEFAULT'
+      }
     },
 
     hasCompletedBackgroundInfo() {
@@ -381,18 +381,18 @@ export default {
         this.user.occupation &&
         this.user.occupation.length > 0 &&
         this.user.country
-      );
+      )
     },
 
     impactStats() {
-      const user = this.$store.state.user.user;
+      const user = this.$store.state.user.user
       // (1) Hours selected
       const userHasSchedule = _.chain(user)
-        .get("availability.Thursday.5p")
+        .get('availability.Thursday.5p')
         .isBoolean()
-        .value();
+        .value()
 
-      let numHoursSelected = 0;
+      let numHoursSelected = 0
 
       if (userHasSchedule) {
         numHoursSelected = _.reduce(
@@ -403,66 +403,66 @@ export default {
               dayHours,
               (dailyHourCount, hourVal) => {
                 // Add 1 if hour val is true
-                return dailyHourCount + (hourVal ? 1 : 0);
+                return dailyHourCount + (hourVal ? 1 : 0)
               },
               0
-            );
+            )
 
-            return weeklyHourCount + hoursSelectedForDay;
+            return weeklyHourCount + hoursSelectedForDay
           },
           0
-        );
+        )
       }
 
       // (2) Certs obtained
       const certsObtained = _.filter(upchieveTopics, topic => {
-        return _.get(user, `certifications.${topic}.passed`, false);
-      });
+        return _.get(user, `certifications.${topic}.passed`, false)
+      })
 
-      const numCertsObtained = certsObtained.length;
+      const numCertsObtained = certsObtained.length
 
       // (3) Requests filled
-      const numRequestsFilled = _.get(user, "pastSessions.length", "--");
+      const numRequestsFilled = _.get(user, 'pastSessions.length', '--')
 
       // (4) Hours tutored
-      const numHoursTutored = Number(this.user.hoursTutored) || "--";
+      const numHoursTutored = Number(this.user.hoursTutored) || '--'
 
-      const numElapsedAvailabilityHours = user.elapsedAvailability;
+      const numElapsedAvailabilityHours = user.elapsedAvailability
 
       return [
         {
-          label: "Hours of availability selected",
+          label: 'Hours of availability selected',
           value: `${numHoursSelected} hours selected`
         },
         {
-          label: "Number of certifications obtained",
+          label: 'Number of certifications obtained',
           value: `${numCertsObtained} certs obtained`
         },
         {
-          label: "Number of requests filled",
+          label: 'Number of requests filled',
           value: `${numRequestsFilled} requests filled`
         },
         {
-          label: "Hours of tutoring completed",
+          label: 'Hours of tutoring completed',
           value: `${numHoursTutored} hours tutored`
         },
         {
-          label: "Hours of elapsed availability",
+          label: 'Hours of elapsed availability',
           value: `${numElapsedAvailabilityHours} hours elapsed`
         }
-      ];
+      ]
     },
 
     approvalCardSubheader() {
       if (this.user.volunteerPartnerOrg)
-        return "Just one step left to get approved to volunteer with UPchieve!";
+        return 'Just one step left to get approved to volunteer with UPchieve!'
 
-      return "Complete our screening process to get approved to volunteer with UPchieve.";
+      return 'Complete our screening process to get approved to volunteer with UPchieve.'
     },
     openVolunteerApprovalAccountActions() {
       const accountActions = [
         {
-          title: "Background information",
+          title: 'Background information',
           subtitle: this.backgroundInfoAction.subtitle,
           status: this.backgroundInfoAction.status,
           clickFn: this.goToBackgroundInfo,
@@ -470,7 +470,7 @@ export default {
           priority: this.addSortPriorityNum(this.backgroundInfoAction.status)
         },
         {
-          title: "Proof of identity",
+          title: 'Proof of identity',
           subtitle: this.photoIdAction.subtitle,
           status: this.photoIdAction.status,
           clickFn: this.togglePhotoUploadModal,
@@ -478,22 +478,22 @@ export default {
           priority: this.addSortPriorityNum(this.photoIdAction.status)
         },
         {
-          title: "Reference check",
+          title: 'Reference check',
           subtitle: this.referenceAction.subtitle,
           status: this.referenceAction.status,
           clickFn: this.toggleReferencesModal,
           icon: ReferencesIcon,
           priority: this.addSortPriorityNum(this.referenceAction.status)
         }
-      ];
+      ]
 
-      return accountActions.sort((a, b) => a.priority - b.priority);
+      return accountActions.sort((a, b) => a.priority - b.priority)
     },
 
     partnerVolunteerApprovalAccountActions() {
       const accountActions = [
         {
-          title: "Background information",
+          title: 'Background information',
           subtitle: this.backgroundInfoAction.subtitle,
           status: this.backgroundInfoAction.status,
           clickFn: this.goToBackgroundInfo,
@@ -501,23 +501,23 @@ export default {
           priority: this.addSortPriorityNum(this.backgroundInfoAction.status)
         },
         {
-          title: "Proof of identity",
+          title: 'Proof of identity',
           // @todo: change copy for subtitle
-          subtitle: "Completed",
-          status: "COMPLETED",
+          subtitle: 'Completed',
+          status: 'COMPLETED',
           clickFn: () => {},
           icon: PersonCardIcon,
-          priority: this.addSortPriorityNum("COMPLETED")
+          priority: this.addSortPriorityNum('COMPLETED')
         }
-      ];
+      ]
 
-      return accountActions.sort((a, b) => a.priority - b.priority);
+      return accountActions.sort((a, b) => a.priority - b.priority)
     },
 
     onboaringAccountActions() {
       const onboaringActions = [
         {
-          title: "Complete UPchieve 101",
+          title: 'Complete UPchieve 101',
           subtitle: this.trainingAction.subtitle,
           status: this.trainingAction.status,
           clickFn: this.clickUpchieve101Action,
@@ -525,7 +525,7 @@ export default {
           priority: this.addSortPriorityNum(this.trainingAction.status)
         },
         {
-          title: "Select availability",
+          title: 'Select availability',
           subtitle: this.availabilityAction.subtitle,
           status: this.availabilityAction.status,
           clickFn: this.clickAvailabilityAction,
@@ -533,63 +533,63 @@ export default {
           priority: this.addSortPriorityNum(this.availabilityAction.status)
         },
         {
-          title: "Unlock a subject",
+          title: 'Unlock a subject',
           subtitle: this.certificationAction.subtitle,
           status: this.certificationAction.status,
           clickFn: this.clickCertificationAction,
           icon: CertificationIcon,
           priority: this.addSortPriorityNum(this.certificationAction.status)
         }
-      ];
-      return onboaringActions.sort((a, b) => a.priority - b.priority);
+      ]
+      return onboaringActions.sort((a, b) => a.priority - b.priority)
     }
   },
   methods: {
     rejoinHelpSession() {
-      const path = this.sessionPath;
+      const path = this.sessionPath
       if (path) {
-        this.$router.push(path);
+        this.$router.push(path)
       } else {
-        this.$router.push("/");
+        this.$router.push('/')
       }
     },
 
     showOnboardingModal() {
-      this.$store.dispatch("app/modal/show", {
-        component: "VolunteerOnboardingModal",
-        data: { alertModal: true, acceptText: "Get started" }
-      });
+      this.$store.dispatch('app/modal/show', {
+        component: 'VolunteerOnboardingModal',
+        data: { alertModal: true, acceptText: 'Get started' }
+      })
     },
     toggleWelcomeModal() {
-      this.showWelcomeModal = !this.showWelcomeModal;
+      this.showWelcomeModal = !this.showWelcomeModal
     },
     togglePhotoUploadModal() {
-      this.showPhotoUploadModal = !this.showPhotoUploadModal;
+      this.showPhotoUploadModal = !this.showPhotoUploadModal
     },
     toggleReferencesModal() {
-      this.showReferencesModal = !this.showReferencesModal;
+      this.showReferencesModal = !this.showReferencesModal
     },
     clickAvailabilityAction() {
-      this.$router.push("/calendar");
+      this.$router.push('/calendar')
     },
     clickCertificationAction() {
-      this.$router.push("/training");
+      this.$router.push('/training')
     },
     clickUpchieve101Action() {
-      this.$router.push("/training/course/upchieve101");
+      this.$router.push('/training/course/upchieve101')
     },
     goToBackgroundInfo() {
-      this.$router.push("/background-information");
+      this.$router.push('/background-information')
     },
     addSortPriorityNum(status) {
-      if (status === "COMPLETED") return 0;
-      if (status === "ERROR") return 1;
-      if (status === "PENDING") return 2;
-      if (status === "PROGRESS") return 3;
-      if (status === "DEFAULT") return 4;
+      if (status === 'COMPLETED') return 0
+      if (status === 'ERROR') return 1
+      if (status === 'PENDING') return 2
+      if (status === 'PROGRESS') return 3
+      if (status === 'DEFAULT') return 4
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -622,7 +622,7 @@ export default {
   @include flex-container(column);
   padding: 40px 15px;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     display: inline-flex;
     min-width: 100%;
     padding: 40px;
@@ -633,7 +633,7 @@ export default {
     @include child-spacing(right, 0);
     margin-top: 40px;
 
-    @include breakpoint-above("huge") {
+    @include breakpoint-above('huge') {
       @include child-spacing(top, 0);
       @include child-spacing(right, 40px);
 
@@ -671,7 +671,7 @@ export default {
     margin-bottom: 24px;
     padding: 0 15px;
 
-    @include breakpoint-above("medium") {
+    @include breakpoint-above('medium') {
       padding: 0 42px;
     }
   }
@@ -679,7 +679,7 @@ export default {
   .account-action {
     margin: 0 10px;
 
-    @include breakpoint-above("medium") {
+    @include breakpoint-above('medium') {
       margin: 0 20px;
     }
   }
@@ -688,7 +688,7 @@ export default {
 .students-waiting {
   padding: 0;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     padding: 0 30px;
   }
 }
@@ -696,7 +696,7 @@ export default {
 .volunteer-impact {
   padding: 0 10px;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     padding: 0 30px;
   }
 
@@ -751,7 +751,7 @@ export default {
 }
 
 .track-hours-link {
-  @include font-category("button");
+  @include font-category('button');
   display: inline-flex;
   align-items: center;
   margin: 0 auto;

@@ -4,19 +4,19 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters } from 'vuex'
 
-import VolunteerDashboard from "./VolunteerDashboard";
-import StudentDashboard from "./StudentDashboard";
+import VolunteerDashboard from './VolunteerDashboard'
+import StudentDashboard from './StudentDashboard'
 
 export default {
-  name: "dashboard-view",
+  name: 'dashboard-view',
   components: { VolunteerDashboard, StudentDashboard },
   computed: {
     ...mapGetters({
-      isAuthenticated: "user/isAuthenticated",
-      isVolunteer: "user/isVolunteer"
+      isAuthenticated: 'user/isAuthenticated',
+      isVolunteer: 'user/isVolunteer'
     })
   }
-};
+}
 </script>

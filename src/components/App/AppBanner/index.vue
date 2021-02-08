@@ -5,9 +5,9 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import BannerTemplate from "./BannerTemplate";
-import MobileAppNoticeBanner from "./MobileAppNoticeBanner";
+import { mapState } from 'vuex'
+import BannerTemplate from './BannerTemplate'
+import MobileAppNoticeBanner from './MobileAppNoticeBanner'
 
 export default {
   components: {
@@ -21,8 +21,8 @@ export default {
   },
   methods: {
     onCancel() {
-      this.$store.dispatch("app/banner/hide");
+      this.$store.dispatch('app/banner/hide')
     }
   }
-};
+}
 </script>

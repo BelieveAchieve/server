@@ -15,18 +15,18 @@ export default {
   props: {
     headerTitle: {
       type: String,
-      default: ""
+      default: ''
     },
     ledeText: {
       type: String,
-      default: ""
+      default: ''
     }
   },
   data() {
-    return {};
+    return {}
   },
   methods: {}
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -37,7 +37,7 @@ export default {
   margin: 10px;
   padding: 20px 15px;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin: 40px;
     padding: 40px;
   }

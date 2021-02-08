@@ -15,7 +15,7 @@ export default {
   props: {
     resourceId: String
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

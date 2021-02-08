@@ -20,10 +20,10 @@
 </template>
 
 <script>
-import ChatMessage from "./ChatMessage";
+import ChatMessage from './ChatMessage'
 
 export default {
-  name: "ChatLog",
+  name: 'ChatLog',
 
   components: { ChatMessage },
 
@@ -32,7 +32,7 @@ export default {
     student: Object,
     volunteer: Object
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

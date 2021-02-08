@@ -48,11 +48,11 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import CheckMark from "@/components/CheckMark";
+import { mapState } from 'vuex'
+import CheckMark from '@/components/CheckMark'
 
 export default {
-  name: "AdditionalSubjectsDropDown",
+  name: 'AdditionalSubjectsDropDown',
   components: {
     CheckMark
   },
@@ -76,9 +76,9 @@ export default {
       windowWidth: state => state.app.windowWidth
     }),
     isLargeDevice() {
-      const largeScreenBreakpoint = 992;
+      const largeScreenBreakpoint = 992
 
-      return this.windowWidth <= largeScreenBreakpoint;
+      return this.windowWidth <= largeScreenBreakpoint
     }
   },
 
@@ -86,14 +86,14 @@ export default {
     isComplete(includedSubjects) {
       return includedSubjects.every(subject =>
         this.user.subjects.includes(subject.key)
-      );
+      )
     },
     progressStatus(includedSubjects) {
-      if (this.isComplete(includedSubjects)) return "Unlocked";
-      else return "Locked";
+      if (this.isComplete(includedSubjects)) return 'Unlocked'
+      else return 'Locked'
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

@@ -8,10 +8,10 @@
 </template>
 
 <script>
-import moment from "moment";
+import moment from 'moment'
 
 export default {
-  name: "UserListItem",
+  name: 'UserListItem',
 
   props: {
     user: Object
@@ -19,13 +19,13 @@ export default {
 
   computed: {
     createdAt() {
-      return moment(this.user.createdAt).format("l, h:mm a");
+      return moment(this.user.createdAt).format('l, h:mm a')
     },
     userType() {
-      return this.user.isVolunteer ? "Volunteer" : "Student";
+      return this.user.isVolunteer ? 'Volunteer' : 'Student'
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

@@ -15,10 +15,10 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import FormPageTemplate from "@/components/FormPageTemplate";
-import FormFooter from "@/components/FormFooter";
-import config from "../config";
+import { mapState } from 'vuex'
+import FormPageTemplate from '@/components/FormPageTemplate'
+import FormFooter from '@/components/FormFooter'
+import config from '../config'
 
 export default {
   components: {
@@ -26,7 +26,7 @@ export default {
     FormFooter
   },
   created() {
-    this.$store.dispatch("app/hideNavigation");
+    this.$store.dispatch('app/hideNavigation')
   },
   computed: {
     ...mapState({
@@ -36,9 +36,9 @@ export default {
   data() {
     return {
       mainWebsiteUrl: config.mainWebsiteUrl
-    };
+    }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

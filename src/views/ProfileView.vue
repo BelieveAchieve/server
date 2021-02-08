@@ -146,19 +146,19 @@
 </template>
 
 <script>
-import PhoneNumber from "awesome-phonenumber";
-import { mapGetters, mapState } from "vuex";
-import UserService from "@/services/UserService";
-import AnalyticsService from "@/services/AnalyticsService";
-import { topics, allSubtopics } from "@/utils/topics";
-import DeactivateAccountModal from "./DeactivateAccountModal";
-import setNotificationPermission from "@/utils/set-notification-permission";
-import getNotificationPermission from "@/utils/get-notification-permission";
-import VuePhoneNumberInput from "vue-phone-number-input";
-import { EVENTS } from "@/consts";
+import PhoneNumber from 'awesome-phonenumber'
+import { mapGetters, mapState } from 'vuex'
+import UserService from '@/services/UserService'
+import AnalyticsService from '@/services/AnalyticsService'
+import { topics, allSubtopics } from '@/utils/topics'
+import DeactivateAccountModal from './DeactivateAccountModal'
+import setNotificationPermission from '@/utils/set-notification-permission'
+import getNotificationPermission from '@/utils/get-notification-permission'
+import VuePhoneNumberInput from 'vue-phone-number-input'
+import { EVENTS } from '@/consts'
 
 export default {
-  name: "profile-view",
+  name: 'profile-view',
   components: {
     DeactivateAccountModal,
     VuePhoneNumberInput
@@ -166,31 +166,31 @@ export default {
   data() {
     return {
       activeEdit: false,
-      editBtnMsg: "Edit",
+      editBtnMsg: 'Edit',
       errors: [],
       invalidInputs: [],
       saveFailed: false,
-      phoneNational: "",
+      phoneNational: '',
       phoneInputInfo: {},
       isAccountActive: true,
       isAllowingNotifications: true,
       showDeactivateAccountModal: false
-    };
+    }
   },
   created() {
-    this.isAllowingNotifications = getNotificationPermission() === "granted";
-    this.isAccountActive = !this.user.isDeactivated;
+    this.isAllowingNotifications = getNotificationPermission() === 'granted'
+    this.isAccountActive = !this.user.isDeactivated
     if (this.user.isVolunteer && this.user.phone) {
       const num =
-        this.user.phone[0] === "+" ? this.user.phone : `+1${this.user.phone}`;
-      const pn = new PhoneNumber(num);
-      this.phoneNational = pn.getNumber("national");
+        this.user.phone[0] === '+' ? this.user.phone : `+1${this.user.phone}`
+      const pn = new PhoneNumber(num)
+      this.phoneNational = pn.getNumber('national')
 
       // Hack to initially mock the vue-phone-number-input data
       this.phoneInputInfo = {
         isValid: true,
-        e164: pn.getNumber("e164")
-      };
+        e164: pn.getNumber('e164')
+      }
     }
   },
   computed: {
@@ -198,81 +198,83 @@ export default {
       user: state => state.user.user
     }),
     ...mapGetters({
-      avatarUrl: "user/avatarUrl"
+      avatarUrl: 'user/avatarUrl'
     }),
     name() {
-      const user = this.$store.state.user.user;
-      return user.firstname || (user.isVolunteer ? "volunteer" : "student");
+      const user = this.$store.state.user.user
+      return user.firstname || (user.isVolunteer ? 'volunteer' : 'student')
     },
     internationalPhoneInfo() {
-      if (!this.user.isVolunteer || !this.user.phone) return false;
+      if (!this.user.isVolunteer || !this.user.phone) return false
 
       const num =
-        this.user.phone[0] === "+" ? this.user.phone : `+1 ${this.user.phone}`;
-      const pn = new PhoneNumber(num);
+        this.user.phone[0] === '+' ? this.user.phone : `+1 ${this.user.phone}`
+      const pn = new PhoneNumber(num)
 
       return {
-        number: pn.getNumber("international"),
+        number: pn.getNumber('international'),
         country: pn.getRegionCode()
-      };
+      }
     },
     certKey() {
-      let subtopicObj = {};
+      let subtopicObj = {}
 
       for (let [topicName, topicData] of Object.entries(topics)) {
         for (let topic in topicData.subtopics) {
-          if (topicData.subtopics.hasOwnProperty(topic)) {
-            const { displayName } = topicData.subtopics[topic];
-            subtopicObj[displayName] = topicName.toUpperCase();
+          if (
+            Object.prototype.hasOwnProperty.call(topicData.subtopics, topic)
+          ) {
+            const { displayName } = topicData.subtopics[topic]
+            subtopicObj[displayName] = topicName.toUpperCase()
           }
         }
       }
-      return subtopicObj;
+      return subtopicObj
     },
     subjects() {
-      const user = this.$store.state.user.user;
+      const user = this.$store.state.user.user
 
       const subjects = user.subjects.reduce((displayObj, key) => {
-        const subtopics = allSubtopics();
+        const subtopics = allSubtopics()
 
         if (subtopics[key]) {
-          displayObj[subtopics[key].displayName || subtopics[key]] = true;
+          displayObj[subtopics[key].displayName || subtopics[key]] = true
         }
 
-        return displayObj;
-      }, {});
+        return displayObj
+      }, {})
 
-      return subjects;
+      return subjects
     },
     isNotificationPermissionGranted() {
-      return "Notification" in window && Notification.permission === "granted";
+      return 'Notification' in window && Notification.permission === 'granted'
     }
   },
   methods: {
     onPhoneInputUpdate(phoneInputInfo) {
-      this.phoneInputInfo = phoneInputInfo;
+      this.phoneInputInfo = phoneInputInfo
     },
 
     toggleAccountActive({ value }) {
       if (!value) {
-        this.toggleDeactivatedAccountModal();
-        return;
+        this.toggleDeactivatedAccountModal()
+        return
       }
-      this.setIsAccountActive(true);
+      this.setIsAccountActive(true)
     },
 
     toggleDeactivatedAccountModal() {
-      this.showDeactivateAccountModal = !this.showDeactivateAccountModal;
+      this.showDeactivateAccountModal = !this.showDeactivateAccountModal
     },
 
     toggleWebNotifications({ value }) {
-      const permission = value ? "granted" : "denied";
-      this.isAllowingNotifications = value;
-      setNotificationPermission(permission);
+      const permission = value ? 'granted' : 'denied'
+      this.isAllowingNotifications = value
+      setNotificationPermission(permission)
     },
 
     setIsAccountActive(value) {
-      this.isAccountActive = value;
+      this.isAccountActive = value
     },
 
     /**
@@ -283,17 +285,17 @@ export default {
     editProfile() {
       // {Case A} Enter the editing state, then early exit
       if (!this.activeEdit) {
-        this.editBtnMsg = "Save";
-        this.activeEdit = true;
-        return;
+        this.editBtnMsg = 'Save'
+        this.activeEdit = true
+        return
       }
 
       // {Case B} The remainder of this function saves new changes and exits the editing state
 
       // Start by erasing previous errors
-      this.errors = [];
-      this.invalidInputs = [];
-      this.saveFailed = false;
+      this.errors = []
+      this.invalidInputs = []
+      this.saveFailed = false
 
       // Validate fields
       if (this.user.isVolunteer) {
@@ -303,33 +305,33 @@ export default {
           this.user.phone &&
           (!this.phoneInputInfo.isValid || !this.phoneInputInfo.e164)
         ) {
-          this.errors.push("Please enter a valid phone number.");
-          this.invalidInputs.push("phone");
+          this.errors.push('Please enter a valid phone number.')
+          this.invalidInputs.push('phone')
         }
       }
 
       if (!this.errors.length) {
         // @todo: refactor to use vuex mutation instead of setting global `user` directly
         // form fields valid, so set profile
-        const isDeactivatedBeforeUpdate = this.user.isDeactivated;
-        this.user.phone = this.phoneInputInfo.e164;
-        this.user.isDeactivated = !this.isAccountActive;
+        const isDeactivatedBeforeUpdate = this.user.isDeactivated
+        this.user.phone = this.phoneInputInfo.e164
+        this.user.isDeactivated = !this.isAccountActive
 
         // send only the necessary data
-        const payloadUser = {};
-        const keys = ["phone", "isDeactivated"];
+        const payloadUser = {}
+        const keys = ['phone', 'isDeactivated']
 
-        keys.forEach(key => (payloadUser[key] = this.user[key]));
+        keys.forEach(key => (payloadUser[key] = this.user[key]))
 
         // wait for save to succeed before coming out of edit mode
         UserService.setProfile(payloadUser).then(
           () => {
-            this.editBtnMsg = "Edit";
-            this.activeEdit = false;
-            this.saveFailed = false;
+            this.editBtnMsg = 'Edit'
+            this.activeEdit = false
+            this.saveFailed = false
             AnalyticsService.captureEvent(EVENTS.PROFILE_UPDATED, {
               event: EVENTS.PROFILE_UPDATED
-            });
+            })
 
             if (
               payloadUser.isDeactivated &&
@@ -337,16 +339,16 @@ export default {
             )
               AnalyticsService.captureEvent(EVENTS.ACCOUNT_DEACTIVATED, {
                 event: EVENTS.ACCOUNT_DEACTIVATED
-              });
+              })
           },
           () => {
-            this.saveFailed = true;
+            this.saveFailed = true
           }
-        );
+        )
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -363,7 +365,7 @@ export default {
   @include child-spacing(top, 16px);
   @include child-spacing(right, 0);
 
-  @include breakpoint-above("large") {
+  @include breakpoint-above('large') {
     padding: 40px;
 
     @include child-spacing(top, 0);
@@ -386,7 +388,7 @@ export default {
   font-weight: 500;
   padding: 25px 15px 10px 35px;
 
-  @include breakpoint-above("large") {
+  @include breakpoint-above('large') {
     padding: 40px 40px 0 40px;
   }
 }
@@ -402,7 +404,7 @@ export default {
   padding: 20px;
   text-align: left;
 
-  @include breakpoint-above("large") {
+  @include breakpoint-above('large') {
     padding: 40px;
   }
 }

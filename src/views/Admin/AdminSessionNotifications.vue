@@ -14,23 +14,23 @@
 </template>
 
 <script>
-import NetworkService from "@/services/NetworkService";
-import NotificationPreview from "@/components/Admin/NotificationPreview";
+import NetworkService from '@/services/NetworkService'
+import NotificationPreview from '@/components/Admin/NotificationPreview'
 
 export default {
-  name: "AdminSessionNotifications",
+  name: 'AdminSessionNotifications',
 
   components: { NotificationPreview },
 
   data() {
     return {
       notifications: []
-    };
+    }
   },
 
   methods: {
     goBack() {
-      this.$router.go(-1);
+      this.$router.go(-1)
     }
   },
 
@@ -39,11 +39,11 @@ export default {
       body: { notifications }
     } = await NetworkService.adminGetSessionNotifications(
       this.$route.params.sessionId
-    );
+    )
 
-    this.notifications = notifications;
+    this.notifications = notifications
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -55,7 +55,7 @@ export default {
   overflow-x: scroll;
   text-align: left;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin: 40px;
     padding: 40px;
   }

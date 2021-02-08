@@ -56,57 +56,60 @@
 </template>
 
 <script>
-import NetworkService from "@/services/NetworkService";
-import { STATES_WITH_ABBREVIATIONS } from "@/consts";
+import NetworkService from '@/services/NetworkService'
+import { STATES_WITH_ABBREVIATIONS } from '@/consts'
 
 export default {
-  name: "AdminAddSchool",
+  name: 'AdminAddSchool',
 
   data() {
     return {
-      name: "",
-      city: "",
-      state: "",
-      zipCode: "",
+      name: '',
+      city: '',
+      state: '',
+      zipCode: '',
       isApproved: false,
-      error: "",
-      options: [{ text: "False", value: false }, { text: "True", value: true }]
-    };
+      error: '',
+      options: [
+        { text: 'False', value: false },
+        { text: 'True', value: true }
+      ]
+    }
   },
   computed: {
     states() {
-      return STATES_WITH_ABBREVIATIONS;
+      return STATES_WITH_ABBREVIATIONS
     },
     invalidForm() {
-      return !(this.name && this.city && this.state && this.zipCode);
+      return !(this.name && this.city && this.state && this.zipCode)
     }
   },
   methods: {
     async createSchool(event) {
-      event.preventDefault();
+      event.preventDefault()
 
       const data = {
         name: this.name,
         city: this.city,
-        state: this.state ? this.state : "",
+        state: this.state ? this.state : '',
         zipCode: this.zipCode,
         isApproved: this.isApproved
-      };
+      }
 
       try {
         const {
           body: { schoolId }
-        } = await NetworkService.adminCreateSchool(data);
-        this.$router.push(`/admin/school/${schoolId}`);
+        } = await NetworkService.adminCreateSchool(data)
+        this.$router.push(`/admin/school/${schoolId}`)
       } catch (error) {
-        this.error = "There was a problem creating a new school.";
+        this.error = 'There was a problem creating a new school.'
       }
     },
     goBack() {
-      this.$router.go(-1);
+      this.$router.go(-1)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -130,7 +133,7 @@ select {
   }
 
   &__header {
-    @include font-category("display-small");
+    @include font-category('display-small');
     margin-bottom: 1em;
   }
 

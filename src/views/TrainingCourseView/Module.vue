@@ -28,9 +28,9 @@
 </template>
 
 <script>
-import Material from "./Material";
-import CheckMark from "@/components/CheckMark";
-import RightCaret from "@/assets/right-caret.svg";
+import Material from './Material'
+import CheckMark from '@/components/CheckMark'
+import RightCaret from '@/assets/right-caret.svg'
 
 export default {
   components: {
@@ -44,39 +44,39 @@ export default {
   data() {
     return {
       showMaterials: false,
-      openMaterial: ""
-    };
+      openMaterial: ''
+    }
   },
   computed: {
     isCompleted() {
       return this.module.materials.every(
         mat => mat.isCompleted || !mat.isRequired
-      );
+      )
     },
     isStarted() {
-      return this.module.materials.some(mat => mat.isCompleted);
+      return this.module.materials.some(mat => mat.isCompleted)
     },
     statusClass() {
-      if (this.isCompleted) return "module--completed";
-      else if (this.isStarted) return "module--started";
-      return "module--not-started";
+      if (this.isCompleted) return 'module--completed'
+      else if (this.isStarted) return 'module--started'
+      return 'module--not-started'
     },
     statusText() {
-      if (this.isCompleted) return "Completed";
-      else if (this.isStarted) return "In progress";
-      return "Not started";
+      if (this.isCompleted) return 'Completed'
+      else if (this.isStarted) return 'In progress'
+      return 'Not started'
     }
   },
   methods: {
     toggleMaterials() {
-      this.showMaterials = !this.showMaterials;
+      this.showMaterials = !this.showMaterials
     },
     toggleMaterial(materialKey) {
-      if (materialKey === this.openMaterial) this.openMaterial = "";
-      else this.openMaterial = materialKey;
+      if (materialKey === this.openMaterial) this.openMaterial = ''
+      else this.openMaterial = materialKey
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -140,7 +140,7 @@ export default {
   &__materials {
     margin-left: 30px;
 
-    @include breakpoint-above("large") {
+    @include breakpoint-above('large') {
       margin-left: 100px;
     }
   }

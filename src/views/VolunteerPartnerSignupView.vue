@@ -211,136 +211,134 @@
 </template>
 
 <script>
-import validator from "validator";
-import * as Sentry from "@sentry/browser";
+import validator from 'validator'
+import * as Sentry from '@sentry/browser'
 
-import FormPageTemplate from "@/components/FormPageTemplate";
-import AuthService from "@/services/AuthService";
-import NetworkService from "@/services/NetworkService";
-import VuePhoneNumberInput from "vue-phone-number-input";
-import Loader from "@/components/Loader";
+import FormPageTemplate from '@/components/FormPageTemplate'
+import AuthService from '@/services/AuthService'
+import NetworkService from '@/services/NetworkService'
+import VuePhoneNumberInput from 'vue-phone-number-input'
+import Loader from '@/components/Loader'
 
 export default {
-  name: "volunteer-partner-signup-view",
+  name: 'volunteer-partner-signup-view',
   components: {
     FormPageTemplate,
     VuePhoneNumberInput,
     Loader
   },
   beforeRouteEnter(to, from, next) {
-    const partnerId = to.params.partnerId;
+    const partnerId = to.params.partnerId
 
     NetworkService.getVolunteerPartner(partnerId)
       .then(data => {
-        const volunteerPartner = data.body.volunteerPartner;
-        if (!volunteerPartner) return next("/sign-up");
-        return next(_this => _this.setVolunteerPartner(volunteerPartner));
+        const volunteerPartner = data.body.volunteerPartner
+        if (!volunteerPartner) return next('/sign-up')
+        return next(_this => _this.setVolunteerPartner(volunteerPartner))
       })
       .catch(err => {
         if (err.status !== 404) {
           // we shouldn't get 422 here, since semantics of GET request are expected
           // to be correct regardless of user input
-          Sentry.captureException(err);
+          Sentry.captureException(err)
         }
-        return next("/sign-up");
-      });
+        return next('/sign-up')
+      })
   },
   created() {
-    this.$store.dispatch("app/hideNavigation");
+    this.$store.dispatch('app/hideNavigation')
   },
   data() {
     return {
       volunteerPartner: {
-        name: "",
+        name: '',
         requiredEmailDomains: []
       },
-      formStep: "step-1",
+      formStep: 'step-1',
       formData: {
-        email: "",
-        password: "",
-        firstName: "",
-        lastName: "",
-        phone: "",
+        email: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+        phone: '',
         terms: false
       },
       phoneInputInfo: {},
       errors: [],
       invalidInputs: [],
-      serverErrorMsg: "",
+      serverErrorMsg: '',
       isRegistering: false
-    };
+    }
   },
   computed: {
     hasEmailValidation() {
-      const requiredDomains = this.volunteerPartner.requiredEmailDomains;
-      return requiredDomains && requiredDomains.length;
+      const requiredDomains = this.volunteerPartner.requiredEmailDomains
+      return requiredDomains && requiredDomains.length
     },
 
     welcomeTitle() {
-      const typeOfPerson = this.hasEmailValidation ? "Employee" : "Volunteer";
-      return `Welcome ${this.volunteerPartner.name} ${typeOfPerson}!`;
+      const typeOfPerson = this.hasEmailValidation ? 'Employee' : 'Volunteer'
+      return `Welcome ${this.volunteerPartner.name} ${typeOfPerson}!`
     },
 
     emailInputLabel() {
       return this.hasEmailValidation
         ? "What's your work email?"
-        : "What's your email?";
+        : "What's your email?"
     }
   },
   methods: {
     setVolunteerPartner(volunteerPartner) {
-      this.volunteerPartner = volunteerPartner;
+      this.volunteerPartner = volunteerPartner
     },
 
     isValidPartnerEmail(email) {
-      const requiredDomains = this.volunteerPartner.requiredEmailDomains;
-      if (!(requiredDomains && requiredDomains.length)) return true;
+      const requiredDomains = this.volunteerPartner.requiredEmailDomains
+      if (!(requiredDomains && requiredDomains.length)) return true
 
-      const domain = email.split("@")[1];
-      return domain && requiredDomains.indexOf(domain) >= 0;
+      const domain = email.split('@')[1]
+      return domain && requiredDomains.indexOf(domain) >= 0
     },
 
     onPhoneInputUpdate(phoneInputInfo) {
-      this.phoneInputInfo = phoneInputInfo;
+      this.phoneInputInfo = phoneInputInfo
     },
 
     formStepTwo() {
       // validate input
-      this.errors = [];
-      this.invalidInputs = [];
+      this.errors = []
+      this.invalidInputs = []
 
       if (!this.formData.email) {
-        this.errors.push("An email address is required.");
-        this.invalidInputs.push("inputEmail");
+        this.errors.push('An email address is required.')
+        this.invalidInputs.push('inputEmail')
       } else if (!validator.isEmail(this.formData.email)) {
         // this is necessary because browsers ignore <input type="email"> until the
         // user actually tries to submit the form, which does not occur until step 2
-        this.errors.push(
-          this.formData.email + " is not a valid email address."
-        );
+        this.errors.push(this.formData.email + ' is not a valid email address.')
 
-        this.invalidInputs.push("inputEmail");
+        this.invalidInputs.push('inputEmail')
       } else if (!this.isValidPartnerEmail(this.formData.email)) {
         if (this.volunteerPartner.requiredEmailDomains.length < 5) {
           this.errors.push(
             `This page currently only accepts the following domains: ${this.volunteerPartner.requiredEmailDomains.join(
-              ", "
+              ', '
             )}. If you work at ${
               this.volunteerPartner.name
             } but don’t have this email domain, please contact our team at support@upchieve.org!`
-          );
+          )
         } else {
-          this.errors.push("You must use your company email address");
+          this.errors.push('You must use your company email address')
         }
-        this.invalidInputs.push("inputEmail");
+        this.invalidInputs.push('inputEmail')
       }
 
       if (!this.formData.password) {
-        this.errors.push("A password is required.");
-        this.invalidInputs.push("inputPassword");
+        this.errors.push('A password is required.')
+        this.invalidInputs.push('inputPassword')
       }
       if (this.errors.length) {
-        return;
+        return
       }
 
       // Check credentials
@@ -349,52 +347,52 @@ export default {
         password: this.formData.password
       })
         .then(() => {
-          this.formStep = "step-2";
-          this.serverErrorMsg = "";
+          this.formStep = 'step-2'
+          this.serverErrorMsg = ''
         })
         .catch(err => {
-          this.serverErrorMsg = err.message;
+          this.serverErrorMsg = err.message
           if (err.status !== 409 && err.status !== 422) {
-            Sentry.captureException(err);
+            Sentry.captureException(err)
           }
-        });
+        })
     },
 
     submitSignupForm() {
-      this.errors = [];
-      this.invalidInputs = [];
+      this.errors = []
+      this.invalidInputs = []
 
       // validate input
       if (!this.formData.firstName || !this.formData.lastName) {
-        this.errors.push("You must enter your first and last name.");
+        this.errors.push('You must enter your first and last name.')
       }
       if (!this.formData.firstName) {
-        this.invalidInputs.push("firstName");
+        this.invalidInputs.push('firstName')
       }
       if (!this.formData.lastName) {
-        this.invalidInputs.push("lastName");
+        this.invalidInputs.push('lastName')
       }
       if (!this.formData.phone) {
-        this.errors.push("You must enter a phone number.");
-        this.invalidInputs.push("phone");
+        this.errors.push('You must enter a phone number.')
+        this.invalidInputs.push('phone')
       } else if (!this.phoneInputInfo.isValid || !this.phoneInputInfo.e164) {
-        this.errors.push(this.formData.phone + " is not a valid phone number.");
-        this.invalidInputs.push("phone");
+        this.errors.push(this.formData.phone + ' is not a valid phone number.')
+        this.invalidInputs.push('phone')
       }
       if (!this.formData.terms) {
         this.errors.push(
-          "You must read and accept the user agreement and volunteer agreement."
-        );
+          'You must read and accept the user agreement and volunteer agreement.'
+        )
       }
 
       if (!this.errors.length) {
-        this.register();
+        this.register()
       }
     },
 
     register() {
-      if (this.isRegistering) return;
-      this.isRegistering = true;
+      if (this.isRegistering) return
+      this.isRegistering = true
       AuthService.registerPartnerVolunteer(this, {
         volunteerPartnerOrg: this.$route.params.partnerId,
         partnerUserId: this.$route.query.uid,
@@ -406,19 +404,19 @@ export default {
         terms: this.formData.terms
       })
         .then(() => {
-          this.isRegistering = false;
-          this.formStep = "success";
+          this.isRegistering = false
+          this.formStep = 'success'
         })
         .catch(err => {
-          this.isRegistering = false;
-          this.serverErrorMsg = err.message;
+          this.isRegistering = false
+          this.serverErrorMsg = err.message
           if (err.status !== 422) {
-            Sentry.captureException(err);
+            Sentry.captureException(err)
           }
-        });
+        })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

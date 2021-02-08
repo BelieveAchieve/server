@@ -3,7 +3,7 @@
 import { Static } from 'runtypes'
 import { Config } from './config-type'
 
-const mongoHost = process.env.SUBWAY_DB_HOST || 'localhost'
+const mongoHost = process.env.SUBWAY_DB_HOST || 'mongodb'
 const mongoPort = process.env.SUBWAY_DB_PORT || '27017'
 const mongoName = process.env.SUBWAY_DB_NAME || 'upchieve'
 const mongoPass = process.env.SUBWAY_DB_PASS
@@ -16,7 +16,7 @@ if (mongoPass) {
   mongoConn = `mongodb://${mongoHost}:${mongoPort}/${mongoName}`
 }
 
-const redisHost = process.env.SUBWAY_REDIS_HOST || 'localhost'
+const redisHost = process.env.SUBWAY_REDIS_HOST || 'cache'
 const redisPort = process.env.SUBWAY_REDIS_PORT || '6379'
 const redisConn = `redis://${redisHost}:${redisPort}`
 

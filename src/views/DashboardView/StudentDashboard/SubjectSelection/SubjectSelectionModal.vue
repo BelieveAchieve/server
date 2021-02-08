@@ -37,11 +37,11 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
-import { startSession } from "@/utils/session";
-import LargeButton from "@/components/LargeButton";
-import PresessionSurvey from "./PresessionSurvey";
-import getCookie from "@/utils/get-cookie";
+import { mapState, mapGetters } from 'vuex'
+import { startSession } from '@/utils/session'
+import LargeButton from '@/components/LargeButton'
+import PresessionSurvey from './PresessionSurvey'
+import getCookie from '@/utils/get-cookie'
 
 export default {
   components: { LargeButton, PresessionSurvey },
@@ -50,57 +50,57 @@ export default {
   },
   data() {
     return {
-      selectedSubtopic: this.modalData.preSelectedSubtopic || "",
+      selectedSubtopic: this.modalData.preSelectedSubtopic || '',
       showSurvey: this.modalData.preSelectedSubtopic ? true : false
-    };
+    }
   },
   computed: {
     ...mapState({
       isMobileApp: state => state.app.isMobileApp,
       user: state => state.user.user
     }),
-    ...mapGetters({ mobileMode: "app/mobileMode" }),
+    ...mapGetters({ mobileMode: 'app/mobileMode' }),
     title() {
-      if (this.modalData.topic === "college")
-        return `Choose a ${this.modalData.topic} counseling subject`;
+      if (this.modalData.topic === 'college')
+        return `Choose a ${this.modalData.topic} counseling subject`
       return this.modalData.topic
         ? `Choose a ${this.modalData.topic} subject`
-        : "Choose a subject";
+        : 'Choose a subject'
     }
   },
   methods: {
     setSelectedSubtopic(subject) {
-      this.selectedSubtopic = subject;
-      this.$emit("enable-accept", subject !== "");
+      this.selectedSubtopic = subject
+      this.$emit('enable-accept', subject !== '')
     },
     handleMobileStart(subject) {
-      this.setSelectedSubtopic(subject);
-      const hasSentPushTokenRegister = getCookie("hasSentPushTokenRegister");
+      this.setSelectedSubtopic(subject)
+      const hasSentPushTokenRegister = getCookie('hasSentPushTokenRegister')
 
       if (this.isMobileApp && !hasSentPushTokenRegister) {
-        this.$store.dispatch("app/modal/show", {
-          component: "NotificationsModal",
+        this.$store.dispatch('app/modal/show', {
+          component: 'NotificationsModal',
           data: {
-            backText: "Dashboard",
-            acceptText: "Yes, please notify me!",
+            backText: 'Dashboard',
+            acceptText: 'Yes, please notify me!',
             selectedSubtopic: this.selectedSubtopic,
             topic: this.modalData.topic
           }
-        });
+        })
       } else {
-        this.onAccept();
+        this.onAccept()
       }
     },
     onAccept() {
-      if (this.selectedSubtopic === "") return;
-      if (this.modalData.topic === "college") this.onSurveyCompleted();
-      else this.showSurvey = true;
+      if (this.selectedSubtopic === '') return
+      if (this.modalData.topic === 'college') this.onSurveyCompleted()
+      else this.showSurvey = true
     },
     onSurveyCompleted() {
-      startSession(this.$router, this.modalData.topic, this.selectedSubtopic);
+      startSession(this.$router, this.modalData.topic, this.selectedSubtopic)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -119,22 +119,22 @@ p {
   min-height: 350px;
   @include flex-container(column);
   @include child-spacing(top, 24px);
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     @include child-spacing(top, 16px);
   }
 }
 
 .SubjectSelectionModal-title {
-  @include font-category("display-small");
+  @include font-category('display-small');
   margin-bottom: 1em;
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin-top: 24px;
     margin-bottom: 0;
   }
 }
 
 .SubjectSelectionModal-subtitle {
-  @include font-category("body");
+  @include font-category('body');
   color: $c-secondary-grey;
 }
 
@@ -142,7 +142,7 @@ p {
   @include flex-container(column);
   @include child-spacing(top, 16px);
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     @include child-spacing(top, 0);
 
     display: grid;
@@ -157,19 +157,19 @@ p {
 .SubjectSelectionModal-subtopic {
   @include flex-container(row, space-between, center);
   @include child-spacing(left, 16px);
-  @include font-category("button");
+  @include font-category('button');
 
   border: 1px solid $c-border-grey;
   border-radius: 8px;
   padding: 20px 24px;
 
-  @include breakpoint-below("tiny") {
+  @include breakpoint-below('tiny') {
     @include flex-container(column, center, center);
     @include child-spacing(left, 0);
     @include child-spacing(top, 16px);
   }
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     color: $c-secondary-grey;
     cursor: pointer;
     border-radius: 4px;

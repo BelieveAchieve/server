@@ -97,11 +97,11 @@
 </template>
 
 <script>
-import NetworkService from "@/services/NetworkService";
-import { isEmpty } from "lodash";
+import NetworkService from '@/services/NetworkService'
+import { isEmpty } from 'lodash'
 
 export default {
-  name: "AdminEditUser",
+  name: 'AdminEditUser',
 
   props: {
     user: { type: Object, required: true },
@@ -111,93 +111,96 @@ export default {
 
   data() {
     return {
-      firstName: "",
-      lastName: "",
-      email: "",
+      firstName: '',
+      lastName: '',
+      email: '',
       partnerOrg: {},
-      partnerSite: "",
+      partnerSite: '',
       isVerified: false,
       isBanned: false,
       isDeactivated: false,
       isApproved: false,
-      options: [{ text: "False", value: false }, { text: "True", value: true }],
-      error: "",
+      options: [
+        { text: 'False', value: false },
+        { text: 'True', value: true }
+      ],
+      error: '',
       listedPartnerOrgs: []
-    };
+    }
   },
   async created() {
     if (this.user.isVolunteer) {
-      const response = await NetworkService.adminGetVolunteerPartners();
+      const response = await NetworkService.adminGetVolunteerPartners()
       const {
         body: { partnerOrgs }
-      } = response;
-      this.listedPartnerOrgs = partnerOrgs;
+      } = response
+      this.listedPartnerOrgs = partnerOrgs
     } else {
-      const response = await NetworkService.adminGetStudentPartners();
+      const response = await NetworkService.adminGetStudentPartners()
       const {
         body: { partnerOrgs }
-      } = response;
-      this.listedPartnerOrgs = partnerOrgs;
+      } = response
+      this.listedPartnerOrgs = partnerOrgs
     }
 
-    this.firstName = this.user.firstname;
-    this.lastName = this.user.lastname;
-    this.email = this.user.email;
-    this.partnerSite = this.user.partnerSite || "";
-    this.isVerified = this.user.verified;
-    this.isBanned = this.user.isBanned;
-    this.isDeactivated = this.user.isDeactivated;
-    this.isApproved = this.user.isApproved;
-    this.partnerOrg = {};
+    this.firstName = this.user.firstname
+    this.lastName = this.user.lastname
+    this.email = this.user.email
+    this.partnerSite = this.user.partnerSite || ''
+    this.isVerified = this.user.verified
+    this.isBanned = this.user.isBanned
+    this.isDeactivated = this.user.isDeactivated
+    this.isApproved = this.user.isApproved
+    this.partnerOrg = {}
 
     for (let org of this.listedPartnerOrgs) {
       if (
         org.key === this.user.studentPartnerOrg ||
         org.key === this.user.volunteerPartnerOrg
       ) {
-        this.partnerOrg = org;
-        break;
+        this.partnerOrg = org
+        break
       }
     }
   },
 
   methods: {
     async submitUpdate(event) {
-      event.preventDefault();
+      event.preventDefault()
       const data = {
         firstName: this.firstName,
         lastName: this.lastName,
         email: this.email,
-        partnerOrg: isEmpty(this.partnerOrg) ? "" : this.partnerOrg.key,
-        partnerSite: "",
+        partnerOrg: isEmpty(this.partnerOrg) ? '' : this.partnerOrg.key,
+        partnerSite: '',
         isVerified: this.isVerified,
         isBanned: this.isBanned,
         isDeactivated: this.isDeactivated,
         isApproved: this.isApproved
-      };
+      }
 
       if (
         !isEmpty(this.partnerOrg) &&
         this.partnerOrg.sites &&
         this.partnerOrg.sites.includes(this.partnerSite)
       ) {
-        data.partnerSite = this.partnerSite;
+        data.partnerSite = this.partnerSite
       }
 
       try {
-        await NetworkService.adminUpdateUser(this.user._id, data);
+        await NetworkService.adminUpdateUser(this.user._id, data)
 
-        this.getUser();
-        this.toggleEditMode();
+        this.getUser()
+        this.toggleEditMode()
       } catch (error) {
-        this.error = "There was a problem updating the user.";
+        this.error = 'There was a problem updating the user.'
       }
     },
     goBack() {
-      this.toggleEditMode();
+      this.toggleEditMode()
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

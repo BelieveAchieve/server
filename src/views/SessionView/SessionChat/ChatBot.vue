@@ -20,26 +20,26 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters } from 'vuex'
 
 export default {
-  name: "chat-bot",
+  name: 'chat-bot',
 
   data() {
     return {
       unsentBotMessages: [],
       sentBotMessages: [],
       botInterval: null
-    };
+    }
   },
 
   computed: {
     ...mapGetters({
-      firstName: "user/firstName"
+      firstName: 'user/firstName'
     }),
 
     isStillMessaging() {
-      return this.unsentBotMessages.length > 0;
+      return this.unsentBotMessages.length > 0
     }
   },
 
@@ -56,28 +56,28 @@ export default {
         msg:
           "While you're waiting, you can save time by telling us what you need help with in the chat! You can also write out a problem you're working on on the whiteboard."
       }
-    ];
+    ]
 
-    this.unsentBotMessages = botMessages;
+    this.unsentBotMessages = botMessages
 
     setTimeout(() => {
-      this.showBotMessage();
-      this.botInterval = setInterval(this.showBotMessage, 4500);
-    }, 3000);
+      this.showBotMessage()
+      this.botInterval = setInterval(this.showBotMessage, 4500)
+    }, 3000)
   },
 
   methods: {
     showBotMessage() {
-      const newMessage = this.unsentBotMessages.shift();
+      const newMessage = this.unsentBotMessages.shift()
 
       if (!newMessage) {
-        return clearInterval(this.botInterval);
+        return clearInterval(this.botInterval)
       }
 
-      this.sentBotMessages.push(newMessage);
+      this.sentBotMessages.push(newMessage)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

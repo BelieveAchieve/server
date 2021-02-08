@@ -9,8 +9,8 @@
 </template>
 
 <script>
-import HambugerIcon from "@/assets/hamburger.svg";
-import CrossIcon from "@/assets/cross.svg";
+import HambugerIcon from '@/assets/hamburger.svg'
+import CrossIcon from '@/assets/cross.svg'
 
 export default {
   props: { tabindex: Number },
@@ -18,18 +18,18 @@ export default {
     icon() {
       return this.$store.state.app.sidebar.isCollapsed
         ? HambugerIcon
-        : CrossIcon;
+        : CrossIcon
     }
   },
   methods: {
     handleAction() {
       const action = this.$store.state.app.sidebar.isCollapsed
-        ? "app/sidebar/expand"
-        : "app/sidebar/collapse";
-      this.$store.dispatch(action);
+        ? 'app/sidebar/expand'
+        : 'app/sidebar/collapse'
+      this.$store.dispatch(action)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

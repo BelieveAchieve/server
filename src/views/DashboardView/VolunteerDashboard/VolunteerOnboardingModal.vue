@@ -39,8 +39,8 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import LargeButton from "@/components/LargeButton";
+import { mapGetters } from 'vuex'
+import LargeButton from '@/components/LargeButton'
 
 export default {
   components: { LargeButton },
@@ -49,36 +49,36 @@ export default {
   },
   computed: {
     ...mapGetters({
-      mobileMode: "app/mobileMode"
+      mobileMode: 'app/mobileMode'
     })
   },
   methods: {
     onAccept() {
-      this.$store.dispatch("user/firstDashboardVisit", false);
-      this.$router.push("/calendar");
+      this.$store.dispatch('user/firstDashboardVisit', false)
+      this.$router.push('/calendar')
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
 .OnboardingModal {
   @include flex-container(column);
   @include child-spacing(top, 24px);
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     @include child-spacing(top, 16px);
   }
 }
 
 .OnboardingModal-title {
-  @include font-category("display-small");
-  @include breakpoint-above("medium") {
+  @include font-category('display-small');
+  @include breakpoint-above('medium') {
     margin-top: 24px;
   }
 }
 
 .OnboardingModal-message {
-  @include font-category("body");
+  @include font-category('body');
 }
 
 .OnboardingModal-title-container {

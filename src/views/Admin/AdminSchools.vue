@@ -56,101 +56,101 @@
 </template>
 
 <script>
-import NetworkService from "@/services/NetworkService";
-import PageControl from "@/components/Admin/PageControl";
-import SchoolListItem from "@/components/Admin/SchoolListItem";
-import PlusIcon from "@/assets/plus_icon.svg";
-import { STATES_WITH_ABBREVIATIONS } from "@/consts";
+import NetworkService from '@/services/NetworkService'
+import PageControl from '@/components/Admin/PageControl'
+import SchoolListItem from '@/components/Admin/SchoolListItem'
+import PlusIcon from '@/assets/plus_icon.svg'
+import { STATES_WITH_ABBREVIATIONS } from '@/consts'
 
 const getSchools = async data => {
   const {
     body: { schools, isLastPage }
-  } = await NetworkService.adminGetSchools(data);
-  return { schools, isLastPage };
-};
+  } = await NetworkService.adminGetSchools(data)
+  return { schools, isLastPage }
+}
 
 export default {
-  name: "AdminSchools",
+  name: 'AdminSchools',
   components: { SchoolListItem, PageControl, PlusIcon },
   data() {
     return {
       page: 1,
       isLastPage: true,
       schools: [],
-      name: "",
-      city: "",
-      state: ""
-    };
+      name: '',
+      city: '',
+      state: ''
+    }
   },
   async created() {
     const {
       query: { page: pageQuery, name, city, state }
-    } = this.$route;
-    const page = parseInt(pageQuery) || this.page;
-    this.name = name || this.name;
-    this.city = city || this.city;
-    this.state = state || this.state;
+    } = this.$route
+    const page = parseInt(pageQuery) || this.page
+    this.name = name || this.name
+    this.city = city || this.city
+    this.state = state || this.state
     this.$nextTick(() => {
       document
-        .querySelector(".schools__search-panel")
-        .addEventListener("keydown", this.keyboardListener);
-    });
+        .querySelector('.schools__search-panel')
+        .addEventListener('keydown', this.keyboardListener)
+    })
 
-    this.setPage(page);
+    this.setPage(page)
   },
   computed: {
     isFirstPage() {
-      return this.page === 1;
+      return this.page === 1
     },
     states() {
-      return STATES_WITH_ABBREVIATIONS;
+      return STATES_WITH_ABBREVIATIONS
     }
   },
   methods: {
     setPage(page) {
-      this.page = page;
-      this.schools = [];
-      this.getSchools();
+      this.page = page
+      this.schools = []
+      this.getSchools()
     },
     nextPage() {
-      this.setPage(this.page + 1);
+      this.setPage(this.page + 1)
     },
     previousPage() {
-      this.setPage(this.page - 1);
+      this.setPage(this.page - 1)
     },
     submitQuery() {
-      this.page = 1;
-      this.getSchools();
+      this.page = 1
+      this.getSchools()
     },
     async getSchools() {
       const data = {
         name: this.name,
         city: this.city,
-        state: this.state ? this.state : ""
-      };
+        state: this.state ? this.state : ''
+      }
       this.$router.push({
-        path: "/admin/schools",
+        path: '/admin/schools',
         query: {
           ...data,
           page: this.page
         }
-      });
+      })
       const { schools, isLastPage } = await getSchools({
         ...data,
         page: this.page
-      });
-      this.schools = schools;
-      this.isLastPage = isLastPage;
+      })
+      this.schools = schools
+      this.isLastPage = isLastPage
     },
     keyboardListener(event) {
-      const { key, target } = event;
-      const { tagName } = target;
-      if (key === "Enter" && tagName === "INPUT") {
-        this.getSchools();
+      const { key, target } = event
+      const { tagName } = target
+      if (key === 'Enter' && tagName === 'INPUT') {
+        this.getSchools()
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -169,7 +169,7 @@ select {
   border-radius: 8px;
   text-align: left;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin: 40px;
     padding: 40px;
   }

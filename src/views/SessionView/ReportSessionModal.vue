@@ -38,17 +38,17 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import NetworkService from "@/services/NetworkService";
-import LargeButton from "@/components/LargeButton";
+import { mapState } from 'vuex'
+import NetworkService from '@/services/NetworkService'
+import LargeButton from '@/components/LargeButton'
 
 const reportReasonOptions = [
-  "Technical issue",
-  "Student was rude",
-  "Student was unresponsive",
-  "Student was misusing platform",
-  "Other"
-];
+  'Technical issue',
+  'Student was rude',
+  'Student was unresponsive',
+  'Student was misusing platform',
+  'Other'
+]
 
 export default {
   components: { LargeButton },
@@ -59,15 +59,15 @@ export default {
     return {
       reportReasonOptions,
       reportReason: null,
-      reportMessage: ""
-    };
+      reportMessage: ''
+    }
   },
   computed: {
     ...mapState({
       currentSession: state => state.user.session
     }),
     isFormComplete() {
-      return !!this.reportReason;
+      return !!this.reportReason
     }
   },
   methods: {
@@ -77,18 +77,18 @@ export default {
           sessionId: this.currentSession._id,
           reportReason: this.reportReason,
           reportMessage: this.reportMessage
-        });
+        })
       } catch (error) {
-        alert("Failed to submit");
+        alert('Failed to submit')
       }
 
-      this.$store.dispatch("app/modal/hide");
+      this.$store.dispatch('app/modal/hide')
     },
     cancel() {
-      this.$store.dispatch("app/modal/hide");
+      this.$store.dispatch('app/modal/hide')
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -96,11 +96,11 @@ export default {
   @include flex-container(column);
 
   &__title {
-    @include font-category("display-small");
+    @include font-category('display-small');
   }
 
   &__subtitle {
-    @include font-category("body");
+    @include font-category('body');
     margin: 0 0 35px;
     color: $c-secondary-grey;
     font-size: 15px;

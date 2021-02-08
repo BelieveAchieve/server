@@ -6,10 +6,10 @@
 </template>
 
 <script>
-import moment from "moment";
+import moment from 'moment'
 
 export default {
-  name: "ChatMessage",
+  name: 'ChatMessage',
 
   props: {
     message: Object
@@ -17,10 +17,10 @@ export default {
 
   computed: {
     timestamp() {
-      return moment(this.message.createdAt).format("h:mm a");
+      return moment(this.message.createdAt).format('h:mm a')
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

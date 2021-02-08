@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import ReferralLink from "@/components/ReferralLink.vue";
+import { mapGetters } from 'vuex'
+import ReferralLink from '@/components/ReferralLink.vue'
 
 export default {
   components: { ReferralLink },
@@ -25,14 +25,14 @@ export default {
   },
   data() {
     return {
-      selectedSubtopic: "",
-      copyMessage: "Copy"
-    };
+      selectedSubtopic: '',
+      copyMessage: 'Copy'
+    }
   },
   computed: {
-    ...mapGetters({ mobileMode: "app/mobileMode" })
+    ...mapGetters({ mobileMode: 'app/mobileMode' })
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -50,20 +50,20 @@ p {
 .ReferralModal {
   @include flex-container(column);
   @include child-spacing(top, 24px);
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     @include child-spacing(top, 16px);
   }
 }
 
 .ReferralModal-title {
-  @include font-category("display-small");
-  @include breakpoint-above("medium") {
+  @include font-category('display-small');
+  @include breakpoint-above('medium') {
     margin-top: 24px;
   }
 }
 
 .ReferralModal-subtitle {
-  @include font-category("body");
+  @include font-category('body');
   color: $c-secondary-grey;
 }
 </style>

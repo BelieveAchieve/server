@@ -54,71 +54,71 @@
 </template>
 
 <script>
-import NetworkService from "@/services/NetworkService";
-import AdminEditSchool from "@/views/Admin/AdminEditSchool";
+import NetworkService from '@/services/NetworkService'
+import AdminEditSchool from '@/views/Admin/AdminEditSchool'
 
 const getSchool = async schoolId => {
   const {
     body: { school }
-  } = await NetworkService.adminGetSchool(schoolId);
+  } = await NetworkService.adminGetSchool(schoolId)
 
-  return school;
-};
+  return school
+}
 
 export default {
-  name: "AdminSchoolDetail",
+  name: 'AdminSchoolDetail',
 
   components: { AdminEditSchool },
 
   data() {
     return {
       school: {},
-      error: "",
+      error: '',
       isEditMode: false
-    };
+    }
   },
 
   async created() {
-    this.getSchool();
+    this.getSchool()
   },
 
   computed: {
     schoolApprovalStatus() {
-      return this.school.isApproved ? "Approved" : "Not approved";
+      return this.school.isApproved ? 'Approved' : 'Not approved'
     }
   },
 
   methods: {
     goBack() {
-      this.$router.go(-1);
+      this.$router.go(-1)
     },
     async toggleSchoolApproval(event) {
       const {
         target: { checked }
-      } = event;
+      } = event
 
       const data = {
         schoolId: this.school._id,
         isApproved: checked
-      };
+      }
 
       try {
-        await NetworkService.adminUpdateSchoolApproval(data);
-        this.school.isApproved = checked;
+        await NetworkService.adminUpdateSchoolApproval(data)
+        this.school.isApproved = checked
       } catch (error) {
-        this.error = "There was an error updating the school's approval status";
+        this.error = "There was an error updating the school's approval status"
       }
     },
 
     toggleEditMode() {
-      this.isEditMode = !this.isEditMode;
+      this.isEditMode = !this.isEditMode
     },
 
     async getSchool() {
-      this.school = await getSchool(this.$route.params.schoolId);
+      this.school = await getSchool(this.$route.params.schoolId)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -129,7 +129,7 @@ export default {
   padding: 10px;
   max-width: 800px;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin: 40px;
     padding: 40px;
   }
@@ -185,7 +185,7 @@ export default {
   }
 
   &__edit-button {
-    @include font-category("body");
+    @include font-category('body');
     background-color: $c-success-green;
     border-radius: 30px;
     width: 120px;
@@ -208,7 +208,7 @@ export default {
   transition: all 0.3s;
 
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     width: 18px;
     height: 18px;
@@ -231,7 +231,7 @@ export default {
 }
 
 .error {
-  @include font-category("helper-text");
+  @include font-category('helper-text');
   color: $c-error-red;
   text-align: left;
 }

@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import AlertIcon from "@/assets/alert.svg";
+import AlertIcon from '@/assets/alert.svg'
 export default {
   components: {
     AlertIcon
@@ -63,7 +63,7 @@ export default {
   props: {
     label: {
       type: String,
-      default: ""
+      default: ''
     },
     sublabel: {
       type: String
@@ -73,26 +73,26 @@ export default {
     },
     alertMessage: {
       type: String,
-      default: ""
+      default: ''
     }
   },
   computed: {
     isIntegratedMathDropDown() {
-      return this.isOpen && this.label === "Integrated Math";
+      return this.isOpen && this.label === 'Integrated Math'
     }
   },
 
   data() {
     return {
       isOpen: false
-    };
+    }
   },
   methods: {
     toggle() {
-      this.isOpen = !this.isOpen;
+      this.isOpen = !this.isOpen
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -115,7 +115,7 @@ export default {
       color: $c-success-green;
     }
 
-    @include breakpoint-below("large") {
+    @include breakpoint-below('large') {
       @include flex-container(column);
     }
   }
@@ -130,7 +130,7 @@ export default {
     color: $c-soft-black;
 
     &-header {
-      @include font-category("heading");
+      @include font-category('heading');
       font-weight: 500;
     }
 
@@ -157,7 +157,7 @@ export default {
     flex-shrink: 0;
 
     &:after {
-      content: "";
+      content: '';
       position: absolute;
       display: block;
       height: 6px;
@@ -218,7 +218,7 @@ export default {
     margin-left: auto;
     color: $c-error-red;
 
-    @include breakpoint-below("large") {
+    @include breakpoint-below('large') {
       flex-basis: 100%;
       margin-left: 60px;
     }

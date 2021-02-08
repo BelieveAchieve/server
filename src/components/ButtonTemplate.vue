@@ -21,22 +21,22 @@
 </template>
 
 <script>
-import ArrowIcon from "@/assets/arrow.svg";
+import ArrowIcon from '@/assets/arrow.svg'
 
 export default {
-  name: "ButtonTemplate",
+  name: 'ButtonTemplate',
   components: { ArrowIcon },
   props: {
     primary: Boolean,
     routeTo: String,
     showArrow: Boolean
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
 .ButtonTemplate {
-  @include font-category("button");
+  @include font-category('button');
   @include flex-container(row, center, center);
 
   background: none;

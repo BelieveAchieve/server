@@ -83,16 +83,16 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters } from 'vuex'
 
-import SessionService from "@/services/SessionService";
-import router from "@/router";
-import StudentAvatarUrl from "@/assets/defaultavatar3.png";
-import VolunteerAvatarUrl from "@/assets/defaultavatar4.png";
-import LoadingMessage from "@/components/LoadingMessage";
-import TroubleMatchingModal from "@/views/SessionView/TroubleMatchingModal";
-import UnmatchedModal from "@/views/SessionView/UnmatchedModal";
-import sendWebNotification from "@/utils/send-web-notification";
+import SessionService from '@/services/SessionService'
+import router from '@/router'
+import StudentAvatarUrl from '@/assets/defaultavatar3.png'
+import VolunteerAvatarUrl from '@/assets/defaultavatar4.png'
+import LoadingMessage from '@/components/LoadingMessage'
+import TroubleMatchingModal from '@/views/SessionView/TroubleMatchingModal'
+import UnmatchedModal from '@/views/SessionView/UnmatchedModal'
+import sendWebNotification from '@/utils/send-web-notification'
 
 /**
  * @todo {1} Refactoring candidate: use a modal instead.
@@ -100,15 +100,15 @@ import sendWebNotification from "@/utils/send-web-notification";
 export default {
   data() {
     return {
-      connectionMsg: "",
-      connectionMsgType: "",
-      reconnectAttemptMsg: "",
+      connectionMsg: '',
+      connectionMsgType: '',
+      reconnectAttemptMsg: '',
       isSessionEnding: false,
       showTroubleMatchingModal: false,
       showUnmatchedModal: false,
       hasSeenTroubleMatchingModal: false,
       isWaitingIntervalId: null
-    };
+    }
   },
   components: {
     LoadingMessage,
@@ -124,16 +124,16 @@ export default {
        * the screen. Set a timeout to display the modal after those initial re-renders
        **/
       setTimeout(() => {
-        this.isWaitingTooLong();
-      }, 500);
+        this.isWaitingTooLong()
+      }, 500)
 
       this.isWaitingIntervalId = setInterval(() => {
-        this.isWaitingTooLong();
-      }, 1000 * 60);
+        this.isWaitingTooLong()
+      }, 1000 * 60)
     }
   },
   beforeDestroy() {
-    this.$socket.disconnect();
+    this.$socket.disconnect()
   },
   computed: {
     ...mapState({
@@ -141,23 +141,23 @@ export default {
       session: state => state.user.session
     }),
     ...mapGetters({
-      sessionPartner: "user/sessionPartner",
-      isSessionAlive: "user/isSessionAlive",
-      isSessionWaitingForVolunteer: "user/isSessionWaitingForVolunteer",
-      isSessionInProgress: "user/isSessionInProgress",
-      isSessionOver: "user/isSessionOver"
+      sessionPartner: 'user/sessionPartner',
+      isSessionAlive: 'user/isSessionAlive',
+      isSessionWaitingForVolunteer: 'user/isSessionWaitingForVolunteer',
+      isSessionInProgress: 'user/isSessionInProgress',
+      isSessionOver: 'user/isSessionOver'
     }),
 
     partnerAvatar() {
-      let picture = "";
+      let picture = ''
       if (this.user.isVolunteer === false) {
-        picture = VolunteerAvatarUrl;
+        picture = VolunteerAvatarUrl
       } else {
-        picture = StudentAvatarUrl;
+        picture = StudentAvatarUrl
       }
       return {
         backgroundImage: `url(${picture})`
-      };
+      }
     }
   },
   methods: {
@@ -165,141 +165,141 @@ export default {
       if (this.isSessionWaitingForVolunteer) {
         const shouldEndSession = window.confirm(
           "Are you sure you want to cancel this request? If you've been waiting less than 5 minutes, you won't be able to make another request right away."
-        );
+        )
 
         if (!shouldEndSession) {
-          return;
+          return
         }
       } else {
         // Only ask for confirmation if session hasn't been ended by other user
         const shouldEndSession = this.isSessionAlive
-          ? window.confirm("Do you really want to end the session?")
-          : true;
+          ? window.confirm('Do you really want to end the session?')
+          : true
 
         // Early exit if user didn't confirm
         if (!shouldEndSession) {
-          return;
+          return
         }
       }
 
       if (this.isSessionEnding) {
-        return;
+        return
       }
-      this.isSessionEnding = true;
-      this.endSession();
+      this.isSessionEnding = true
+      this.endSession()
     },
     endSession() {
-      const sessionId = this.session._id;
+      const sessionId = this.session._id
 
       SessionService.endSession(this, sessionId)
         .then(() => {
-          this.$store.dispatch("user/sessionDisconnected");
-          this.goToFeedbackPage();
+          this.$store.dispatch('user/sessionDisconnected')
+          this.goToFeedbackPage()
         })
-        .catch(this.alertCouldNotEnd);
+        .catch(this.alertCouldNotEnd)
     },
     reportSession() {
-      this.$store.dispatch("app/modal/show", {
-        component: "ReportSessionModal",
+      this.$store.dispatch('app/modal/show', {
+        component: 'ReportSessionModal',
         data: {
           showTemplateButtons: false
         }
-      });
+      })
     },
     alertCouldNotEnd() {
-      this.isSessionEnding = false;
-      window.alert("Could not end session");
+      this.isSessionEnding = false
+      window.alert('Could not end session')
     },
     tryReconnect() {
       // socket must be closed before reopening for automatic reconnections
       // to resume
-      this.$socket.close();
-      this.$socket.open();
-      this.reconnectAttemptMsg = "Waiting for server response.";
-      this.$emit("try-clicked");
+      this.$socket.close()
+      this.$socket.open()
+      this.reconnectAttemptMsg = 'Waiting for server response.'
+      this.$emit('try-clicked')
     },
     connectionSuccess() {
-      this.connectionMsg = "";
-      this.reconnectAttemptMsg = "";
-      this.connectionMsgType = "";
+      this.connectionMsg = ''
+      this.reconnectAttemptMsg = ''
+      this.connectionMsgType = ''
     },
     goToFeedbackPage() {
-      const sessionId = this.session._id;
-      let studentId = "";
-      let volunteerId = null;
-      let subTopic = null;
-      let topic = null;
+      const sessionId = this.session._id
+      let studentId = ''
+      let volunteerId = null
+      let subTopic = null
+      let topic = null
 
-      if (this.session.student) studentId = this.session.student._id;
-      if (this.session.volunteer) volunteerId = this.session.volunteer._id;
-      if (this.session.type) topic = this.session.type;
-      if (this.session.subTopic) subTopic = this.session.subTopic;
+      if (this.session.student) studentId = this.session.student._id
+      if (this.session.volunteer) volunteerId = this.session.volunteer._id
+      if (this.session.type) topic = this.session.type
+      if (this.session.subTopic) subTopic = this.session.subTopic
 
       const url = volunteerId
-        ? "/feedback/" +
+        ? '/feedback/' +
           sessionId +
-          "/" +
+          '/' +
           topic +
-          "/" +
+          '/' +
           subTopic +
-          "/" +
-          (this.user.isVolunteer ? "volunteer" : "student") +
-          "/" +
+          '/' +
+          (this.user.isVolunteer ? 'volunteer' : 'student') +
+          '/' +
           studentId +
-          "/" +
+          '/' +
           volunteerId
-        : "/";
-      router.push(url);
+        : '/'
+      router.push(url)
     },
     toggleTroubleMatchingModal() {
-      this.showTroubleMatchingModal = !this.showTroubleMatchingModal;
+      this.showTroubleMatchingModal = !this.showTroubleMatchingModal
     },
     toggleUnmatchedModal() {
-      this.showUnmatchedModal = !this.showUnmatchedModal;
+      this.showUnmatchedModal = !this.showUnmatchedModal
     },
     isWaitingTooLong() {
       if (this.session.volunteer) {
-        clearInterval(this.isWaitingIntervalId);
-        this.showTroubleMatchingModal = false;
-        this.showUnmatchedModal = false;
-        return;
+        clearInterval(this.isWaitingIntervalId)
+        this.showTroubleMatchingModal = false
+        this.showUnmatchedModal = false
+        return
       }
 
-      const fifteenMins = 1000 * 60 * 15;
+      const fifteenMins = 1000 * 60 * 15
       const fifteenMinsFromSessionStart =
-        new Date(this.session.createdAt).getTime() + fifteenMins;
+        new Date(this.session.createdAt).getTime() + fifteenMins
       const fortyFiveMinsFromSessionStart =
-        fifteenMinsFromSessionStart + fifteenMins * 2;
+        fifteenMinsFromSessionStart + fifteenMins * 2
 
       if (Date.now() >= fortyFiveMinsFromSessionStart) {
         // Students must end their session after 45 minutes of waiting
-        this.toggleUnmatchedModal();
-        clearInterval(this.isWaitingIntervalId);
+        this.toggleUnmatchedModal()
+        clearInterval(this.isWaitingIntervalId)
       } else if (
         Date.now() >= fifteenMinsFromSessionStart &&
         !this.hasSeenTroubleMatchingModal
       ) {
-        this.toggleTroubleMatchingModal();
-        this.hasSeenTroubleMatchingModal = true;
+        this.toggleTroubleMatchingModal()
+        this.hasSeenTroubleMatchingModal = true
       }
     }
   },
   sockets: {
     connect_error() {
       this.connectionMsg =
-        "The system seems to be having a problem reaching the server.";
-      this.connectionMsgType = "warning";
+        'The system seems to be having a problem reaching the server.'
+      this.connectionMsgType = 'warning'
     },
     connect_timeout() {
       this.connectionMsg =
-        "The system seems to be having a problem reaching the server.";
-      this.connectionMsgType = "warning";
+        'The system seems to be having a problem reaching the server.'
+      this.connectionMsgType = 'warning'
     },
     reconnect_attempt() {
-      this.reconnectAttemptMsg = "Trying periodically to reconnect.";
+      this.reconnectAttemptMsg = 'Trying periodically to reconnect.'
     },
     connect() {
-      this.connectionSuccess();
+      this.connectionSuccess()
     }
   },
   watch: {
@@ -307,27 +307,27 @@ export default {
     // and clear the isWaiting interval when a volunteer joins the session
     async isSessionWaitingForVolunteer(value, prevValue) {
       if (!value && prevValue) {
-        this.showTroubleMatchingModal = false;
-        this.showUnmatchedModal = false;
-        clearInterval(this.isWaitingIntervalId);
+        this.showTroubleMatchingModal = false
+        this.showUnmatchedModal = false
+        clearInterval(this.isWaitingIntervalId)
         try {
           const volunteerJoinedAudio = document.querySelector(
-            ".audio__volunteer-joined"
-          );
+            '.audio__volunteer-joined'
+          )
           // Unmuting the audio allows us to bypass the need for user interaction with the DOM before playing a sound
-          volunteerJoinedAudio.muted = false;
-          await volunteerJoinedAudio.play();
+          volunteerJoinedAudio.muted = false
+          await volunteerJoinedAudio.play()
         } catch (error) {
           // eslint-disable-next-line no-console
-          console.log("Unable to play audio");
+          console.log('Unable to play audio')
         }
-        sendWebNotification("We found a coach!", {
+        sendWebNotification('We found a coach!', {
           body: `Start chatting with ${this.sessionPartner.firstname} now.`
-        });
+        })
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -346,7 +346,7 @@ export default {
   justify-content: space-between;
   align-items: center;
 
-  @include breakpoint-below("medium") {
+  @include breakpoint-below('medium') {
     border-radius: 0px 0px 20px 20px;
     height: 80px;
   }
@@ -363,7 +363,7 @@ h1 {
   width: 36px;
   height: 36px;
   border-radius: 18px;
-  background-image: url("~@/assets/defaultAvatar@2x.png");
+  background-image: url('~@/assets/defaultAvatar@2x.png');
   background-size: cover;
   flex-shrink: 0;
 }

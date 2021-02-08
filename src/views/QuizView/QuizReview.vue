@@ -27,56 +27,56 @@
 </template>
 
 <script>
-import "core-js/fn/array/flat-map";
+import 'core-js/fn/array/flat-map'
 
-import TrainingService from "@/services/TrainingService";
+import TrainingService from '@/services/TrainingService'
 
 export default {
   data() {
     return {
       questionsReview: []
-    };
+    }
   },
   mounted() {
-    this.questionsReview = TrainingService.reviewQuiz(this);
+    this.questionsReview = TrainingService.reviewQuiz(this)
     this.questionsReview.forEach(question => {
       if (question.imageSrc) {
         question.imageStyle = {
           backgroundImage: `url(${question.imageSrc})`,
-          width: "300px",
-          height: "300px",
-          display: "flex",
-          backgroundSize: "100%",
-          backgroundRepeat: "no-repeat"
-        };
+          width: '300px',
+          height: '300px',
+          display: 'flex',
+          backgroundSize: '100%',
+          backgroundRepeat: 'no-repeat'
+        }
       } else {
-        question.imageStyle = {};
+        question.imageStyle = {}
       }
-    });
+    })
   },
   updated() {
-    this.rerenderMathJaxElements();
+    this.rerenderMathJaxElements()
   },
   methods: {
     rerenderMathJaxElements() {
       // Re-render MathJax in all question text and answers in quiz review
-      const questions = document.querySelectorAll(".review .question");
+      const questions = document.querySelectorAll('.review .question')
 
       if (!questions || !questions.length) {
-        return;
+        return
       }
 
       window.MathJax.Hub.Queue([
-        "Typeset",
+        'Typeset',
         window.MathJax.Hub,
         Array.from(questions).flatMap(question => [
-          question.querySelector(".question-text"),
-          ...Array.from(question.querySelectorAll(".possible-answers div"))
+          question.querySelector('.question-text'),
+          ...Array.from(question.querySelectorAll('.possible-answers div'))
         ])
-      ]);
+      ])
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

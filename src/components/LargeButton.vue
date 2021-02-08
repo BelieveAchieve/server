@@ -10,10 +10,10 @@
 </template>
 
 <script>
-import ButtonTemplate from "./ButtonTemplate";
+import ButtonTemplate from './ButtonTemplate'
 
 export default {
-  name: "LargeButton",
+  name: 'LargeButton',
   components: { ButtonTemplate },
   props: {
     primary: Boolean,
@@ -26,14 +26,14 @@ export default {
   },
   computed: {
     buttonClasses() {
-      const base = `LargeButton-${this.primary ? "primary" : "secondary"}`;
+      const base = `LargeButton-${this.primary ? 'primary' : 'secondary'}`
       return {
         [base]: true,
         [`${base}--reverse`]: this.reverse
-      };
+      }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

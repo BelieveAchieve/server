@@ -70,16 +70,16 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import FormPageTemplate from "@/components/FormPageTemplate";
-import StudentForm from "./StudentForm";
-import VolunteerForm from "./VolunteerForm";
-import FormFooter from "@/components/FormFooter";
-import NetworkService from "@/services/NetworkService";
-import { capitalize } from "lodash";
+import { mapState } from 'vuex'
+import FormPageTemplate from '@/components/FormPageTemplate'
+import StudentForm from './StudentForm'
+import VolunteerForm from './VolunteerForm'
+import FormFooter from '@/components/FormFooter'
+import NetworkService from '@/services/NetworkService'
+import { capitalize } from 'lodash'
 
 export default {
-  name: "signup-view",
+  name: 'signup-view',
   components: {
     FormPageTemplate,
     StudentForm,
@@ -91,31 +91,31 @@ export default {
       userSelection: null,
       isReferred: false,
       referredBy: {}
-    };
+    }
   },
 
   async created() {
-    this.$store.dispatch("app/hideNavigation");
-    const referralCode = this.$route.query.referral;
+    this.$store.dispatch('app/hideNavigation')
+    const referralCode = this.$route.query.referral
     if (referralCode) {
-      window.localStorage.setItem("upcReferredByCode", referralCode);
-      this.isReferred = true;
+      window.localStorage.setItem('upcReferredByCode', referralCode)
+      this.isReferred = true
 
       const {
         data: { user }
-      } = await NetworkService.getReferredBy(referralCode);
+      } = await NetworkService.getReferredBy(referralCode)
 
       if (!user) {
-        this.isReferred = false;
-        window.localStorage.removeItem("upcReferredByCode");
-      } else this.referredBy = user;
+        this.isReferred = false
+        window.localStorage.removeItem('upcReferredByCode')
+      } else this.referredBy = user
     }
 
     if (this.$route.params)
-      if (this.isMobileApp || this.$route.params.userType === "student")
-        this.userSelection = "student";
-      else if (this.$route.params.userType === "volunteer")
-        this.userSelection = "volunteer";
+      if (this.isMobileApp || this.$route.params.userType === 'student')
+        this.userSelection = 'student'
+      else if (this.$route.params.userType === 'volunteer')
+        this.userSelection = 'volunteer'
   },
   computed: {
     ...mapState({
@@ -123,28 +123,28 @@ export default {
     }),
     welcomeMessage() {
       if (this.isReferred && this.referredBy)
-        return `${this.firstName} invited you to UPchieve!`;
+        return `${this.firstName} invited you to UPchieve!`
 
-      return "Welcome to UPchieve!";
+      return 'Welcome to UPchieve!'
     },
     firstName() {
       if (this.referredBy && this.referredBy.firstname)
-        return capitalize(this.referredBy.firstname);
-      else return "";
+        return capitalize(this.referredBy.firstname)
+      else return ''
     }
   },
 
   methods: {
     selectVolunteer() {
-      this.$router.push("/sign-up/volunteer");
-      this.userSelection = "volunteer";
+      this.$router.push('/sign-up/volunteer')
+      this.userSelection = 'volunteer'
     },
     selectStudent() {
-      this.$router.push("/sign-up/student");
-      this.userSelection = "student";
+      this.$router.push('/sign-up/student')
+      this.userSelection = 'student'
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

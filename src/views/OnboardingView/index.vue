@@ -5,14 +5,14 @@
 </template>
 
 <script>
-import SendVerification from "./SendVerification";
+import SendVerification from './SendVerification'
 
 export default {
-  name: "onboarding-view",
+  name: 'onboarding-view',
   components: {
     SendVerification
   }
-};
+}
 </script>
 
 <style lang="scss" scoped></style>

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import CheckIcon from "@/assets/check.svg";
+import CheckIcon from '@/assets/check.svg'
 
 export default {
   components: {
@@ -17,7 +17,7 @@ export default {
       default: false
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

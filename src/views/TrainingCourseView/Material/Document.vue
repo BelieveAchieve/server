@@ -20,10 +20,10 @@
 </template>
 
 <script>
-import Loader from "@/components/Loader";
+import Loader from '@/components/Loader'
 
 export default {
-  name: "Document",
+  name: 'Document',
   props: {
     resourceId: String
   },
@@ -33,12 +33,12 @@ export default {
       isLoaded: false,
       isLoadedIntervalId: null,
       reloadAttempts: 0
-    };
+    }
   },
   computed: {
     isMaxAttempt() {
-      const maxAttempts = 20;
-      return this.reloadAttempts > maxAttempts;
+      const maxAttempts = 20
+      return this.reloadAttempts > maxAttempts
     }
   },
   mounted() {
@@ -49,22 +49,22 @@ export default {
      **/
     // @todo: backoff requests
     this.isLoadedIntervalId = setInterval(() => {
-      if (this.isLoaded) clearInterval(this.isLoadedIntervalId);
-      else this.forceRerender();
-    }, 1000 * 2);
+      if (this.isLoaded) clearInterval(this.isLoadedIntervalId)
+      else this.forceRerender()
+    }, 1000 * 2)
   },
   beforeDestroy() {
-    clearInterval(this.isLoadedIntervalId);
+    clearInterval(this.isLoadedIntervalId)
   },
   methods: {
     loaded() {
-      this.isLoaded = true;
+      this.isLoaded = true
     },
     forceRerender() {
-      this.reloadAttempts += 1;
+      this.reloadAttempts += 1
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

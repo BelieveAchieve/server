@@ -53,51 +53,51 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import LargeButton from "@/components/LargeButton";
+import { mapGetters } from 'vuex'
+import LargeButton from '@/components/LargeButton'
 
 const questions = [
   {
     title: "What is your primary goal for today's session?",
-    key: "primary-goal",
+    key: 'primary-goal',
     options: [
       {
-        displayName: "Solve a specific question",
-        value: "specific-question"
+        displayName: 'Solve a specific question',
+        value: 'specific-question'
       },
       {
-        displayName: "Complete a homework assignment",
-        value: "complete-homework"
+        displayName: 'Complete a homework assignment',
+        value: 'complete-homework'
       },
       {
-        displayName: "Prepare for a quiz/test",
-        value: "test-prep"
+        displayName: 'Prepare for a quiz/test',
+        value: 'test-prep'
       },
       {
-        displayName: "Check my answers",
-        value: "check-answers"
+        displayName: 'Check my answers',
+        value: 'check-answers'
       },
       {
-        displayName: "Improve my understanding of a topic",
-        value: "improve-understanding"
+        displayName: 'Improve my understanding of a topic',
+        value: 'improve-understanding'
       },
       {
-        displayName: "Other",
-        value: "other"
+        displayName: 'Other',
+        value: 'other'
       }
     ]
   },
   {
     title:
-      "What is your level of understanding of the topic you need support with?",
-    key: "topic-understanding",
+      'What is your level of understanding of the topic you need support with?',
+    key: 'topic-understanding',
     options: [
       {
         displayName: "I don't know how to do this at all.",
         value: 1
       },
       {
-        displayName: "I think I know how to do it, but I need help.",
+        displayName: 'I think I know how to do it, but I need help.',
         value: 2
       },
       {
@@ -106,12 +106,12 @@ const questions = [
         value: 3
       },
       {
-        displayName: "I am very comfortable with this topic.",
+        displayName: 'I am very comfortable with this topic.',
         value: 4
       }
     ]
   }
-];
+]
 
 export default {
   components: { LargeButton },
@@ -120,36 +120,36 @@ export default {
     return {
       questions,
       responses: {
-        "primary-goal": {
-          answer: ""
+        'primary-goal': {
+          answer: ''
         },
-        "topic-understanding": {
-          answer: ""
+        'topic-understanding': {
+          answer: ''
         }
       }
-    };
+    }
   },
 
   computed: {
-    ...mapGetters({ mobileMode: "app/mobileMode" }),
+    ...mapGetters({ mobileMode: 'app/mobileMode' }),
     isComplete() {
       return (
-        !!this.responses["primary-goal"].answer &&
-        !!this.responses["topic-understanding"].answer
-      );
+        !!this.responses['primary-goal'].answer &&
+        !!this.responses['topic-understanding'].answer
+      )
     }
   },
 
   methods: {
     submitSurvey() {
-      this.$store.dispatch("user/updatePresessionSurvey", this.responses);
-      this.$emit("survey-completed");
+      this.$store.dispatch('user/updatePresessionSurvey', this.responses)
+      this.$emit('survey-completed')
     },
     cancel() {
-      this.$store.dispatch("app/modal/hide");
+      this.$store.dispatch('app/modal/hide')
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -161,7 +161,7 @@ export default {
   flex-direction: column;
   align-items: center;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     padding: 40px 40px 0;
   }
 
@@ -204,7 +204,7 @@ export default {
 .questions-container {
   overflow-y: scroll;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     height: 321px;
   }
 }
@@ -236,7 +236,7 @@ export default {
       font-size: 16px;
 
       &:before {
-        content: "";
+        content: '';
         display: inline-block;
         width: 24px;
         height: 24px;
@@ -250,7 +250,7 @@ export default {
       }
     }
 
-    input[type="radio"] {
+    input[type='radio'] {
       display: none;
 
       &:checked + label:before {
@@ -259,7 +259,7 @@ export default {
       }
     }
 
-    input[type="text"] {
+    input[type='text'] {
       margin: 0 0 0 10px;
       width: 250px;
     }

@@ -24,9 +24,9 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import LargeButton from "@/components/LargeButton";
-import ArrowIcon from "@/assets/arrow.svg";
+import { mapGetters } from 'vuex'
+import LargeButton from '@/components/LargeButton'
+import ArrowIcon from '@/assets/arrow.svg'
 
 export default {
   components: { LargeButton, ArrowIcon },
@@ -38,56 +38,56 @@ export default {
       step: 0,
       views: [
         {
-          title: "Welcome to UPchieve! 🎉",
+          title: 'Welcome to UPchieve! 🎉',
           subtitle:
-            "You’re almost ready to get started! We just need to lay down some ground rules.",
+            'You’re almost ready to get started! We just need to lay down some ground rules.',
           button: "I'm listening"
         },
         {
-          title: "Rule #1: Be patient when making a request.",
+          title: 'Rule #1: Be patient when making a request.',
           subtitle:
-            "Pairing you with a coach can take up to 10 minutes. We know waiting’s hard, but we promise a coach is on their way 🏃🏿‍♂️ Don’t leave ‘em hanging!",
+            'Pairing you with a coach can take up to 10 minutes. We know waiting’s hard, but we promise a coach is on their way 🏃🏿‍♂️ Don’t leave ‘em hanging!',
           tip:
-            "Our coaches are patient, too. Ask as many questions as you want in the same session! There’s no time limit.",
-          button: "Patience, check"
+            'Our coaches are patient, too. Ask as many questions as you want in the same session! There’s no time limit.',
+          button: 'Patience, check'
         },
         {
-          title: "Rule #2: Play nice with your coach.",
+          title: 'Rule #2: Play nice with your coach.',
           subtitle:
-            "Our coaches are real people with real feelings — No 🤖 here. They’re eager to help you, so please be kind and respectful.",
-          button: "I promise to bring my best self"
+            'Our coaches are real people with real feelings — No 🤖 here. They’re eager to help you, so please be kind and respectful.',
+          button: 'I promise to bring my best self'
         },
         {
-          title: "Rule #3: Stay safe out there.",
+          title: 'Rule #3: Stay safe out there.',
           subtitle:
-            "You came to UPchieve for homework help, not the ☕. Keep conversations on-topic, and don’t share personal info like your phone number, IG handle, or email.",
-          button: "Got it, I’m here to learn"
+            'You came to UPchieve for homework help, not the ☕. Keep conversations on-topic, and don’t share personal info like your phone number, IG handle, or email.',
+          button: 'Got it, I’m here to learn'
         },
         {
-          title: "You’re ready for your first session! 💯",
+          title: 'You’re ready for your first session! 💯',
           subtitle:
-            "Thank you for listening. We can tell this is going to be the beginning of a beautiful friendship.",
-          button: "Take me to my dashboard"
+            'Thank you for listening. We can tell this is going to be the beginning of a beautiful friendship.',
+          button: 'Take me to my dashboard'
         }
       ]
-    };
+    }
   },
   computed: {
     ...mapGetters({
-      mobileMode: "app/mobileMode"
+      mobileMode: 'app/mobileMode'
     })
   },
   methods: {
     nextStep() {
       if (this.step === this.views.length - 1) {
-        this.$store.dispatch("app/modal/hide");
-        this.$store.dispatch("user/firstDashboardVisit", false);
+        this.$store.dispatch('app/modal/hide')
+        this.$store.dispatch('user/firstDashboardVisit', false)
       } else {
-        this.step += 1;
+        this.step += 1
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -114,15 +114,15 @@ p {
 }
 
 .OnboardingModal-title {
-  @include font-category("display-small");
+  @include font-category('display-small');
   margin-bottom: 1.4em;
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     margin-top: 24px;
   }
 }
 
 .OnboardingModal-subtitle {
-  @include font-category("heading");
+  @include font-category('heading');
   color: $c-secondary-grey;
   margin-bottom: 1em;
 }
@@ -133,7 +133,7 @@ p {
   margin-top: auto;
   margin-bottom: 4em;
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     @include child-spacing(top, 0);
 
     flex-direction: row;
@@ -168,7 +168,7 @@ p {
     border: 1px solid $c-success-green;
   }
 
-  @include breakpoint-above("medium") {
+  @include breakpoint-above('medium') {
     padding: 0.8em 1.8em;
   }
 }

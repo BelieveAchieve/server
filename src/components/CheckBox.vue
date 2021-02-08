@@ -23,8 +23,8 @@
 export default {
   inheritAttrs: false,
   model: {
-    prop: "checked",
-    event: "change"
+    prop: 'checked',
+    event: 'change'
   },
   props: {
     checked: Boolean,
@@ -33,7 +33,7 @@ export default {
       required: true
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -42,7 +42,7 @@ export default {
 }
 
 .CheckBox-label {
-  @include font-category("body");
+  @include font-category('body');
   color: $c-soft-black;
   margin: 0 0 0 12px;
 }
@@ -61,7 +61,7 @@ export default {
   margin: 0; // bootstrap fix
 
   &:after {
-    content: "✓";
+    content: '✓';
     opacity: 0;
   }
 

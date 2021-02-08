@@ -782,37 +782,37 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters } from 'vuex'
 
-import FullTextTemplate from "@/components/FullTextTemplate";
-import AccordionItem from "@/components/AccordionItem";
+import FullTextTemplate from '@/components/FullTextTemplate'
+import AccordionItem from '@/components/AccordionItem'
 
 export default {
-  name: "LegalView",
+  name: 'LegalView',
   components: {
     FullTextTemplate,
     AccordionItem
   },
   created() {
     if (!this.isAuthenticated) {
-      this.$store.dispatch("app/hideNavigation");
+      this.$store.dispatch('app/hideNavigation')
     }
   },
   computed: {
     ...mapGetters({
-      isAuthenticated: "user/isAuthenticated"
+      isAuthenticated: 'user/isAuthenticated'
     })
   },
   watch: {
     isAuthenticated(isAuthed) {
       if (isAuthed) {
-        this.$store.dispatch("app/showNavigation");
+        this.$store.dispatch('app/showNavigation')
       } else {
-        this.$store.dispatch("app/hideNavigation");
+        this.$store.dispatch('app/hideNavigation')
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped></style>

@@ -35,7 +35,7 @@ export default {
     options: Array,
     optionDisplay: Object
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -46,7 +46,7 @@ export default {
 }
 
 .DropdownList-label {
-  @include font-category("subheading");
+  @include font-category('subheading');
   margin-bottom: 16px;
 
   &--disabled {
@@ -55,7 +55,7 @@ export default {
 }
 
 .DropdownList-select {
-  @include font-category("body");
+  @include font-category('body');
 
   background: white;
   border: 1px solid $c-border-grey;

@@ -48,82 +48,82 @@
 </template>
 
 <script>
-import axios from "axios";
-import NetworkService from "@/services/NetworkService";
-import { mapState, mapGetters } from "vuex";
-import Modal from "@/components/Modal";
-import Separator from "@/components/Separator";
-import LargeButton from "@/components/LargeButton";
-import TrashIcon from "@/assets/trash.svg";
-import CrossIcon from "@/assets/cross.svg";
-import AnalyticsService from "@/services/AnalyticsService";
-import { EVENTS } from "@/consts";
+import axios from 'axios'
+import NetworkService from '@/services/NetworkService'
+import { mapState, mapGetters } from 'vuex'
+import Modal from '@/components/Modal'
+import Separator from '@/components/Separator'
+import LargeButton from '@/components/LargeButton'
+import TrashIcon from '@/assets/trash.svg'
+import CrossIcon from '@/assets/cross.svg'
+import AnalyticsService from '@/services/AnalyticsService'
+import { EVENTS } from '@/consts'
 
 export default {
-  name: "volunteer-dashboard",
+  name: 'volunteer-dashboard',
   components: { Modal, Separator, LargeButton, TrashIcon, CrossIcon },
   props: {
     closeModal: { type: Function, required: true }
   },
   data() {
     return {
-      photo: "",
+      photo: '',
       file: undefined,
-      error: ""
-    };
+      error: ''
+    }
   },
   computed: {
     ...mapState({
       user: state => state.user.user
     }),
-    ...mapGetters({ mobileMode: "app/mobileMode" })
+    ...mapGetters({ mobileMode: 'app/mobileMode' })
   },
   methods: {
     addPhoto(event) {
-      const { files } = event.target;
-      const file = files[0];
-      const twentyFiveMegaBytes = 25 * 1000000;
+      const { files } = event.target
+      const file = files[0]
+      const twentyFiveMegaBytes = 25 * 1000000
       if (file.size > twentyFiveMegaBytes) {
         this.error =
-          "This photo is too large. Please upload a photo less than 25mb.";
-        return;
+          'This photo is too large. Please upload a photo less than 25mb.'
+        return
       }
-      this.error = "";
-      this.file = file;
-      this.photo = URL.createObjectURL(file);
+      this.error = ''
+      this.file = file
+      this.photo = URL.createObjectURL(file)
     },
     removePhoto() {
-      event.stopPropagation();
-      this.photo = "";
+      event.stopPropagation()
+      this.photo = ''
     },
     submitPhoto() {
       if (!this.photo) {
-        this.error = "Please upload a photo before submitting.";
-        return;
+        this.error = 'Please upload a photo before submitting.'
+        return
       }
-      this.error = "";
+      this.error = ''
       NetworkService.getPhotoUploadUrl().then(res => {
-        const { uploadUrl } = res.body;
+        const { uploadUrl } = res.body
         if (uploadUrl) {
           axios.put(uploadUrl, this.file, {
             headers: {
-              "Content-Type": this.file.type
+              'Content-Type': this.file.type
             }
-          });
-          this.$store.dispatch("user/addToUser", {
-            photoIdStatus: "SUBMITTED"
-          });
+          })
+          this.$store.dispatch('user/addToUser', {
+            photoIdStatus: 'SUBMITTED'
+          })
           AnalyticsService.captureEvent(EVENTS.PHOTO_ID_ADDED, {
             event: EVENTS.PHOTO_ID_ADDED
-          });
-          this.closeModal();
+          })
+          this.closeModal()
         } else {
-          this.error = "Sorry, we had trouble uploading your photo.";
+          this.error = 'Sorry, we had trouble uploading your photo.'
         }
-      });
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -140,13 +140,13 @@ header {
 }
 
 .title {
-  @include font-category("display-small");
+  @include font-category('display-small');
   @include child-spacing(bottom, 18px);
   text-align: left;
 }
 
 .subtitle {
-  @include font-category("body");
+  @include font-category('body');
   text-align: left;
   color: $c-secondary-grey;
 }
