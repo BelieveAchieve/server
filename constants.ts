@@ -367,4 +367,4 @@ export enum SESSION_FLAGS {
 }
 
 // amount of volunteers to text notifications to per session
-export const TOTAL_VOLUNTEERS_TO_TEXT_FOR_HELP = 20;
+export const TOTAL_VOLUNTEERS_TO_TEXT_FOR_HELP = 15;
