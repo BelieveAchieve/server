@@ -11,6 +11,7 @@ import {
 } from '../generate'
 import { resetDb, insertStudent } from '../db-utils'
 jest.mock('../../services/MailService')
+jest.setTimeout(10000)
 
 const US_IP_ADDRESS = '161.185.160.93'
 
