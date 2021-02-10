@@ -1,39 +1,37 @@
-const Session = require('../models/Session')
-const { redisGet, redisSet, redisDel, redisAppend } = require('./RedisService')
+import Session from '../models/Session';
+import { redisGet, redisSet, redisDel, redisAppend } from './RedisService';
 
-const sessionIdToKey = id => `zwibbler-${id}`
+const sessionIdToKey = (id): string => `zwibbler-${id}`;
 
-module.exports = {
-  createDoc: async sessionId => {
-    const newDoc = ''
-    await redisSet(sessionIdToKey(sessionId), newDoc)
-    return newDoc
-  },
+export const createDoc = async (sessionId): Promise<string> => {
+  const newDoc = '';
+  await redisSet(sessionIdToKey(sessionId), newDoc);
+  return newDoc;
+};
 
-  getDoc: async sessionId => {
-    return redisGet(sessionIdToKey(sessionId))
-  },
+export const getDoc = (sessionId): Promise<string> => {
+  return redisGet(sessionIdToKey(sessionId));
+};
 
-  getDocLength: async sessionId => {
-    const document = await redisGet(sessionIdToKey(sessionId))
-    if (document === undefined) return 0
-    return Buffer.byteLength(document, 'utf8')
-  },
+export const getDocLength = async (sessionId): Promise<number> => {
+  const document = await redisGet(sessionIdToKey(sessionId));
+  if (document === undefined) return 0;
+  return Buffer.byteLength(document, 'utf8');
+};
 
-  appendToDoc: async (sessionId, docAddition) => {
-    return redisAppend(sessionIdToKey(sessionId), docAddition)
-  },
+export const appendToDoc = (sessionId, docAddition): Promise<void> => {
+  return redisAppend(sessionIdToKey(sessionId), docAddition);
+};
 
-  deleteDoc: async sessionId => {
-    return redisDel(sessionIdToKey(sessionId))
-  },
+export const deleteDoc = (sessionId): Promise<void> => {
+  return redisDel(sessionIdToKey(sessionId));
+};
 
-  getFinalDocState: async sessionId => {
-    const { whiteboardDoc } = await Session.findOne({ _id: sessionId })
-      .select('whiteboardDoc')
-      .lean()
-      .exec()
+export const getFinalDocState = async (sessionId): Promise<string> => {
+  const { whiteboardDoc } = await Session.findOne({ _id: sessionId })
+    .select('whiteboardDoc')
+    .lean()
+    .exec();
 
-    return whiteboardDoc
-  }
-}
+  return whiteboardDoc;
+};
