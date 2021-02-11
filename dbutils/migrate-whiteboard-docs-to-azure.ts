@@ -21,6 +21,7 @@ async function upgrade(): Promise<void> {
       createdAt: { $gte: cutOffDate }
     })
       .sort({ createdAt: -1 })
+      .select({ _id: 1, whiteboardDoc: 1})
       .lean()
       .exec();
 
@@ -64,6 +65,7 @@ async function downgrade(): Promise<void> {
       type: { $ne: SUBJECT_TYPES.COLLEGE },
       createdAt: { $gte: cutOffDate }
     })
+      .select({ _id: 1 })
       .lean()
       .exec();
 
