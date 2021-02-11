@@ -9,7 +9,8 @@ const MailService = require('./MailService')
 const {
   USER_BAN_REASON,
   SESSION_REPORT_REASON,
-  EVENTS
+  EVENTS,
+  SUBJECT_TYPES
 } = require('../constants')
 const UserActionCtrl = require('../controllers/UserActionCtrl')
 const ObjectId = require('mongodb').ObjectId
@@ -475,16 +476,25 @@ module.exports = {
       if (isReviewNeeded) update.reviewedVolunteer = false
     }
 
-    const quillDoc = await QuillDocService.getDoc(session._id.toString())
-    const whiteboardDoc = await WhiteboardService.getDoc(session._id.toString())
+    // Only college subjects use the Quill document editor
+    if (session.type === SUBJECT_TYPES.COLLEGE) {
+      const quillDoc = await QuillDocService.getDoc(session._id.toString())
+      update.quillDoc = JSON.stringify(quillDoc)
+    } else {
+      const whiteboardDoc = await WhiteboardService.getDoc(
+        session._id.toString()
+      )
+      update.hasWhiteboardDoc = await WhiteboardService.uploadedToStorage(
+        sessionId,
+        whiteboardDoc
+      )
+    }
 
     await Session.updateOne(
       { _id: session._id },
       {
         endedAt,
         endedBy,
-        whiteboardDoc: whiteboardDoc || undefined,
-        quillDoc: quillDoc ? JSON.stringify(quillDoc) : undefined,
         timeTutored,
         ...update
       }
