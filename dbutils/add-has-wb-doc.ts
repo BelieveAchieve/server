@@ -6,7 +6,10 @@ const upgrade = async (): Promise<void> => {
   try {
     await dbconnect();
 
-    const results = await SessionModel.updateMany({}, { hasWhiteboardDoc: false });
+    const results = await SessionModel.updateMany(
+      { type: { $ne: 'college' } },
+      { hasWhiteboardDoc: false }
+    );
 
     console.log(results);
   } catch (error) {
@@ -20,7 +23,7 @@ async function downgrade(): Promise<void> {
   try {
     await dbconnect();
     const results = await SessionModel.updateMany(
-      {},
+      { type: { $ne: 'college' } },
       {
         $unset: {
           hasWhiteboardDoc: ''
