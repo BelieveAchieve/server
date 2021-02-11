@@ -7,6 +7,7 @@ import {
 } from '../services/WhiteboardService';
 import { SUBJECT_TYPES } from '../constants';
 
+// whiteboard docs prior to this date have a different format that is unusable
 const cutOffDate = new Date('2020-11-18T00:00:00.000+00:00');
 
 // migrate whiteboard docs to azure
@@ -19,6 +20,7 @@ async function upgrade(): Promise<void> {
       type: { $ne: SUBJECT_TYPES.COLLEGE },
       createdAt: { $gte: cutOffDate }
     })
+      .sort({ createdAt: -1 })
       .lean()
       .exec();
 
@@ -46,19 +48,6 @@ async function upgrade(): Promise<void> {
 
     const results = await Promise.all(updates);
     console.log(results);
-
-    // Sessions prior to the cut off date will have their whiteboard doc removed
-    const oldSessionUpdateResults = await SessionModel.updateMany({
-      type: { $ne: SUBJECT_TYPES.COLLEGE },
-      createdAt: { $lt: cutOffDate }
-    }, {
-      $unset: {
-        whiteboardDoc: ''
-      }
-     })
-      .lean()
-      .exec();
-    console.log(oldSessionUpdateResults);
   } catch (error) {
     console.error(error);
   }
@@ -66,6 +55,7 @@ async function upgrade(): Promise<void> {
   mongoose.disconnect();
 }
 
+// get whiteboard docs from azure and store in to the whiteboardDoc property
 async function downgrade(): Promise<void> {
   try {
     await dbconnect();
@@ -88,7 +78,7 @@ async function downgrade(): Promise<void> {
           },
           {
             whiteboardDoc,
-            hasWhiteboard: false
+            hasWhiteboardDoc: false
           }
         )
       );
