@@ -488,6 +488,8 @@ module.exports = {
         sessionId,
         whiteboardDoc
       )
+      // @todo: remove once whiteboard docs are in azure storage
+      update.whiteboardDoc = whiteboardDoc
     }
 
     await Session.updateOne(
