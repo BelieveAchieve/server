@@ -180,7 +180,26 @@ const config: Static<typeof Config> = {
   unleashUrl:
     process.env.SUBWAY_UNLEASH_URL ||
     'https://gitlab.com/api/v4/feature_flags/unleash/23285197',
-  posthogToken: process.env.SUBWAY_POSTHOG_TOKEN || 'bogus'
+  posthogToken: process.env.SUBWAY_POSTHOG_TOKEN || 'bogus',
+
+  /**
+   *
+   * @note: DefaultAzureCredential() requires AZURE_CLIENT_ID, AZURE_TENANT_ID, and AZURE_CLIENT_SECRET.
+   * https://github.com/Azure/azure-sdk-for-js/blob/master/sdk/identity/identity/README.md#environment-variables
+   *
+   * To combine multiple credential instances please see:
+   * https://github.com/Azure/azure-sdk-for-js/blob/master/sdk/identity/identity/README.md#define-a-custom-authentication-flow-with-the-chainedtokencredential
+   *
+   **/
+  whiteboardStorageAppId: process.env.AZURE_CLIENT_ID || 'bogus',
+  whiteboardStorageTenantId: process.env.AZURE_TENANT_ID || 'bogus',
+  whiteboardStorageSecret: process.env.AZURE_CLIENT_SECRET || 'bogus',
+  whiteboardStorageSubscriptionId:
+    process.env.SUBWAY_AZURE_WHITEBOARD_SUBSCRIPTION_ID || 'bogus',
+  whiteboardStorageAccountName:
+    process.env.SUBWAY_WHITEBOARD_STORAGE_ACCOUNT_NAME || 'bogus',
+  whiteboardStorageContainer:
+    process.env.SUBWAY_WHITEBOARD_STORAGE_CONTAINER || 'bogus'
 };
 
 module.exports = config;

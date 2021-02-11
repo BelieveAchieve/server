@@ -88,5 +88,11 @@ export const Config = Record({
   unleashId: String,
   unleashName: String,
   unleashUrl: String,
-  posthogToken: String
+  posthogToken: String,
+  whiteboardStorageAppId: String,
+  whiteboardStorageTenantId: String,
+  whiteboardStorageSecret: String,
+  whiteboardStorageSubscriptionId: String,
+  whiteboardStorageAccountName: String,
+  whiteboardStorageContainer: String
 });
