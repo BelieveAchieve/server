@@ -17,7 +17,7 @@ export interface Session {
   type: string;
   subTopic: string;
   messages: Message[];
-  hasWhiteboardDoc: boolean;
+  hasWhiteboardDoc?: boolean;
   // @todo: make optional once whiteboard docs are in azure storage
   whiteboardDoc: string;
   quillDoc: string;
