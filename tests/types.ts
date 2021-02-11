@@ -218,6 +218,7 @@ export interface Session {
   type: string;
   subTopic: string;
   messages: Message[];
+  // @todo make optional once whiteboard docs are in azure storage
   whiteboardDoc: string;
   quillDoc: string;
   createdAt: Date;
