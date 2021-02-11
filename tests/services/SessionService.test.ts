@@ -23,7 +23,7 @@ import { Student, Volunteer } from '../types';
 import { Message } from '../../models/Message';
 import { SESSION_FLAGS } from '../../constants';
 import { convertObjectIdListToStringList } from '../utils';
-import WhiteboardService from '../../services/WhiteboardService';
+import * as WhiteboardService from '../../services/WhiteboardService';
 jest.mock('../../services/MailService');
 jest.mock('../../services/WhiteboardService');
 jest.mock('../../services/QuillDocService');
