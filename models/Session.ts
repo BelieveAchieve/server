@@ -17,7 +17,7 @@ export interface Session {
   type: string;
   subTopic: string;
   messages: Message[];
-  hasWhiteboardDoc: boolean;
+  hasWhiteboardDoc?: boolean;
   whiteboardDoc: string;
   quillDoc: string;
   createdAt: Date;
