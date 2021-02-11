@@ -34,7 +34,6 @@ export interface Session {
   reviewedStudent: boolean;
   reviewedVolunteer: boolean;
   timeTutored: number;
-  whiteboardUrl: string;
 }
 
 export type SessionDocument = Session & Document;
@@ -78,12 +77,6 @@ const sessionSchema = new Schema({
     type: String,
     default: '',
     select: false
-  },
-
-  whiteboardUrl: {
-    type: String,
-    default: ''
-    // select: false
   },
 
   quillDoc: {
