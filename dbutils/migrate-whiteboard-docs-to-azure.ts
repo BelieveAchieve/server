@@ -7,13 +7,17 @@ import {
 } from '../services/WhiteboardService';
 import { SUBJECT_TYPES } from '../constants';
 
+const cutOffDate = new Date('2020-11-18T00:00:00.000+00:00');
+
 // migrate whiteboard docs to azure
 async function upgrade(): Promise<void> {
   try {
     await dbconnect();
 
+    // Sessions after the cut off date will have their whiteboard doc moved to azure
     const sessions = await SessionModel.find({
-      type: { $ne: SUBJECT_TYPES.COLLEGE }
+      type: { $ne: SUBJECT_TYPES.COLLEGE },
+      createdAt: { $gte: cutOffDate }
     })
       .lean()
       .exec();
@@ -41,8 +45,20 @@ async function upgrade(): Promise<void> {
     }
 
     const results = await Promise.all(updates);
-
     console.log(results);
+
+    // Sessions prior to the cut off date will have their whiteboard doc removed
+    const oldSessionUpdateResults = await SessionModel.updateMany({
+      type: { $ne: SUBJECT_TYPES.COLLEGE },
+      createdAt: { $lt: cutOffDate }
+    }, {
+      $unset: {
+        whiteboardDoc: ''
+      }
+     })
+      .lean()
+      .exec();
+    console.log(oldSessionUpdateResults);
   } catch (error) {
     console.error(error);
   }
@@ -55,7 +71,8 @@ async function downgrade(): Promise<void> {
     await dbconnect();
 
     const sessions = await SessionModel.find({
-      type: { $ne: SUBJECT_TYPES.COLLEGE }
+      type: { $ne: SUBJECT_TYPES.COLLEGE },
+      createdAt: { $gte: cutOffDate }
     })
       .lean()
       .exec();
