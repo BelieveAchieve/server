@@ -37,6 +37,8 @@
     "npm": "^6.14"
   },
   "dependencies": {
+    "@azure/identity": "^1.2.3",
+    "@azure/storage-blob": "^12.4.1",
     "@sendgrid/mail": "^6.4.0",
     "@sentry/node": "^5.27.6",
     "@small-tech/express-ws": "^1.0.1",
