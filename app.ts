@@ -6,15 +6,15 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Request } from 'express';
 import expressWs from '@small-tech/express-ws';
-import config from './config';
-import router from './router';
 import cacheControl from 'express-cache-controller';
 import timeout from 'connect-timeout';
-import logger from './logger';
 import expressPino from 'express-pino-logger';
+import config from './config';
+import router from './router';
+import logger from './logger';
 
-function haltOnTimedout (req, res, next) {
-  if (!req.timedout) next()
+function haltOnTimedout(req, res, next): void {
+  if (!req.timedout) next();
 }
 
 interface LoadedRequest extends Request {
@@ -31,8 +31,8 @@ Sentry.init({
 // Express App
 const app = express();
 
-const expressLogger = expressPino({ logger })
-app.use(expressLogger)
+const expressLogger = expressPino({ logger });
+app.use(expressLogger);
 
 app.use(timeout(300000));
 
@@ -57,9 +57,11 @@ app.use(
 );
 // for now, send directive to never cache to prevent Zwibbler issues
 // until we figure out a caching strategy
-app.use(cacheControl({
-  noCache: true
-}));
+app.use(
+  cacheControl({
+    noCache: true
+  })
+);
 app.use(haltOnTimedout);
 // see https://stackoverflow.com/questions/51023943/nodejs-getting-username-of-logged-in-user-within-route
 app.use((req: LoadedRequest, res, next) => {
@@ -85,7 +87,8 @@ app.use(haltOnTimedout);
 
 // Send error responses to API requests after they are passed to Sentry
 app.use(
-  ['/api', '/auth', '/contact', '/school', '/twiml', '/whiteboard'], haltOnTimedout,
+  ['/api', '/auth', '/contact', '/school', '/twiml', '/whiteboard'],
+  haltOnTimedout,
   (err, req, res, next) => {
     res.status(err.httpStatus || 500).json({ err: err.message || err });
     next();
